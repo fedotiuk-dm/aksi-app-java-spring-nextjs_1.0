@@ -26,10 +26,15 @@ import type {
 
 import type {
   ErrorResponse,
+  GetUserSessionsParams,
   InvalidateAllSessionsParams,
   LoginRequest,
   LoginResponse,
-  SessionInfo
+  SecurityAttemptsResponse,
+  SecurityPolicyResponse,
+  SessionInfo,
+  SessionTerminationResponse,
+  UserSessionsResponse
 } from './aKSIDryCleaningOrderSystemAPI.schemas';
 
 import orvalFetcher from '../../../../lib/api/orval-fetcher';
@@ -39,6 +44,134 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 
+/**
+ * Clear failed login attempts and unlock blocked user (admin only)
+ * @summary Unlock blocked user
+ */
+export const unlockUser = (
+    username: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<null>(
+      {url: `/api/auth/security/unlock/${username}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getUnlockUserMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof unlockUser>>, TError,{username: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof unlockUser>>, TError,{username: string}, TContext> => {
+
+const mutationKey = ['unlockUser'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof unlockUser>>, {username: string}> = (props) => {
+          const {username} = props ?? {};
+
+          return  unlockUser(username,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UnlockUserMutationResult = NonNullable<Awaited<ReturnType<typeof unlockUser>>>
+    
+    export type UnlockUserMutationError = ErrorResponse | ErrorResponse | ErrorResponse
+
+    /**
+ * @summary Unlock blocked user
+ */
+export const useUnlockUser = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof unlockUser>>, TError,{username: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof unlockUser>>,
+        TError,
+        {username: string},
+        TContext
+      > => {
+
+      const mutationOptions = getUnlockUserMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Clear failed login attempts and unlock blocked IP address (admin only)
+ * @summary Unlock IP address
+ */
+export const unlockIp = (
+    ipAddress: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<null>(
+      {url: `/api/auth/security/unlock-ip/${ipAddress}`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getUnlockIpMutationOptions = <TError = ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof unlockIp>>, TError,{ipAddress: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof unlockIp>>, TError,{ipAddress: string}, TContext> => {
+
+const mutationKey = ['unlockIp'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof unlockIp>>, {ipAddress: string}> = (props) => {
+          const {ipAddress} = props ?? {};
+
+          return  unlockIp(ipAddress,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UnlockIpMutationResult = NonNullable<Awaited<ReturnType<typeof unlockIp>>>
+    
+    export type UnlockIpMutationError = ErrorResponse | ErrorResponse
+
+    /**
+ * @summary Unlock IP address
+ */
+export const useUnlockIp = <TError = ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof unlockIp>>, TError,{ipAddress: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof unlockIp>>,
+        TError,
+        {ipAddress: string},
+        TContext
+      > => {
+
+      const mutationOptions = getUnlockIpMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * Terminate current session
  * @summary Logout from system
@@ -165,6 +298,159 @@ export const useLogin = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
       > => {
 
       const mutationOptions = getLoginMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * List all active sessions for current user or specified user (admin only)
+ * @summary Get all user sessions
+ */
+export const getUserSessions = (
+    params?: GetUserSessionsParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<UserSessionsResponse>(
+      {url: `/api/auth/sessions`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
+
+export const getGetUserSessionsQueryKey = (params?: GetUserSessionsParams,) => {
+    return [`/api/auth/sessions`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getGetUserSessionsQueryOptions = <TData = Awaited<ReturnType<typeof getUserSessions>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(params?: GetUserSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserSessions>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetUserSessionsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUserSessions>>> = ({ signal }) => getUserSessions(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUserSessions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetUserSessionsQueryResult = NonNullable<Awaited<ReturnType<typeof getUserSessions>>>
+export type GetUserSessionsQueryError = ErrorResponse | ErrorResponse | ErrorResponse
+
+
+export function useGetUserSessions<TData = Awaited<ReturnType<typeof getUserSessions>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
+ params: undefined |  GetUserSessionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserSessions>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserSessions>>,
+          TError,
+          Awaited<ReturnType<typeof getUserSessions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserSessions<TData = Awaited<ReturnType<typeof getUserSessions>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
+ params?: GetUserSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserSessions>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserSessions>>,
+          TError,
+          Awaited<ReturnType<typeof getUserSessions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserSessions<TData = Awaited<ReturnType<typeof getUserSessions>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
+ params?: GetUserSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserSessions>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all user sessions
+ */
+
+export function useGetUserSessions<TData = Awaited<ReturnType<typeof getUserSessions>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
+ params?: GetUserSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserSessions>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetUserSessionsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Logout user from all devices except current session
+ * @summary Terminate all other sessions
+ */
+export const terminateOtherSessions = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<SessionTerminationResponse>(
+      {url: `/api/auth/sessions`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getTerminateOtherSessionsMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof terminateOtherSessions>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof terminateOtherSessions>>, TError,void, TContext> => {
+
+const mutationKey = ['terminateOtherSessions'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof terminateOtherSessions>>, void> = () => {
+          
+
+          return  terminateOtherSessions(requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TerminateOtherSessionsMutationResult = NonNullable<Awaited<ReturnType<typeof terminateOtherSessions>>>
+    
+    export type TerminateOtherSessionsMutationError = ErrorResponse
+
+    /**
+ * @summary Terminate all other sessions
+ */
+export const useTerminateOtherSessions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof terminateOtherSessions>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof terminateOtherSessions>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getTerminateOtherSessionsMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }
@@ -318,6 +604,247 @@ export const useInvalidateAllSessions = <TError = ErrorResponse | ErrorResponse 
       > => {
 
       const mutationOptions = getInvalidateAllSessionsMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Get current security policy settings (rate limits, password policy, etc.)
+ * @summary Get current security policy
+ */
+export const getSecurityPolicy = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SecurityPolicyResponse>(
+      {url: `/api/auth/security/policy`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetSecurityPolicyQueryKey = () => {
+    return [`/api/auth/security/policy`] as const;
+    }
+
+    
+export const getGetSecurityPolicyQueryOptions = <TData = Awaited<ReturnType<typeof getSecurityPolicy>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSecurityPolicy>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSecurityPolicyQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSecurityPolicy>>> = ({ signal }) => getSecurityPolicy(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSecurityPolicy>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSecurityPolicyQueryResult = NonNullable<Awaited<ReturnType<typeof getSecurityPolicy>>>
+export type GetSecurityPolicyQueryError = ErrorResponse
+
+
+export function useGetSecurityPolicy<TData = Awaited<ReturnType<typeof getSecurityPolicy>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSecurityPolicy>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSecurityPolicy>>,
+          TError,
+          Awaited<ReturnType<typeof getSecurityPolicy>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSecurityPolicy<TData = Awaited<ReturnType<typeof getSecurityPolicy>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSecurityPolicy>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSecurityPolicy>>,
+          TError,
+          Awaited<ReturnType<typeof getSecurityPolicy>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSecurityPolicy<TData = Awaited<ReturnType<typeof getSecurityPolicy>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSecurityPolicy>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get current security policy
+ */
+
+export function useGetSecurityPolicy<TData = Awaited<ReturnType<typeof getSecurityPolicy>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSecurityPolicy>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSecurityPolicyQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Get rate limiting and security attempt statistics (admin only)
+ * @summary Get login attempt statistics
+ */
+export const getSecurityAttempts = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<SecurityAttemptsResponse>(
+      {url: `/api/auth/security/attempts`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetSecurityAttemptsQueryKey = () => {
+    return [`/api/auth/security/attempts`] as const;
+    }
+
+    
+export const getGetSecurityAttemptsQueryOptions = <TData = Awaited<ReturnType<typeof getSecurityAttempts>>, TError = ErrorResponse | ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSecurityAttempts>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSecurityAttemptsQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSecurityAttempts>>> = ({ signal }) => getSecurityAttempts(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSecurityAttempts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSecurityAttemptsQueryResult = NonNullable<Awaited<ReturnType<typeof getSecurityAttempts>>>
+export type GetSecurityAttemptsQueryError = ErrorResponse | ErrorResponse
+
+
+export function useGetSecurityAttempts<TData = Awaited<ReturnType<typeof getSecurityAttempts>>, TError = ErrorResponse | ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSecurityAttempts>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSecurityAttempts>>,
+          TError,
+          Awaited<ReturnType<typeof getSecurityAttempts>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSecurityAttempts<TData = Awaited<ReturnType<typeof getSecurityAttempts>>, TError = ErrorResponse | ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSecurityAttempts>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSecurityAttempts>>,
+          TError,
+          Awaited<ReturnType<typeof getSecurityAttempts>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSecurityAttempts<TData = Awaited<ReturnType<typeof getSecurityAttempts>>, TError = ErrorResponse | ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSecurityAttempts>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get login attempt statistics
+ */
+
+export function useGetSecurityAttempts<TData = Awaited<ReturnType<typeof getSecurityAttempts>>, TError = ErrorResponse | ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSecurityAttempts>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSecurityAttemptsQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Terminate a specific user session
+ * @summary Terminate specific session
+ */
+export const terminateSession = (
+    sessionId: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<null>(
+      {url: `/api/auth/sessions/${sessionId}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getTerminateSessionMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof terminateSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof terminateSession>>, TError,{sessionId: string}, TContext> => {
+
+const mutationKey = ['terminateSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof terminateSession>>, {sessionId: string}> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  terminateSession(sessionId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TerminateSessionMutationResult = NonNullable<Awaited<ReturnType<typeof terminateSession>>>
+    
+    export type TerminateSessionMutationError = ErrorResponse | ErrorResponse | ErrorResponse
+
+    /**
+ * @summary Terminate specific session
+ */
+export const useTerminateSession = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof terminateSession>>, TError,{sessionId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof terminateSession>>,
+        TError,
+        {sessionId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getTerminateSessionMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

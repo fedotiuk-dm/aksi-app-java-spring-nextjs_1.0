@@ -10,6 +10,24 @@ import {
 } from 'zod';
 
 /**
+ * Clear failed login attempts and unlock blocked user (admin only)
+ * @summary Unlock blocked user
+ */
+export const unlockUserParams = zod.object({
+  "username": zod.string().describe('Username to unlock')
+})
+
+
+/**
+ * Clear failed login attempts and unlock blocked IP address (admin only)
+ * @summary Unlock IP address
+ */
+export const unlockIpParams = zod.object({
+  "ipAddress": zod.string().describe('IP address to unlock')
+})
+
+
+/**
  * Authenticate operator and return session cookie
  * @summary Login to system
  */
@@ -18,14 +36,14 @@ export const loginBodyUsernameMin = 3;
 export const loginBodyUsernameMax = 50;
 
 export const loginBodyUsernameRegExp = new RegExp('^[a-zA-Z0-9_]+$');
-export const loginBodyPasswordMin = 8;
+export const loginBodyPasswordMin = 6;
 
 export const loginBodyPasswordMax = 100;
 
 
 export const loginBody = zod.object({
   "username": zod.string().min(loginBodyUsernameMin).max(loginBodyUsernameMax).regex(loginBodyUsernameRegExp).describe('Operator username'),
-  "password": zod.string().min(loginBodyPasswordMin).max(loginBodyPasswordMax).describe('Password'),
+  "password": zod.string().min(loginBodyPasswordMin).max(loginBodyPasswordMax).describe('Password (min 6 chars for dev, 12 for prod)'),
   "rememberMe": zod.boolean().optional().describe('Remember session for 30 days'),
   "branchId": zod.object({
   "present": zod.boolean().optional()
@@ -33,6 +51,7 @@ export const loginBody = zod.object({
 })
 
 export const loginResponseRolesMax = 2147483647;
+export const loginResponseAttemptsRemainingMin = 0;
 
 
 export const loginResponse = zod.object({
@@ -48,7 +67,45 @@ export const loginResponse = zod.object({
   "branchName": zod.object({
   "present": zod.boolean().optional()
 }).optional(),
-  "requiresBranchSelection": zod.boolean().describe('Whether branch selection is required')
+  "requiresBranchSelection": zod.boolean().describe('Whether branch selection is required'),
+  "isBlocked": zod.boolean().describe('Whether user account is blocked due to failed attempts'),
+  "attemptsRemaining": zod.number().min(loginResponseAttemptsRemainingMin).describe('Number of login attempts remaining before lockout'),
+  "lockoutExpiresAt": zod.iso.datetime({}).optional().describe('When account lockout expires (if blocked)')
+})
+
+
+/**
+ * List all active sessions for current user or specified user (admin only)
+ * @summary Get all user sessions
+ */
+export const getUserSessionsQueryParams = zod.object({
+  "userId": zod.uuid().optional().describe('User ID to get sessions for (admin only, defaults to current user)')
+})
+
+export const getUserSessionsResponse = zod.object({
+  "sessions": zod.array(zod.object({
+  "sessionId": zod.string().describe('Session ID'),
+  "createdAt": zod.iso.datetime({}).describe('Session creation time'),
+  "lastAccessedAt": zod.iso.datetime({}).describe('Last access time'),
+  "expiresAt": zod.iso.datetime({}).describe('Session expiration time'),
+  "ipAddress": zod.string().describe('IP address'),
+  "userAgent": zod.string().optional().describe('Browser user agent'),
+  "location": zod.string().optional().describe('Approximate location based on IP'),
+  "deviceType": zod.string().optional().describe('Device type (mobile, tablet, desktop)'),
+  "isCurrentSession": zod.boolean().describe('Is this the current session')
+})).describe('List of user sessions'),
+  "totalCount": zod.number().describe('Total number of sessions'),
+  "currentSessionId": zod.string().describe('Current session ID')
+})
+
+
+/**
+ * Logout user from all devices except current session
+ * @summary Terminate all other sessions
+ */
+export const terminateOtherSessionsResponse = zod.object({
+  "terminatedCount": zod.number().describe('Number of sessions terminated'),
+  "message": zod.string().describe('Success message')
 })
 
 
@@ -81,4 +138,85 @@ export const getCurrentSessionResponse = zod.object({
  */
 export const invalidateAllSessionsQueryParams = zod.object({
   "userId": zod.uuid().describe('User ID to invalidate sessions for')
+})
+
+
+/**
+ * Get current security policy settings (rate limits, password policy, etc.)
+ * @summary Get current security policy
+ */
+export const getSecurityPolicyResponse = zod.object({
+  "rateLimiting": zod.object({
+  "maxAttemptsPerUser": zod.number().describe('Max failed attempts per user'),
+  "maxAttemptsPerIp": zod.number().describe('Max failed attempts per IP'),
+  "lockoutDurationMinutes": zod.number().describe('Lockout duration in minutes'),
+  "enabled": zod.boolean().describe('Is rate limiting enabled')
+}),
+  "passwordPolicy": zod.object({
+  "minLength": zod.number().describe('Minimum password length'),
+  "requireUppercase": zod.boolean().describe('Require uppercase letters'),
+  "requireLowercase": zod.boolean().describe('Require lowercase letters'),
+  "requireNumbers": zod.boolean().describe('Require numbers'),
+  "requireSpecialChars": zod.boolean().describe('Require special characters'),
+  "allowedSpecialChars": zod.string().optional().describe('Allowed special characters')
+}),
+  "sessionPolicy": zod.object({
+  "defaultTimeoutMinutes": zod.number().describe('Default session timeout in minutes'),
+  "maxConcurrentSessions": zod.number().describe('Max concurrent sessions per user'),
+  "rememberMeTimeoutDays": zod.number().describe('Remember me timeout in days'),
+  "sessionFixationProtection": zod.boolean().optional().describe('Is session fixation protection enabled')
+})
+})
+
+
+/**
+ * Get rate limiting and security attempt statistics (admin only)
+ * @summary Get login attempt statistics
+ */
+export const getSecurityAttemptsResponseRecentAttemptsMin = 0;
+
+export const getSecurityAttemptsResponseRecentAttemptsMax = 50;
+
+
+export const getSecurityAttemptsResponse = zod.object({
+  "overview": zod.object({
+  "totalFailedAttemptsToday": zod.number().describe('Total failed attempts today'),
+  "totalBlockedUsers": zod.number().describe('Currently blocked users count'),
+  "totalBlockedIps": zod.number().describe('Currently blocked IPs count'),
+  "peakAttemptTime": zod.iso.datetime({}).describe('Time of highest attempt rate today'),
+  "averageAttemptsPerHour": zod.number().optional().describe('Average failed attempts per hour')
+}),
+  "recentAttempts": zod.array(zod.object({
+  "timestamp": zod.iso.datetime({}).describe('Attempt timestamp'),
+  "username": zod.string().describe('Username attempted'),
+  "ipAddress": zod.string().describe('IP address'),
+  "userAgent": zod.string().optional().describe('User agent'),
+  "location": zod.string().optional().describe('Approximate location'),
+  "success": zod.boolean().describe('Whether attempt was successful'),
+  "failureReason": zod.string().optional().describe('Reason for failure')
+})).min(getSecurityAttemptsResponseRecentAttemptsMin).max(getSecurityAttemptsResponseRecentAttemptsMax).describe('Recent login attempts (last 50)'),
+  "blockedUsers": zod.array(zod.object({
+  "username": zod.string().describe('Blocked username'),
+  "failedAttempts": zod.number().describe('Number of failed attempts'),
+  "lastAttemptAt": zod.iso.datetime({}).describe('Last failed attempt time'),
+  "blockedUntil": zod.iso.datetime({}).describe('When block expires'),
+  "lastAttemptIp": zod.string().optional().describe('IP of last attempt')
+})).describe('Currently blocked users'),
+  "blockedIps": zod.array(zod.object({
+  "ipAddress": zod.string().describe('Blocked IP address'),
+  "failedAttempts": zod.number().describe('Number of failed attempts'),
+  "lastAttemptAt": zod.iso.datetime({}).describe('Last failed attempt time'),
+  "blockedUntil": zod.iso.datetime({}).describe('When block expires'),
+  "location": zod.string().optional().describe('Approximate location'),
+  "lastUsername": zod.string().optional().describe('Last username attempted from this IP')
+})).describe('Currently blocked IP addresses')
+})
+
+
+/**
+ * Terminate a specific user session
+ * @summary Terminate specific session
+ */
+export const terminateSessionParams = zod.object({
+  "sessionId": zod.string().describe('Session ID to terminate')
 })

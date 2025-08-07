@@ -3,6 +3,7 @@ package com.aksi.service.user;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,8 @@ import com.aksi.exception.UnauthorizedException;
 import com.aksi.mapper.UserMapper;
 import com.aksi.repository.BranchRepository;
 import com.aksi.repository.UserRepository;
+import com.aksi.service.auth.AuthValidationService;
+import com.aksi.service.auth.SecurityEventAuditService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +46,9 @@ public class UserCommandService {
   private final UserQueryService userQueryService;
   private final PasswordEncoder passwordEncoder;
   private final UserMapper userMapper;
+  private final AuthValidationService authValidationService;
+  private final SecurityEventAuditService securityEventAuditService;
+  private final Environment environment;
 
   /**
    * Create a new user. Validation is handled by Spring Validation annotations on the DTO.
@@ -53,6 +59,15 @@ public class UserCommandService {
    */
   public UserDetail createUser(CreateUserRequest request) {
     log.info("Creating new user with username: {}", request.getUsername());
+
+    // Enforce validation in production mode
+    if (shouldEnforceValidation()) {
+      // Validate username format
+      authValidationService.validateUsername(request.getUsername());
+
+      // Validate password strength
+      authValidationService.validatePassword(request.getPassword());
+    }
 
     // Validate username uniqueness
     if (userQueryService.existsByUsername(request.getUsername())) {
@@ -167,14 +182,26 @@ public class UserCommandService {
     UserEntity userEntity = getUserOrThrow(userId);
 
     // Verify current password if provided (self password change)
-    if (request.getCurrentPassword() != null
+    boolean isSelfChange = request.getCurrentPassword() != null;
+    if (isSelfChange
         && !passwordEncoder.matches(request.getCurrentPassword(), userEntity.getPasswordHash())) {
       throw new UnauthorizedException("Current password is incorrect");
+    }
+
+    // Enforce validation in production mode
+    if (shouldEnforceValidation()) {
+      // Validate new password strength
+      authValidationService.validatePassword(request.getNewPassword());
     }
 
     // Update password
     userEntity.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
     userRepository.save(userEntity);
+
+    // Log password change event
+    securityEventAuditService.logPasswordChange(
+        userEntity.getUsername(), "Password changed successfully", !isSelfChange // isAdminReset
+        );
 
     log.info("Password changed for user: {}", userId);
   }
@@ -321,5 +348,10 @@ public class UserCommandService {
     userEntity.setFailedLoginAttempts(0);
 
     return userEntity;
+  }
+
+  /** Check if validation should be enforced (not in dev mode). */
+  private boolean shouldEnforceValidation() {
+    return !java.util.Arrays.asList(environment.getActiveProfiles()).contains("dev");
   }
 }

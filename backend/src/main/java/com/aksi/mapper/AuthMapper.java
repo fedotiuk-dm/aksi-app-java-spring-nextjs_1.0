@@ -16,6 +16,9 @@ public interface AuthMapper {
   @Mapping(target = "branchId", ignore = true)
   @Mapping(target = "branchName", ignore = true)
   @Mapping(target = "requiresBranchSelection", constant = "false")
+  @Mapping(target = "isBlocked", constant = "false")
+  @Mapping(target = "attemptsRemaining", ignore = true)
+  @Mapping(target = "lockoutExpiresAt", ignore = true)
   LoginResponse toLoginResponse(UserEntity userEntity);
 
   @Mapping(target = "userId", source = "userEntity.id")

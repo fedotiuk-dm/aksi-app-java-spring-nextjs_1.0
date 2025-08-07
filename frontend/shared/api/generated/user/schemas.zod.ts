@@ -26,6 +26,7 @@ export const updateUserRolesBody = zod.object({
 
 export const updateUserRolesResponseRolesMax = 2147483647;
 export const updateUserRolesResponsePhoneRegExp = new RegExp('^\\+?[0-9]{10,15}$');
+export const updateUserRolesResponseFailedLoginAttemptsMin = 0;
 
 
 export const updateUserRolesResponse = zod.object({
@@ -46,7 +47,10 @@ export const updateUserRolesResponse = zod.object({
 })).describe('Assigned branches'),
   "updatedAt": zod.iso.datetime({}).describe('Last update timestamp'),
   "createdBy": zod.uuid().optional().describe('ID of user who created this user'),
-  "updatedBy": zod.uuid().optional().describe('ID of user who last updated this user')
+  "updatedBy": zod.uuid().optional().describe('ID of user who last updated this user'),
+  "failedLoginAttempts": zod.number().min(updateUserRolesResponseFailedLoginAttemptsMin).optional().describe('Number of failed login attempts'),
+  "accountLockTime": zod.iso.datetime({}).optional().describe('When account was locked due to failed attempts'),
+  "lastFailedLoginAt": zod.iso.datetime({}).optional().describe('Last failed login attempt timestamp')
 })
 
 
@@ -58,14 +62,14 @@ export const changePasswordParams = zod.object({
   "userId": zod.uuid().describe('User ID')
 })
 
-export const changePasswordBodyNewPasswordMin = 8;
+export const changePasswordBodyNewPasswordMin = 6;
 
 export const changePasswordBodyNewPasswordMax = 100;
 
 
 export const changePasswordBody = zod.object({
   "currentPassword": zod.string().optional().describe('Current password (required if changing own password)'),
-  "newPassword": zod.string().min(changePasswordBodyNewPasswordMin).max(changePasswordBodyNewPasswordMax).describe('New password')
+  "newPassword": zod.string().min(changePasswordBodyNewPasswordMin).max(changePasswordBodyNewPasswordMax).describe('New password (min 6 chars for dev, 12 for prod)')
 })
 
 
@@ -164,11 +168,9 @@ export const createUserBodyUsernameMin = 3;
 export const createUserBodyUsernameMax = 50;
 
 export const createUserBodyUsernameRegExp = new RegExp('^[a-zA-Z0-9_]+$');
-export const createUserBodyPasswordMin = 8;
+export const createUserBodyPasswordMin = 6;
 
 export const createUserBodyPasswordMax = 100;
-
-export const createUserBodyPasswordRegExp = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$');
 export const createUserBodyFirstNameMax = 100;
 
 export const createUserBodyFirstNameRegExp = new RegExp('^[a-zA-Z\\u0400-\\u04FF\\s\\-]+$');
@@ -187,7 +189,7 @@ export const createUserBodyBranchIdsMax = 50;
 
 export const createUserBody = zod.object({
   "username": zod.string().min(createUserBodyUsernameMin).max(createUserBodyUsernameMax).regex(createUserBodyUsernameRegExp).describe('Username (must be unique)'),
-  "password": zod.string().min(createUserBodyPasswordMin).max(createUserBodyPasswordMax).regex(createUserBodyPasswordRegExp).describe('Password (min 8 chars, must contain uppercase, lowercase, number and special char)'),
+  "password": zod.string().min(createUserBodyPasswordMin).max(createUserBodyPasswordMax).describe('Password (min 6 chars for dev, 12 for prod)'),
   "firstName": zod.string().min(1).max(createUserBodyFirstNameMax).regex(createUserBodyFirstNameRegExp).describe('First name (letters only)'),
   "lastName": zod.string().min(1).max(createUserBodyLastNameMax).regex(createUserBodyLastNameRegExp).describe('Last name (letters only)'),
   "email": zod.string().min(createUserBodyEmailMin).max(createUserBodyEmailMax).describe('Email address (must be unique)'),
@@ -210,6 +212,7 @@ export const deactivateUserParams = zod.object({
 
 export const deactivateUserResponseRolesMax = 2147483647;
 export const deactivateUserResponsePhoneRegExp = new RegExp('^\\+?[0-9]{10,15}$');
+export const deactivateUserResponseFailedLoginAttemptsMin = 0;
 
 
 export const deactivateUserResponse = zod.object({
@@ -230,7 +233,10 @@ export const deactivateUserResponse = zod.object({
 })).describe('Assigned branches'),
   "updatedAt": zod.iso.datetime({}).describe('Last update timestamp'),
   "createdBy": zod.uuid().optional().describe('ID of user who created this user'),
-  "updatedBy": zod.uuid().optional().describe('ID of user who last updated this user')
+  "updatedBy": zod.uuid().optional().describe('ID of user who last updated this user'),
+  "failedLoginAttempts": zod.number().min(deactivateUserResponseFailedLoginAttemptsMin).optional().describe('Number of failed login attempts'),
+  "accountLockTime": zod.iso.datetime({}).optional().describe('When account was locked due to failed attempts'),
+  "lastFailedLoginAt": zod.iso.datetime({}).optional().describe('Last failed login attempt timestamp')
 })
 
 
@@ -244,6 +250,7 @@ export const activateUserParams = zod.object({
 
 export const activateUserResponseRolesMax = 2147483647;
 export const activateUserResponsePhoneRegExp = new RegExp('^\\+?[0-9]{10,15}$');
+export const activateUserResponseFailedLoginAttemptsMin = 0;
 
 
 export const activateUserResponse = zod.object({
@@ -264,7 +271,10 @@ export const activateUserResponse = zod.object({
 })).describe('Assigned branches'),
   "updatedAt": zod.iso.datetime({}).describe('Last update timestamp'),
   "createdBy": zod.uuid().optional().describe('ID of user who created this user'),
-  "updatedBy": zod.uuid().optional().describe('ID of user who last updated this user')
+  "updatedBy": zod.uuid().optional().describe('ID of user who last updated this user'),
+  "failedLoginAttempts": zod.number().min(activateUserResponseFailedLoginAttemptsMin).optional().describe('Number of failed login attempts'),
+  "accountLockTime": zod.iso.datetime({}).optional().describe('When account was locked due to failed attempts'),
+  "lastFailedLoginAt": zod.iso.datetime({}).optional().describe('Last failed login attempt timestamp')
 })
 
 
@@ -278,6 +288,7 @@ export const getUserByIdParams = zod.object({
 
 export const getUserByIdResponseRolesMax = 2147483647;
 export const getUserByIdResponsePhoneRegExp = new RegExp('^\\+?[0-9]{10,15}$');
+export const getUserByIdResponseFailedLoginAttemptsMin = 0;
 
 
 export const getUserByIdResponse = zod.object({
@@ -298,7 +309,10 @@ export const getUserByIdResponse = zod.object({
 })).describe('Assigned branches'),
   "updatedAt": zod.iso.datetime({}).describe('Last update timestamp'),
   "createdBy": zod.uuid().optional().describe('ID of user who created this user'),
-  "updatedBy": zod.uuid().optional().describe('ID of user who last updated this user')
+  "updatedBy": zod.uuid().optional().describe('ID of user who last updated this user'),
+  "failedLoginAttempts": zod.number().min(getUserByIdResponseFailedLoginAttemptsMin).optional().describe('Number of failed login attempts'),
+  "accountLockTime": zod.iso.datetime({}).optional().describe('When account was locked due to failed attempts'),
+  "lastFailedLoginAt": zod.iso.datetime({}).optional().describe('Last failed login attempt timestamp')
 })
 
 
@@ -324,6 +338,7 @@ export const updateUserBody = zod.object({
 
 export const updateUserResponseRolesMax = 2147483647;
 export const updateUserResponsePhoneRegExp = new RegExp('^\\+?[0-9]{10,15}$');
+export const updateUserResponseFailedLoginAttemptsMin = 0;
 
 
 export const updateUserResponse = zod.object({
@@ -344,7 +359,10 @@ export const updateUserResponse = zod.object({
 })).describe('Assigned branches'),
   "updatedAt": zod.iso.datetime({}).describe('Last update timestamp'),
   "createdBy": zod.uuid().optional().describe('ID of user who created this user'),
-  "updatedBy": zod.uuid().optional().describe('ID of user who last updated this user')
+  "updatedBy": zod.uuid().optional().describe('ID of user who last updated this user'),
+  "failedLoginAttempts": zod.number().min(updateUserResponseFailedLoginAttemptsMin).optional().describe('Number of failed login attempts'),
+  "accountLockTime": zod.iso.datetime({}).optional().describe('When account was locked due to failed attempts'),
+  "lastFailedLoginAt": zod.iso.datetime({}).optional().describe('Last failed login attempt timestamp')
 })
 
 

@@ -8,48 +8,49 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.auth.dto.SessionInfo;
 import com.aksi.domain.user.UserEntity;
 import com.aksi.exception.UnauthorizedException;
 import com.aksi.mapper.AuthMapper;
+import com.aksi.service.user.UserService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Service responsible for session management operations. Handles session creation, validation, and
- * cleanup.
+ * Query service for auth-related read operations. Handles all authentication state inquiries and
+ * session information retrieval.
  */
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public class SessionManagementService {
+public class AuthQueryService {
 
+  private final UserService userService;
   private final FindByIndexNameSessionRepository<? extends Session> sessionRepository;
   private final AuthMapper authMapper;
+  private final SecurityContextService securityContextService;
 
   // Session attribute keys
   public static final String SESSION_USER_ID = "USER_ID";
   public static final String SESSION_USERNAME = "USERNAME";
-  public static final String SESSION_ROLES = "USER_ROLES";
 
   /**
-   * Create session for authenticated user.
+   * Get current user from session.
    *
-   * @param userEntity authenticated user
    * @param session HTTP session
+   * @return user entity or null if not found
    */
-  public void createSession(UserEntity userEntity, HttpSession session) {
-    // Store user information in session
-    session.setAttribute(SESSION_USER_ID, userEntity.getId());
-    session.setAttribute(SESSION_USERNAME, userEntity.getUsername());
-    session.setAttribute(SESSION_ROLES, userEntity.getRoles());
-    session.setAttribute(
-        FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, userEntity.getUsername());
-
-    log.debug("Created session {} for user: {}", session.getId(), userEntity.getUsername());
+  public UserEntity getCurrentUser(HttpSession session) {
+    UUID userId = getUserIdFromSession(session);
+    if (userId == null) {
+      return null;
+    }
+    return userService.findById(userId).orElse(null);
   }
 
   /**
@@ -76,6 +77,9 @@ public class SessionManagementService {
    * @return user ID or null
    */
   public UUID getUserIdFromSession(HttpSession session) {
+    if (session == null) {
+      return null;
+    }
     return (UUID) session.getAttribute(SESSION_USER_ID);
   }
 
@@ -86,6 +90,9 @@ public class SessionManagementService {
    * @return username or null
    */
   public String getUsernameFromSession(HttpSession session) {
+    if (session == null) {
+      return null;
+    }
     return (String) session.getAttribute(SESSION_USERNAME);
   }
 
@@ -100,40 +107,30 @@ public class SessionManagementService {
   }
 
   /**
-   * Invalidate session.
+   * Comprehensive authentication check combining session and security context validation.
    *
    * @param session HTTP session
+   * @return true if fully authenticated
    */
-  public void invalidateSession(HttpSession session) {
-    if (session != null) {
-      String username = getUsernameFromSession(session);
-      log.debug("Invalidating session {} for user: {}", session.getId(), username);
-      session.invalidate();
+  public boolean isAuthenticated(HttpSession session) {
+    boolean sessionAuth = isSessionAuthenticated(session);
+    boolean contextAuth = securityContextService.isAuthenticated();
+    boolean contextValid = securityContextService.isSecurityContextValid(session);
+
+    // Additional validation: check username consistency between session and context
+    if (sessionAuth && contextAuth && contextValid && session != null) {
+      String sessionUsername = getUsernameFromSession(session);
+      String contextUsername = securityContextService.getCurrentUsername();
+
+      if (sessionUsername != null
+          && contextUsername != null
+          && !sessionUsername.equals(contextUsername)) {
+        log.warn("Username mismatch: session={}, context={}", sessionUsername, contextUsername);
+        return false;
+      }
     }
-  }
 
-  /**
-   * Invalidate all sessions for a user.
-   *
-   * @param username username
-   * @return number of invalidated sessions
-   */
-  public int invalidateAllUserSessions(String username) {
-    log.info("Admin operation: Invalidating all sessions for user: {}", username);
-
-    // Find all sessions for this user
-    var userSessionsMap = sessionRepository.findByPrincipalName(username);
-
-    // Delete all sessions
-    userSessionsMap.forEach(
-        (sessionId, session) -> {
-          sessionRepository.deleteById(sessionId);
-          log.info("Force deleted session: {} for user: {}", sessionId, username);
-        });
-
-    int count = userSessionsMap.size();
-    log.warn("SECURITY: Force invalidated {} sessions for user: {}", count, username);
-    return count;
+    return sessionAuth && contextAuth && contextValid;
   }
 
   /**
@@ -185,5 +182,15 @@ public class SessionManagementService {
     }
 
     return userId;
+  }
+
+  /**
+   * Check if user exists by ID.
+   *
+   * @param userId user ID
+   * @return true if user exists
+   */
+  public boolean existsById(UUID userId) {
+    return userService.findById(userId).isPresent();
   }
 }

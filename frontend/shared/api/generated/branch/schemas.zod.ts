@@ -91,17 +91,19 @@ export const deleteBranchParams = zod.object({
  * Get list of branches
  * @summary List branches
  */
-export const listBranchesQueryActiveDefault = true;export const listBranchesQueryOffsetDefault = 0;
-export const listBranchesQueryOffsetMin = 0;
-export const listBranchesQueryLimitDefault = 20;
-export const listBranchesQueryLimitMax = 100;
-
+export const listBranchesQueryPageDefault = 0;
+export const listBranchesQueryPageMin = 0;
+export const listBranchesQuerySizeDefault = 20;
+export const listBranchesQuerySizeMax = 100;
+export const listBranchesQuerySortByDefault = "name";export const listBranchesQuerySortOrderDefault = "asc";export const listBranchesQueryActiveDefault = true;
 
 export const listBranchesQueryParams = zod.object({
+  "page": zod.number().min(listBranchesQueryPageMin).optional().describe('Page number (0-based)'),
+  "size": zod.number().min(1).max(listBranchesQuerySizeMax).default(listBranchesQuerySizeDefault).describe('Page size (number of items per page)'),
+  "sortBy": zod.string().default(listBranchesQuerySortByDefault).describe('Sort field'),
+  "sortOrder": zod.string().default(listBranchesQuerySortOrderDefault).describe('Sort direction'),
   "active": zod.boolean().default(listBranchesQueryActiveDefault).describe('Filter by active status'),
-  "search": zod.string().optional().describe('Search by name or address'),
-  "offset": zod.number().min(listBranchesQueryOffsetMin).optional().describe('Number of items to skip'),
-  "limit": zod.number().min(1).max(listBranchesQueryLimitMax).default(listBranchesQueryLimitDefault).describe('Number of items to return')
+  "search": zod.string().optional().describe('Search by name or address')
 })
 
 export const listBranchesResponse = zod.object({
@@ -151,3 +153,63 @@ export const createBranchBody = zod.object({
   "description": zod.string().min(createBranchBodyDescriptionMin).max(createBranchBodyDescriptionMax).optional().describe('Branch description'),
   "sortOrder": zod.number().optional().describe('Sort order for display')
 })
+
+
+/**
+ * Deactivate an active branch (admin only)
+ * @summary Deactivate branch
+ */
+export const deactivateBranchParams = zod.object({
+  "branchId": zod.uuid().describe('Branch ID')
+})
+
+export const deactivateBranchResponse = zod.object({
+  "id": zod.uuid().describe('Branch ID'),
+  "name": zod.string().describe('Branch name'),
+  "address": zod.string().describe('Branch address'),
+  "phone": zod.string().describe('Branch phone number'),
+  "email": zod.string().optional().describe('Branch email'),
+  "workingHours": zod.string().optional().describe('Working hours (e.g., \"Пн-Пт 8:00-20:00, Сб 9:00-18:00\")'),
+  "active": zod.boolean().describe('Is branch active'),
+  "description": zod.string().optional().describe('Branch description'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
+})
+
+
+/**
+ * Activate a deactivated branch (admin only)
+ * @summary Activate branch
+ */
+export const activateBranchParams = zod.object({
+  "branchId": zod.uuid().describe('Branch ID')
+})
+
+export const activateBranchResponse = zod.object({
+  "id": zod.uuid().describe('Branch ID'),
+  "name": zod.string().describe('Branch name'),
+  "address": zod.string().describe('Branch address'),
+  "phone": zod.string().describe('Branch phone number'),
+  "email": zod.string().optional().describe('Branch email'),
+  "workingHours": zod.string().optional().describe('Working hours (e.g., \"Пн-Пт 8:00-20:00, Сб 9:00-18:00\")'),
+  "active": zod.boolean().describe('Is branch active'),
+  "description": zod.string().optional().describe('Branch description'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
+})
+
+
+/**
+ * Get all active branches for dropdowns (no pagination)
+ * @summary Get all active branches
+ */
+export const getAllActiveBranchesResponseItem = zod.object({
+  "id": zod.uuid().describe('Branch ID'),
+  "name": zod.string().describe('Branch name'),
+  "address": zod.string().describe('Branch address'),
+  "phone": zod.string().describe('Branch phone number'),
+  "email": zod.string().optional().describe('Branch email'),
+  "workingHours": zod.string().optional().describe('Working hours (e.g., \"Пн-Пт 8:00-20:00, Сб 9:00-18:00\")'),
+  "active": zod.boolean().describe('Is branch active'),
+  "description": zod.string().optional().describe('Branch description'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
+})
+export const getAllActiveBranchesResponse = zod.array(getAllActiveBranchesResponseItem)

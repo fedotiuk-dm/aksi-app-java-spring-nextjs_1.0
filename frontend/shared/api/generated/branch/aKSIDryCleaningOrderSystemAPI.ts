@@ -414,3 +414,220 @@ export const useCreateBranch = <TError = ErrorResponse | ErrorResponse | ErrorRe
       return useMutation(mutationOptions , queryClient);
     }
     
+/**
+ * Deactivate an active branch (admin only)
+ * @summary Deactivate branch
+ */
+export const deactivateBranch = (
+    branchId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<BranchInfo>(
+      {url: `/api/branches/${branchId}/deactivate`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getDeactivateBranchMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deactivateBranch>>, TError,{branchId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof deactivateBranch>>, TError,{branchId: string}, TContext> => {
+
+const mutationKey = ['deactivateBranch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deactivateBranch>>, {branchId: string}> = (props) => {
+          const {branchId} = props ?? {};
+
+          return  deactivateBranch(branchId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeactivateBranchMutationResult = NonNullable<Awaited<ReturnType<typeof deactivateBranch>>>
+    
+    export type DeactivateBranchMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
+
+    /**
+ * @summary Deactivate branch
+ */
+export const useDeactivateBranch = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deactivateBranch>>, TError,{branchId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deactivateBranch>>,
+        TError,
+        {branchId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getDeactivateBranchMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Activate a deactivated branch (admin only)
+ * @summary Activate branch
+ */
+export const activateBranch = (
+    branchId: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<BranchInfo>(
+      {url: `/api/branches/${branchId}/activate`, method: 'POST', signal
+    },
+      options);
+    }
+  
+
+
+export const getActivateBranchMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateBranch>>, TError,{branchId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof activateBranch>>, TError,{branchId: string}, TContext> => {
+
+const mutationKey = ['activateBranch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof activateBranch>>, {branchId: string}> = (props) => {
+          const {branchId} = props ?? {};
+
+          return  activateBranch(branchId,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ActivateBranchMutationResult = NonNullable<Awaited<ReturnType<typeof activateBranch>>>
+    
+    export type ActivateBranchMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
+
+    /**
+ * @summary Activate branch
+ */
+export const useActivateBranch = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateBranch>>, TError,{branchId: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof activateBranch>>,
+        TError,
+        {branchId: string},
+        TContext
+      > => {
+
+      const mutationOptions = getActivateBranchMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Get all active branches for dropdowns (no pagination)
+ * @summary Get all active branches
+ */
+export const getAllActiveBranches = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<BranchInfo[]>(
+      {url: `/api/branches/active`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetAllActiveBranchesQueryKey = () => {
+    return [`/api/branches/active`] as const;
+    }
+
+    
+export const getGetAllActiveBranchesQueryOptions = <TData = Awaited<ReturnType<typeof getAllActiveBranches>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllActiveBranches>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAllActiveBranchesQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllActiveBranches>>> = ({ signal }) => getAllActiveBranches(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAllActiveBranches>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAllActiveBranchesQueryResult = NonNullable<Awaited<ReturnType<typeof getAllActiveBranches>>>
+export type GetAllActiveBranchesQueryError = ErrorResponse
+
+
+export function useGetAllActiveBranches<TData = Awaited<ReturnType<typeof getAllActiveBranches>>, TError = ErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllActiveBranches>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllActiveBranches>>,
+          TError,
+          Awaited<ReturnType<typeof getAllActiveBranches>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllActiveBranches<TData = Awaited<ReturnType<typeof getAllActiveBranches>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllActiveBranches>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAllActiveBranches>>,
+          TError,
+          Awaited<ReturnType<typeof getAllActiveBranches>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAllActiveBranches<TData = Awaited<ReturnType<typeof getAllActiveBranches>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllActiveBranches>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all active branches
+ */
+
+export function useGetAllActiveBranches<TData = Awaited<ReturnType<typeof getAllActiveBranches>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAllActiveBranches>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAllActiveBranchesQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+

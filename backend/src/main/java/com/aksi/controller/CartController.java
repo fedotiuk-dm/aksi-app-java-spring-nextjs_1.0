@@ -13,7 +13,7 @@ import com.aksi.api.cart.dto.CartItemInfo;
 import com.aksi.api.cart.dto.CartPricingInfo;
 import com.aksi.api.cart.dto.UpdateCartItemRequest;
 import com.aksi.api.cart.dto.UpdateCartModifiersRequest;
-import com.aksi.service.auth.SessionManagementService;
+import com.aksi.service.auth.AuthQueryService;
 import com.aksi.service.cart.CartService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CartController implements CartApi {
 
   private final CartService cartService;
-  private final SessionManagementService sessionManagementService;
+  private final AuthQueryService authQueryService;
 
   @Override
   public ResponseEntity<CartInfo> getCart() {
@@ -108,6 +108,6 @@ public class CartController implements CartApi {
   }
 
   private UUID getCurrentCustomerId() {
-    return sessionManagementService.getCurrentUserIdFromContext();
+    return authQueryService.getCurrentUserIdFromContext();
   }
 }

@@ -119,6 +119,174 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/auth/sessions:
+    get:
+      operationId: getUserSessions
+      summary: Get all user sessions
+      description: List all active sessions for current user or specified user (admin only)
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          description: User ID to get sessions for (admin only, defaults to current user)
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of user sessions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSessionsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    delete:
+      operationId: terminateOtherSessions
+      summary: Terminate all other sessions
+      description: Logout user from all devices except current session
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Other sessions terminated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionTerminationResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/auth/sessions/{sessionId}:
+    parameters:
+      - name: sessionId
+        in: path
+        required: true
+        description: Session ID to terminate
+        schema:
+          type: string
+    
+    delete:
+      operationId: terminateSession
+      summary: Terminate specific session
+      description: Terminate a specific user session
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Session terminated successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/auth/security/attempts:
+    get:
+      operationId: getSecurityAttempts
+      summary: Get login attempt statistics
+      description: Get rate limiting and security attempt statistics (admin only)
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Security attempt statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityAttemptsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/auth/security/unlock/{username}:
+    parameters:
+      - name: username
+        in: path
+        required: true
+        description: Username to unlock
+        schema:
+          type: string
+    
+    post:
+      operationId: unlockUser
+      summary: Unlock blocked user
+      description: Clear failed login attempts and unlock blocked user (admin only)
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: User unlocked successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/auth/security/unlock-ip/{ipAddress}:
+    post:
+      operationId: unlockIp
+      summary: Unlock IP address
+      description: Clear failed login attempts and unlock blocked IP address (admin only)
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: ipAddress
+          in: path
+          required: true
+          description: IP address to unlock
+          schema:
+            type: string
+            example: '192.168.1.100'
+      responses:
+        '200':
+          description: IP address unlocked successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/auth/security/policy:
+    get:
+      operationId: getSecurityPolicy
+      summary: Get current security policy
+      description: Get current security policy settings (rate limits, password policy, etc.)
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Current security policy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityPolicyResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
 components:
   responses:
     BadRequest:
@@ -179,10 +347,12 @@ components:
           example: operator1
         password:
           type: string
-          minLength: 8
+          minLength: 6
           maxLength: 100
-          description: Password
-          example: SecurePassword123!
+          # Pattern removed for dev mode - production should use strict pattern
+          # pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$'
+          description: Password (min 6 chars for dev, 12 for prod)
+          example: Admin123!
         rememberMe:
           type: boolean
           default: false
@@ -200,6 +370,8 @@ components:
         - username
         - roles
         - requiresBranchSelection
+        - isBlocked
+        - attemptsRemaining
       properties:
         userId:
           type: string
@@ -241,6 +413,20 @@ components:
         requiresBranchSelection:
           type: boolean
           description: Whether branch selection is required
+        isBlocked:
+          type: boolean
+          description: Whether user account is blocked due to failed attempts
+          example: false
+        attemptsRemaining:
+          type: integer
+          description: Number of login attempts remaining before lockout
+          minimum: 0
+          example: 5
+        lockoutExpiresAt:
+          type: string
+          nullable: true
+          format: date-time
+          description: When account lockout expires (if blocked)
     
     SessionInfo:
       type: object
@@ -342,6 +528,349 @@ components:
           type: ['array', 'null']
           items:
             $ref: '#/components/schemas/ErrorDetail'
+    
+    # Session Management schemas
+    UserSessionsResponse:
+      type: object
+      required:
+        - sessions
+        - totalCount
+        - currentSessionId
+      properties:
+        sessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SessionDetail'
+          description: List of user sessions
+        totalCount:
+          type: integer
+          description: Total number of sessions
+          example: 3
+        currentSessionId:
+          type: string
+          description: Current session ID
+          example: 'KJ3h4k2j3h4k23j4h23k4j'
+    
+    SessionDetail:
+      type: object
+      required:
+        - sessionId
+        - createdAt
+        - lastAccessedAt
+        - expiresAt
+        - ipAddress
+        - isCurrentSession
+      properties:
+        sessionId:
+          type: string
+          description: Session ID
+          example: 'KJ3h4k2j3h4k23j4h23k4j'
+        createdAt:
+          type: string
+          format: date-time
+          description: Session creation time
+        lastAccessedAt:
+          type: string
+          format: date-time
+          description: Last access time
+        expiresAt:
+          type: string
+          format: date-time
+          description: Session expiration time
+        ipAddress:
+          type: string
+          description: IP address
+          example: '192.168.1.1'
+        userAgent:
+          type: string
+          description: Browser user agent
+          example: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        location:
+          type: string
+          nullable: true
+          description: Approximate location based on IP
+          example: 'Kiev, Ukraine'
+        deviceType:
+          type: string
+          nullable: true
+          description: Device type (mobile, tablet, desktop)
+          example: 'desktop'
+        isCurrentSession:
+          type: boolean
+          description: Is this the current session
+          example: true
+    
+    SessionTerminationResponse:
+      type: object
+      required:
+        - terminatedCount
+        - message
+      properties:
+        terminatedCount:
+          type: integer
+          description: Number of sessions terminated
+          example: 2
+        message:
+          type: string
+          description: Success message
+          example: 'Successfully terminated 2 other sessions'
+    
+    # Security Management schemas
+    SecurityAttemptsResponse:
+      type: object
+      required:
+        - overview
+        - recentAttempts
+        - blockedUsers
+        - blockedIps
+      properties:
+        overview:
+          $ref: '#/components/schemas/SecurityOverview'
+        recentAttempts:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoginAttempt'
+          maxItems: 50
+          description: Recent login attempts (last 50)
+        blockedUsers:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockedUser'
+          description: Currently blocked users
+        blockedIps:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlockedIp'
+          description: Currently blocked IP addresses
+    
+    SecurityOverview:
+      type: object
+      required:
+        - totalFailedAttemptsToday
+        - totalBlockedUsers
+        - totalBlockedIps
+        - peakAttemptTime
+      properties:
+        totalFailedAttemptsToday:
+          type: integer
+          description: Total failed attempts today
+          example: 147
+        totalBlockedUsers:
+          type: integer
+          description: Currently blocked users count
+          example: 3
+        totalBlockedIps:
+          type: integer
+          description: Currently blocked IPs count
+          example: 8
+        peakAttemptTime:
+          type: string
+          format: date-time
+          description: Time of highest attempt rate today
+        averageAttemptsPerHour:
+          type: number
+          format: double
+          description: Average failed attempts per hour
+          example: 6.2
+    
+    LoginAttempt:
+      type: object
+      required:
+        - timestamp
+        - username
+        - ipAddress
+        - success
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Attempt timestamp
+        username:
+          type: string
+          description: Username attempted
+          example: 'operator1'
+        ipAddress:
+          type: string
+          description: IP address
+          example: '192.168.1.1'
+        userAgent:
+          type: string
+          nullable: true
+          description: User agent
+        location:
+          type: string
+          nullable: true
+          description: Approximate location
+          example: 'Kiev, Ukraine'
+        success:
+          type: boolean
+          description: Whether attempt was successful
+        failureReason:
+          type: string
+          nullable: true
+          description: Reason for failure
+          example: 'Invalid password'
+    
+    BlockedUser:
+      type: object
+      required:
+        - username
+        - failedAttempts
+        - lastAttemptAt
+        - blockedUntil
+      properties:
+        username:
+          type: string
+          description: Blocked username
+          example: 'operator1'
+        failedAttempts:
+          type: integer
+          description: Number of failed attempts
+          example: 5
+        lastAttemptAt:
+          type: string
+          format: date-time
+          description: Last failed attempt time
+        blockedUntil:
+          type: string
+          format: date-time
+          description: When block expires
+        lastAttemptIp:
+          type: string
+          description: IP of last attempt
+          example: '192.168.1.1'
+    
+    BlockedIp:
+      type: object
+      required:
+        - ipAddress
+        - failedAttempts
+        - lastAttemptAt
+        - blockedUntil
+      properties:
+        ipAddress:
+          type: string
+          description: Blocked IP address
+          example: '192.168.1.1'
+        failedAttempts:
+          type: integer
+          description: Number of failed attempts
+          example: 12
+        lastAttemptAt:
+          type: string
+          format: date-time
+          description: Last failed attempt time
+        blockedUntil:
+          type: string
+          format: date-time
+          description: When block expires
+        location:
+          type: string
+          nullable: true
+          description: Approximate location
+          example: 'Kiev, Ukraine'
+        lastUsername:
+          type: string
+          nullable: true
+          description: Last username attempted from this IP
+          example: 'operator1'
+    
+    SecurityPolicyResponse:
+      type: object
+      required:
+        - rateLimiting
+        - passwordPolicy
+        - sessionPolicy
+      properties:
+        rateLimiting:
+          $ref: '#/components/schemas/RateLimitingPolicy'
+        passwordPolicy:
+          $ref: '#/components/schemas/PasswordPolicyInfo'
+        sessionPolicy:
+          $ref: '#/components/schemas/SessionPolicyInfo'
+    
+    RateLimitingPolicy:
+      type: object
+      required:
+        - maxAttemptsPerUser
+        - maxAttemptsPerIp
+        - lockoutDurationMinutes
+        - enabled
+      properties:
+        maxAttemptsPerUser:
+          type: integer
+          description: Max failed attempts per user
+          example: 5
+        maxAttemptsPerIp:
+          type: integer
+          description: Max failed attempts per IP
+          example: 10
+        lockoutDurationMinutes:
+          type: integer
+          description: Lockout duration in minutes
+          example: 15
+        enabled:
+          type: boolean
+          description: Is rate limiting enabled
+          example: true
+    
+    PasswordPolicyInfo:
+      type: object
+      required:
+        - minLength
+        - requireUppercase
+        - requireLowercase
+        - requireNumbers
+        - requireSpecialChars
+      properties:
+        minLength:
+          type: integer
+          description: Minimum password length
+          example: 12
+        requireUppercase:
+          type: boolean
+          description: Require uppercase letters
+          example: true
+        requireLowercase:
+          type: boolean
+          description: Require lowercase letters
+          example: true
+        requireNumbers:
+          type: boolean
+          description: Require numbers
+          example: true
+        requireSpecialChars:
+          type: boolean
+          description: Require special characters
+          example: true
+        allowedSpecialChars:
+          type: string
+          description: Allowed special characters
+          example: '@$!%*?&'
+    
+    SessionPolicyInfo:
+      type: object
+      required:
+        - defaultTimeoutMinutes
+        - maxConcurrentSessions
+        - rememberMeTimeoutDays
+      properties:
+        defaultTimeoutMinutes:
+          type: integer
+          description: Default session timeout in minutes
+          example: 60
+        maxConcurrentSessions:
+          type: integer
+          description: Max concurrent sessions per user
+          example: 3
+        rememberMeTimeoutDays:
+          type: integer
+          description: Remember me timeout in days
+          example: 30
+        sessionFixationProtection:
+          type: boolean
+          description: Is session fixation protection enabled
+          example: true
 
 security:
   - cookieAuth: []

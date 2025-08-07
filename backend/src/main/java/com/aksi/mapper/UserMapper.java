@@ -27,6 +27,8 @@ public interface UserMapper {
   @Mapping(target = "lastLoginAt", ignore = true)
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
+  @Mapping(target = "accountLockTime", ignore = true)
+  @Mapping(target = "lastFailedLoginAt", ignore = true)
   UserDetail toUserDetail(UserEntity userEntity);
 
   @Mapping(target = "id", ignore = true)

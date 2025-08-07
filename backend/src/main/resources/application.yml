@@ -19,7 +19,43 @@ server:
     include-message: always
     include-binding-errors: always
 
-# CORS configuration
+# Logging configuration
+logging:
+  level:
+    com.aksi: DEBUG
+    org.springframework.security: DEBUG
+    SECURITY_AUDIT: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Application configuration
 app:
   cors:
     allowed-origins: http://localhost:3000
+  
+  # Security configuration (default values - override in profiles)
+  security:
+    # Rate limiting settings
+    rate-limiting:
+      enabled: false  # Disabled by default for development
+    max-attempts-per-user: 999  # Very high for development
+    max-attempts-per-ip: 999    # Very high for development
+    lockout-duration-minutes: 1  # Short lockout for development
+    attempt-window-minutes: 60
+    
+    # Password policy settings (relaxed for development)
+    password:
+      min-length: 6  # Short for development
+      require-uppercase: false
+      require-lowercase: false
+      require-numbers: false
+      require-special-chars: false
+      allowed-special-chars: "@$!%*?&"
+    
+    # Session management settings
+    session:
+      default-timeout-minutes: 480  # 8 hours for development
+      max-concurrent-sessions: 10   # Many sessions for testing
+      remember-me-timeout-days: 30
+      session-fixation-protection: true

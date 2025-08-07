@@ -62,6 +62,15 @@ export interface UserDetail {
   createdBy?: string;
   /** ID of user who last updated this user */
   updatedBy?: string;
+  /**
+   * Number of failed login attempts
+   * @minimum 0
+   */
+  failedLoginAttempts?: number;
+  /** When account was locked due to failed attempts */
+  accountLockTime?: string;
+  /** Last failed login attempt timestamp */
+  lastFailedLoginAt?: string;
 }
 
 export interface ErrorResponse {
@@ -108,8 +117,8 @@ export interface ChangePasswordRequest {
   /** Current password (required if changing own password) */
   currentPassword?: string;
   /**
-   * New password
-   * @minLength 8
+   * New password (min 6 chars for dev, 12 for prod)
+   * @minLength 6
    * @maxLength 100
    */
   newPassword: string;
@@ -915,10 +924,9 @@ export interface CreateUserRequest {
    */
   username: string;
   /**
-   * Password (min 8 chars, must contain uppercase, lowercase, number and special char)
-   * @minLength 8
+   * Password (min 6 chars for dev, 12 for prod)
+   * @minLength 6
    * @maxLength 100
-   * @pattern ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$
    */
   password: string;
   /**
@@ -1492,6 +1500,15 @@ export interface LoginResponse {
   branchName?: JsonNullableString;
   /** Whether branch selection is required */
   requiresBranchSelection: boolean;
+  /** Whether user account is blocked due to failed attempts */
+  isBlocked: boolean;
+  /**
+   * Number of login attempts remaining before lockout
+   * @minimum 0
+   */
+  attemptsRemaining: number;
+  /** When account lockout expires (if blocked) */
+  lockoutExpiresAt?: string;
 }
 
 export interface LoginRequest {
@@ -1503,8 +1520,8 @@ export interface LoginRequest {
    */
   username: string;
   /**
-   * Password
-   * @minLength 8
+   * Password (min 6 chars for dev, 12 for prod)
+   * @minLength 6
    * @maxLength 100
    */
   password: string;
@@ -1699,6 +1716,36 @@ export interface BranchesResponse {
   hasMore: boolean;
 }
 
+export interface SessionDetail {
+  /** Session ID */
+  sessionId: string;
+  /** Session creation time */
+  createdAt: string;
+  /** Last access time */
+  lastAccessedAt: string;
+  /** Session expiration time */
+  expiresAt: string;
+  /** IP address */
+  ipAddress: string;
+  /** Browser user agent */
+  userAgent?: string;
+  /** Approximate location based on IP */
+  location?: string;
+  /** Device type (mobile, tablet, desktop) */
+  deviceType?: string;
+  /** Is this the current session */
+  isCurrentSession: boolean;
+}
+
+export interface UserSessionsResponse {
+  /** List of user sessions */
+  sessions: SessionDetail[];
+  /** Total number of sessions */
+  totalCount: number;
+  /** Current session ID */
+  currentSessionId: string;
+}
+
 export interface SessionInfo {
   /** Session ID */
   sessionId: string;
@@ -1721,6 +1768,128 @@ export interface SessionInfo {
   ipAddress?: string;
   /** Browser user agent */
   userAgent?: string;
+}
+
+export interface PasswordPolicyInfo {
+  /** Minimum password length */
+  minLength: number;
+  /** Require uppercase letters */
+  requireUppercase: boolean;
+  /** Require lowercase letters */
+  requireLowercase: boolean;
+  /** Require numbers */
+  requireNumbers: boolean;
+  /** Require special characters */
+  requireSpecialChars: boolean;
+  /** Allowed special characters */
+  allowedSpecialChars?: string;
+}
+
+export interface RateLimitingPolicy {
+  /** Max failed attempts per user */
+  maxAttemptsPerUser: number;
+  /** Max failed attempts per IP */
+  maxAttemptsPerIp: number;
+  /** Lockout duration in minutes */
+  lockoutDurationMinutes: number;
+  /** Is rate limiting enabled */
+  enabled: boolean;
+}
+
+export interface SecurityPolicyResponse {
+  rateLimiting: RateLimitingPolicy;
+  passwordPolicy: PasswordPolicyInfo;
+  sessionPolicy: SessionPolicyInfo;
+}
+
+export interface SessionPolicyInfo {
+  /** Default session timeout in minutes */
+  defaultTimeoutMinutes: number;
+  /** Max concurrent sessions per user */
+  maxConcurrentSessions: number;
+  /** Remember me timeout in days */
+  rememberMeTimeoutDays: number;
+  /** Is session fixation protection enabled */
+  sessionFixationProtection?: boolean;
+}
+
+export interface BlockedIp {
+  /** Blocked IP address */
+  ipAddress: string;
+  /** Number of failed attempts */
+  failedAttempts: number;
+  /** Last failed attempt time */
+  lastAttemptAt: string;
+  /** When block expires */
+  blockedUntil: string;
+  /** Approximate location */
+  location?: string;
+  /** Last username attempted from this IP */
+  lastUsername?: string;
+}
+
+export interface BlockedUser {
+  /** Blocked username */
+  username: string;
+  /** Number of failed attempts */
+  failedAttempts: number;
+  /** Last failed attempt time */
+  lastAttemptAt: string;
+  /** When block expires */
+  blockedUntil: string;
+  /** IP of last attempt */
+  lastAttemptIp?: string;
+}
+
+export interface LoginAttempt {
+  /** Attempt timestamp */
+  timestamp: string;
+  /** Username attempted */
+  username: string;
+  /** IP address */
+  ipAddress: string;
+  /** User agent */
+  userAgent?: string;
+  /** Approximate location */
+  location?: string;
+  /** Whether attempt was successful */
+  success: boolean;
+  /** Reason for failure */
+  failureReason?: string;
+}
+
+export interface SecurityAttemptsResponse {
+  overview: SecurityOverview;
+  /**
+   * Recent login attempts (last 50)
+   * @minItems 0
+   * @maxItems 50
+   */
+  recentAttempts: LoginAttempt[];
+  /** Currently blocked users */
+  blockedUsers: BlockedUser[];
+  /** Currently blocked IP addresses */
+  blockedIps: BlockedIp[];
+}
+
+export interface SecurityOverview {
+  /** Total failed attempts today */
+  totalFailedAttemptsToday: number;
+  /** Currently blocked users count */
+  totalBlockedUsers: number;
+  /** Currently blocked IPs count */
+  totalBlockedIps: number;
+  /** Time of highest attempt rate today */
+  peakAttemptTime: string;
+  /** Average failed attempts per hour */
+  averageAttemptsPerHour?: number;
+}
+
+export interface SessionTerminationResponse {
+  /** Number of sessions terminated */
+  terminatedCount: number;
+  /** Success message */
+  message: string;
 }
 
 export type ListOrdersParams = {

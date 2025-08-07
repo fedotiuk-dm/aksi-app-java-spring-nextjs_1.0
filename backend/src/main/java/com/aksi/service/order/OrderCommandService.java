@@ -37,7 +37,7 @@ import com.aksi.repository.BranchRepository;
 import com.aksi.repository.CartRepository;
 import com.aksi.repository.OrderRepository;
 import com.aksi.repository.UserRepository;
-import com.aksi.service.auth.SessionManagementService;
+import com.aksi.service.auth.AuthQueryService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +56,7 @@ public class OrderCommandService {
   private final CartRepository cartRepository;
   private final BranchRepository branchRepository;
   private final UserRepository userRepository;
-  private final SessionManagementService sessionManagementService;
+  private final AuthQueryService authQueryService;
 
   // Business logic components
   private final OrderNumberGenerator numberGenerator;
@@ -241,7 +241,7 @@ public class OrderCommandService {
 
   private UserEntity getCurrentUser() {
     try {
-      UUID userId = sessionManagementService.getCurrentUserIdFromContext();
+      UUID userId = authQueryService.getCurrentUserIdFromContext();
       return userRepository.findById(userId).orElse(null);
     } catch (Exception e) {
       log.warn("Could not get current user: {}", e.getMessage());

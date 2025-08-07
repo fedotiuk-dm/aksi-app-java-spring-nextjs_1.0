@@ -618,6 +618,21 @@ components:
               nullable: true
               format: uuid
               description: ID of user who last updated this user
+            failedLoginAttempts:
+              type: integer
+              minimum: 0
+              description: Number of failed login attempts
+              example: 0
+            accountLockTime:
+              type: string
+              nullable: true
+              format: date-time
+              description: When account was locked due to failed attempts
+            lastFailedLoginAt:
+              type: string
+              nullable: true
+              format: date-time
+              description: Last failed login attempt timestamp
     
     BranchAssignment:
       type: object
@@ -657,10 +672,11 @@ components:
           x-spring-validation: '@Username'
         password:
           type: string
-          minLength: 8
+          minLength: 6
           maxLength: 100
-          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
-          description: Password (min 8 chars, must contain uppercase, lowercase, number and special char)
+          # Pattern removed for dev mode - production should use strict pattern
+          # pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$'
+          description: Password (min 6 chars for dev, 12 for prod)
           example: SecurePassword123!
           x-spring-validation: '@StrongPassword'
         firstName:
@@ -760,10 +776,12 @@ components:
           description: Current password (required if changing own password)
         newPassword:
           type: string
-          minLength: 8
+          minLength: 6
           maxLength: 100
-          description: New password
-          example: NewSecurePassword123!
+          # Pattern removed for dev mode - production should use strict pattern
+          # pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$'
+          description: New password (min 6 chars for dev, 12 for prod)
+          example: Admin123!
     
     UpdateRolesRequest:
       type: object
