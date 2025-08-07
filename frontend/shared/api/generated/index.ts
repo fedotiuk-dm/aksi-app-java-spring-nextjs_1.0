@@ -1,5 +1,5 @@
 // 🌍 ГЛОБАЛЬНИЙ BARREL для всіх DOMAIN API модулів
-// Згенеровано: 2025-08-07T14:29:58.917Z
+// Згенеровано: 2025-08-07T16:57:04.074Z
 // Не редагуйте вручну - файл буде перезаписаний при наступній генерації
 //
 // 💡 Цей файл дозволяє імпортувати з будь-якого домену API:
@@ -13,9 +13,11 @@
 // - branch: 🏢 Branch Domain - філії, графік роботи, статистика філій
 // - cart: 🔧 Домен cart
 // - customer: 🔧 Домен customer
+// - file: 🔧 Домен file
 // - order: 📦 Order Domain - замовлення, розрахунки, завершення замовлень
 // - priceList: 🔧 Домен priceList
 // - pricing: 🔧 Домен pricing
+// - receipt: 🔧 Домен receipt
 // - user: 🔧 Домен user
 
 // 🔧 Домен auth
@@ -30,6 +32,9 @@ export * from './cart';
 // 🔧 Домен customer
 export * from './customer';
 
+// 🔧 Домен file
+export * from './file';
+
 // 📦 Order Domain - замовлення, розрахунки, завершення замовлень
 export * from './order';
 
@@ -39,6 +44,9 @@ export * from './priceList';
 // 🔧 Домен pricing
 export * from './pricing';
 
+// 🔧 Домен receipt
+export * from './receipt';
+
 // 🔧 Домен user
 export * from './user';
 
@@ -47,9 +55,11 @@ export type * from './auth';
 export type * from './branch';
 export type * from './cart';
 export type * from './customer';
+export type * from './file';
 export type * from './order';
 export type * from './priceList';
 export type * from './pricing';
+export type * from './receipt';
 export type * from './user';
 
 // 📚 ПРИКЛАДИ ВИКОРИСТАННЯ:

@@ -38,9 +38,17 @@
  *   │   ├── pricingApi.ts             - хуки (useCalculatePrice, useListModifiers тощо)
  *   │   ├── index.ts                  - типи + BARREL: export * from './pricingApi'
  *   │   └── schemas.zod.ts            - Zod схеми
- *   └── serviceItem/      # Service Item Domain
- *       ├── serviceItemApi.ts         - хуки (useListServices, useListItems, useGetServiceItemPrice тощо)
- *       ├── index.ts                  - типи + BARREL: export * from './serviceItemApi'
+ *   ├── priceList/        # Service Item Domain
+ *   │   ├── priceListApi.ts           - хуки (useListServices, useListItems, useGetServiceItemPrice тощо)
+ *   │   ├── index.ts                  - типи + BARREL: export * from './priceListApi'
+ *   │   └── schemas.zod.ts            - Zod схеми
+ *   ├── receipt/          # Receipt Domain
+ *   │   ├── receiptApi.ts             - хуки (useGenerateOrderReceipt, useEmailOrderReceipt тощо)
+ *   │   ├── index.ts                  - типи + BARREL: export * from './receiptApi'
+ *   │   └── schemas.zod.ts            - Zod схеми
+ *   └── file/             # File Domain
+ *       ├── fileApi.ts                - хуки (useServeFile тощо)
+ *       ├── index.ts                  - типи + BARREL: export * from './fileApi'
  *       └── schemas.zod.ts            - Zod схеми
  *
  * 🚀 ПЕРЕВАГИ КОМПОЗИЦІЇ:
@@ -51,7 +59,9 @@
  * ✅ import { useGetCart, useAddCartItem } from '@/shared/api/generated/cart'
  * ✅ import { useListOrders, useCreateOrder } from '@/shared/api/generated/order'
  * ✅ import { useCalculatePrice } from '@/shared/api/generated/pricing'
- * ✅ import { useListServices } from '@/shared/api/generated/serviceItem'
+ * ✅ import { useListServices } from '@/shared/api/generated/priceList'
+ * ✅ import { useGenerateOrderReceipt } from '@/shared/api/generated/receipt'
+ * ✅ import { useServeFile } from '@/shared/api/generated/file'
  *
  * 🎯 ORDER WIZARD: UI компоненти використовують композицію доменних API
  */
@@ -72,7 +82,7 @@ const DOMAIN_TAGS = {
   user: ['users'],
 
   // 👤 Customer Domain
-  customer: ['customers'],
+  customer: ['customer'],
 
   // 🏢 Branch Domain
   branch: ['branches'],
@@ -88,6 +98,12 @@ const DOMAIN_TAGS = {
 
   // 🏷️ Service Item Domain
   serviceItem: ['price-list'],
+
+  // 📄 Receipt Domain
+  receipt: ['receipts'],
+
+  // 📁 File Domain
+  file: ['files'],
 };
 
 // 🏭 Фабрика для створення доменних конфігурацій
@@ -178,6 +194,12 @@ const config: Config = {
 
   // 🏷️ SERVICE ITEM DOMAIN
   ...createDomainConfig('priceList', DOMAIN_TAGS.serviceItem),
+
+  // 📄 RECEIPT DOMAIN
+  ...createDomainConfig('receipt', DOMAIN_TAGS.receipt),
+
+  // 📁 FILE DOMAIN
+  ...createDomainConfig('file', DOMAIN_TAGS.file),
 };
 
 export default config;

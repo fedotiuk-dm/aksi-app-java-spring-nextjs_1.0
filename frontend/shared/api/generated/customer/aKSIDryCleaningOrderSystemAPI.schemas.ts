@@ -974,6 +974,86 @@ export interface CreateUserRequest {
   emailVerified?: boolean;
 }
 
+export interface ReceiptItem {
+  /** Item position in order */
+  position?: number;
+  /** Item name */
+  name: string;
+  /** Catalog number */
+  catalogNumber?: string;
+  /** Quantity */
+  quantity: number;
+  /** Unit price in kopiykas */
+  unitPrice: number;
+  /** Total price in kopiykas */
+  totalPrice: number;
+  /** Applied modifiers */
+  modifiers?: string[];
+}
+
+export interface ReceiptOrderData {
+  /** Order number */
+  orderNumber: string;
+  /** Branch name */
+  branchName: string;
+  /** Branch address */
+  branchAddress?: string;
+  /** Branch phone */
+  branchPhone?: string;
+  /** Customer name */
+  customerName: string;
+  /** Customer phone */
+  customerPhone?: string;
+  /** Order items */
+  items: ReceiptItem[];
+  /** Subtotal in kopiykas */
+  subtotal?: number;
+  /** Discount amount in kopiykas */
+  discount?: number;
+  /** Total amount in kopiykas */
+  totalAmount: number;
+  /** Prepaid amount in kopiykas */
+  prepaidAmount?: number;
+  /** Due amount in kopiykas */
+  dueAmount?: number;
+  /** Payment method */
+  paymentMethod?: string;
+  /** Order creation timestamp */
+  createdAt: string;
+  /** Expected completion date */
+  completionDate?: string;
+  /** Additional notes */
+  notes?: string;
+}
+
+export interface ReceiptPreviewRequest {
+  orderData: ReceiptOrderData;
+  /** Template ID to use */
+  templateId?: string;
+  /** Locale for receipt generation */
+  locale?: string;
+}
+
+export interface EmailReceiptResponse {
+  /** Email sent successfully */
+  success: boolean;
+  /** Email sent timestamp */
+  sentAt: string;
+  /** Email address where receipt was sent */
+  email?: string;
+  /** Email message ID */
+  messageId?: string;
+}
+
+export interface EmailReceiptRequest {
+  /** Email address (if not specified, use customer's email) */
+  email?: string;
+  /** Email subject */
+  subject?: string;
+  /** Additional message */
+  message?: string;
+}
+
 /**
  * Modifier type
  */
@@ -1668,6 +1748,19 @@ export interface UserSummary {
   lastLoginAt?: string;
 }
 
+export interface ReceiptTemplate {
+  /** Template ID */
+  id: string;
+  /** Template name */
+  name: string;
+  /** Template description */
+  description: string;
+  /** Is default template */
+  isDefault: boolean;
+  /** Supported locales */
+  supportedLocales?: string[];
+}
+
 export interface PriceModifiersResponse {
   /** List of price modifiers */
   modifiers: PriceModifierDto[];
@@ -1958,4 +2051,36 @@ export interface SessionTerminationResponse {
   /** Success message */
   message: string;
 }
+
+export type ListCustomersParams = {
+/**
+ * Search by name, phone or email
+ * @minLength 2
+ * @maxLength 2147483647
+ */
+search?: string;
+/**
+ * Filter by phone number
+ */
+phone?: string;
+/**
+ * Filter by email
+ */
+email?: string;
+/**
+ * Filter by discount card number
+ */
+discountCard?: string;
+/**
+ * Number of items to skip
+ * @minimum 0
+ */
+offset?: number;
+/**
+ * Number of items to return
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
+};
 

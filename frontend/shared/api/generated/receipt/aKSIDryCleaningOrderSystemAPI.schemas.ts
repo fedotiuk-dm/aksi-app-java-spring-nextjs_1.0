@@ -2052,3 +2052,10 @@ export interface SessionTerminationResponse {
   message: string;
 }
 
+export type GenerateOrderReceiptParams = {
+/**
+ * Locale for receipt generation (e.g. uk, en)
+ */
+locale?: string;
+};
+

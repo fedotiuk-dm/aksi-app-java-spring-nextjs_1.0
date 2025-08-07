@@ -2052,3 +2052,19 @@ export interface SessionTerminationResponse {
   message: string;
 }
 
+export type UploadFileParams = {
+/**
+ * Directory to upload file to
+ */
+directory: string;
+/**
+ * Optional custom filename (without extension)
+ */
+filename?: string;
+};
+
+export type UploadFileBody = {
+  /** File to upload */
+  file: Blob;
+};
+
