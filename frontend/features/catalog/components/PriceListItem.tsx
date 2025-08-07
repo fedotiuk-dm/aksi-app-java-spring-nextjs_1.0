@@ -184,6 +184,7 @@ export const PriceListItem: React.FC<PriceListItemProps> = ({ item, onRefetchAct
           </Grid>
         </Grid>
 
+
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}

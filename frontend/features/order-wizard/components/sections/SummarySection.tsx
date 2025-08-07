@@ -17,11 +17,8 @@ import {
   Paper,
   Alert,
 } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
-import 'dayjs/locale/uk';
 import { Print } from '@mui/icons-material';
 import SignatureCanvas from 'react-signature-canvas';
 import { useOrderWizardStore } from '@/features/order-wizard';
@@ -132,27 +129,25 @@ export const SummarySection: React.FC = () => {
 
       {/* Delivery Date */}
       {isClient && clientDeliveryDate && (
-        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="uk">
-          <DatePicker
-            label="Дата виконання"
-            value={dayjs(clientDeliveryDate)}
-            onChange={(newValue) => {
-              if (newValue) {
-                const date = newValue.toDate();
-                setClientDeliveryDate(date);
-                setDeliveryDate(date);
-              }
-            }}
-            format="DD.MM.YYYY"
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                sx: { mb: 2 },
-                helperText: 'Стандарт: 48 год (одяг) / 14 днів (шкіра)',
-              },
-            }}
-          />
-        </LocalizationProvider>
+        <DatePicker
+          label="Дата виконання"
+          value={dayjs(clientDeliveryDate)}
+          onChange={(newValue) => {
+            if (newValue) {
+              const date = newValue.toDate();
+              setClientDeliveryDate(date);
+              setDeliveryDate(date);
+            }
+          }}
+          format="DD.MM.YYYY"
+          slotProps={{
+            textField: {
+              fullWidth: true,
+              sx: { mb: 2 },
+              helperText: 'Стандарт: 48 год (одяг) / 14 днів (шкіра)',
+            },
+          }}
+        />
       )}
 
       {/* Urgency */}

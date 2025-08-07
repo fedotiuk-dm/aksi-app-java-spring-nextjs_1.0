@@ -31,6 +31,7 @@ export default function PageLayout({ children }: PageLayoutProps) {
       >
         {children}
       </Box>
+      
     </Box>
   );
 }

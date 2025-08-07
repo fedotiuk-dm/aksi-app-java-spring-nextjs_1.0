@@ -35,6 +35,7 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 frontend/.eslintcache
 frontend/*.tsbuildinfo
+frontend/package-lock.json
 
 # Docker
 docker/pgadmin/servers.json
@@ -75,3 +76,4 @@ Thumbs.db
 logs/
 *.log
 node_modules
+
