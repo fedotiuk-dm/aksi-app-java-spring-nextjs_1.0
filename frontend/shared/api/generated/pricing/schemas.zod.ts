@@ -219,10 +219,12 @@ export const createDiscountBody = zod.object({
  * Get list of all available price modifiers
  * @summary List available price modifiers
  */
-export const listPriceModifiersQueryActiveDefault = true;
+export const listPriceModifiersQuerySortOrderDefault = "ASC";export const listPriceModifiersQueryActiveDefault = true;
 
 export const listPriceModifiersQueryParams = zod.object({
   "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).optional().describe('Filter by category code'),
+  "sortBy": zod.string().optional().describe('Field to sort by (domain-specific). If not provided, server default is used'),
+  "sortOrder": zod.enum(['ASC', 'DESC']).default(listPriceModifiersQuerySortOrderDefault).describe('Sort direction'),
   "active": zod.boolean().default(listPriceModifiersQueryActiveDefault).describe('Filter by active status')
 })
 
@@ -274,10 +276,12 @@ export const listPriceModifiersResponse = zod.object({
  * Get list of all available discount types
  * @summary List available discounts
  */
-export const listDiscountsQueryActiveDefault = true;
+export const listDiscountsQueryActiveDefault = true;export const listDiscountsQuerySortOrderDefault = "ASC";
 
 export const listDiscountsQueryParams = zod.object({
-  "active": zod.boolean().default(listDiscountsQueryActiveDefault).describe('Filter by active status')
+  "active": zod.boolean().default(listDiscountsQueryActiveDefault).describe('Filter by active status'),
+  "sortBy": zod.string().optional().describe('Field to sort by (domain-specific). If not provided, server default is used'),
+  "sortOrder": zod.enum(['ASC', 'DESC']).default(listDiscountsQuerySortOrderDefault).describe('Sort direction')
 })
 
 export const listDiscountsResponseDiscountsItemPercentageMin = 0;

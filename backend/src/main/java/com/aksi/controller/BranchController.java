@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.api.branch.BranchesApi;
 import com.aksi.api.branch.dto.BranchInfo;
-import com.aksi.api.branch.dto.BranchesResponse;
+import com.aksi.api.branch.dto.BranchListResponse;
 import com.aksi.api.branch.dto.CreateBranchRequest;
 import com.aksi.api.branch.dto.SortOrder;
 import com.aksi.api.branch.dto.UpdateBranchRequest;
@@ -32,10 +32,10 @@ public class BranchController implements BranchesApi {
   }
 
   @Override
-  public ResponseEntity<BranchesResponse> listBranches(
+  public ResponseEntity<BranchListResponse> listBranches(
       Integer page,
       Integer size,
-      String sortBy,
+      @Nullable String sortBy,
       SortOrder sortOrder,
       Boolean active,
       @Nullable String search) {

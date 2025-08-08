@@ -1,11 +1,11 @@
 package com.aksi.mapper;
 
-import java.util.List;
-
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import org.mapstruct.MappingTarget;
 
+import com.aksi.api.order.dto.CreateOrderRequest;
 import com.aksi.api.order.dto.CustomerSummary;
 import com.aksi.api.order.dto.ItemCharacteristics;
 import com.aksi.api.order.dto.ItemDefect;
@@ -20,6 +20,10 @@ import com.aksi.api.order.dto.OrderItemPricingInfo;
 import com.aksi.api.order.dto.OrderPricingInfo;
 import com.aksi.api.order.dto.PaymentInfo;
 import com.aksi.api.order.dto.PriceListItemSummary;
+import com.aksi.api.order.dto.UpdateOrderStatusRequest;
+import com.aksi.api.pricing.dto.CalculatedItemPrice;
+import com.aksi.api.pricing.dto.PriceCalculationResponse;
+import com.aksi.domain.cart.CartItem;
 import com.aksi.domain.catalog.PriceListItemEntity;
 import com.aksi.domain.customer.CustomerEntity;
 import com.aksi.domain.order.ItemCharacteristicsEntity;
@@ -34,24 +38,21 @@ import com.aksi.domain.order.OrderPaymentEntity;
 
 /** MapStruct mapper for Order domain entities and DTOs */
 @Mapper(componentModel = "spring")
-public interface OrderMapper {
+public abstract class OrderMapper {
 
   /** Map Order entity to OrderInfo DTO */
-  @Mapping(target = "customer", source = "customerEntity", qualifiedByName = "toCustomerSummary")
+  @Mapping(target = "customer", source = "customerEntity")
   @Mapping(target = "customerId", source = "customerEntity.id")
   @Mapping(target = "branchId", source = "branchEntity.id")
   @Mapping(target = "items", source = "items")
-  @Mapping(target = "pricing", source = ".", qualifiedByName = "toOrderPricingInfo")
+  @Mapping(target = "pricing", source = ".")
   @Mapping(target = "payments", source = "payments")
   @Mapping(target = "createdBy", source = "createdBy.id")
   @Mapping(target = "status", source = "status", defaultValue = "PENDING")
-  OrderInfo toOrderInfo(OrderEntity orderEntity);
+  public abstract OrderInfo toOrderInfo(OrderEntity orderEntity);
 
   /** Map OrderItem entity to OrderItemInfo DTO */
-  @Mapping(
-      target = "priceListItem",
-      source = "priceListItemEntity",
-      qualifiedByName = "toPriceListItemSummary")
+  @Mapping(target = "priceListItem", source = "priceListItemEntity")
   @Mapping(target = "priceListItemId", source = "priceListItemEntity.id")
   @Mapping(target = "characteristics", source = "characteristics")
   @Mapping(target = "stains", source = "stains")
@@ -59,73 +60,171 @@ public interface OrderMapper {
   @Mapping(target = "risks", source = "risks")
   @Mapping(target = "photos", source = "photos")
   @Mapping(target = "modifiers", source = "modifiers")
-  @Mapping(target = "pricing", source = ".", qualifiedByName = "toOrderItemPricingInfo")
-  OrderItemInfo toOrderItemInfo(OrderItemEntity orderItemEntity);
+  @Mapping(target = "pricing", source = ".")
+  public abstract OrderItemInfo toOrderItemInfo(OrderItemEntity orderItemEntity);
 
   /** Map Customer entity to CustomerSummary DTO */
-  @Named("toCustomerSummary")
   @Mapping(target = "phone", source = "phonePrimary")
-  CustomerSummary toCustomerSummary(CustomerEntity customerEntity);
+  public abstract CustomerSummary toCustomerSummary(CustomerEntity customerEntity);
 
   /** Map Order entity to OrderPricingInfo DTO */
-  @Named("toOrderPricingInfo")
-  @Mapping(target = "paidAmount", source = "paidAmount")
-  @Mapping(target = "balanceDue", source = "balanceDue")
+  @Mapping(target = "paidAmount", ignore = true)
+  @Mapping(target = "balanceDue", ignore = true)
   @Mapping(target = "total", source = "totalAmount")
-  OrderPricingInfo toOrderPricingInfo(OrderEntity orderEntity);
+  public abstract OrderPricingInfo mapPricing(OrderEntity orderEntity);
 
   /** Map OrderItem entity to OrderItemPricingInfo DTO */
-  @Named("toOrderItemPricingInfo")
   @Mapping(target = "modifierDetails", source = "modifiers")
   @Mapping(target = "total", source = "totalAmount")
-  OrderItemPricingInfo toOrderItemPricingInfo(OrderItemEntity orderItemEntity);
+  public abstract OrderItemPricingInfo mapItemPricing(OrderItemEntity orderItemEntity);
 
   /** Map PriceListItem entity to PriceListItemSummary DTO */
-  @Named("toPriceListItemSummary")
   @Mapping(target = "categoryCode", source = "categoryCode.value")
   @Mapping(target = "unitOfMeasure", source = "unitOfMeasure", defaultValue = "PIECE")
-  PriceListItemSummary toPriceListItemSummary(PriceListItemEntity priceListItemEntity);
+  public abstract PriceListItemSummary toPriceListItemSummary(
+      PriceListItemEntity priceListItemEntity);
 
   /** Map ItemCharacteristics entity to DTO */
   @Mapping(target = "fillerCondition", source = "fillerCondition")
-  ItemCharacteristics toItemCharacteristics(ItemCharacteristicsEntity characteristics);
+  public abstract ItemCharacteristics toItemCharacteristics(
+      ItemCharacteristicsEntity characteristics);
 
   /** Map ItemStain entity to DTO */
   @Mapping(target = "type", source = "type")
-  ItemStain toItemStain(ItemStainEntity stain);
+  public abstract ItemStain toItemStain(ItemStainEntity stain);
 
   /** Map ItemDefect entity to DTO */
   @Mapping(target = "type", source = "type")
-  ItemDefect toItemDefect(ItemDefectEntity defect);
+  public abstract ItemDefect toItemDefect(ItemDefectEntity defect);
 
   /** Map ItemRisk entity to DTO */
   @Mapping(target = "type", source = "type")
-  ItemRisk toItemRisk(ItemRiskEntity risk);
+  public abstract ItemRisk toItemRisk(ItemRiskEntity risk);
 
   /** Map ItemPhoto entity to ItemPhotoInfo DTO */
   @Mapping(target = "type", source = "type", defaultValue = "GENERAL")
   @Mapping(target = "uploadedBy", source = "uploadedBy.id")
-  ItemPhotoInfo toItemPhotoInfo(ItemPhotoEntity photo);
+  public abstract ItemPhotoInfo toItemPhotoInfo(ItemPhotoEntity photo);
+
+  // Back-references проставляються у доменних add*() методах, after-mapping не потрібен
 
   /** Map ItemModifier entity to ItemModifier DTO */
   @Mapping(target = "type", source = "type")
-  ItemModifier toItemModifier(ItemModifierEntity modifier);
+  public abstract ItemModifier toItemModifier(ItemModifierEntity modifier);
 
   /** Map ItemModifier entity to ModifierDetail DTO */
   @Mapping(target = "amount", source = "appliedAmount")
-  ModifierDetail toModifierDetail(ItemModifierEntity modifier);
+  public abstract ModifierDetail toModifierDetail(ItemModifierEntity modifier);
 
   /** Map OrderPayment entity to PaymentInfo DTO */
   @Mapping(target = "method", source = "method", defaultValue = "CASH")
   @Mapping(target = "paidBy", source = "paidBy.id")
-  PaymentInfo toPaymentInfo(OrderPaymentEntity payment);
+  public abstract PaymentInfo toPaymentInfo(OrderPaymentEntity payment);
 
-  /** List mapping for OrderInfo */
-  List<OrderInfo> toOrderInfoList(List<OrderEntity> orderEntities);
+  /**
+   * Apply CreateOrderRequest fields to existing OrderEntity Only request-related fields are set;
+   * defaults and null-safety handled here to keep services clean.
+   */
+  @BeanMapping(ignoreByDefault = true)
+  @Mapping(target = "uniqueLabel", source = "uniqueLabel")
+  @Mapping(target = "notes", source = "notes")
+  @Mapping(target = "customerSignature", source = "customerSignature")
+  @Mapping(target = "termsAccepted", source = "termsAccepted", defaultValue = "false")
+  public abstract void applyCreateRequest(
+      CreateOrderRequest request, @MappingTarget OrderEntity orderEntity);
 
-  /** List mapping for OrderItemInfo */
-  List<OrderItemInfo> toOrderItemInfoList(List<OrderItemEntity> orderItemEntities);
+  /** Apply calculated pricing snapshot to existing OrderItemEntity */
+  @BeanMapping(ignoreByDefault = true)
+  @Mapping(target = "basePrice", source = "basePrice", defaultValue = "0")
+  @Mapping(
+      target = "modifiersTotalAmount",
+      source = "calculations.modifiersTotal",
+      defaultValue = "0")
+  @Mapping(target = "subtotal", source = "calculations.subtotal", defaultValue = "0")
+  @Mapping(
+      target = "urgencyAmount",
+      source = "calculations.urgencyModifier.amount",
+      defaultValue = "0")
+  @Mapping(
+      target = "discountAmount",
+      source = "calculations.discountModifier.amount",
+      defaultValue = "0")
+  @Mapping(target = "totalAmount", source = "total", defaultValue = "0")
+  @Mapping(
+      target = "discountEligible",
+      source = "calculations.discountEligible",
+      defaultValue = "true")
+  public abstract void applyCalculatedPrice(
+      CalculatedItemPrice price, @MappingTarget OrderItemEntity orderItem);
 
-  /** List mapping for PaymentInfo */
-  List<PaymentInfo> toPaymentInfoList(List<OrderPaymentEntity> payments);
+  /** Map cart-item characteristics to order-item characteristics entity */
+  @Mapping(target = "orderItemEntity", ignore = true)
+  @Mapping(target = "material", source = "characteristics.material")
+  @Mapping(target = "color", source = "characteristics.color")
+  @Mapping(target = "filler", source = "characteristics.filler")
+  @Mapping(target = "fillerCondition", source = "characteristics.fillerCondition")
+  @Mapping(target = "wearLevel", source = "characteristics.wearLevel")
+  public abstract ItemCharacteristicsEntity toItemCharacteristicsEntity(CartItem cartItem);
+
+  // --- Lists mapping for item attributes ---
+  @BeanMapping(ignoreByDefault = true)
+  @Mapping(target = "type", source = "type")
+  @Mapping(target = "description", source = "description")
+  public abstract ItemStainEntity toItemStainEntity(ItemStain dto);
+
+  @BeanMapping(ignoreByDefault = true)
+  @Mapping(target = "type", source = "type")
+  @Mapping(target = "description", source = "description")
+  public abstract ItemDefectEntity toItemDefectEntity(ItemDefect dto);
+
+  @BeanMapping(ignoreByDefault = true)
+  @Mapping(target = "type", source = "type")
+  @Mapping(target = "description", source = "description")
+  public abstract ItemRiskEntity toItemRiskEntity(ItemRisk dto);
+
+  /** Apply API ItemCharacteristics DTO to existing entity */
+  @BeanMapping(ignoreByDefault = true)
+  @Mapping(target = "material", source = "material")
+  @Mapping(target = "color", source = "color")
+  @Mapping(target = "filler", source = "filler")
+  @Mapping(target = "fillerCondition", source = "fillerCondition")
+  @Mapping(target = "wearLevel", source = "wearLevel")
+  public abstract void applyItemCharacteristics(
+      ItemCharacteristics dto, @MappingTarget ItemCharacteristicsEntity entity);
+
+  // Update status mapping (DTO → Entity)
+  @BeanMapping(ignoreByDefault = true)
+  @Mapping(target = "status", source = "status")
+  public abstract void applyUpdateStatus(
+      UpdateOrderStatusRequest request, @MappingTarget OrderEntity orderEntity);
+
+  /** Apply pricing snapshot to existing OrderEntity */
+  @BeanMapping(ignoreByDefault = true)
+  @Mapping(target = "itemsSubtotal", source = "totals.itemsSubtotal")
+  @Mapping(target = "urgencyAmount", source = "totals.urgencyAmount")
+  @Mapping(target = "discountAmount", source = "totals.discountAmount")
+  @Mapping(target = "discountApplicableAmount", source = "totals.discountApplicableAmount")
+  @Mapping(target = "totalAmount", source = "totals.total")
+  public abstract void applyPricingSnapshot(
+      PriceCalculationResponse pricing, @MappingTarget OrderEntity orderEntity);
+
+  /** Convert CartItem to OrderItemEntity */
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "orderEntity", ignore = true)
+  @Mapping(target = "priceListItemEntity", source = "priceListItemEntity")
+  @Mapping(target = "quantity", source = "quantity")
+  @Mapping(target = "characteristics", ignore = true) // Will be set separately
+  @Mapping(target = "stains", ignore = true)
+  @Mapping(target = "defects", ignore = true)
+  @Mapping(target = "risks", ignore = true)
+  @Mapping(target = "photos", ignore = true)
+  @Mapping(target = "modifiers", ignore = true)
+  @Mapping(target = "basePrice", ignore = true) // Will be set from pricing
+  @Mapping(target = "subtotal", ignore = true)
+  @Mapping(target = "modifiersTotalAmount", ignore = true)
+  @Mapping(target = "urgencyAmount", ignore = true)
+  @Mapping(target = "discountAmount", ignore = true)
+  @Mapping(target = "totalAmount", ignore = true)
+  @Mapping(target = "discountEligible", ignore = true)
+  public abstract OrderItemEntity toOrderItemEntity(CartItem cartItem);
 }

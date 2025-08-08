@@ -28,12 +28,7 @@ paths:
       security:
         - cookieAuth: []
       parameters:
-        - name: search
-          in: query
-          description: Search by name, phone or email
-          schema:
-            type: string
-            minLength: 2
+        - $ref: "../openapi/common.yaml#/components/parameters/Search"
         - name: phone
           in: query
           description: Filter by phone number
@@ -64,13 +59,14 @@ paths:
             minimum: 1
             maximum: 100
             default: 20
+
       responses:
         "200":
           description: List of customers
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CustomersResponse"
+                $ref: "#/components/schemas/CustomerListResponse"
         "401":
           $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
@@ -246,11 +242,11 @@ components:
         createdAt:
           type: string
           format: date-time
-          description: Registration date
+          description: Registration date (UTC)
         updatedAt:
           type: string
           format: date-time
-          description: Last update timestamp
+          description: Last update timestamp (UTC)
         version:
           type: integer
           format: int64
@@ -363,26 +359,14 @@ components:
           type: boolean
           description: Whether customer is active
 
-    CustomersResponse:
-      type: object
-      required:
-        - customers
-        - total
-        - offset
-        - limit
-      properties:
-        customers:
-          type: array
-          items:
-            $ref: "#/components/schemas/CustomerInfo"
-        total:
-          type: integer
-          description: Total number of customers
-        offset:
-          type: integer
-          description: Number of items skipped
-        limit:
-          type: integer
-          description: Number of items returned
+    CustomerListResponse:
+      allOf:
+        - $ref: "../openapi/common.yaml#/components/schemas/PaginatedResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/CustomerInfo"
 
   # Security schemes and error responses centralized in common.yaml

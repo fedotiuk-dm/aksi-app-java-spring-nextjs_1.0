@@ -25,16 +25,12 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
+import { Search, Add, Edit, LocationOn, Phone, Email, Visibility } from '@mui/icons-material';
 import {
-  Search,
-  Add,
-  Edit,
-  LocationOn,
-  Phone,
-  Email,
-  Visibility,
-} from '@mui/icons-material';
-import { useListBranches, useDeactivateBranch, useActivateBranch } from '@/shared/api/generated/branch';
+  useListBranches,
+  useDeactivateBranch,
+  useActivateBranch,
+} from '@/shared/api/generated/branch';
 import { useBranchStore } from '@/features/branch';
 import { BranchForm } from './BranchForm';
 import { toast } from 'sonner';
@@ -94,9 +90,7 @@ export const BranchList: React.FC = () => {
   if (error) {
     return (
       <Container maxWidth="lg" sx={{ mt: 4 }}>
-        <Alert severity="error">
-          Помилка завантаження філій: {error.message}
-        </Alert>
+        <Alert severity="error">Помилка завантаження філій: {error.message}</Alert>
       </Container>
     );
   }
@@ -128,7 +122,7 @@ export const BranchList: React.FC = () => {
                     <Search />
                   </InputAdornment>
                 ),
-              }
+              },
             }}
             sx={{ flexGrow: 1, maxWidth: 400 }}
           />
@@ -138,7 +132,7 @@ export const BranchList: React.FC = () => {
             <Select
               value={statusFilter}
               label="Статус"
-              onChange={(e) => setStatusFilter(e.target.value as any)}
+              onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
             >
               <MenuItem value="all">Всі</MenuItem>
               <MenuItem value="active">Активні</MenuItem>
@@ -146,18 +140,13 @@ export const BranchList: React.FC = () => {
             </Select>
           </FormControl>
 
-
           <Button variant="text" onClick={resetFilters}>
             Скинути
           </Button>
 
           <Box sx={{ flexGrow: 1 }} />
 
-          <Button
-            variant="contained"
-            startIcon={<Add />}
-            onClick={() => openForm()}
-          >
+          <Button variant="contained" startIcon={<Add />} onClick={() => openForm()}>
             Додати філію
           </Button>
         </Stack>
@@ -181,7 +170,7 @@ export const BranchList: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data?.branches?.map((branch) => (
+              {data?.data?.map((branch) => (
                 <TableRow key={branch.id}>
                   <TableCell>
                     <Typography variant="subtitle2">{branch.name}</Typography>
@@ -195,9 +184,7 @@ export const BranchList: React.FC = () => {
                     <Stack direction="row" spacing={0.5} alignItems="center">
                       <LocationOn fontSize="small" color="action" />
                       <Box>
-                        <Typography variant="body2">
-                          {branch.address}
-                        </Typography>
+                        <Typography variant="body2">{branch.address}</Typography>
                       </Box>
                     </Stack>
                   </TableCell>
@@ -230,11 +217,7 @@ export const BranchList: React.FC = () => {
                     >
                       <Visibility />
                     </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => openForm(branch)}
-                      title="Редагувати"
-                    >
+                    <IconButton size="small" onClick={() => openForm(branch)} title="Редагувати">
                       <Edit />
                     </IconButton>
                     {branch.active ? (

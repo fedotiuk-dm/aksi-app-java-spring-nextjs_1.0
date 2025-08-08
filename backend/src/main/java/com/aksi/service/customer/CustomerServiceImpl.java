@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.customer.dto.CreateCustomerRequest;
 import com.aksi.api.customer.dto.CustomerInfo;
+import com.aksi.api.customer.dto.CustomerListResponse;
 import com.aksi.api.customer.dto.UpdateCustomerRequest;
 import com.aksi.domain.customer.CustomerEntity;
 
@@ -21,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 @Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
@@ -35,7 +36,6 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  @Transactional(readOnly = true)
   public CustomerInfo getCustomer(UUID customerId) {
     return queryService.getCustomer(customerId);
   }
@@ -48,14 +48,23 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  @Transactional(readOnly = true)
   public Page<CustomerInfo> searchCustomers(
       String search, String phone, String email, String discountCard, Pageable pageable) {
     return queryService.searchCustomers(search, phone, email, discountCard, pageable);
   }
 
   @Override
-  @Transactional(readOnly = true)
+  public CustomerListResponse listCustomers(
+      String search,
+      String phone,
+      String email,
+      String discountCard,
+      Integer offset,
+      Integer limit) {
+    return queryService.listCustomers(search, phone, email, discountCard, offset, limit);
+  }
+
+  @Override
   public boolean existsById(UUID customerId) {
     return queryService.existsById(customerId);
   }

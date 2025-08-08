@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.branch.dto.BranchInfo;
-import com.aksi.api.branch.dto.BranchesResponse;
+import com.aksi.api.branch.dto.BranchListResponse;
 import com.aksi.api.branch.dto.CreateBranchRequest;
 import com.aksi.api.branch.dto.UpdateBranchRequest;
 
@@ -52,7 +52,7 @@ public class BranchServiceImpl implements BranchService {
 
   @Override
   @Transactional(readOnly = true)
-  public BranchesResponse listBranches(
+  public BranchListResponse listBranches(
       Integer page, Integer size, String sortBy, String sortOrder, Boolean active, String search) {
     return queryService.listBranches(page, size, sortBy, sortOrder, active, search);
   }

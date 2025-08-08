@@ -27,7 +27,7 @@ import type {
 import type {
   CreateCustomerRequest,
   CustomerInfo,
-  CustomersResponse,
+  CustomerListResponse,
   ErrorResponse,
   ListCustomersParams,
   UpdateCustomerRequest
@@ -205,7 +205,7 @@ export const listCustomers = (
 ) => {
       
       
-      return orvalFetcher<CustomersResponse>(
+      return orvalFetcher<CustomerListResponse>(
       {url: `/api/customers`, method: 'GET',
         params, signal
     },

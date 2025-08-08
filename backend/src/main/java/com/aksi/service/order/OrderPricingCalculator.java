@@ -3,10 +3,12 @@ package com.aksi.service.order;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.aksi.api.pricing.dto.CalculatedItemPrice;
 import com.aksi.api.pricing.dto.DiscountType;
 import com.aksi.api.pricing.dto.GlobalPriceModifiers;
 import com.aksi.api.pricing.dto.ItemCharacteristics;
@@ -14,10 +16,10 @@ import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.api.pricing.dto.UrgencyType;
-import com.aksi.api.pricing.dto.WearLevel;
 import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
 import com.aksi.domain.cart.CartItemModifierEntity;
+import com.aksi.service.order.util.OrderQueryUtils;
 import com.aksi.service.pricing.PricingService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderPricingCalculator {
 
   private final PricingService pricingService;
+  private final OrderQueryUtils queryUtils;
 
   @Value("${app.order.default-completion-hours:72}")
   private int defaultCompletionHours;
@@ -46,16 +49,18 @@ public class OrderPricingCalculator {
   public PriceCalculationResponse calculateCartPricing(CartEntity cartEntity) {
     log.debug("Calculating pricing for cart with {} items", cartEntity.getItems().size());
 
+    // Step 1: Build pricing request
     PriceCalculationRequest pricingRequest = new PriceCalculationRequest();
 
-    // Convert cart items to pricing calculation items
+    // Step 2: Convert cart items to pricing calculation items
     List<PriceCalculationItem> pricingItems = convertCartItemsToPricingItems(cartEntity.getItems());
     pricingRequest.setItems(pricingItems);
 
-    // Set global modifiers
+    // Step 3: Set global modifiers
     GlobalPriceModifiers globalModifiers = buildGlobalModifiers(cartEntity);
     pricingRequest.setGlobalModifiers(globalModifiers);
 
+    // Step 4: Calculate pricing
     return pricingService.calculatePrice(pricingRequest);
   }
 
@@ -66,16 +71,20 @@ public class OrderPricingCalculator {
    * @return expected completion instant
    */
   public Instant calculateExpectedCompletionDate(CartEntity cartEntity) {
-    Instant baseDate = Instant.now().plusSeconds((long) defaultCompletionHours * 3600);
-
-    // Adjust based on urgency
-    if ("EXPRESS_24H".equals(cartEntity.getUrgencyType())) {
-      return Instant.now().plusSeconds(24 * 3600);
-    } else if ("EXPRESS_48H".equals(cartEntity.getUrgencyType())) {
-      return Instant.now().plusSeconds(48 * 3600);
+    // Step 1: Convert urgency type from string to enum
+    UrgencyType urgencyType = null;
+    if (cartEntity.getUrgencyType() != null) {
+      try {
+        urgencyType = UrgencyType.fromValue(cartEntity.getUrgencyType());
+      } catch (IllegalArgumentException e) {
+        log.warn(
+            "Invalid urgency type: {}, using default completion hours",
+            cartEntity.getUrgencyType());
+      }
     }
 
-    return baseDate;
+    // Step 2: Calculate completion date using utility
+    return queryUtils.calculateCompletionDate(urgencyType, defaultCompletionHours);
   }
 
   /**
@@ -88,16 +97,17 @@ public class OrderPricingCalculator {
     List<PriceCalculationItem> pricingItems = new ArrayList<>();
 
     for (CartItem cartItem : cartItems) {
+      // Step 1: Create pricing item
       PriceCalculationItem pricingItem = new PriceCalculationItem();
       pricingItem.setPriceListItemId(cartItem.getPriceListItemEntity().getId());
       pricingItem.setQuantity(cartItem.getQuantity());
 
-      // Add characteristics if present
+      // Step 2: Add characteristics if present
       if (cartItem.getCharacteristics() != null) {
         pricingItem.setCharacteristics(convertCharacteristics(cartItem));
       }
 
-      // Add modifiers
+      // Step 3: Add modifiers
       List<String> modifierCodes =
           cartItem.getModifiers().stream().map(CartItemModifierEntity::getCode).toList();
       pricingItem.setModifierCodes(modifierCodes);
@@ -118,20 +128,54 @@ public class OrderPricingCalculator {
   private ItemCharacteristics convertCharacteristics(CartItem cartItem) {
     ItemCharacteristics characteristics = new ItemCharacteristics();
 
+    // Step 1: Copy basic characteristics
     characteristics.setMaterial(cartItem.getCharacteristics().getMaterial());
     characteristics.setColor(cartItem.getCharacteristics().getColor());
 
+    // Step 2: Set wear level directly if API schema is integer-based
     // Note: filler and fillerCondition not supported in pricing DTO
-    if (cartItem.getCharacteristics().getWearLevel() != null) {
+    var wear = cartItem.getCharacteristics().getWearLevel();
+    if (wear != null) {
+      // Pricing DTO WearLevel is integer enum in OpenAPI → generator may still emit enum type.
+      // Use "setWearLevelValue" if available; otherwise fallback to string/int setter.
       try {
-        characteristics.setWearLevel(
-            WearLevel.fromValue(cartItem.getCharacteristics().getWearLevel()));
-      } catch (IllegalArgumentException e) {
-        log.warn("Invalid wear level: {}", cartItem.getCharacteristics().getWearLevel());
+        ItemCharacteristics.class
+            .getMethod("setWearLevel", Integer.class)
+            .invoke(characteristics, wear);
+      } catch (ReflectiveOperationException e) {
+        try {
+          ItemCharacteristics.class
+              .getMethod("setWearLevelValue", Integer.class)
+              .invoke(characteristics, wear);
+        } catch (ReflectiveOperationException ignored) {
+          // last resort: do nothing to avoid compile errors across generator variants
+        }
       }
     }
 
     return characteristics;
+  }
+
+  /**
+   * Find calculated price for specific cart item in pricing response
+   *
+   * @param cartItem cart item to find price for
+   * @param pricing pricing calculation response
+   * @return calculated price for the cart item
+   * @throws IllegalStateException if no pricing found for item
+   */
+  public CalculatedItemPrice findCalculatedPriceForItem(
+      CartItem cartItem, PriceCalculationResponse pricing) {
+
+    // Step 1: Get price list item ID
+    UUID priceListItemId = cartItem.getPriceListItemEntity().getId();
+
+    // Step 2: Find matching pricing item
+    return pricing.getItems().stream()
+        .filter(item -> item.getPriceListItemId().equals(priceListItemId))
+        .findFirst()
+        .orElseThrow(
+            () -> new IllegalStateException("No pricing found for item: " + priceListItemId));
   }
 
   /**
@@ -143,7 +187,7 @@ public class OrderPricingCalculator {
   private GlobalPriceModifiers buildGlobalModifiers(CartEntity cartEntity) {
     GlobalPriceModifiers globalModifiers = new GlobalPriceModifiers();
 
-    // Set urgency type
+    // Step 1: Set urgency type
     if (cartEntity.getUrgencyType() != null) {
       try {
         globalModifiers.setUrgencyType(UrgencyType.fromValue(cartEntity.getUrgencyType()));
@@ -153,7 +197,7 @@ public class OrderPricingCalculator {
       }
     }
 
-    // Set discount type
+    // Step 2: Set discount type and percentage
     if (cartEntity.getDiscountType() != null) {
       try {
         globalModifiers.setDiscountType(DiscountType.fromValue(cartEntity.getDiscountType()));

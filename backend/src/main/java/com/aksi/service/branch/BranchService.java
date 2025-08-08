@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.aksi.api.branch.dto.BranchInfo;
-import com.aksi.api.branch.dto.BranchesResponse;
+import com.aksi.api.branch.dto.BranchListResponse;
 import com.aksi.api.branch.dto.CreateBranchRequest;
 import com.aksi.api.branch.dto.UpdateBranchRequest;
 
@@ -54,7 +54,7 @@ public interface BranchService {
    * @param search Search by name or address
    * @return Branches response with pagination
    */
-  BranchesResponse listBranches(
+  BranchListResponse listBranches(
       Integer page, Integer size, String sortBy, String sortOrder, Boolean active, String search);
 
   /**

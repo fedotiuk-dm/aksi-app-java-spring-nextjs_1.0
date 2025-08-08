@@ -30,7 +30,7 @@ paths:
       parameters:
         - $ref: "../openapi/common.yaml#/components/parameters/PageNumber"
         - $ref: "../openapi/common.yaml#/components/parameters/PageSize"
-        - $ref: "#/components/parameters/SortBy"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortBy"
         - $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
         - name: active
           in: query
@@ -51,7 +51,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BranchesResponse"
+                $ref: "#/components/schemas/BranchListResponse"
         "401":
           $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
@@ -255,19 +255,6 @@ paths:
           $ref: "../openapi/common.yaml#/components/responses/Conflict"
 
 components:
-  parameters:
-    SortBy:
-      name: sortBy
-      in: query
-      description: Sort field
-      schema:
-        type: string
-        default: name
-        enum:
-          - name
-          - createdAt
-          - sortOrder
-
   # Use common responses from common.yaml instead of duplicating
 
   schemas:
@@ -315,11 +302,11 @@ components:
         createdAt:
           type: string
           format: date-time
-          description: Creation timestamp
+          description: Creation timestamp (UTC)
         updatedAt:
           type: string
           format: date-time
-          description: Last update timestamp
+          description: Last update timestamp (UTC)
 
     CreateBranchRequest:
       type: object
@@ -397,24 +384,15 @@ components:
           type: integer
           description: Sort order for display
 
-    BranchesResponse:
-      type: object
-      required:
-        - branches
-        - totalItems
-        - hasMore
-      properties:
-        branches:
-          type: array
-          items:
-            $ref: "#/components/schemas/BranchInfo"
-          description: List of branches
-        totalItems:
-          type: integer
-          description: Total number of items matching the filter
-        hasMore:
-          type: boolean
-          description: Whether there are more items to load
+    BranchListResponse:
+      allOf:
+        - $ref: "../openapi/common.yaml#/components/schemas/PaginatedResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/BranchInfo"
 
     # ErrorResponse moved to common.yaml
 

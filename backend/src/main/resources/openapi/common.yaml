@@ -40,6 +40,51 @@ components:
       description: Sort direction
       schema:
         $ref: "#/components/schemas/SortOrder"
+    SortBy:
+      name: sortBy
+      in: query
+      description: Field to sort by (domain-specific). If not provided, server default is used
+      schema:
+        type: string
+    CustomerId:
+      name: customerId
+      in: query
+      description: Filter by customer ID
+      required: false
+      schema:
+        type: string
+        format: uuid
+    BranchId:
+      name: branchId
+      in: query
+      description: Filter by branch ID
+      required: false
+      schema:
+        type: string
+        format: uuid
+    DateFrom:
+      name: dateFrom
+      in: query
+      description: Filter by creation date from (UTC)
+      required: false
+      schema:
+        type: string
+        format: date-time
+    DateTo:
+      name: dateTo
+      in: query
+      description: Filter by creation date to (UTC)
+      required: false
+      schema:
+        type: string
+        format: date-time
+    Search:
+      name: search
+      in: query
+      description: Free text search
+      required: false
+      schema:
+        type: string
 
   responses:
     BadRequest:
@@ -181,7 +226,7 @@ components:
     WearLevel:
       type: integer
       enum: [10, 30, 50, 75]
-      description: Wear level percentage
+      description: Wear level percentage (allowed values)
 
     # Item Issues
     StainType:
@@ -338,3 +383,18 @@ components:
           items:
             $ref: "#/components/schemas/ErrorDetail"
           nullable: true
+
+    ProblemDetails:
+      type: object
+      description: RFC 7807 Problem Details
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string

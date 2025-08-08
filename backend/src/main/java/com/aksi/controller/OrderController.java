@@ -41,7 +41,7 @@ public class OrderController implements OrdersApi {
   public ResponseEntity<OrderListResponse> listOrders(
       Integer page,
       Integer size,
-      String sortBy,
+      @Nullable String sortBy,
       SortOrder sortOrder,
       @Nullable UUID customerId,
       @Nullable OrderStatus status,
@@ -140,7 +140,7 @@ public class OrderController implements OrdersApi {
 
   @Override
   public ResponseEntity<OrderListResponse> getCustomerOrderHistory(
-      UUID customerId, Integer page, Integer size, String sortBy, SortOrder sortOrder) {
+      UUID customerId, Integer page, Integer size, @Nullable String sortBy, SortOrder sortOrder) {
     OrderListResponse response =
         orderService.getCustomerOrderHistory(customerId, page, size, sortBy, sortOrder.getValue());
     return ResponseEntity.ok(response);
@@ -154,7 +154,7 @@ public class OrderController implements OrdersApi {
 
   @Override
   public ResponseEntity<OrderListResponse> getOrdersDueForCompletion(
-      Integer days, Integer page, Integer size, String sortBy, SortOrder sortOrder) {
+      Integer days, Integer page, Integer size, @Nullable String sortBy, SortOrder sortOrder) {
     OrderListResponse response =
         orderService.getOrdersDueForCompletion(days, page, size, sortBy, sortOrder.getValue());
     return ResponseEntity.ok(response);
@@ -162,7 +162,7 @@ public class OrderController implements OrdersApi {
 
   @Override
   public ResponseEntity<OrderListResponse> getOverdueOrders(
-      Integer page, Integer size, String sortBy, SortOrder sortOrder) {
+      Integer page, Integer size, @Nullable String sortBy, SortOrder sortOrder) {
     OrderListResponse response =
         orderService.getOverdueOrders(page, size, sortBy, sortOrder.getValue());
     return ResponseEntity.ok(response);

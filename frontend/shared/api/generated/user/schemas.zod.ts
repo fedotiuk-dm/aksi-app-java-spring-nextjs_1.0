@@ -120,13 +120,13 @@ export const listUsersQueryPageDefault = 0;
 export const listUsersQueryPageMin = 0;
 export const listUsersQuerySizeDefault = 20;
 export const listUsersQuerySizeMax = 100;
-export const listUsersQuerySortByDefault = "createdAt";export const listUsersQuerySortOrderDefault = "asc";
+export const listUsersQuerySortByDefault = "createdAt";export const listUsersQuerySortOrderDefault = "ASC";
 
 export const listUsersQueryParams = zod.object({
   "page": zod.number().min(listUsersQueryPageMin).optional().describe('Page number (0-based)'),
   "size": zod.number().min(1).max(listUsersQuerySizeMax).default(listUsersQuerySizeDefault).describe('Page size (number of items per page)'),
   "sortBy": zod.string().default(listUsersQuerySortByDefault).describe('Field to sort by'),
-  "sortOrder": zod.enum(['asc', 'desc']).default(listUsersQuerySortOrderDefault).describe('Sort direction'),
+  "sortOrder": zod.enum(['ASC', 'DESC']).default(listUsersQuerySortOrderDefault).describe('Sort direction'),
   "search": zod.string().optional().describe('Search by username, first name, or last name'),
   "role": zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER']).optional().describe('Filter by role'),
   "branchId": zod.uuid().optional().describe('Filter by branch'),

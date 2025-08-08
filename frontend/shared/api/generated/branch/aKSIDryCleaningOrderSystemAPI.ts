@@ -26,7 +26,7 @@ import type {
 
 import type {
   BranchInfo,
-  BranchesResponse,
+  BranchListResponse,
   CreateBranchRequest,
   ErrorResponse,
   ListBranchesParams,
@@ -268,7 +268,7 @@ export const listBranches = (
 ) => {
       
       
-      return orvalFetcher<BranchesResponse>(
+      return orvalFetcher<BranchListResponse>(
       {url: `/api/branches`, method: 'GET',
         params, signal
     },

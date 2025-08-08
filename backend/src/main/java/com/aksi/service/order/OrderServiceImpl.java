@@ -19,7 +19,6 @@ import com.aksi.api.order.dto.PaymentInfo;
 import com.aksi.api.order.dto.PhotoType;
 import com.aksi.api.order.dto.UpdateItemCharacteristicsRequest;
 import com.aksi.api.order.dto.UpdateOrderStatusRequest;
-import com.aksi.domain.order.OrderEntity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -162,8 +161,6 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   public List<OrderInfo> getOrdersByStatus(OrderStatus status, UUID branchId) {
-    // Convert API OrderStatus to entity OrderStatus
-    OrderEntity.OrderStatus entityStatus = OrderEntity.OrderStatus.valueOf(status.name());
-    return queryService.getOrdersByStatus(entityStatus, branchId);
+    return queryService.getOrdersByStatus(status, branchId);
   }
 }

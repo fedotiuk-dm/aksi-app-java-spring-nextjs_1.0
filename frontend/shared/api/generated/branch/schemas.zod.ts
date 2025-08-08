@@ -38,8 +38,8 @@ export const getBranchByIdResponse = zod.object({
   "active": zod.boolean().describe('Is branch active'),
   "description": zod.string().optional().describe('Branch description'),
   "sortOrder": zod.number().optional().describe('Sort order for display'),
-  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp'),
-  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp')
+  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp (UTC)'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp (UTC)')
 })
 
 
@@ -101,8 +101,8 @@ export const updateBranchResponse = zod.object({
   "active": zod.boolean().describe('Is branch active'),
   "description": zod.string().optional().describe('Branch description'),
   "sortOrder": zod.number().optional().describe('Sort order for display'),
-  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp'),
-  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp')
+  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp (UTC)'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp (UTC)')
 })
 
 
@@ -123,44 +123,50 @@ export const listBranchesQueryPageDefault = 0;
 export const listBranchesQueryPageMin = 0;
 export const listBranchesQuerySizeDefault = 20;
 export const listBranchesQuerySizeMax = 100;
-export const listBranchesQuerySortByDefault = "name";export const listBranchesQuerySortOrderDefault = "asc";export const listBranchesQueryActiveDefault = true;
+export const listBranchesQuerySortOrderDefault = "ASC";export const listBranchesQueryActiveDefault = true;
 
 export const listBranchesQueryParams = zod.object({
   "page": zod.number().min(listBranchesQueryPageMin).optional().describe('Page number (0-based)'),
   "size": zod.number().min(1).max(listBranchesQuerySizeMax).default(listBranchesQuerySizeDefault).describe('Page size (number of items per page)'),
-  "sortBy": zod.string().default(listBranchesQuerySortByDefault).describe('Sort field'),
-  "sortOrder": zod.enum(['asc', 'desc']).default(listBranchesQuerySortOrderDefault).describe('Sort direction'),
+  "sortBy": zod.string().optional().describe('Field to sort by (domain-specific). If not provided, server default is used'),
+  "sortOrder": zod.enum(['ASC', 'DESC']).default(listBranchesQuerySortOrderDefault).describe('Sort direction'),
   "active": zod.boolean().default(listBranchesQueryActiveDefault).describe('Filter by active status'),
   "search": zod.string().optional().describe('Search by name or address')
 })
 
-export const listBranchesResponseBranchesItemNameMax = 255;
-export const listBranchesResponseBranchesItemPhoneMin = 10;
+export const listBranchesResponseDataItemNameMax = 255;
+export const listBranchesResponseDataItemPhoneMin = 10;
 
-export const listBranchesResponseBranchesItemPhoneMax = 20;
+export const listBranchesResponseDataItemPhoneMax = 20;
 
-export const listBranchesResponseBranchesItemPhoneRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
-export const listBranchesResponseBranchesItemEmailMin = 0;
+export const listBranchesResponseDataItemPhoneRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
+export const listBranchesResponseDataItemEmailMin = 0;
 
-export const listBranchesResponseBranchesItemEmailMax = 255;
+export const listBranchesResponseDataItemEmailMax = 255;
 
 
 export const listBranchesResponse = zod.object({
-  "branches": zod.array(zod.object({
+  "data": zod.array(zod.object({
   "id": zod.uuid().describe('Branch ID'),
-  "name": zod.string().min(1).max(listBranchesResponseBranchesItemNameMax).describe('Branch name'),
+  "name": zod.string().min(1).max(listBranchesResponseDataItemNameMax).describe('Branch name'),
   "address": zod.string().describe('Branch address'),
-  "phone": zod.string().min(listBranchesResponseBranchesItemPhoneMin).max(listBranchesResponseBranchesItemPhoneMax).regex(listBranchesResponseBranchesItemPhoneRegExp).describe('Branch phone number'),
-  "email": zod.string().min(listBranchesResponseBranchesItemEmailMin).max(listBranchesResponseBranchesItemEmailMax).optional().describe('Branch email'),
+  "phone": zod.string().min(listBranchesResponseDataItemPhoneMin).max(listBranchesResponseDataItemPhoneMax).regex(listBranchesResponseDataItemPhoneRegExp).describe('Branch phone number'),
+  "email": zod.string().min(listBranchesResponseDataItemEmailMin).max(listBranchesResponseDataItemEmailMax).optional().describe('Branch email'),
   "workingHours": zod.string().optional().describe('Working hours (e.g., \"Пн-Пт 8:00-20:00, Сб 9:00-18:00\")'),
   "active": zod.boolean().describe('Is branch active'),
   "description": zod.string().optional().describe('Branch description'),
   "sortOrder": zod.number().optional().describe('Sort order for display'),
-  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp'),
-  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp')
-})).describe('List of branches'),
-  "totalItems": zod.number().describe('Total number of items matching the filter'),
-  "hasMore": zod.boolean().describe('Whether there are more items to load')
+  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp (UTC)'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp (UTC)')
+})),
+  "totalElements": zod.number().describe('Total number of elements'),
+  "totalPages": zod.number().describe('Total number of pages'),
+  "size": zod.number().describe('Page size'),
+  "number": zod.number().describe('Page number (0-based)'),
+  "numberOfElements": zod.number().describe('Number of elements in current page'),
+  "first": zod.boolean().describe('Is first page'),
+  "last": zod.boolean().describe('Is last page'),
+  "empty": zod.boolean().describe('Is empty')
 })
 
 
@@ -227,8 +233,8 @@ export const deactivateBranchResponse = zod.object({
   "active": zod.boolean().describe('Is branch active'),
   "description": zod.string().optional().describe('Branch description'),
   "sortOrder": zod.number().optional().describe('Sort order for display'),
-  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp'),
-  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp')
+  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp (UTC)'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp (UTC)')
 })
 
 
@@ -261,8 +267,8 @@ export const activateBranchResponse = zod.object({
   "active": zod.boolean().describe('Is branch active'),
   "description": zod.string().optional().describe('Branch description'),
   "sortOrder": zod.number().optional().describe('Sort order for display'),
-  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp'),
-  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp')
+  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp (UTC)'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp (UTC)')
 })
 
 
@@ -291,7 +297,7 @@ export const getAllActiveBranchesResponseItem = zod.object({
   "active": zod.boolean().describe('Is branch active'),
   "description": zod.string().optional().describe('Branch description'),
   "sortOrder": zod.number().optional().describe('Sort order for display'),
-  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp'),
-  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp')
+  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp (UTC)'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp (UTC)')
 })
 export const getAllActiveBranchesResponse = zod.array(getAllActiveBranchesResponseItem)

@@ -3,11 +3,13 @@ package com.aksi.service.customer;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.customer.dto.CustomerInfo;
+import com.aksi.api.customer.dto.CustomerListResponse;
 import com.aksi.domain.customer.CustomerEntity;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.CustomerMapper;
@@ -77,6 +79,30 @@ public class CustomerQueryService {
         .findAll(
             CustomerSpecification.searchCustomers(search, phone, email, discountCard), pageable)
         .map(customerMapper::toCustomerInfo);
+  }
+
+  /** List customers with offset/limit API contract and return PaginatedResponse model */
+  public CustomerListResponse listCustomers(
+      String search,
+      String phone,
+      String email,
+      String discountCard,
+      Integer offset,
+      Integer limit) {
+    PageRequest pageRequest = PageRequest.of(offset / limit, limit);
+    Page<CustomerInfo> page = searchCustomers(search, phone, email, discountCard, pageRequest);
+
+    CustomerListResponse response = new CustomerListResponse();
+    response.setData(page.getContent());
+    response.setTotalElements(page.getTotalElements());
+    response.setTotalPages(page.getTotalPages());
+    response.setSize(page.getSize());
+    response.setNumber(page.getNumber());
+    response.setNumberOfElements(page.getNumberOfElements());
+    response.setFirst(page.isFirst());
+    response.setLast(page.isLast());
+    response.setEmpty(page.isEmpty());
+    return response;
   }
 
   /**

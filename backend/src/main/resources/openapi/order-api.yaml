@@ -30,42 +30,18 @@ paths:
       parameters:
         - $ref: "../openapi/common.yaml#/components/parameters/PageNumber"
         - $ref: "../openapi/common.yaml#/components/parameters/PageSize"
-        - $ref: "#/components/parameters/SortBy"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortBy"
         - $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
-        - name: customerId
-          in: query
-          description: Filter by customer ID
-          required: false
-          schema:
-            type: string
-            format: uuid
+        - $ref: "../openapi/common.yaml#/components/parameters/CustomerId"
         - name: status
           in: query
           description: Filter by order status
           required: false
           schema:
             $ref: "../openapi/common.yaml#/components/schemas/OrderStatus"
-        - name: branchId
-          in: query
-          description: Filter by branch ID
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: dateFrom
-          in: query
-          description: Filter by creation date from
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - name: dateTo
-          in: query
-          description: Filter by creation date to
-          required: false
-          schema:
-            type: string
-            format: date-time
+        - $ref: "../openapi/common.yaml#/components/parameters/BranchId"
+        - $ref: "../openapi/common.yaml#/components/parameters/DateFrom"
+        - $ref: "../openapi/common.yaml#/components/parameters/DateTo"
       responses:
         "200":
           description: List of orders
@@ -420,7 +396,7 @@ paths:
             format: uuid
         - $ref: "../openapi/common.yaml#/components/parameters/PageNumber"
         - $ref: "../openapi/common.yaml#/components/parameters/PageSize"
-        - $ref: "#/components/parameters/SortBy"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortBy"
         - $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
       responses:
         "200":
@@ -491,7 +467,7 @@ paths:
             default: 7
         - $ref: "../openapi/common.yaml#/components/parameters/PageNumber"
         - $ref: "../openapi/common.yaml#/components/parameters/PageSize"
-        - $ref: "#/components/parameters/SortBy"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortBy"
         - $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
       responses:
         "200":
@@ -515,7 +491,7 @@ paths:
       parameters:
         - $ref: "../openapi/common.yaml#/components/parameters/PageNumber"
         - $ref: "../openapi/common.yaml#/components/parameters/PageSize"
-        - $ref: "#/components/parameters/SortBy"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortBy"
         - $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
       responses:
         "200":
@@ -668,16 +644,6 @@ components:
       $ref: "../openapi/common.yaml#/components/parameters/PageNumber"
     PageSize:
       $ref: "../openapi/common.yaml#/components/parameters/PageSize"
-
-    SortBy:
-      name: sortBy
-      in: query
-      description: Field to sort by
-      schema:
-        type: string
-        default: createdAt
-        enum: [createdAt, orderNumber, status, totalAmount]
-
     SortOrder:
       $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
 

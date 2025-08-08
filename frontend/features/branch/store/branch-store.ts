@@ -1,6 +1,6 @@
 /**
  * @fileoverview Branch store для управління UI станом
- * 
+ *
  * Зберігає тільки UI стан - фільтри, вибрані елементи, налаштування відображення
  * Серверні дані управляються через React Query (Orval hooks)
  */
@@ -14,17 +14,17 @@ export interface BranchUIState {
   // Filters
   searchQuery: string;
   statusFilter: 'all' | 'active' | 'inactive';
-  
+
   // UI State
   selectedBranchId: string | null;
   isFormOpen: boolean;
   editingBranch: BranchInfo | null;
-  
+
   // View preferences
   viewMode: 'table' | 'cards';
   sortBy: 'name' | 'address';
   sortOrder: 'asc' | 'desc';
-  
+
   // Actions
   setSearchQuery: (query: string) => void;
   setStatusFilter: (status: 'all' | 'active' | 'inactive') => void;
@@ -33,7 +33,7 @@ export interface BranchUIState {
   closeForm: () => void;
   setViewMode: (mode: 'table' | 'cards') => void;
   setSorting: (field: 'name' | 'address', order: 'asc' | 'desc') => void;
-  
+
   // Computed
   getListParams: () => ListBranchesParams;
   resetFilters: () => void;
@@ -66,7 +66,6 @@ export const useBranchStore = create<BranchUIState>()(
           set((state) => {
             state.statusFilter = status;
           }),
-
 
         setSelectedBranch: (id) =>
           set((state) => {
@@ -104,6 +103,10 @@ export const useBranchStore = create<BranchUIState>()(
             size: 20,
           };
 
+          // Sorting (map UI -> API params)
+          params.sortBy = state.sortBy;
+          params.sortOrder = state.sortOrder.toUpperCase() as 'ASC' | 'DESC';
+
           // Add search if present
           if (state.searchQuery) {
             params.search = state.searchQuery;
@@ -115,7 +118,6 @@ export const useBranchStore = create<BranchUIState>()(
           } else if (state.statusFilter === 'inactive') {
             params.active = false;
           }
-
 
           return params;
         },

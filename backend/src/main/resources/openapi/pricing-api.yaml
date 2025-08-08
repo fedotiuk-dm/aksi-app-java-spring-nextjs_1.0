@@ -61,6 +61,8 @@ paths:
           required: false
           schema:
             $ref: "../openapi/common.yaml#/components/schemas/ServiceCategoryType"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortBy"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
         - name: active
           in: query
           description: Filter by active status
@@ -95,6 +97,8 @@ paths:
           schema:
             type: boolean
             default: true
+        - $ref: "../openapi/common.yaml#/components/parameters/SortBy"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
       responses:
         "200":
           description: List of discounts

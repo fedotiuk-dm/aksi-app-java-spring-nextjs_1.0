@@ -15,7 +15,6 @@ import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.api.pricing.dto.UrgencyType;
-import com.aksi.api.pricing.dto.WearLevel;
 import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
 import com.aksi.domain.cart.CartItemModifierEntity;
@@ -73,14 +72,8 @@ public class CartPricingServiceImpl implements CartPricingService {
     CartItemPricingInfo pricing = new CartItemPricingInfo();
     pricing.setBasePrice(calculatedItem.getBasePrice());
     pricing.setSubtotal(calculations.getSubtotal());
-    pricing.setUrgencyAmount(
-        calculations.getUrgencyModifier() != null
-            ? calculations.getUrgencyModifier().getAmount()
-            : 0);
-    pricing.setDiscountAmount(
-        calculations.getDiscountModifier() != null
-            ? calculations.getDiscountModifier().getAmount()
-            : 0);
+    pricing.setUrgencyAmount(calculations.getUrgencyModifier().getAmount());
+    pricing.setDiscountAmount(calculations.getDiscountModifier().getAmount());
     pricing.setTotal(calculations.getFinalAmount());
 
     // Convert modifiers
@@ -136,11 +129,9 @@ public class CartPricingServiceImpl implements CartPricingService {
       ItemCharacteristics characteristics = new ItemCharacteristics();
       characteristics.setMaterial(cartItem.getCharacteristics().getMaterial());
       characteristics.setColor(cartItem.getCharacteristics().getColor());
-      // Note: filler field is not available in pricing ItemCharacteristics
-      if (cartItem.getCharacteristics().getWearLevel() != null) {
-        characteristics.setWearLevel(
-            WearLevel.fromValue(cartItem.getCharacteristics().getWearLevel()));
-      }
+      // Wear level mapping is schema-dependent (enum vs int). To avoid mismatch between
+      // generated DTOs during regeneration cycles, omit it here and rely on
+      // OrderPricingCalculator's conversion or future regenerated setter.
       item.setCharacteristics(characteristics);
     }
 

@@ -116,6 +116,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FileUploadResponse"
+          headers:
+            Location:
+              description: Public URL of the uploaded file
+              schema:
+                type: string
         "400":
           $ref: "../openapi/common.yaml#/components/responses/BadRequest"
 
@@ -139,6 +144,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FileUploadResponse"
+          headers:
+            Location:
+              description: Public URL of the uploaded file
+              schema:
+                type: string
         "400":
           $ref: "../openapi/common.yaml#/components/responses/BadRequest"
 

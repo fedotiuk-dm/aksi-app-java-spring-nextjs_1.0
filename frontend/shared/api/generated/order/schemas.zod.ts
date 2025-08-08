@@ -108,18 +108,18 @@ export const listOrdersQueryPageDefault = 0;
 export const listOrdersQueryPageMin = 0;
 export const listOrdersQuerySizeDefault = 20;
 export const listOrdersQuerySizeMax = 100;
-export const listOrdersQuerySortByDefault = "createdAt";export const listOrdersQuerySortOrderDefault = "asc";
+export const listOrdersQuerySortOrderDefault = "ASC";
 
 export const listOrdersQueryParams = zod.object({
   "page": zod.number().min(listOrdersQueryPageMin).optional().describe('Page number (0-based)'),
   "size": zod.number().min(1).max(listOrdersQuerySizeMax).default(listOrdersQuerySizeDefault).describe('Page size (number of items per page)'),
-  "sortBy": zod.string().default(listOrdersQuerySortByDefault).describe('Field to sort by'),
-  "sortOrder": zod.enum(['asc', 'desc']).default(listOrdersQuerySortOrderDefault).describe('Sort direction'),
+  "sortBy": zod.string().optional().describe('Field to sort by (domain-specific). If not provided, server default is used'),
+  "sortOrder": zod.enum(['ASC', 'DESC']).default(listOrdersQuerySortOrderDefault).describe('Sort direction'),
   "customerId": zod.uuid().optional().describe('Filter by customer ID'),
   "status": zod.enum(['PENDING', 'ACCEPTED', 'IN_PROGRESS', 'READY', 'COMPLETED', 'CANCELLED']).optional().describe('Filter by order status'),
   "branchId": zod.uuid().optional().describe('Filter by branch ID'),
-  "dateFrom": zod.iso.datetime({}).optional().describe('Filter by creation date from'),
-  "dateTo": zod.iso.datetime({}).optional().describe('Filter by creation date to')
+  "dateFrom": zod.iso.datetime({}).optional().describe('Filter by creation date from (UTC)'),
+  "dateTo": zod.iso.datetime({}).optional().describe('Filter by creation date to (UTC)')
 })
 
 export const listOrdersResponse = zod.object({
@@ -706,13 +706,13 @@ export const getOverdueOrdersQueryPageDefault = 0;
 export const getOverdueOrdersQueryPageMin = 0;
 export const getOverdueOrdersQuerySizeDefault = 20;
 export const getOverdueOrdersQuerySizeMax = 100;
-export const getOverdueOrdersQuerySortByDefault = "createdAt";export const getOverdueOrdersQuerySortOrderDefault = "asc";
+export const getOverdueOrdersQuerySortOrderDefault = "ASC";
 
 export const getOverdueOrdersQueryParams = zod.object({
   "page": zod.number().min(getOverdueOrdersQueryPageMin).optional().describe('Page number (0-based)'),
   "size": zod.number().min(1).max(getOverdueOrdersQuerySizeMax).default(getOverdueOrdersQuerySizeDefault).describe('Page size (number of items per page)'),
-  "sortBy": zod.string().default(getOverdueOrdersQuerySortByDefault).describe('Field to sort by'),
-  "sortOrder": zod.enum(['asc', 'desc']).default(getOverdueOrdersQuerySortOrderDefault).describe('Sort direction')
+  "sortBy": zod.string().optional().describe('Field to sort by (domain-specific). If not provided, server default is used'),
+  "sortOrder": zod.enum(['ASC', 'DESC']).default(getOverdueOrdersQuerySortOrderDefault).describe('Sort direction')
 })
 
 export const getOverdueOrdersResponse = zod.object({
@@ -832,14 +832,14 @@ export const getOrdersDueForCompletionQueryPageDefault = 0;
 export const getOrdersDueForCompletionQueryPageMin = 0;
 export const getOrdersDueForCompletionQuerySizeDefault = 20;
 export const getOrdersDueForCompletionQuerySizeMax = 100;
-export const getOrdersDueForCompletionQuerySortByDefault = "createdAt";export const getOrdersDueForCompletionQuerySortOrderDefault = "asc";
+export const getOrdersDueForCompletionQuerySortOrderDefault = "ASC";
 
 export const getOrdersDueForCompletionQueryParams = zod.object({
   "days": zod.number().min(1).max(getOrdersDueForCompletionQueryDaysMax).default(getOrdersDueForCompletionQueryDaysDefault).describe('Number of days to look ahead'),
   "page": zod.number().min(getOrdersDueForCompletionQueryPageMin).optional().describe('Page number (0-based)'),
   "size": zod.number().min(1).max(getOrdersDueForCompletionQuerySizeMax).default(getOrdersDueForCompletionQuerySizeDefault).describe('Page size (number of items per page)'),
-  "sortBy": zod.string().default(getOrdersDueForCompletionQuerySortByDefault).describe('Field to sort by'),
-  "sortOrder": zod.enum(['asc', 'desc']).default(getOrdersDueForCompletionQuerySortOrderDefault).describe('Sort direction')
+  "sortBy": zod.string().optional().describe('Field to sort by (domain-specific). If not provided, server default is used'),
+  "sortOrder": zod.enum(['ASC', 'DESC']).default(getOrdersDueForCompletionQuerySortOrderDefault).describe('Sort direction')
 })
 
 export const getOrdersDueForCompletionResponse = zod.object({
@@ -1075,13 +1075,13 @@ export const getCustomerOrderHistoryQueryPageDefault = 0;
 export const getCustomerOrderHistoryQueryPageMin = 0;
 export const getCustomerOrderHistoryQuerySizeDefault = 20;
 export const getCustomerOrderHistoryQuerySizeMax = 100;
-export const getCustomerOrderHistoryQuerySortByDefault = "createdAt";export const getCustomerOrderHistoryQuerySortOrderDefault = "asc";
+export const getCustomerOrderHistoryQuerySortOrderDefault = "ASC";
 
 export const getCustomerOrderHistoryQueryParams = zod.object({
   "page": zod.number().min(getCustomerOrderHistoryQueryPageMin).optional().describe('Page number (0-based)'),
   "size": zod.number().min(1).max(getCustomerOrderHistoryQuerySizeMax).default(getCustomerOrderHistoryQuerySizeDefault).describe('Page size (number of items per page)'),
-  "sortBy": zod.string().default(getCustomerOrderHistoryQuerySortByDefault).describe('Field to sort by'),
-  "sortOrder": zod.enum(['asc', 'desc']).default(getCustomerOrderHistoryQuerySortOrderDefault).describe('Sort direction')
+  "sortBy": zod.string().optional().describe('Field to sort by (domain-specific). If not provided, server default is used'),
+  "sortOrder": zod.enum(['ASC', 'DESC']).default(getCustomerOrderHistoryQuerySortOrderDefault).describe('Sort direction')
 })
 
 export const getCustomerOrderHistoryResponse = zod.object({

@@ -14,6 +14,7 @@ import com.aksi.domain.order.ItemModifierEntity;
 import com.aksi.domain.order.OrderEntity;
 import com.aksi.domain.order.OrderItemEntity;
 import com.aksi.domain.order.OrderPaymentEntity;
+import com.aksi.service.order.util.OrderQueryUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class ReceiptDataConverterImpl implements ReceiptDataConverter {
 
   private final ReceiptConfiguration config;
+  private final OrderQueryUtils orderQueryUtils;
 
   @Override
   public ReceiptOrderData convert(OrderEntity order) {
@@ -124,8 +126,8 @@ public class ReceiptDataConverterImpl implements ReceiptDataConverter {
     data.setSubtotal(order.getItemsSubtotal());
     data.setDiscount(order.getDiscountAmount());
     data.setTotalAmount(order.getTotalAmount());
-    data.setPrepaidAmount(order.getPaidAmount());
-    data.setDueAmount(order.getBalanceDue());
+    data.setPrepaidAmount(orderQueryUtils.calculatePaidAmount(order));
+    data.setDueAmount(orderQueryUtils.calculateBalanceDue(order));
   }
 
   private void setPaymentInfo(ReceiptOrderData data, OrderEntity order) {

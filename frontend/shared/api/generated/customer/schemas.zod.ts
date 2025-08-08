@@ -40,8 +40,8 @@ export const getCustomerResponse = zod.object({
   "notes": zod.string().optional().describe('Internal notes about customer'),
   "discountCardNumber": zod.string().optional().describe('Discount card number (unique)'),
   "active": zod.boolean().describe('Whether customer is active'),
-  "createdAt": zod.iso.datetime({}).describe('Registration date'),
-  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp'),
+  "createdAt": zod.iso.datetime({}).describe('Registration date (UTC)'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp (UTC)'),
   "version": zod.number().optional().describe('Version for optimistic locking')
 })
 
@@ -115,8 +115,8 @@ export const updateCustomerResponse = zod.object({
   "notes": zod.string().optional().describe('Internal notes about customer'),
   "discountCardNumber": zod.string().optional().describe('Discount card number (unique)'),
   "active": zod.boolean().describe('Whether customer is active'),
-  "createdAt": zod.iso.datetime({}).describe('Registration date'),
-  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp'),
+  "createdAt": zod.iso.datetime({}).describe('Registration date (UTC)'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp (UTC)'),
   "version": zod.number().optional().describe('Version for optimistic locking')
 })
 
@@ -125,9 +125,6 @@ export const updateCustomerResponse = zod.object({
  * Search and list customers with optional filters
  * @summary List customers
  */
-export const listCustomersQuerySearchMin = 2;
-
-export const listCustomersQuerySearchMax = 2147483647;
 export const listCustomersQueryOffsetDefault = 0;
 export const listCustomersQueryOffsetMin = 0;
 export const listCustomersQueryLimitDefault = 20;
@@ -135,7 +132,7 @@ export const listCustomersQueryLimitMax = 100;
 
 
 export const listCustomersQueryParams = zod.object({
-  "search": zod.string().min(listCustomersQuerySearchMin).max(listCustomersQuerySearchMax).optional().describe('Search by name, phone or email'),
+  "search": zod.string().optional().describe('Free text search'),
   "phone": zod.string().optional().describe('Filter by phone number'),
   "email": zod.string().optional().describe('Filter by email'),
   "discountCard": zod.string().optional().describe('Filter by discount card number'),
@@ -143,23 +140,23 @@ export const listCustomersQueryParams = zod.object({
   "limit": zod.number().min(1).max(listCustomersQueryLimitMax).default(listCustomersQueryLimitDefault).describe('Number of items to return')
 })
 
-export const listCustomersResponseCustomersItemPhonePrimaryMin = 10;
+export const listCustomersResponseDataItemPhonePrimaryMin = 10;
 
-export const listCustomersResponseCustomersItemPhonePrimaryMax = 20;
+export const listCustomersResponseDataItemPhonePrimaryMax = 20;
 
-export const listCustomersResponseCustomersItemPhonePrimaryRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
-export const listCustomersResponseCustomersItemEmailMin = 0;
+export const listCustomersResponseDataItemPhonePrimaryRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
+export const listCustomersResponseDataItemEmailMin = 0;
 
-export const listCustomersResponseCustomersItemEmailMax = 255;
+export const listCustomersResponseDataItemEmailMax = 255;
 
 
 export const listCustomersResponse = zod.object({
-  "customers": zod.array(zod.object({
+  "data": zod.array(zod.object({
   "id": zod.uuid().describe('Customer ID'),
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
-  "phonePrimary": zod.string().min(listCustomersResponseCustomersItemPhonePrimaryMin).max(listCustomersResponseCustomersItemPhonePrimaryMax).regex(listCustomersResponseCustomersItemPhonePrimaryRegExp).describe('Primary phone number (must be unique for active customers)'),
-  "email": zod.string().min(listCustomersResponseCustomersItemEmailMin).max(listCustomersResponseCustomersItemEmailMax).optional().describe('Email address (must be unique for active customers)'),
+  "phonePrimary": zod.string().min(listCustomersResponseDataItemPhonePrimaryMin).max(listCustomersResponseDataItemPhonePrimaryMax).regex(listCustomersResponseDataItemPhonePrimaryRegExp).describe('Primary phone number (must be unique for active customers)'),
+  "email": zod.string().min(listCustomersResponseDataItemEmailMin).max(listCustomersResponseDataItemEmailMax).optional().describe('Email address (must be unique for active customers)'),
   "address": zod.string().optional().describe('Address'),
   "contactPreferences": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional().describe('Preferred contact methods'),
   "infoSource": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional().describe('How customer learned about the service'),
@@ -167,13 +164,18 @@ export const listCustomersResponse = zod.object({
   "notes": zod.string().optional().describe('Internal notes about customer'),
   "discountCardNumber": zod.string().optional().describe('Discount card number (unique)'),
   "active": zod.boolean().describe('Whether customer is active'),
-  "createdAt": zod.iso.datetime({}).describe('Registration date'),
-  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp'),
+  "createdAt": zod.iso.datetime({}).describe('Registration date (UTC)'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp (UTC)'),
   "version": zod.number().optional().describe('Version for optimistic locking')
 })),
-  "total": zod.number().describe('Total number of customers'),
-  "offset": zod.number().describe('Number of items skipped'),
-  "limit": zod.number().describe('Number of items returned')
+  "totalElements": zod.number().describe('Total number of elements'),
+  "totalPages": zod.number().describe('Total number of pages'),
+  "size": zod.number().describe('Page size'),
+  "number": zod.number().describe('Page number (0-based)'),
+  "numberOfElements": zod.number().describe('Number of elements in current page'),
+  "first": zod.boolean().describe('Is first page'),
+  "last": zod.boolean().describe('Is last page'),
+  "empty": zod.boolean().describe('Is empty')
 })
 
 

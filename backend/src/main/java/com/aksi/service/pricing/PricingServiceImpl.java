@@ -105,7 +105,7 @@ public class PricingServiceImpl implements PricingService {
   @Override
   @Transactional(readOnly = true)
   public PriceModifiersResponse listPriceModifiers(
-      ServiceCategoryType categoryCode, Boolean active) {
+      ServiceCategoryType categoryCode, Boolean active, String sortBy, String sortOrder) {
     log.debug("Listing price modifiers for category: {}, active: {}", categoryCode, active);
 
     List<PriceModifierEntity> modifiers;
@@ -134,7 +134,7 @@ public class PricingServiceImpl implements PricingService {
 
   @Override
   @Transactional(readOnly = true)
-  public DiscountsResponse listDiscounts(Boolean active) {
+  public DiscountsResponse listDiscounts(Boolean active, String sortBy, String sortOrder) {
     log.debug("Listing discounts, active: {}", active);
 
     List<DiscountEntity> discountEntities;

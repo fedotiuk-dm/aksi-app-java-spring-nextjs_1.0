@@ -1,13 +1,13 @@
 package com.aksi.service.order;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +17,12 @@ import com.aksi.api.order.dto.OrderListResponse;
 import com.aksi.api.order.dto.OrderStatus;
 import com.aksi.api.order.dto.PaymentInfo;
 import com.aksi.domain.order.OrderEntity;
-import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.OrderMapper;
 import com.aksi.repository.OrderRepository;
 import com.aksi.repository.OrderSpecification;
+import com.aksi.service.order.guard.OrderGuard;
+import com.aksi.service.order.util.OrderQueryUtils;
+import com.aksi.service.receipt.ReceiptService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,13 +32,17 @@ import lombok.extern.slf4j.Slf4j;
  * side effects
  */
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 @Slf4j
 public class OrderQueryService {
 
   private final OrderRepository orderRepository;
+
+  private final OrderGuard orderGuard;
   private final OrderMapper orderMapper;
+  private final OrderQueryUtils queryUtils;
+  private final ReceiptService receiptService;
 
   /**
    * Get order by ID
@@ -46,8 +52,12 @@ public class OrderQueryService {
    */
   public OrderInfo getOrder(UUID orderId) {
     log.debug("Getting order by ID: {}", orderId);
-    OrderEntity orderEntity = findOrderById(orderId);
-    return orderMapper.toOrderInfo(orderEntity);
+
+    // Step 1: Load entity
+    OrderEntity order = orderGuard.ensureExists(orderId);
+
+    // Step 2: Map to DTO and enrich with calculated fields
+    return enrichOrderInfo(order);
   }
 
   /**
@@ -58,32 +68,15 @@ public class OrderQueryService {
    */
   public OrderInfo getOrderByNumber(String orderNumber) {
     log.debug("Getting order by number: {}", orderNumber);
-    OrderEntity orderEntity = findOrderByNumber(orderNumber);
-    return orderMapper.toOrderInfo(orderEntity);
+
+    // Step 1: Load entity
+    OrderEntity order = orderGuard.ensureExistsByNumber(orderNumber);
+
+    // Step 2: Map to DTO and enrich with calculated fields
+    return enrichOrderInfo(order);
   }
 
   /** List orders with filters and pagination */
-  public Page<OrderInfo> listOrders(
-      UUID customerId,
-      OrderEntity.OrderStatus status,
-      UUID branchId,
-      Instant dateFrom,
-      Instant dateTo,
-      String search,
-      Pageable pageable) {
-
-    log.debug(
-        "Listing orders with filters - customer: {}, status: {}, branch: {}",
-        customerId,
-        status,
-        branchId);
-
-    var specification =
-        OrderSpecification.searchOrders(customerId, branchId, status, dateFrom, dateTo, search);
-    return orderRepository.findAll(specification, pageable).map(orderMapper::toOrderInfo);
-  }
-
-  /** List orders with page/size parameters and return OrderListResponse */
   public OrderListResponse listOrders(
       Integer page,
       Integer size,
@@ -102,178 +95,119 @@ public class OrderQueryService {
         sortBy,
         sortOrder);
 
-    // OpenAPI schema defines defaults: page=0, size=20, sortBy=createdAt, sortOrder=desc
-    Sort.Direction direction =
-        "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
-    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-
-    // Convert OrderStatus DTO to entity enum
-    OrderEntity.OrderStatus entityStatus = null;
-    if (status != null) {
-      entityStatus = OrderEntity.OrderStatus.valueOf(status.name());
-    }
-
-    // Get page of orders
-    Page<OrderInfo> ordersPage =
-        listOrders(customerId, entityStatus, branchId, dateFrom, dateTo, null, pageable);
-
-    // Convert to OrderListResponse
-    return createOrderListResponse(ordersPage);
+    Pageable pageable = queryUtils.buildPageable(page, size, sortBy, sortOrder);
+    String statusString = valueOf(status);
+    Specification<OrderEntity> spec =
+        OrderSpecification.searchOrders(customerId, branchId, statusString, dateFrom, dateTo, null);
+    return fetchToResponse(spec, pageable);
   }
 
-  /** Check if order exists by ID */
+  /** Get customer order history */
+  public OrderListResponse getCustomerOrderHistory(
+      UUID customerId, Integer page, Integer size, String sortBy, String sortOrder) {
+
+    log.debug("Getting order history for customer {} - page: {}, size: {}", customerId, page, size);
+
+    Pageable pageable = queryUtils.buildPageable(page, size, sortBy, sortOrder);
+    Specification<OrderEntity> spec =
+        OrderSpecification.searchOrders(customerId, null, null, null, null, null);
+    return fetchToResponse(spec, pageable);
+  }
+
+  /** Get orders due for completion */
+  public OrderListResponse getOrdersDueForCompletion(
+      Integer days, Integer page, Integer size, String sortBy, String sortOrder) {
+
+    log.debug(
+        "Getting orders due for completion in {} days - page: {}, size: {}", days, page, size);
+
+    Pageable pageable =
+        queryUtils.buildPageable(page, size, sortBy, sortOrder, "expectedCompletionDate");
+    Instant targetDate = queryUtils.calculateDueDate(days);
+    return fetchToResponse(OrderSpecification.isDueForCompletion(targetDate), pageable);
+  }
+
+  /** Get overdue orders */
+  public OrderListResponse getOverdueOrders(
+      Integer page, Integer size, String sortBy, String sortOrder) {
+
+    log.debug("Getting overdue orders - page: {}, size: {}", page, size);
+
+    Pageable pageable =
+        queryUtils.buildPageable(page, size, sortBy, sortOrder, "expectedCompletionDate");
+    return fetchToResponse(OrderSpecification.isOverdue(Instant.now()), pageable);
+  }
+
+  /** Get customer recent orders */
+  public List<OrderInfo> getCustomerRecentOrders(UUID customerId, int limit) {
+    log.debug("Getting {} recent orders for customer {}", limit, customerId);
+
+    // Step 1: Build pageable
+    Pageable pageable = queryUtils.buildPageable(0, limit, "createdAt", "desc");
+
+    // Step 2: Execute query
+    Page<OrderEntity> ordersPage =
+        orderRepository.findByCustomerEntityIdOrderByCreatedAtDesc(customerId, pageable);
+
+    // Step 3: Map to DTOs and enrich with calculated fields
+    return ordersPage.getContent().stream().map(this::enrichOrderInfo).toList();
+  }
+
+  /** Get order items */
+  public List<OrderItemInfo> getOrderItems(UUID orderId) {
+    log.debug("Getting order items for order {}", orderId);
+
+    // Step 1: Load order
+    OrderEntity order = orderGuard.ensureExists(orderId);
+
+    // Step 2: Map items
+    return order.getItems().stream().map(orderMapper::toOrderItemInfo).toList();
+  }
+
+  /** Get order payments */
+  public List<PaymentInfo> getOrderPayments(UUID orderId) {
+    log.debug("Getting payments for order {}", orderId);
+
+    // Step 1: Load order
+    OrderEntity order = orderGuard.ensureExists(orderId);
+
+    // Step 2: Map payments
+    return order.getPayments().stream().map(orderMapper::toPaymentInfo).toList();
+  }
+
+  /** Get orders by status and branch */
+  public List<OrderInfo> getOrdersByStatus(OrderStatus status, UUID branchId) {
+    log.debug("Getting orders with status {} for branch {}", status, branchId);
+
+    String statusString = valueOf(status);
+    Specification<OrderEntity> spec =
+        OrderSpecification.searchOrders(null, branchId, statusString, null, null, null);
+    Pageable pageable = queryUtils.buildPageable(0, Integer.MAX_VALUE, "createdAt", "desc");
+    return fetchToResponse(spec, pageable).getData();
+  }
+
+  /** Check if order exists */
   public boolean existsById(UUID orderId) {
     return orderRepository.existsById(orderId);
   }
 
-  /** Get customer order history with pagination */
-  public Page<OrderInfo> getCustomerOrderHistory(UUID customerId, Pageable pageable) {
-    log.debug("Getting order history for customer: {}", customerId);
-    return orderRepository
-        .findByCustomerEntityIdOrderByCreatedAtDesc(customerId, pageable)
-        .map(orderMapper::toOrderInfo);
-  }
-
-  /** Get orders due for completion within specified days */
-  public Page<OrderInfo> getOrdersDueForCompletion(int days, Pageable pageable) {
-    log.debug("Getting orders due for completion in {} days", days);
-    Instant targetDate = Instant.now().plusSeconds((long) days * 24 * 60 * 60);
-    return orderRepository
-        .findAll(OrderSpecification.isDueForCompletion(targetDate), pageable)
-        .map(orderMapper::toOrderInfo);
-  }
-
-  /** Get overdue orders */
-  public Page<OrderInfo> getOverdueOrders(Pageable pageable) {
-    log.debug("Getting overdue orders");
-    return orderRepository
-        .findAll(OrderSpecification.isOverdue(Instant.now()), pageable)
-        .map(orderMapper::toOrderInfo);
-  }
-
-  /** Get customer recent orders with limit */
-  public List<OrderInfo> getCustomerRecentOrders(UUID customerId, int limit) {
-    log.debug("Getting {} recent orders for customer {}", limit, customerId);
-
-    Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
-    List<OrderEntity> orderEntities =
-        orderRepository
-            .findByCustomerEntityIdOrderByCreatedAtDesc(customerId, pageable)
-            .getContent();
-
-    return orderMapper.toOrderInfoList(orderEntities);
-  }
-
-  /** Get order items for specific order */
-  public List<OrderItemInfo> getOrderItems(UUID orderId) {
-    log.debug("Getting order items for order {}", orderId);
-    OrderEntity orderEntity = findOrderById(orderId);
-    return orderMapper.toOrderItemInfoList(orderEntity.getItems());
-  }
-
-  /** Get payments for specific order */
-  public List<PaymentInfo> getOrderPayments(UUID orderId) {
-    log.debug("Getting payments for order {}", orderId);
-    OrderEntity orderEntity = findOrderById(orderId);
-    return orderMapper.toPaymentInfoList(orderEntity.getPayments());
-  }
-
-  /** Get orders by status and branch */
-  public List<OrderInfo> getOrdersByStatus(OrderEntity.OrderStatus status, UUID branchId) {
-    log.debug("Getting orders with status {} for branch {}", status, branchId);
-
-    var specification = OrderSpecification.searchOrders(null, branchId, status, null, null, null);
-    Pageable pageable =
-        PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "createdAt"));
-
-    List<OrderEntity> orderEntities = orderRepository.findAll(specification, pageable).getContent();
-    return orderMapper.toOrderInfoList(orderEntities);
-  }
-
-  /** Generate receipt data (read-only preparation) */
+  /** Get order receipt (placeholder) */
   public byte[] getOrderReceipt(UUID orderId) {
     log.debug("Preparing receipt for order {}", orderId);
-    OrderEntity orderEntity = findOrderById(orderId);
 
-    // TODO: Implement PDF generation service
-    log.info("Generating receipt for order {}", orderEntity.getOrderNumber());
-    return "PDF content placeholder".getBytes();
+    try {
+      // Delegate to dedicated receipt service (PDF generation implemented there)
+      var resource = receiptService.generateOrderReceipt(orderId, "uk");
+      return resource.getInputStream().readAllBytes();
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to generate receipt PDF", e);
+    }
   }
 
-  /** Get customer order history with page/size parameters */
-  public OrderListResponse getCustomerOrderHistory(
-      UUID customerId, Integer page, Integer size, String sortBy, String sortOrder) {
-    log.debug("Getting order history for customer {} - page: {}, size: {}", customerId, page, size);
-
-    // OpenAPI schema defines defaults: page=0, size=20, sortBy=createdAt, sortOrder=desc
-    Sort.Direction direction =
-        "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
-    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-
-    // Get orders
-    Page<OrderInfo> ordersPage = getCustomerOrderHistory(customerId, pageable);
-
-    // Convert to OrderListResponse
-    return createOrderListResponse(ordersPage);
-  }
-
-  /** Get orders due for completion with page/size parameters */
-  public OrderListResponse getOrdersDueForCompletion(
-      Integer days, Integer page, Integer size, String sortBy, String sortOrder) {
-    log.debug(
-        "Getting orders due for completion in {} days - page: {}, size: {}", days, page, size);
-
-    // OpenAPI schema defines defaults: page=0, size=20, sortOrder=desc
-    Sort.Direction direction =
-        "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
-    String sortField = sortBy != null ? sortBy : "expectedCompletionDate";
-    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
-
-    // Get orders
-    Page<OrderInfo> ordersPage = getOrdersDueForCompletion(days != null ? days : 7, pageable);
-
-    // Convert to OrderListResponse
-    return createOrderListResponse(ordersPage);
-  }
-
-  /** Get overdue orders with page/size parameters */
-  public OrderListResponse getOverdueOrders(
-      Integer page, Integer size, String sortBy, String sortOrder) {
-    log.debug("Getting overdue orders - page: {}, size: {}", page, size);
-
-    // OpenAPI schema defines defaults: page=0, size=20, sortOrder=desc
-    Sort.Direction direction =
-        "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
-    String sortField = sortBy != null ? sortBy : "expectedCompletionDate";
-    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
-
-    // Get orders
-    Page<OrderInfo> ordersPage = getOverdueOrders(pageable);
-
-    // Convert to OrderListResponse
-    return createOrderListResponse(ordersPage);
-  }
-
-  // Private helper methods from OrderFinder
-
-  /** Find order by ID with validation */
-  private OrderEntity findOrderById(UUID orderId) {
-    return orderRepository
-        .findById(orderId)
-        .orElseThrow(() -> new NotFoundException("Order not found: " + orderId));
-  }
-
-  /** Find order by order number with validation */
-  private OrderEntity findOrderByNumber(String orderNumber) {
-    return orderRepository
-        .findByOrderNumber(orderNumber)
-        .orElseThrow(() -> new NotFoundException("Order not found: " + orderNumber));
-  }
-
-  /** Convert Page<OrderInfo> to OrderListResponse */
-  private OrderListResponse createOrderListResponse(Page<OrderInfo> ordersPage) {
-    OrderListResponse response = new OrderListResponse();
-    response.setData(ordersPage.getContent());
+  /** Build order list response from page */
+  private OrderListResponse buildOrderListResponse(Page<OrderEntity> ordersPage) {
+    var response = new OrderListResponse();
+    response.setData(ordersPage.map(this::enrichOrderInfo).getContent());
     response.setTotalElements(ordersPage.getTotalElements());
     response.setTotalPages(ordersPage.getTotalPages());
     response.setSize(ordersPage.getSize());
@@ -283,5 +217,34 @@ public class OrderQueryService {
     response.setLast(ordersPage.isLast());
     response.setEmpty(ordersPage.isEmpty());
     return response;
+  }
+
+  private OrderListResponse fetchToResponse(
+      Specification<OrderEntity> specification, Pageable pageable) {
+    Page<OrderEntity> page = orderRepository.findAll(specification, pageable);
+    return buildOrderListResponse(page);
+  }
+
+  private String valueOf(OrderStatus status) {
+    return status != null ? status.getValue() : null;
+  }
+
+  /**
+   * Enrich OrderInfo with calculated fields
+   *
+   * @param order order entity
+   * @return enriched order info
+   */
+  private OrderInfo enrichOrderInfo(OrderEntity order) {
+    // Step 1: Map entity to DTO
+    OrderInfo orderInfo = orderMapper.toOrderInfo(order);
+
+    // Step 2: Calculate and set pricing fields
+    Integer paidAmount = queryUtils.calculatePaidAmount(order);
+    Integer balanceDue = queryUtils.calculateBalanceDue(order);
+    orderInfo.getPricing().setPaidAmount(paidAmount);
+    orderInfo.getPricing().setBalanceDue(balanceDue);
+
+    return orderInfo;
   }
 }

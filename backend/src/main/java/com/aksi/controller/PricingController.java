@@ -14,6 +14,7 @@ import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.api.pricing.dto.PriceModifierDto;
 import com.aksi.api.pricing.dto.PriceModifiersResponse;
 import com.aksi.api.pricing.dto.ServiceCategoryType;
+import com.aksi.api.pricing.dto.SortOrder;
 import com.aksi.service.pricing.PricingService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,13 +34,18 @@ public class PricingController implements PricingApi {
 
   @Override
   public ResponseEntity<PriceModifiersResponse> listPriceModifiers(
-      @Nullable ServiceCategoryType categoryCode, Boolean active) {
-    return ResponseEntity.ok(pricingService.listPriceModifiers(categoryCode, active));
+      @Nullable ServiceCategoryType categoryCode,
+      @Nullable String sortBy,
+      SortOrder sortOrder,
+      @Nullable Boolean active) {
+    return ResponseEntity.ok(
+        pricingService.listPriceModifiers(categoryCode, active, sortBy, sortOrder.getValue()));
   }
 
   @Override
-  public ResponseEntity<DiscountsResponse> listDiscounts(Boolean active) {
-    return ResponseEntity.ok(pricingService.listDiscounts(active));
+  public ResponseEntity<DiscountsResponse> listDiscounts(
+      @Nullable Boolean active, @Nullable String sortBy, SortOrder sortOrder) {
+    return ResponseEntity.ok(pricingService.listDiscounts(active, sortBy, sortOrder.getValue()));
   }
 
   // CRUD operations for PriceModifiers

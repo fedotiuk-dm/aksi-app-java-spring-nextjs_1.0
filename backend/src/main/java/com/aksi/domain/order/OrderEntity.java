@@ -12,8 +12,6 @@ import com.aksi.domain.user.UserEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
@@ -44,15 +42,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OrderEntity extends BaseEntity {
 
-  public enum OrderStatus {
-    PENDING,
-    ACCEPTED,
-    IN_PROGRESS,
-    READY,
-    COMPLETED,
-    CANCELLED
-  }
-
   @Column(name = "order_number", nullable = false, unique = true, length = 50)
   private String orderNumber;
 
@@ -67,9 +56,8 @@ public class OrderEntity extends BaseEntity {
   @Column(name = "unique_label", length = 100)
   private String uniqueLabel;
 
-  @Enumerated(EnumType.STRING)
   @Column(name = "status", nullable = false, length = 20)
-  private OrderStatus status = OrderStatus.PENDING;
+  private String status = "PENDING";
 
   @OneToMany(
       mappedBy = "orderEntity",
@@ -119,44 +107,4 @@ public class OrderEntity extends BaseEntity {
 
   @Column(name = "total_amount", nullable = false)
   private Integer totalAmount = 0;
-
-  // Business methods
-  public Integer getPaidAmount() {
-    return payments.stream().mapToInt(OrderPaymentEntity::getAmount).sum();
-  }
-
-  public Integer getBalanceDue() {
-    return totalAmount - getPaidAmount();
-  }
-
-  public void addItem(OrderItemEntity item) {
-    items.add(item);
-    item.setOrderEntity(this);
-  }
-
-  public void removeItem(OrderItemEntity item) {
-    items.remove(item);
-    item.setOrderEntity(null);
-  }
-
-  public void addPayment(OrderPaymentEntity payment) {
-    payments.add(payment);
-    payment.setOrderEntity(this);
-  }
-
-  public boolean isFullyPaid() {
-    return getBalanceDue() <= 0;
-  }
-
-  public boolean isCompleted() {
-    return status == OrderStatus.COMPLETED;
-  }
-
-  public boolean isCancelled() {
-    return status == OrderStatus.CANCELLED;
-  }
-
-  public boolean canBeModified() {
-    return status == OrderStatus.PENDING || status == OrderStatus.ACCEPTED;
-  }
 }

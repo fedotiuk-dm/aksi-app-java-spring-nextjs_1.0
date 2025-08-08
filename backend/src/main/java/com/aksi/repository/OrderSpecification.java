@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
+import com.aksi.api.order.dto.OrderStatus;
 import com.aksi.domain.order.OrderEntity;
 
 import jakarta.persistence.criteria.Join;
@@ -37,7 +38,7 @@ public class OrderSpecification {
   }
 
   /** Filter by order status */
-  public static Specification<OrderEntity> hasStatus(OrderEntity.OrderStatus status) {
+  public static Specification<OrderEntity> hasStatus(String status) {
     return (root, query, cb) -> {
       if (status == null) {
         return cb.conjunction();
@@ -92,7 +93,7 @@ public class OrderSpecification {
       return cb.and(
           cb.lessThanOrEqualTo(root.get("expectedCompletionDate"), effectiveDate),
           root.get("status")
-              .in(OrderEntity.OrderStatus.ACCEPTED, OrderEntity.OrderStatus.IN_PROGRESS));
+              .in(OrderStatus.ACCEPTED.getValue(), OrderStatus.IN_PROGRESS.getValue()));
     };
   }
 
@@ -103,7 +104,7 @@ public class OrderSpecification {
       return cb.and(
           cb.lessThan(root.get("expectedCompletionDate"), effectiveNow),
           root.get("status")
-              .in(OrderEntity.OrderStatus.ACCEPTED, OrderEntity.OrderStatus.IN_PROGRESS));
+              .in(OrderStatus.ACCEPTED.getValue(), OrderStatus.IN_PROGRESS.getValue()));
     };
   }
 
@@ -111,7 +112,7 @@ public class OrderSpecification {
   public static Specification<OrderEntity> searchOrders(
       UUID customerId,
       UUID branchId,
-      OrderEntity.OrderStatus status,
+      String status,
       Instant dateFrom,
       Instant dateTo,
       String search) {

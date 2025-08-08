@@ -1,14 +1,8 @@
 'use client';
 
 import React from 'react';
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  CircularProgress,
-  SelectChangeEvent,
-} from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem, CircularProgress } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import { useGetAllActiveBranches } from '@/shared/api/generated/branch';
 
 interface BranchSelectorProps {

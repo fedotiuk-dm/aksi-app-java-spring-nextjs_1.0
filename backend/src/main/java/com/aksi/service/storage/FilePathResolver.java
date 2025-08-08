@@ -77,6 +77,21 @@ public class FilePathResolver {
     return baseUrl + "/api/files/" + filePath;
   }
 
+  /**
+   * Try to extract relative storage path from a public URL
+   *
+   * @param url public URL (e.g. http://host/api/files/dir/file.jpg)
+   * @return relative path (e.g. dir/file.jpg) or null if not applicable
+   */
+  public String extractRelativePathFromUrl(String url) {
+    if (url == null) {
+      return null;
+    }
+    String marker = "/api/files/";
+    int idx = url.indexOf(marker);
+    return idx >= 0 ? url.substring(idx + marker.length()) : null;
+  }
+
   /** Check if file exists at given path */
   public boolean fileExistsAtPath(String filePath) {
     try {

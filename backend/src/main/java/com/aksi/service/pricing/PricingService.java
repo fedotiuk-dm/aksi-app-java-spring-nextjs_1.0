@@ -28,7 +28,8 @@ public interface PricingService {
    * @param active Filter by active status
    * @return Price modifiers response
    */
-  PriceModifiersResponse listPriceModifiers(ServiceCategoryType categoryCode, Boolean active);
+  PriceModifiersResponse listPriceModifiers(
+      ServiceCategoryType categoryCode, Boolean active, String sortBy, String sortOrder);
 
   /**
    * List available discounts
@@ -36,7 +37,7 @@ public interface PricingService {
    * @param active Filter by active status
    * @return Discounts response
    */
-  DiscountsResponse listDiscounts(Boolean active);
+  DiscountsResponse listDiscounts(Boolean active, String sortBy, String sortOrder);
 
   /**
    * Get modifiers applicable to specific category

@@ -2,8 +2,6 @@ package com.aksi.controller;
 
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -12,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aksi.api.customer.CustomerApi;
 import com.aksi.api.customer.dto.CreateCustomerRequest;
 import com.aksi.api.customer.dto.CustomerInfo;
-import com.aksi.api.customer.dto.CustomersResponse;
+import com.aksi.api.customer.dto.CustomerListResponse;
 import com.aksi.api.customer.dto.UpdateCustomerRequest;
 import com.aksi.service.customer.CustomerService;
 
@@ -45,24 +43,15 @@ public class CustomerController implements CustomerApi {
   }
 
   @Override
-  public ResponseEntity<CustomersResponse> listCustomers(
+  public ResponseEntity<CustomerListResponse> listCustomers(
       @Nullable String search,
       @Nullable String phone,
       @Nullable String email,
       @Nullable String discountCard,
       Integer offset,
       Integer limit) {
-    PageRequest pageRequest = PageRequest.of(offset / limit, limit);
-    Page<CustomerInfo> page =
-        customerService.searchCustomers(search, phone, email, discountCard, pageRequest);
-
-    CustomersResponse response = new CustomersResponse();
-    response.setCustomers(page.getContent());
-    response.setTotal((int) page.getTotalElements());
-    response.setOffset(offset);
-    response.setLimit(limit);
-
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(
+        customerService.listCustomers(search, phone, email, discountCard, offset, limit));
   }
 
   @Override

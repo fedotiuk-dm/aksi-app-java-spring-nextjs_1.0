@@ -614,9 +614,9 @@ export interface CustomerInfo {
   discountCardNumber?: string;
   /** Whether customer is active */
   active: boolean;
-  /** Registration date */
+  /** Registration date (UTC) */
   createdAt: string;
-  /** Last update timestamp */
+  /** Last update timestamp (UTC) */
   updatedAt?: string;
   /** Version for optimistic locking */
   version?: number;
@@ -891,9 +891,9 @@ export interface BranchInfo {
   description?: string;
   /** Sort order for display */
   sortOrder?: number;
-  /** Creation timestamp */
+  /** Creation timestamp (UTC) */
   createdAt?: string;
-  /** Last update timestamp */
+  /** Last update timestamp (UTC) */
   updatedAt?: string;
 }
 
@@ -1929,23 +1929,44 @@ export interface Base64FileResponse {
   fileSize: number;
 }
 
-export interface CustomersResponse {
-  customers: CustomerInfo[];
-  /** Total number of customers */
-  total: number;
-  /** Number of items skipped */
-  offset: number;
-  /** Number of items returned */
-  limit: number;
+export interface CustomerListResponse {
+  data: CustomerInfo[];
+  /** Total number of elements */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Page size */
+  size: number;
+  /** Page number (0-based) */
+  number: number;
+  /** Number of elements in current page */
+  numberOfElements: number;
+  /** Is first page */
+  first: boolean;
+  /** Is last page */
+  last: boolean;
+  /** Is empty */
+  empty: boolean;
 }
 
-export interface BranchesResponse {
-  /** List of branches */
-  branches: BranchInfo[];
-  /** Total number of items matching the filter */
-  totalItems: number;
-  /** Whether there are more items to load */
-  hasMore: boolean;
+export interface BranchListResponse {
+  data: BranchInfo[];
+  /** Total number of elements */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Page size */
+  size: number;
+  /** Page number (0-based) */
+  number: number;
+  /** Number of elements in current page */
+  numberOfElements: number;
+  /** Is first page */
+  first: boolean;
+  /** Is last page */
+  last: boolean;
+  /** Is empty */
+  empty: boolean;
 }
 
 export interface SessionDetail {
@@ -2149,7 +2170,7 @@ page?: number;
  */
 size?: number;
 /**
- * Sort field
+ * Field to sort by (domain-specific). If not provided, server default is used
  */
 sortBy?: string;
 /**
@@ -2171,7 +2192,7 @@ export type ListBranchesSortOrder = typeof ListBranchesSortOrder[keyof typeof Li
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ListBranchesSortOrder = {
-  asc: 'asc',
-  desc: 'desc',
+  ASC: 'ASC',
+  DESC: 'DESC',
 } as const;
 

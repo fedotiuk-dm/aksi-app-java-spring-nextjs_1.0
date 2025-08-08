@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.branch.dto.BranchInfo;
-import com.aksi.api.branch.dto.BranchesResponse;
+import com.aksi.api.branch.dto.BranchListResponse;
 import com.aksi.domain.branch.BranchEntity;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.BranchMapper;
@@ -59,7 +59,7 @@ public class BranchQueryService {
    * @param search Search by name or address
    * @return Branches response with pagination
    */
-  public BranchesResponse listBranches(
+  public BranchListResponse listBranches(
       Integer page, Integer size, String sortBy, String sortOrder, Boolean active, String search) {
     log.debug(
         "Listing branches - page: {}, size: {}, sortBy: {}, sortOrder: {}, active: {}, search: '{}'",
@@ -134,9 +134,14 @@ public class BranchQueryService {
    * @return Pageable object
    */
   private Pageable createPagination(Integer page, Integer size, String sortBy, String sortOrder) {
+    int safePage = page != null ? page : 0;
+    int safeSize = size != null ? size : 20;
+    String property = (sortBy == null || sortBy.isBlank()) ? "name" : sortBy;
     Sort.Direction direction =
-        "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
-    return PageRequest.of(page, size, Sort.by(direction, sortBy));
+        (sortOrder != null && "desc".equalsIgnoreCase(sortOrder))
+            ? Sort.Direction.DESC
+            : Sort.Direction.ASC;
+    return PageRequest.of(safePage, safeSize, Sort.by(direction, property));
   }
 
   /**
@@ -145,13 +150,19 @@ public class BranchQueryService {
    * @param page page of branch entities
    * @return branches response
    */
-  private BranchesResponse buildBranchesResponse(Page<BranchEntity> page) {
-    List<BranchInfo> branches = page.getContent().stream().map(branchMapper::toBranchInfo).toList();
+  private BranchListResponse buildBranchesResponse(Page<BranchEntity> page) {
+    List<BranchInfo> data = page.getContent().stream().map(branchMapper::toBranchInfo).toList();
 
-    BranchesResponse response = new BranchesResponse();
-    response.setBranches(branches);
-    response.setTotalItems((int) page.getTotalElements());
-    response.setHasMore(page.hasNext());
+    BranchListResponse response = new BranchListResponse();
+    response.setData(data);
+    response.setTotalElements(page.getTotalElements());
+    response.setTotalPages(page.getTotalPages());
+    response.setSize(page.getSize());
+    response.setNumber(page.getNumber());
+    response.setNumberOfElements(page.getNumberOfElements());
+    response.setFirst(page.isFirst());
+    response.setLast(page.isLast());
+    response.setEmpty(page.isEmpty());
 
     return response;
   }
