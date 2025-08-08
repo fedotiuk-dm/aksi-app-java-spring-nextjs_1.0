@@ -19,6 +19,7 @@ import com.aksi.api.pricing.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.domain.pricing.DiscountEntity;
 import com.aksi.domain.pricing.PriceModifierEntity;
+import com.aksi.exception.ConflictException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.PricingMapper;
 import com.aksi.repository.DiscountRepository;
@@ -67,10 +68,6 @@ public class PricingServiceImpl implements PricingService {
         CalculatedItemPrice calculatedItem =
             itemPriceCalculator.calculate(item, priceListItem, request.getGlobalModifiers());
         calculatedItems.add(calculatedItem);
-      } catch (NotFoundException e) {
-        log.warn(
-            "Error calculating price for item {}: {}", item.getPriceListItemId(), e.getMessage());
-        warnings.add("Unable to calculate price for item: " + e.getMessage());
       } catch (RuntimeException e) {
         log.warn(
             "Error calculating price for item {}: {}", item.getPriceListItemId(), e.getMessage());
@@ -177,14 +174,20 @@ public class PricingServiceImpl implements PricingService {
 
     // Check if modifier with same code already exists
     if (priceModifierRepository.existsByCode(priceModifierDto.getCode())) {
-      throw new IllegalArgumentException(
+      throw new ConflictException(
           "Price modifier with code '" + priceModifierDto.getCode() + "' already exists");
     }
 
     PriceModifierEntity entity = pricingMapper.toPriceModifierEntity(priceModifierDto);
-    PriceModifierEntity saved = priceModifierRepository.save(entity);
-
-    return pricingMapper.toPriceModifierDto(saved);
+    
+    try {
+      PriceModifierEntity saved = priceModifierRepository.save(entity);
+      return pricingMapper.toPriceModifierDto(saved);
+    } catch (org.springframework.dao.DataIntegrityViolationException e) {
+      log.error("Failed to create price modifier due to data integrity violation", e);
+      throw new ConflictException(
+          "Failed to create price modifier: " + e.getMostSpecificCause().getMessage(), e);
+    }
   }
 
   @Override
@@ -225,7 +228,7 @@ public class PricingServiceImpl implements PricingService {
 
     // Check if discount with same code already exists
     if (discountRepository.existsByCode(discountDto.getCode())) {
-      throw new IllegalArgumentException(
+      throw new ConflictException(
           "Discount with code '" + discountDto.getCode() + "' already exists");
     }
 

@@ -29,7 +29,6 @@ import com.aksi.exception.ConflictException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.exception.UnauthorizedException;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /** Global exception handler for REST API. */
@@ -95,7 +94,7 @@ public class GlobalExceptionHandler {
     log.warn("Method argument type mismatch: {}", e.getMessage());
 
     String message = e.getMessage();
-    if (message != null && message.contains("No enum constant")) {
+    if (message.contains("No enum constant")) {
       String parameterName = e.getName();
       Object invalidValue = e.getValue();
 
@@ -218,10 +217,7 @@ public class GlobalExceptionHandler {
     try {
       RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
       if (attrs instanceof ServletRequestAttributes sra) {
-        HttpServletRequest request = sra.getRequest();
-        if (request != null) {
-          return request.getServletPath();
-        }
+        return sra.getRequest().getServletPath();
       }
     } catch (IllegalStateException ignored) {
       // No request context available

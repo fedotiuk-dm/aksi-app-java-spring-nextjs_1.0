@@ -8,6 +8,7 @@ import com.aksi.api.cart.dto.CartItemInfo;
 import com.aksi.api.cart.dto.CartPricingInfo;
 import com.aksi.api.cart.dto.UpdateCartItemRequest;
 import com.aksi.api.cart.dto.UpdateCartModifiersRequest;
+import com.aksi.exception.BadRequestException;
 
 /** Service interface for managing shopping carts */
 public interface CartService {

@@ -73,7 +73,7 @@ public class AuthCommandService {
 
     } catch (BadCredentialsException | DisabledException e) {
       log.warn("Login failed for user {}: {}", loginRequest.getUsername(), e.getMessage());
-      throw new UnauthorizedException(e.getMessage());
+      throw new UnauthorizedException(e.getMessage(), e);
     }
   }
 

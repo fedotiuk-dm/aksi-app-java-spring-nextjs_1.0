@@ -95,7 +95,7 @@ components:
       description: Unique name field (must be unique within entity type)
       x-unique: true
       x-validation: "@UniqueName"
-    
+
     PhoneNumber:
       type: string
       pattern: '^\+?[0-9\s\-\(\)]+$'
@@ -103,14 +103,14 @@ components:
       maxLength: 20
       description: Phone number in international format
       example: "+380 (50) 123-45-67"
-    
+
     Email:
       type: string
       format: email
       maxLength: 255
       description: Email address
       example: "user@example.com"
-    
+
     # Centralized domain enums shared across APIs
     ServiceCategoryType:
       type: string
@@ -258,8 +258,8 @@ components:
     # Sorting
     SortOrder:
       type: string
-      enum: [asc, desc]
-      default: asc
+      enum: [ASC, DESC]
+      default: ASC
       description: Sort direction
 
     # Pagination (base) - use allOf in specific APIs to set data shape
