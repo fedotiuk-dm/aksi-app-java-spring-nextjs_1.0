@@ -17,20 +17,32 @@ export const getCustomerParams = zod.object({
   "customerId": zod.uuid().describe('Customer ID')
 })
 
+export const getCustomerResponsePhonePrimaryMin = 10;
+
+export const getCustomerResponsePhonePrimaryMax = 20;
+
+export const getCustomerResponsePhonePrimaryRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
+export const getCustomerResponseEmailMin = 0;
+
+export const getCustomerResponseEmailMax = 255;
+
+
 export const getCustomerResponse = zod.object({
   "id": zod.uuid().describe('Customer ID'),
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
-  "phonePrimary": zod.string().describe('Primary phone number'),
-  "email": zod.string().optional().describe('Email address'),
+  "phonePrimary": zod.string().min(getCustomerResponsePhonePrimaryMin).max(getCustomerResponsePhonePrimaryMax).regex(getCustomerResponsePhonePrimaryRegExp).describe('Primary phone number (must be unique for active customers)'),
+  "email": zod.string().min(getCustomerResponseEmailMin).max(getCustomerResponseEmailMax).optional().describe('Email address (must be unique for active customers)'),
   "address": zod.string().optional().describe('Address'),
   "contactPreferences": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional().describe('Preferred contact methods'),
   "infoSource": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional().describe('How customer learned about the service'),
   "infoSourceOther": zod.string().optional().describe('Other info source details'),
   "notes": zod.string().optional().describe('Internal notes about customer'),
-  "discountCardNumber": zod.string().optional().describe('Discount card number'),
+  "discountCardNumber": zod.string().optional().describe('Discount card number (unique)'),
   "active": zod.boolean().describe('Whether customer is active'),
-  "createdAt": zod.iso.datetime({}).describe('Registration date')
+  "createdAt": zod.iso.datetime({}).describe('Registration date'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp'),
+  "version": zod.number().optional().describe('Version for optimistic locking')
 })
 
 
@@ -49,6 +61,9 @@ export const updateCustomerBodyPhonePrimaryMin = 10;
 export const updateCustomerBodyPhonePrimaryMax = 20;
 
 export const updateCustomerBodyPhonePrimaryRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
+export const updateCustomerBodyEmailMin = 0;
+
+export const updateCustomerBodyEmailMax = 255;
 export const updateCustomerBodyAddressMin = 0;
 
 export const updateCustomerBodyAddressMax = 500;
@@ -66,31 +81,43 @@ export const updateCustomerBodyDiscountCardNumberMax = 20;
 export const updateCustomerBody = zod.object({
   "firstName": zod.string().min(1).max(updateCustomerBodyFirstNameMax).optional().describe('First name'),
   "lastName": zod.string().min(1).max(updateCustomerBodyLastNameMax).optional().describe('Last name'),
-  "phonePrimary": zod.string().min(updateCustomerBodyPhonePrimaryMin).max(updateCustomerBodyPhonePrimaryMax).regex(updateCustomerBodyPhonePrimaryRegExp).optional().describe('Primary phone number'),
-  "email": zod.string().optional().describe('Email address'),
+  "phonePrimary": zod.string().min(updateCustomerBodyPhonePrimaryMin).max(updateCustomerBodyPhonePrimaryMax).regex(updateCustomerBodyPhonePrimaryRegExp).optional().describe('Primary phone number (must be unique for active customers)'),
+  "email": zod.string().min(updateCustomerBodyEmailMin).max(updateCustomerBodyEmailMax).optional().describe('Email address (must be unique for active customers)'),
   "address": zod.string().min(updateCustomerBodyAddressMin).max(updateCustomerBodyAddressMax).optional().describe('Address'),
   "contactPreferences": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional().describe('Preferred contact methods'),
   "infoSource": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional().describe('How customer learned about the service'),
   "infoSourceOther": zod.string().min(updateCustomerBodyInfoSourceOtherMin).max(updateCustomerBodyInfoSourceOtherMax).optional().describe('Other info source details'),
   "notes": zod.string().min(updateCustomerBodyNotesMin).max(updateCustomerBodyNotesMax).optional().describe('Internal notes about customer'),
-  "discountCardNumber": zod.string().min(updateCustomerBodyDiscountCardNumberMin).max(updateCustomerBodyDiscountCardNumberMax).optional().describe('Discount card number'),
+  "discountCardNumber": zod.string().min(updateCustomerBodyDiscountCardNumberMin).max(updateCustomerBodyDiscountCardNumberMax).optional().describe('Discount card number (must be unique)'),
   "active": zod.boolean().optional().describe('Whether customer is active')
 })
+
+export const updateCustomerResponsePhonePrimaryMin = 10;
+
+export const updateCustomerResponsePhonePrimaryMax = 20;
+
+export const updateCustomerResponsePhonePrimaryRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
+export const updateCustomerResponseEmailMin = 0;
+
+export const updateCustomerResponseEmailMax = 255;
+
 
 export const updateCustomerResponse = zod.object({
   "id": zod.uuid().describe('Customer ID'),
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
-  "phonePrimary": zod.string().describe('Primary phone number'),
-  "email": zod.string().optional().describe('Email address'),
+  "phonePrimary": zod.string().min(updateCustomerResponsePhonePrimaryMin).max(updateCustomerResponsePhonePrimaryMax).regex(updateCustomerResponsePhonePrimaryRegExp).describe('Primary phone number (must be unique for active customers)'),
+  "email": zod.string().min(updateCustomerResponseEmailMin).max(updateCustomerResponseEmailMax).optional().describe('Email address (must be unique for active customers)'),
   "address": zod.string().optional().describe('Address'),
   "contactPreferences": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional().describe('Preferred contact methods'),
   "infoSource": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional().describe('How customer learned about the service'),
   "infoSourceOther": zod.string().optional().describe('Other info source details'),
   "notes": zod.string().optional().describe('Internal notes about customer'),
-  "discountCardNumber": zod.string().optional().describe('Discount card number'),
+  "discountCardNumber": zod.string().optional().describe('Discount card number (unique)'),
   "active": zod.boolean().describe('Whether customer is active'),
-  "createdAt": zod.iso.datetime({}).describe('Registration date')
+  "createdAt": zod.iso.datetime({}).describe('Registration date'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp'),
+  "version": zod.number().optional().describe('Version for optimistic locking')
 })
 
 
@@ -116,21 +143,33 @@ export const listCustomersQueryParams = zod.object({
   "limit": zod.number().min(1).max(listCustomersQueryLimitMax).default(listCustomersQueryLimitDefault).describe('Number of items to return')
 })
 
+export const listCustomersResponseCustomersItemPhonePrimaryMin = 10;
+
+export const listCustomersResponseCustomersItemPhonePrimaryMax = 20;
+
+export const listCustomersResponseCustomersItemPhonePrimaryRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
+export const listCustomersResponseCustomersItemEmailMin = 0;
+
+export const listCustomersResponseCustomersItemEmailMax = 255;
+
+
 export const listCustomersResponse = zod.object({
   "customers": zod.array(zod.object({
   "id": zod.uuid().describe('Customer ID'),
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
-  "phonePrimary": zod.string().describe('Primary phone number'),
-  "email": zod.string().optional().describe('Email address'),
+  "phonePrimary": zod.string().min(listCustomersResponseCustomersItemPhonePrimaryMin).max(listCustomersResponseCustomersItemPhonePrimaryMax).regex(listCustomersResponseCustomersItemPhonePrimaryRegExp).describe('Primary phone number (must be unique for active customers)'),
+  "email": zod.string().min(listCustomersResponseCustomersItemEmailMin).max(listCustomersResponseCustomersItemEmailMax).optional().describe('Email address (must be unique for active customers)'),
   "address": zod.string().optional().describe('Address'),
   "contactPreferences": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional().describe('Preferred contact methods'),
   "infoSource": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional().describe('How customer learned about the service'),
   "infoSourceOther": zod.string().optional().describe('Other info source details'),
   "notes": zod.string().optional().describe('Internal notes about customer'),
-  "discountCardNumber": zod.string().optional().describe('Discount card number'),
+  "discountCardNumber": zod.string().optional().describe('Discount card number (unique)'),
   "active": zod.boolean().describe('Whether customer is active'),
-  "createdAt": zod.iso.datetime({}).describe('Registration date')
+  "createdAt": zod.iso.datetime({}).describe('Registration date'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp'),
+  "version": zod.number().optional().describe('Version for optimistic locking')
 })),
   "total": zod.number().describe('Total number of customers'),
   "offset": zod.number().describe('Number of items skipped'),
@@ -149,6 +188,9 @@ export const createCustomerBodyPhonePrimaryMin = 10;
 export const createCustomerBodyPhonePrimaryMax = 20;
 
 export const createCustomerBodyPhonePrimaryRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
+export const createCustomerBodyEmailMin = 0;
+
+export const createCustomerBodyEmailMax = 255;
 export const createCustomerBodyAddressMin = 0;
 
 export const createCustomerBodyAddressMax = 500;
@@ -166,14 +208,14 @@ export const createCustomerBodyDiscountCardNumberMax = 20;
 export const createCustomerBody = zod.object({
   "firstName": zod.string().min(1).max(createCustomerBodyFirstNameMax).describe('First name'),
   "lastName": zod.string().min(1).max(createCustomerBodyLastNameMax).describe('Last name'),
-  "phonePrimary": zod.string().min(createCustomerBodyPhonePrimaryMin).max(createCustomerBodyPhonePrimaryMax).regex(createCustomerBodyPhonePrimaryRegExp).describe('Primary phone number'),
-  "email": zod.string().optional().describe('Email address'),
+  "phonePrimary": zod.string().min(createCustomerBodyPhonePrimaryMin).max(createCustomerBodyPhonePrimaryMax).regex(createCustomerBodyPhonePrimaryRegExp).describe('Primary phone number (must be unique for active customers)'),
+  "email": zod.string().min(createCustomerBodyEmailMin).max(createCustomerBodyEmailMax).optional().describe('Email address (must be unique for active customers)'),
   "address": zod.string().min(createCustomerBodyAddressMin).max(createCustomerBodyAddressMax).optional().describe('Address'),
   "contactPreferences": zod.array(zod.enum(['PHONE', 'SMS', 'VIBER'])).optional().describe('Preferred contact methods'),
   "infoSource": zod.enum(['INSTAGRAM', 'GOOGLE', 'RECOMMENDATION', 'OTHER']).optional().describe('How customer learned about the service'),
   "infoSourceOther": zod.string().min(createCustomerBodyInfoSourceOtherMin).max(createCustomerBodyInfoSourceOtherMax).optional().describe('Other info source details (required if infoSource is OTHER)'),
   "notes": zod.string().min(createCustomerBodyNotesMin).max(createCustomerBodyNotesMax).optional().describe('Internal notes about customer'),
-  "discountCardNumber": zod.string().min(createCustomerBodyDiscountCardNumberMin).max(createCustomerBodyDiscountCardNumberMax).optional().describe('Discount card number')
+  "discountCardNumber": zod.string().min(createCustomerBodyDiscountCardNumberMin).max(createCustomerBodyDiscountCardNumberMax).optional().describe('Discount card number (must be unique)')
 })
 
 

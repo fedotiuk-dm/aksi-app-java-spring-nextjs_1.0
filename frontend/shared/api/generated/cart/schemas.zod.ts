@@ -19,8 +19,8 @@ export const updateCartModifiersBodyDiscountPercentageMax = 100;
 
 
 export const updateCartModifiersBody = zod.object({
-  "urgencyType": zod.enum(['NORMAL', 'EXPRESS_48H', 'EXPRESS_24H']).optional().describe('Urgency type'),
-  "discountType": zod.enum(['NONE', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'OTHER']).optional().describe('Discount type'),
+  "urgencyType": zod.enum(['NORMAL', 'EXPRESS_48H', 'EXPRESS_24H']).optional(),
+  "discountType": zod.enum(['NONE', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'OTHER']).optional(),
   "discountPercentage": zod.number().min(updateCartModifiersBodyDiscountPercentageMin).max(updateCartModifiersBodyDiscountPercentageMax).optional().describe('Discount percentage (required for OTHER type)'),
   "expectedCompletionDate": zod.iso.datetime({}).optional().describe('Expected completion date')
 })
@@ -39,7 +39,7 @@ export const updateCartModifiersResponse = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.string(),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -48,13 +48,13 @@ export const updateCartModifiersResponse = zod.object({
   "material": zod.string().optional().describe('Material type'),
   "color": zod.string().optional().describe('Item color'),
   "filler": zod.string().optional().describe('Filler type (for padded items)'),
-  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional().describe('Filler condition'),
-  "wearLevel": zod.enum(['10', '30', '50', '75']).optional().describe('Wear level percentage')
+  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional(),
+  "wearLevel": zod.enum(['10', '30', '50', '75']).optional()
 }),
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type'),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -75,7 +75,8 @@ export const updateCartModifiersResponse = zod.object({
   "urgencyType": zod.enum(['NORMAL', 'EXPRESS_48H', 'EXPRESS_24H']).optional().describe('Urgency type'),
   "discountType": zod.enum(['NONE', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'OTHER']).optional().describe('Discount type'),
   "discountPercentage": zod.number().min(updateCartModifiersResponseGlobalModifiersDiscountPercentageMin).max(updateCartModifiersResponseGlobalModifiersDiscountPercentageMax).optional().describe('Discount percentage (for OTHER type)'),
-  "expectedCompletionDate": zod.iso.datetime({}).optional().describe('Expected completion date')
+  "expectedCompletionDate": zod.iso.datetime({}).optional().describe('Expected completion date'),
+  "expectedCompletionNote": zod.string().optional().describe('Optional note for expected completion (e.g., \"після 14:00\")')
 }).optional(),
   "pricing": zod.object({
   "itemsSubtotal": zod.number().describe('Sum of all items subtotals in kopiykas'),
@@ -98,17 +99,14 @@ export const updateCartItemParams = zod.object({
   "itemId": zod.uuid().describe('Cart item ID')
 })
 
-export const updateCartItemBodyQuantityMin = 0;
-
-
 export const updateCartItemBody = zod.object({
-  "quantity": zod.number().min(updateCartItemBodyQuantityMin).optional().describe('New quantity'),
+  "quantity": zod.number().min(1).optional().describe('New quantity in smallest unit (piece=1; kilogram=grams)'),
   "characteristics": zod.object({
   "material": zod.string().optional().describe('Material type'),
   "color": zod.string().optional().describe('Item color'),
   "filler": zod.string().optional().describe('Filler type (for padded items)'),
-  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional().describe('Filler condition'),
-  "wearLevel": zod.enum(['10', '30', '50', '75']).optional().describe('Wear level percentage')
+  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional(),
+  "wearLevel": zod.enum(['10', '30', '50', '75']).optional()
 }).optional(),
   "modifierCodes": zod.array(zod.string()).optional().describe('Updated modifier codes')
 })
@@ -119,7 +117,7 @@ export const updateCartItemResponse = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.string(),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -128,13 +126,13 @@ export const updateCartItemResponse = zod.object({
   "material": zod.string().optional().describe('Material type'),
   "color": zod.string().optional().describe('Item color'),
   "filler": zod.string().optional().describe('Filler type (for padded items)'),
-  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional().describe('Filler condition'),
-  "wearLevel": zod.enum(['10', '30', '50', '75']).optional().describe('Wear level percentage')
+  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional(),
+  "wearLevel": zod.enum(['10', '30', '50', '75']).optional()
 }),
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type'),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -166,25 +164,22 @@ export const removeCartItemParams = zod.object({
  * Add a new item to the shopping cart
  * @summary Add item to cart
  */
-export const addCartItemBodyQuantityMin = 0;
-
-
 export const addCartItemBody = zod.object({
   "priceListItemId": zod.uuid().describe('Price list item ID'),
-  "quantity": zod.number().min(addCartItemBodyQuantityMin).describe('Quantity'),
+  "quantity": zod.number().min(1).describe('Quantity in smallest unit (piece=1; kilogram=grams)'),
   "characteristics": zod.object({
   "material": zod.string().optional().describe('Material type'),
   "color": zod.string().optional().describe('Item color'),
   "filler": zod.string().optional().describe('Filler type (for padded items)'),
-  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional().describe('Filler condition'),
-  "wearLevel": zod.enum(['10', '30', '50', '75']).optional().describe('Wear level percentage')
+  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional(),
+  "wearLevel": zod.enum(['10', '30', '50', '75']).optional()
 }).optional(),
   "modifierCodes": zod.array(zod.string()).optional().describe('Modifier codes to apply')
 })
 
 
 /**
- * Recalculate all prices in the cart
+ * Recalculate all prices in the active customer's cart. Does not create a cart; returns 404 if no active cart exists for the session.
  * @summary Calculate cart totals
  */
 export const calculateCartResponse = zod.object({
@@ -197,7 +192,16 @@ export const calculateCartResponse = zod.object({
 
 
 /**
- * Get the current user's shopping cart with all items and calculations
+ * Binds subsequent cart operations to the selected customer in this session
+ * @summary Activate customer for cart in current session
+ */
+export const activateCustomerForCartBody = zod.object({
+  "customerId": zod.uuid().describe('Customer ID to activate')
+})
+
+
+/**
+ * Get or create (getOrCreate) the active customer's shopping cart for this session
  * @summary Get current cart
  */
 export const getCartResponseGlobalModifiersDiscountPercentageMin = 0;
@@ -214,7 +218,7 @@ export const getCartResponse = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.string(),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -223,13 +227,13 @@ export const getCartResponse = zod.object({
   "material": zod.string().optional().describe('Material type'),
   "color": zod.string().optional().describe('Item color'),
   "filler": zod.string().optional().describe('Filler type (for padded items)'),
-  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional().describe('Filler condition'),
-  "wearLevel": zod.enum(['10', '30', '50', '75']).optional().describe('Wear level percentage')
+  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional(),
+  "wearLevel": zod.enum(['10', '30', '50', '75']).optional()
 }),
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type'),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -250,7 +254,8 @@ export const getCartResponse = zod.object({
   "urgencyType": zod.enum(['NORMAL', 'EXPRESS_48H', 'EXPRESS_24H']).optional().describe('Urgency type'),
   "discountType": zod.enum(['NONE', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'OTHER']).optional().describe('Discount type'),
   "discountPercentage": zod.number().min(getCartResponseGlobalModifiersDiscountPercentageMin).max(getCartResponseGlobalModifiersDiscountPercentageMax).optional().describe('Discount percentage (for OTHER type)'),
-  "expectedCompletionDate": zod.iso.datetime({}).optional().describe('Expected completion date')
+  "expectedCompletionDate": zod.iso.datetime({}).optional().describe('Expected completion date'),
+  "expectedCompletionNote": zod.string().optional().describe('Optional note for expected completion (e.g., \"після 14:00\")')
 }).optional(),
   "pricing": zod.object({
   "itemsSubtotal": zod.number().describe('Sum of all items subtotals in kopiykas'),

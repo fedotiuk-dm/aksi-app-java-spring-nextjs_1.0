@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -283,8 +284,9 @@ public class SecurityEventAuditService {
 
       blockedIp.setLastAttemptAt(Instant.now()); // Simplified
       blockedIp.setBlockedUntil(lockoutExpiration);
-      blockedIp.setLocation("Kiev, Ukraine"); // Would use IP geolocation service
-      blockedIp.setLastUsername("unknown"); // Would be stored in real implementation
+      blockedIp.setLocation(JsonNullable.of("Kiev, Ukraine")); // Would use IP geolocation service
+      blockedIp.setLastUsername(
+          JsonNullable.of("unknown")); // Would be stored in real implementation
 
       return blockedIp;
     } catch (Exception e) {
@@ -299,10 +301,10 @@ public class SecurityEventAuditService {
     attempt.setTimestamp(Instant.now());
     attempt.setUsername(username);
     attempt.setIpAddress(ipAddress);
-    attempt.setUserAgent(userAgent);
-    attempt.setLocation("Kiev, Ukraine"); // Would use IP geolocation service
+    attempt.setUserAgent(JsonNullable.of(userAgent));
+    attempt.setLocation(JsonNullable.of("Kiev, Ukraine")); // Would use IP geolocation service
     attempt.setSuccess(success);
-    attempt.setFailureReason(failureReason);
+    attempt.setFailureReason(JsonNullable.of(failureReason));
 
     return attempt;
   }

@@ -5,13 +5,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /** Exception thrown when business validation rules are violated. Returns HTTP 400 Bad Request. */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class BusinessValidationException extends RuntimeException {
+public class BadRequestException extends RuntimeException {
 
-  public BusinessValidationException(String message) {
+  public BadRequestException(String message) {
     super(message);
   }
 
-  public BusinessValidationException(String message, Throwable cause) {
+  public BadRequestException(String message, Throwable cause) {
     super(message, cause);
   }
 }

@@ -1,4 +1,4 @@
-openapi: 3.1.1
+openapi: 3.0.4
 info:
   title: Auth API
   description: Authentication API for dry cleaning management system operators
@@ -30,9 +30,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
       responses:
-        '200':
+        "200":
           description: Successful login
           headers:
             Set-Cookie:
@@ -46,14 +46,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-  
+                $ref: "#/components/schemas/LoginResponse"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "429":
+          $ref: "../openapi/common.yaml#/components/responses/TooManyRequests"
+
   /api/auth/logout:
     post:
       operationId: logout
@@ -64,16 +64,16 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Successful logout
           headers:
             Set-Cookie:
               description: Clear session cookie (e.g., SESSION=; Path=/; Max-Age=0)
               schema:
                 type: string
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+
   /api/auth/session:
     get:
       operationId: getCurrentSession
@@ -84,15 +84,15 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Session information
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SessionInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    
+                $ref: "#/components/schemas/SessionInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+
     delete:
       operationId: invalidateAllSessions
       summary: Terminate all sessions for user
@@ -110,14 +110,14 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: All sessions terminated
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/auth/sessions:
     get:
@@ -137,19 +137,19 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: List of user sessions
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserSessionsResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    
+                $ref: "#/components/schemas/UserSessionsResponse"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+
     delete:
       operationId: terminateOtherSessions
       summary: Terminate all other sessions
@@ -159,14 +159,14 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Other sessions terminated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SessionTerminationResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/SessionTerminationResponse"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
   /api/auth/sessions/{sessionId}:
     parameters:
@@ -176,7 +176,7 @@ paths:
         description: Session ID to terminate
         schema:
           type: string
-    
+
     delete:
       operationId: terminateSession
       summary: Terminate specific session
@@ -186,14 +186,14 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Session terminated successfully
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/auth/security/attempts:
     get:
@@ -205,16 +205,16 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Security attempt statistics
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SecurityAttemptsResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/SecurityAttemptsResponse"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
 
   /api/auth/security/unlock/{username}:
     parameters:
@@ -224,7 +224,7 @@ paths:
         description: Username to unlock
         schema:
           type: string
-    
+
     post:
       operationId: unlockUser
       summary: Unlock blocked user
@@ -234,14 +234,14 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: User unlocked successfully
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/auth/security/unlock-ip/{ipAddress}:
     post:
@@ -259,14 +259,14 @@ paths:
           description: IP address to unlock
           schema:
             type: string
-            example: '192.168.1.100'
+            example: "192.168.1.100"
       responses:
-        '200':
+        "200":
           description: IP address unlocked successfully
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
 
   /api/auth/security/policy:
     get:
@@ -278,59 +278,19 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Current security policy
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SecurityPolicyResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/SecurityPolicyResponse"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
 components:
-  responses:
-    BadRequest:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    Unauthorized:
-      description: Unauthorized access
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    Forbidden:
-      description: Forbidden access
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    TooManyRequests:
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-
   securitySchemes:
     cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session cookie for authentication
-
+      $ref: "../openapi/common.yaml#/components/securitySchemes/cookieAuth"
   schemas:
     LoginRequest:
       type: object
@@ -342,7 +302,7 @@ components:
           type: string
           minLength: 3
           maxLength: 50
-          pattern: '^[a-zA-Z0-9_]+$'
+          pattern: "^[a-zA-Z0-9_]+$"
           description: Operator username
           example: operator1
         password:
@@ -358,11 +318,12 @@ components:
           default: false
           description: Remember session for 30 days
         branchId:
-          type: ['string', 'null']
+          type: string
           format: uuid
+          nullable: true
           description: Branch ID for login (optional, can be selected later)
-          example: '550e8400-e29b-41d4-a716-446655440000'
-    
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
     LoginResponse:
       type: object
       required:
@@ -377,7 +338,7 @@ components:
           type: string
           format: uuid
           description: User ID
-          example: '660e8400-e29b-41d4-a716-446655440001'
+          example: "660e8400-e29b-41d4-a716-446655440001"
         username:
           type: string
           description: Username
@@ -394,20 +355,22 @@ components:
           type: array
           minItems: 1
           items:
-            type: string
+            $ref: "../openapi/common.yaml#/components/schemas/UserRole"
           description: User roles
         permissions:
           type: array
           items:
             type: string
           description: User permissions
-          example: ['CREATE_ORDER', 'VIEW_CUSTOMERS', 'EDIT_ORDER']
+          example: ["CREATE_ORDER", "VIEW_CUSTOMERS", "EDIT_ORDER"]
         branchId:
-          type: ['string', 'null']
+          type: string
           format: uuid
+          nullable: true
           description: Current branch ID
         branchName:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           description: Current branch name
           example: Main Street Branch
         requiresBranchSelection:
@@ -427,7 +390,7 @@ components:
           nullable: true
           format: date-time
           description: When account lockout expires (if blocked)
-    
+
     SessionInfo:
       type: object
       required:
@@ -440,7 +403,7 @@ components:
         sessionId:
           type: string
           description: Session ID
-          example: 'KJ3h4k2j3h4k23j4h23k4j'
+          example: "KJ3h4k2j3h4k23j4h23k4j"
         userId:
           type: string
           format: uuid
@@ -451,13 +414,15 @@ components:
         roles:
           type: array
           items:
-            type: string
+            $ref: "../openapi/common.yaml#/components/schemas/UserRole"
         branchId:
-          type: ['string', 'null']
+          type: string
           format: uuid
+          nullable: true
           description: Current branch ID
         branchName:
-          type: ['string', 'null']
+          type: string
+          nullable: true
           description: Current branch name
         createdAt:
           type: string
@@ -474,61 +439,13 @@ components:
         ipAddress:
           type: string
           description: IP address
-          example: '192.168.1.1'
+          example: "192.168.1.1"
         userAgent:
           type: string
           description: Browser user agent
-    
+
     # Error schemas
-    ErrorDetail:
-      type: object
-      required:
-        - field
-        - message
-      properties:
-        field:
-          type: string
-          description: Field with error
-          example: username
-        message:
-          type: string
-          description: Field error message
-          example: Invalid username format
-    
-    ErrorResponse:
-      type: object
-      required:
-        - timestamp
-        - status
-        - error
-        - message
-        - path
-      properties:
-        timestamp:
-          type: string
-          format: date-time
-          description: Error timestamp
-        status:
-          type: integer
-          description: HTTP status code
-          example: 400
-        error:
-          type: string
-          description: Error name
-          example: Bad Request
-        message:
-          type: string
-          description: Error message
-          example: Validation failed
-        path:
-          type: string
-          description: Request path
-          example: /api/auth/login
-        errors:
-          type: ['array', 'null']
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-    
+
     # Session Management schemas
     UserSessionsResponse:
       type: object
@@ -540,7 +457,7 @@ components:
         sessions:
           type: array
           items:
-            $ref: '#/components/schemas/SessionDetail'
+            $ref: "#/components/schemas/SessionDetail"
           description: List of user sessions
         totalCount:
           type: integer
@@ -549,8 +466,8 @@ components:
         currentSessionId:
           type: string
           description: Current session ID
-          example: 'KJ3h4k2j3h4k23j4h23k4j'
-    
+          example: "KJ3h4k2j3h4k23j4h23k4j"
+
     SessionDetail:
       type: object
       required:
@@ -564,7 +481,7 @@ components:
         sessionId:
           type: string
           description: Session ID
-          example: 'KJ3h4k2j3h4k23j4h23k4j'
+          example: "KJ3h4k2j3h4k23j4h23k4j"
         createdAt:
           type: string
           format: date-time
@@ -580,26 +497,26 @@ components:
         ipAddress:
           type: string
           description: IP address
-          example: '192.168.1.1'
+          example: "192.168.1.1"
         userAgent:
           type: string
           description: Browser user agent
-          example: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          example: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         location:
           type: string
           nullable: true
           description: Approximate location based on IP
-          example: 'Kiev, Ukraine'
+          example: "Kiev, Ukraine"
         deviceType:
           type: string
           nullable: true
           description: Device type (mobile, tablet, desktop)
-          example: 'desktop'
+          example: "desktop"
         isCurrentSession:
           type: boolean
           description: Is this the current session
           example: true
-    
+
     SessionTerminationResponse:
       type: object
       required:
@@ -613,8 +530,8 @@ components:
         message:
           type: string
           description: Success message
-          example: 'Successfully terminated 2 other sessions'
-    
+          example: "Successfully terminated 2 other sessions"
+
     # Security Management schemas
     SecurityAttemptsResponse:
       type: object
@@ -625,24 +542,24 @@ components:
         - blockedIps
       properties:
         overview:
-          $ref: '#/components/schemas/SecurityOverview'
+          $ref: "#/components/schemas/SecurityOverview"
         recentAttempts:
           type: array
           items:
-            $ref: '#/components/schemas/LoginAttempt'
+            $ref: "#/components/schemas/LoginAttempt"
           maxItems: 50
           description: Recent login attempts (last 50)
         blockedUsers:
           type: array
           items:
-            $ref: '#/components/schemas/BlockedUser'
+            $ref: "#/components/schemas/BlockedUser"
           description: Currently blocked users
         blockedIps:
           type: array
           items:
-            $ref: '#/components/schemas/BlockedIp'
+            $ref: "#/components/schemas/BlockedIp"
           description: Currently blocked IP addresses
-    
+
     SecurityOverview:
       type: object
       required:
@@ -672,7 +589,7 @@ components:
           format: double
           description: Average failed attempts per hour
           example: 6.2
-    
+
     LoginAttempt:
       type: object
       required:
@@ -688,11 +605,11 @@ components:
         username:
           type: string
           description: Username attempted
-          example: 'operator1'
+          example: "operator1"
         ipAddress:
           type: string
           description: IP address
-          example: '192.168.1.1'
+          example: "192.168.1.1"
         userAgent:
           type: string
           nullable: true
@@ -701,7 +618,7 @@ components:
           type: string
           nullable: true
           description: Approximate location
-          example: 'Kiev, Ukraine'
+          example: "Kiev, Ukraine"
         success:
           type: boolean
           description: Whether attempt was successful
@@ -709,8 +626,8 @@ components:
           type: string
           nullable: true
           description: Reason for failure
-          example: 'Invalid password'
-    
+          example: "Invalid password"
+
     BlockedUser:
       type: object
       required:
@@ -722,7 +639,7 @@ components:
         username:
           type: string
           description: Blocked username
-          example: 'operator1'
+          example: "operator1"
         failedAttempts:
           type: integer
           description: Number of failed attempts
@@ -738,8 +655,8 @@ components:
         lastAttemptIp:
           type: string
           description: IP of last attempt
-          example: '192.168.1.1'
-    
+          example: "192.168.1.1"
+
     BlockedIp:
       type: object
       required:
@@ -751,7 +668,7 @@ components:
         ipAddress:
           type: string
           description: Blocked IP address
-          example: '192.168.1.1'
+          example: "192.168.1.1"
         failedAttempts:
           type: integer
           description: Number of failed attempts
@@ -768,13 +685,13 @@ components:
           type: string
           nullable: true
           description: Approximate location
-          example: 'Kiev, Ukraine'
+          example: "Kiev, Ukraine"
         lastUsername:
           type: string
           nullable: true
           description: Last username attempted from this IP
-          example: 'operator1'
-    
+          example: "operator1"
+
     SecurityPolicyResponse:
       type: object
       required:
@@ -783,12 +700,12 @@ components:
         - sessionPolicy
       properties:
         rateLimiting:
-          $ref: '#/components/schemas/RateLimitingPolicy'
+          $ref: "#/components/schemas/RateLimitingPolicy"
         passwordPolicy:
-          $ref: '#/components/schemas/PasswordPolicyInfo'
+          $ref: "#/components/schemas/PasswordPolicyInfo"
         sessionPolicy:
-          $ref: '#/components/schemas/SessionPolicyInfo'
-    
+          $ref: "#/components/schemas/SessionPolicyInfo"
+
     RateLimitingPolicy:
       type: object
       required:
@@ -813,7 +730,7 @@ components:
           type: boolean
           description: Is rate limiting enabled
           example: true
-    
+
     PasswordPolicyInfo:
       type: object
       required:
@@ -846,8 +763,8 @@ components:
         allowedSpecialChars:
           type: string
           description: Allowed special characters
-          example: '@$!%*?&'
-    
+          example: "@$!%*?&"
+
     SessionPolicyInfo:
       type: object
       required:

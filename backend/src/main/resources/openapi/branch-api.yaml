@@ -1,4 +1,4 @@
-openapi: 3.1.1
+openapi: 3.0.4
 info:
   title: Branch API
   description: Branch management API for dry cleaning locations
@@ -28,10 +28,10 @@ paths:
       security:
         - cookieAuth: []
       parameters:
-        - $ref: '#/components/parameters/PageNumber'
-        - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/SortBy'
-        - $ref: '#/components/parameters/SortOrder'
+        - $ref: "../openapi/common.yaml#/components/parameters/PageNumber"
+        - $ref: "../openapi/common.yaml#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/SortBy"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
         - name: active
           in: query
           description: Filter by active status
@@ -46,15 +46,15 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: List of branches
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BranchesResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    
+                $ref: "#/components/schemas/BranchesResponse"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+
     post:
       operationId: createBranch
       summary: Create new branch
@@ -68,20 +68,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateBranchRequest'
+              $ref: "#/components/schemas/CreateBranchRequest"
       responses:
-        '201':
+        "201":
           description: Branch created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BranchInfo'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/BranchInfo"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "409":
+          $ref: "../openapi/common.yaml#/components/responses/Conflict"
 
   /api/branches/active:
     get:
@@ -93,16 +95,16 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: List of active branches
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BranchInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                  $ref: "#/components/schemas/BranchInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
   /api/branches/{branchId}:
     parameters:
@@ -113,7 +115,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     get:
       operationId: getBranchById
       summary: Get branch details
@@ -123,17 +125,17 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Branch details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BranchInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    
+                $ref: "#/components/schemas/BranchInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+
     put:
       operationId: updateBranch
       summary: Update branch
@@ -147,23 +149,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateBranchRequest'
+              $ref: "#/components/schemas/UpdateBranchRequest"
       responses:
-        '200':
+        "200":
           description: Branch updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BranchInfo'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    
+                $ref: "#/components/schemas/BranchInfo"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "../openapi/common.yaml#/components/responses/Conflict"
+
     delete:
       operationId: deleteBranch
       summary: Delete branch
@@ -173,14 +177,14 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '204':
+        "204":
           description: Branch deleted successfully
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/branches/{branchId}/activate:
     parameters:
@@ -191,7 +195,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     post:
       operationId: activateBranch
       summary: Activate branch
@@ -201,24 +205,20 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Branch activated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BranchInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          description: Conflict - branch is already active
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/BranchInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "../openapi/common.yaml#/components/responses/Conflict"
 
   /api/branches/{branchId}/deactivate:
     parameters:
@@ -229,7 +229,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     post:
       operationId: deactivateBranch
       summary: Deactivate branch
@@ -239,46 +239,23 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Branch deactivated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BranchInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          description: Conflict - branch is already inactive
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/BranchInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "../openapi/common.yaml#/components/responses/Conflict"
 
 components:
   parameters:
-    PageNumber:
-      name: page
-      in: query
-      description: Page number (0-based)
-      schema:
-        type: integer
-        minimum: 0
-        default: 0
-    
-    PageSize:
-      name: size
-      in: query
-      description: Page size (number of items per page)
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 20
-    
     SortBy:
       name: sortBy
       in: query
@@ -290,46 +267,8 @@ components:
           - name
           - createdAt
           - sortOrder
-    
-    SortOrder:
-      name: sortOrder
-      in: query
-      description: Sort direction
-      schema:
-        type: string
-        default: asc
-        enum:
-          - asc
-          - desc
 
-  responses:
-    BadRequest:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    Unauthorized:
-      description: Unauthorized access
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    Forbidden:
-      description: Forbidden access
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
+  # Use common responses from common.yaml instead of duplicating
 
   schemas:
     BranchInfo:
@@ -346,17 +285,19 @@ components:
           format: uuid
           description: Branch ID
         name:
-          type: string
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/UniqueName"
           description: Branch name
         address:
           type: string
           description: Branch address
         phone:
-          type: string
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/PhoneNumber"
           description: Branch phone number
         email:
-          type: string
-          format: email
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/Email"
           description: Branch email
         workingHours:
           type: string
@@ -371,6 +312,14 @@ components:
           type: integer
           description: Sort order for display
           default: 0
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
 
     CreateBranchRequest:
       type: object
@@ -380,9 +329,8 @@ components:
         - phone
       properties:
         name:
-          type: string
-          minLength: 1
-          maxLength: 255
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/UniqueName"
           description: Branch name
         address:
           type: string
@@ -390,14 +338,12 @@ components:
           maxLength: 500
           description: Branch address
         phone:
-          type: string
-          minLength: 10
-          maxLength: 20
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/PhoneNumber"
           description: Branch phone number
         email:
-          type: string
-          format: email
-          maxLength: 255
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/Email"
           description: Branch email
         workingHours:
           type: string
@@ -420,9 +366,8 @@ components:
       type: object
       properties:
         name:
-          type: string
-          minLength: 1
-          maxLength: 255
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/UniqueName"
           description: Branch name
         address:
           type: string
@@ -430,14 +375,12 @@ components:
           maxLength: 500
           description: Branch address
         phone:
-          type: string
-          minLength: 10
-          maxLength: 20
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/PhoneNumber"
           description: Branch phone number
         email:
-          type: string
-          format: email
-          maxLength: 255
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/Email"
           description: Branch email
         workingHours:
           type: string
@@ -464,7 +407,7 @@ components:
         branches:
           type: array
           items:
-            $ref: '#/components/schemas/BranchInfo'
+            $ref: "#/components/schemas/BranchInfo"
           description: List of branches
         totalItems:
           type: integer
@@ -473,31 +416,8 @@ components:
           type: boolean
           description: Whether there are more items to load
 
-    ErrorResponse:
-      type: object
-      required:
-        - error
-        - message
-        - timestamp
-      properties:
-        error:
-          type: string
-          description: Error code
-        message:
-          type: string
-          description: Error message
-        timestamp:
-          type: string
-          format: date-time
-          description: Error timestamp
-        details:
-          type: object
-          additionalProperties: true
-          description: Additional error details
+    # ErrorResponse moved to common.yaml
 
   securitySchemes:
     cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session-based authentication using httpOnly cookies
+      $ref: "../openapi/common.yaml#/components/securitySchemes/cookieAuth"

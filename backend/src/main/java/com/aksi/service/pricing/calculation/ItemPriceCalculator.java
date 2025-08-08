@@ -7,9 +7,13 @@ import org.springframework.stereotype.Component;
 
 import com.aksi.api.pricing.dto.AppliedModifier;
 import com.aksi.api.pricing.dto.CalculatedItemPrice;
+import com.aksi.api.pricing.dto.DiscountType;
 import com.aksi.api.pricing.dto.GlobalPriceModifiers;
 import com.aksi.api.pricing.dto.ItemPriceCalculation;
+import com.aksi.api.pricing.dto.ModifierType;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
+import com.aksi.api.pricing.dto.ServiceCategoryType;
+import com.aksi.api.pricing.dto.UrgencyType;
 import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.service.pricing.rules.PricingRulesService;
@@ -42,10 +46,10 @@ public class ItemPriceCalculator {
     log.debug("Calculating price for item: {}", priceListItem.getName());
 
     // Step 1: Determine base price based on characteristics
+    var characteristics = item.getCharacteristics();
     int basePrice =
         pricingRulesService.determineBasePrice(
-            priceListItem,
-            item.getCharacteristics() != null ? item.getCharacteristics().getColor() : null);
+            priceListItem, characteristics != null ? characteristics.getColor() : null);
 
     int baseAmount = basePrice * item.getQuantity();
 
@@ -126,7 +130,8 @@ public class ItemPriceCalculator {
     CalculatedItemPrice result = new CalculatedItemPrice();
     result.setPriceListItemId(item.getPriceListItemId());
     result.setItemName(priceListItem.getName());
-    result.setCategoryCode(priceListItem.getCategoryCode().getValue());
+    result.setCategoryCode(
+        ServiceCategoryType.fromValue(priceListItem.getCategoryCode().getValue()));
     result.setQuantity(item.getQuantity());
     result.setBasePrice(basePrice);
     result.setCalculations(calculation);
@@ -149,20 +154,19 @@ public class ItemPriceCalculator {
     AppliedModifier applied = new AppliedModifier();
     applied.setCode(modifier.getCode());
     applied.setName(modifier.getName());
-    applied.setType(AppliedModifier.TypeEnum.fromValue(modifier.getType().name()));
+    applied.setType(modifier.getType());
     applied.setValue(modifier.getValue());
     applied.setAmount(amount);
 
     return applied;
   }
 
-  private AppliedModifier createUrgencyModifier(
-      GlobalPriceModifiers.UrgencyTypeEnum urgencyType, int amount) {
+  private AppliedModifier createUrgencyModifier(UrgencyType urgencyType, int amount) {
 
     AppliedModifier modifier = new AppliedModifier();
     modifier.setCode(urgencyType.getValue());
     modifier.setName("Термінове виконання: " + urgencyType.getValue());
-    modifier.setType(AppliedModifier.TypeEnum.PERCENTAGE);
+    modifier.setType(ModifierType.PERCENTAGE);
     modifier.setValue(priceCalculationService.getUrgencyPercentage(urgencyType));
     modifier.setAmount(amount);
 
@@ -170,12 +174,12 @@ public class ItemPriceCalculator {
   }
 
   private AppliedModifier createDiscountModifier(
-      GlobalPriceModifiers.DiscountTypeEnum discountType, Integer customPercentage, int amount) {
+      DiscountType discountType, Integer customPercentage, int amount) {
 
     AppliedModifier modifier = new AppliedModifier();
     modifier.setCode(discountType.getValue());
     modifier.setName("Знижка: " + discountType.getValue());
-    modifier.setType(AppliedModifier.TypeEnum.PERCENTAGE);
+    modifier.setType(ModifierType.PERCENTAGE);
     modifier.setValue(
         priceCalculationService.getDiscountPercentage(discountType, customPercentage));
     modifier.setAmount(amount);

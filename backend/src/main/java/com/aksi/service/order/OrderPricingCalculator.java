@@ -7,10 +7,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.aksi.api.pricing.dto.DiscountType;
 import com.aksi.api.pricing.dto.GlobalPriceModifiers;
+import com.aksi.api.pricing.dto.ItemCharacteristics;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
+import com.aksi.api.pricing.dto.UrgencyType;
+import com.aksi.api.pricing.dto.WearLevel;
 import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
 import com.aksi.domain.cart.CartItemModifierEntity;
@@ -111,9 +115,8 @@ public class OrderPricingCalculator {
    * @param cartItem cart item with characteristics
    * @return pricing characteristics DTO
    */
-  private com.aksi.api.pricing.dto.ItemCharacteristics convertCharacteristics(CartItem cartItem) {
-    com.aksi.api.pricing.dto.ItemCharacteristics characteristics =
-        new com.aksi.api.pricing.dto.ItemCharacteristics();
+  private ItemCharacteristics convertCharacteristics(CartItem cartItem) {
+    ItemCharacteristics characteristics = new ItemCharacteristics();
 
     characteristics.setMaterial(cartItem.getCharacteristics().getMaterial());
     characteristics.setColor(cartItem.getCharacteristics().getColor());
@@ -122,8 +125,7 @@ public class OrderPricingCalculator {
     if (cartItem.getCharacteristics().getWearLevel() != null) {
       try {
         characteristics.setWearLevel(
-            com.aksi.api.pricing.dto.ItemCharacteristics.WearLevelEnum.fromValue(
-                cartItem.getCharacteristics().getWearLevel()));
+            WearLevel.fromValue(cartItem.getCharacteristics().getWearLevel()));
       } catch (IllegalArgumentException e) {
         log.warn("Invalid wear level: {}", cartItem.getCharacteristics().getWearLevel());
       }
@@ -144,23 +146,21 @@ public class OrderPricingCalculator {
     // Set urgency type
     if (cartEntity.getUrgencyType() != null) {
       try {
-        globalModifiers.setUrgencyType(
-            GlobalPriceModifiers.UrgencyTypeEnum.fromValue(cartEntity.getUrgencyType()));
+        globalModifiers.setUrgencyType(UrgencyType.fromValue(cartEntity.getUrgencyType()));
       } catch (IllegalArgumentException e) {
         log.warn("Invalid urgency type: {}, using NORMAL", cartEntity.getUrgencyType());
-        globalModifiers.setUrgencyType(GlobalPriceModifiers.UrgencyTypeEnum.NORMAL);
+        globalModifiers.setUrgencyType(UrgencyType.NORMAL);
       }
     }
 
     // Set discount type
     if (cartEntity.getDiscountType() != null) {
       try {
-        globalModifiers.setDiscountType(
-            GlobalPriceModifiers.DiscountTypeEnum.fromValue(cartEntity.getDiscountType()));
+        globalModifiers.setDiscountType(DiscountType.fromValue(cartEntity.getDiscountType()));
         globalModifiers.setDiscountPercentage(cartEntity.getDiscountPercentage());
       } catch (IllegalArgumentException e) {
         log.warn("Invalid discount type: {}, using NONE", cartEntity.getDiscountType());
-        globalModifiers.setDiscountType(GlobalPriceModifiers.DiscountTypeEnum.NONE);
+        globalModifiers.setDiscountType(DiscountType.NONE);
       }
     }
 

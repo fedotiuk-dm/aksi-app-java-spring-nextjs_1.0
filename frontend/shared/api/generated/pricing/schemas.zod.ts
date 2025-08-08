@@ -21,20 +21,22 @@ export const updatePriceModifierBody = zod.object({
   "code": zod.string().describe('Unique modifier code'),
   "name": zod.string().describe('Modifier name'),
   "description": zod.string().optional().describe('Modifier description'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type: * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%) * `FIXED` - Fixed amount per item in kopiykas '),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
   "value": zod.number().describe('Modifier value: - For PERCENTAGE: basis points (e.g., 1550 = 15.5%) - For FIXED: amount in kopiykas per item '),
-  "categoryRestrictions": zod.array(zod.string()).optional().describe('Category codes where modifier is applicable'),
-  "active": zod.boolean().describe('Is modifier active')
+  "categoryRestrictions": zod.array(zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES'])).optional().describe('Category codes where modifier is applicable'),
+  "active": zod.boolean().describe('Is modifier active'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
 })
 
 export const updatePriceModifierResponse = zod.object({
   "code": zod.string().describe('Unique modifier code'),
   "name": zod.string().describe('Modifier name'),
   "description": zod.string().optional().describe('Modifier description'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type: * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%) * `FIXED` - Fixed amount per item in kopiykas '),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
   "value": zod.number().describe('Modifier value: - For PERCENTAGE: basis points (e.g., 1550 = 15.5%) - For FIXED: amount in kopiykas per item '),
-  "categoryRestrictions": zod.array(zod.string()).optional().describe('Category codes where modifier is applicable'),
-  "active": zod.boolean().describe('Is modifier active')
+  "categoryRestrictions": zod.array(zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES'])).optional().describe('Category codes where modifier is applicable'),
+  "active": zod.boolean().describe('Is modifier active'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
 })
 
 
@@ -61,12 +63,13 @@ export const updateDiscountBodyPercentageMax = 100;
 
 
 export const updateDiscountBody = zod.object({
-  "code": zod.string().describe('Discount code'),
+  "code": zod.string().describe('Unique discount code'),
   "name": zod.string().describe('Discount name'),
   "description": zod.string().optional().describe('Discount description'),
   "percentage": zod.number().min(updateDiscountBodyPercentageMin).max(updateDiscountBodyPercentageMax).describe('Discount percentage'),
-  "excludedCategories": zod.array(zod.string()).optional().describe('Category codes excluded from discount'),
-  "active": zod.boolean().describe('Is discount active')
+  "excludedCategories": zod.array(zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES'])).optional().describe('Category codes excluded from discount'),
+  "active": zod.boolean().describe('Is discount active'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
 })
 
 export const updateDiscountResponsePercentageMin = 0;
@@ -75,12 +78,13 @@ export const updateDiscountResponsePercentageMax = 100;
 
 
 export const updateDiscountResponse = zod.object({
-  "code": zod.string().describe('Discount code'),
+  "code": zod.string().describe('Unique discount code'),
   "name": zod.string().describe('Discount name'),
   "description": zod.string().optional().describe('Discount description'),
   "percentage": zod.number().min(updateDiscountResponsePercentageMin).max(updateDiscountResponsePercentageMax).describe('Discount percentage'),
-  "excludedCategories": zod.array(zod.string()).optional().describe('Category codes excluded from discount'),
-  "active": zod.boolean().describe('Is discount active')
+  "excludedCategories": zod.array(zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES'])).optional().describe('Category codes excluded from discount'),
+  "active": zod.boolean().describe('Is discount active'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
 })
 
 
@@ -111,8 +115,8 @@ export const calculatePriceBody = zod.object({
   "material": zod.string().optional().describe('Material type'),
   "color": zod.string().optional().describe('Item color'),
   "filler": zod.string().optional().describe('Filler type (for padded items)'),
-  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional().describe('Filler condition'),
-  "wearLevel": zod.enum(['10', '30', '50', '75']).optional().describe('Wear level percentage')
+  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional(),
+  "wearLevel": zod.enum(['10', '30', '50', '75']).optional()
 }).optional(),
   "modifierCodes": zod.array(zod.string()).optional().describe('Modifier codes to apply')
 })).min(1).max(calculatePriceBodyItemsMax).describe('Items to calculate price for'),
@@ -127,7 +131,7 @@ export const calculatePriceResponse = zod.object({
   "items": zod.array(zod.object({
   "priceListItemId": zod.uuid(),
   "itemName": zod.string().describe('Item name from price list'),
-  "categoryCode": zod.string().optional().describe('Category code'),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).optional(),
   "quantity": zod.number(),
   "basePrice": zod.number().describe('Base price per unit in kopiykas'),
   "calculations": zod.object({
@@ -135,7 +139,7 @@ export const calculatePriceResponse = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type'),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
   "value": zod.number().describe('Modifier value (percentage in basis points *100 or fixed amount in kopiykas)'),
   "amount": zod.number().describe('Calculated amount in kopiykas')
 })).describe('Applied modifiers with amounts'),
@@ -144,14 +148,14 @@ export const calculatePriceResponse = zod.object({
   "urgencyModifier": zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type'),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
   "value": zod.number().describe('Modifier value (percentage in basis points *100 or fixed amount in kopiykas)'),
   "amount": zod.number().describe('Calculated amount in kopiykas')
 }),
   "discountModifier": zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type'),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
   "value": zod.number().describe('Modifier value (percentage in basis points *100 or fixed amount in kopiykas)'),
   "amount": zod.number().describe('Calculated amount in kopiykas')
 }),
@@ -167,7 +171,9 @@ export const calculatePriceResponse = zod.object({
   "discountAmount": zod.number().describe('Total discount amount in kopiykas'),
   "discountPercentage": zod.number().optional().describe('Applied discount percentage'),
   "discountApplicableAmount": zod.number().describe('Amount eligible for discount in kopiykas'),
-  "total": zod.number().describe('Final total amount in kopiykas')
+  "total": zod.number().describe('Final total amount in kopiykas'),
+  "expectedCompletionDate": zod.iso.datetime({}).optional().describe('Expected completion date based on items and urgency'),
+  "expectedCompletionNote": zod.string().optional().describe('Optional note (e.g., \"після 14:00\")')
 }),
   "warnings": zod.array(zod.string()).optional().describe('Calculation warnings (e.g., discount not applicable)')
 })
@@ -181,10 +187,11 @@ export const createPriceModifierBody = zod.object({
   "code": zod.string().describe('Unique modifier code'),
   "name": zod.string().describe('Modifier name'),
   "description": zod.string().optional().describe('Modifier description'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type: * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%) * `FIXED` - Fixed amount per item in kopiykas '),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
   "value": zod.number().describe('Modifier value: - For PERCENTAGE: basis points (e.g., 1550 = 15.5%) - For FIXED: amount in kopiykas per item '),
-  "categoryRestrictions": zod.array(zod.string()).optional().describe('Category codes where modifier is applicable'),
-  "active": zod.boolean().describe('Is modifier active')
+  "categoryRestrictions": zod.array(zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES'])).optional().describe('Category codes where modifier is applicable'),
+  "active": zod.boolean().describe('Is modifier active'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
 })
 
 
@@ -198,12 +205,13 @@ export const createDiscountBodyPercentageMax = 100;
 
 
 export const createDiscountBody = zod.object({
-  "code": zod.string().describe('Discount code'),
+  "code": zod.string().describe('Unique discount code'),
   "name": zod.string().describe('Discount name'),
   "description": zod.string().optional().describe('Discount description'),
   "percentage": zod.number().min(createDiscountBodyPercentageMin).max(createDiscountBodyPercentageMax).describe('Discount percentage'),
-  "excludedCategories": zod.array(zod.string()).optional().describe('Category codes excluded from discount'),
-  "active": zod.boolean().describe('Is discount active')
+  "excludedCategories": zod.array(zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES'])).optional().describe('Category codes excluded from discount'),
+  "active": zod.boolean().describe('Is discount active'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
 })
 
 
@@ -214,7 +222,7 @@ export const createDiscountBody = zod.object({
 export const listPriceModifiersQueryActiveDefault = true;
 
 export const listPriceModifiersQueryParams = zod.object({
-  "categoryCode": zod.string().optional().describe('Filter by category code'),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).optional().describe('Filter by category code'),
   "active": zod.boolean().default(listPriceModifiersQueryActiveDefault).describe('Filter by active status')
 })
 
@@ -223,37 +231,41 @@ export const listPriceModifiersResponse = zod.object({
   "code": zod.string().describe('Unique modifier code'),
   "name": zod.string().describe('Modifier name'),
   "description": zod.string().optional().describe('Modifier description'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type: * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%) * `FIXED` - Fixed amount per item in kopiykas '),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
   "value": zod.number().describe('Modifier value: - For PERCENTAGE: basis points (e.g., 1550 = 15.5%) - For FIXED: amount in kopiykas per item '),
-  "categoryRestrictions": zod.array(zod.string()).optional().describe('Category codes where modifier is applicable'),
-  "active": zod.boolean().describe('Is modifier active')
+  "categoryRestrictions": zod.array(zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES'])).optional().describe('Category codes where modifier is applicable'),
+  "active": zod.boolean().describe('Is modifier active'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
 })).describe('List of price modifiers'),
   "generalModifiers": zod.array(zod.object({
   "code": zod.string().describe('Unique modifier code'),
   "name": zod.string().describe('Modifier name'),
   "description": zod.string().optional().describe('Modifier description'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type: * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%) * `FIXED` - Fixed amount per item in kopiykas '),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
   "value": zod.number().describe('Modifier value: - For PERCENTAGE: basis points (e.g., 1550 = 15.5%) - For FIXED: amount in kopiykas per item '),
-  "categoryRestrictions": zod.array(zod.string()).optional().describe('Category codes where modifier is applicable'),
-  "active": zod.boolean().describe('Is modifier active')
+  "categoryRestrictions": zod.array(zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES'])).optional().describe('Category codes where modifier is applicable'),
+  "active": zod.boolean().describe('Is modifier active'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
 })).optional().describe('General modifiers (applicable to all categories)'),
   "textileModifiers": zod.array(zod.object({
   "code": zod.string().describe('Unique modifier code'),
   "name": zod.string().describe('Modifier name'),
   "description": zod.string().optional().describe('Modifier description'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type: * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%) * `FIXED` - Fixed amount per item in kopiykas '),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
   "value": zod.number().describe('Modifier value: - For PERCENTAGE: basis points (e.g., 1550 = 15.5%) - For FIXED: amount in kopiykas per item '),
-  "categoryRestrictions": zod.array(zod.string()).optional().describe('Category codes where modifier is applicable'),
-  "active": zod.boolean().describe('Is modifier active')
+  "categoryRestrictions": zod.array(zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES'])).optional().describe('Category codes where modifier is applicable'),
+  "active": zod.boolean().describe('Is modifier active'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
 })).optional().describe('Textile-specific modifiers'),
   "leatherModifiers": zod.array(zod.object({
   "code": zod.string().describe('Unique modifier code'),
   "name": zod.string().describe('Modifier name'),
   "description": zod.string().optional().describe('Modifier description'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED']).describe('Modifier type: * `PERCENTAGE` - Percentage in basis points (1550 = 15.5%) * `FIXED` - Fixed amount per item in kopiykas '),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
   "value": zod.number().describe('Modifier value: - For PERCENTAGE: basis points (e.g., 1550 = 15.5%) - For FIXED: amount in kopiykas per item '),
-  "categoryRestrictions": zod.array(zod.string()).optional().describe('Category codes where modifier is applicable'),
-  "active": zod.boolean().describe('Is modifier active')
+  "categoryRestrictions": zod.array(zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES'])).optional().describe('Category codes where modifier is applicable'),
+  "active": zod.boolean().describe('Is modifier active'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
 })).optional().describe('Leather-specific modifiers')
 })
 
@@ -275,11 +287,12 @@ export const listDiscountsResponseDiscountsItemPercentageMax = 100;
 
 export const listDiscountsResponse = zod.object({
   "discounts": zod.array(zod.object({
-  "code": zod.string().describe('Discount code'),
+  "code": zod.string().describe('Unique discount code'),
   "name": zod.string().describe('Discount name'),
   "description": zod.string().optional().describe('Discount description'),
   "percentage": zod.number().min(listDiscountsResponseDiscountsItemPercentageMin).max(listDiscountsResponseDiscountsItemPercentageMax).describe('Discount percentage'),
-  "excludedCategories": zod.array(zod.string()).optional().describe('Category codes excluded from discount'),
-  "active": zod.boolean().describe('Is discount active')
+  "excludedCategories": zod.array(zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES'])).optional().describe('Category codes excluded from discount'),
+  "active": zod.boolean().describe('Is discount active'),
+  "sortOrder": zod.number().optional().describe('Sort order for display')
 })).describe('List of available discounts')
 })

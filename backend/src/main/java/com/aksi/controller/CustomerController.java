@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.api.customer.CustomerApi;
@@ -16,26 +17,22 @@ import com.aksi.api.customer.dto.UpdateCustomerRequest;
 import com.aksi.service.customer.CustomerService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /** REST controller for customer management */
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class CustomerController implements CustomerApi {
 
   private final CustomerService customerService;
 
   @Override
   public ResponseEntity<CustomerInfo> createCustomer(CreateCustomerRequest createCustomerRequest) {
-    log.info("Creating new customer");
     CustomerInfo customer = customerService.createCustomer(createCustomerRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(customer);
   }
 
   @Override
   public ResponseEntity<CustomerInfo> getCustomer(UUID customerId) {
-    log.info("Getting customer: {}", customerId);
     CustomerInfo customer = customerService.getCustomer(customerId);
     return ResponseEntity.ok(customer);
   }
@@ -43,28 +40,18 @@ public class CustomerController implements CustomerApi {
   @Override
   public ResponseEntity<CustomerInfo> updateCustomer(
       UUID customerId, UpdateCustomerRequest updateCustomerRequest) {
-    log.info("Updating customer: {}", customerId);
     CustomerInfo customer = customerService.updateCustomer(customerId, updateCustomerRequest);
     return ResponseEntity.ok(customer);
   }
 
   @Override
   public ResponseEntity<CustomersResponse> listCustomers(
-      String search,
-      String phone,
-      String email,
-      String discountCard,
+      @Nullable String search,
+      @Nullable String phone,
+      @Nullable String email,
+      @Nullable String discountCard,
       Integer offset,
       Integer limit) {
-    log.info(
-        "Listing customers - search: {}, phone: {}, email: {}, discountCard: {}, offset: {}, limit: {}",
-        search,
-        phone,
-        email,
-        discountCard,
-        offset,
-        limit);
-
     PageRequest pageRequest = PageRequest.of(offset / limit, limit);
     Page<CustomerInfo> page =
         customerService.searchCustomers(search, phone, email, discountCard, pageRequest);
@@ -80,7 +67,6 @@ public class CustomerController implements CustomerApi {
 
   @Override
   public ResponseEntity<Void> checkCustomerExists(UUID customerId) {
-    log.info("Checking if customer exists: {}", customerId);
     if (customerService.existsById(customerId)) {
       return ResponseEntity.noContent().build();
     } else {

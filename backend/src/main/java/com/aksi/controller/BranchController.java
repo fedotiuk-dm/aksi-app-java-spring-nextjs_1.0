@@ -13,14 +13,13 @@ import com.aksi.api.branch.BranchesApi;
 import com.aksi.api.branch.dto.BranchInfo;
 import com.aksi.api.branch.dto.BranchesResponse;
 import com.aksi.api.branch.dto.CreateBranchRequest;
+import com.aksi.api.branch.dto.SortOrder;
 import com.aksi.api.branch.dto.UpdateBranchRequest;
 import com.aksi.service.branch.BranchService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /** REST controller for branch operations */
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class BranchController implements BranchesApi {
@@ -29,7 +28,6 @@ public class BranchController implements BranchesApi {
 
   @Override
   public ResponseEntity<BranchInfo> getBranchById(UUID branchId) {
-    log.debug("Getting branch by id: {}", branchId);
     return ResponseEntity.ok(branchService.getBranchById(branchId));
   }
 
@@ -38,31 +36,21 @@ public class BranchController implements BranchesApi {
       Integer page,
       Integer size,
       String sortBy,
-      String sortOrder,
+      SortOrder sortOrder,
       Boolean active,
       @Nullable String search) {
-    log.debug(
-        "Listing branches with page: {}, size: {}, sortBy: {}, sortOrder: {}, active: {}, search: '{}'",
-        page,
-        size,
-        sortBy,
-        sortOrder,
-        active,
-        search);
     return ResponseEntity.ok(
-        branchService.listBranches(page, size, sortBy, sortOrder, active, search));
+        branchService.listBranches(page, size, sortBy, sortOrder.getValue(), active, search));
   }
 
   @Override
   public ResponseEntity<List<BranchInfo>> getAllActiveBranches() {
-    log.debug("Getting all active branches for dropdowns");
     return ResponseEntity.ok(branchService.getAllActiveBranches());
   }
 
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<BranchInfo> createBranch(CreateBranchRequest createBranchRequest) {
-    log.debug("Creating new branch: {}", createBranchRequest.getName());
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(branchService.createBranch(createBranchRequest));
   }
@@ -71,14 +59,12 @@ public class BranchController implements BranchesApi {
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<BranchInfo> updateBranch(
       UUID branchId, UpdateBranchRequest updateBranchRequest) {
-    log.debug("Updating branch: {}", branchId);
     return ResponseEntity.ok(branchService.updateBranch(branchId, updateBranchRequest));
   }
 
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Void> deleteBranch(UUID branchId) {
-    log.debug("Deleting branch: {}", branchId);
     branchService.deleteBranch(branchId);
     return ResponseEntity.noContent().build();
   }
@@ -86,14 +72,12 @@ public class BranchController implements BranchesApi {
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<BranchInfo> activateBranch(UUID branchId) {
-    log.debug("Activating branch: {}", branchId);
     return ResponseEntity.ok(branchService.activateBranch(branchId));
   }
 
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<BranchInfo> deactivateBranch(UUID branchId) {
-    log.debug("Deactivating branch: {}", branchId);
     return ResponseEntity.ok(branchService.deactivateBranch(branchId));
   }
 }

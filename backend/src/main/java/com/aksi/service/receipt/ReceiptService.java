@@ -36,7 +36,7 @@ public interface ReceiptService {
    * @param request Email request
    * @return Email response
    */
-  EmailReceiptResponse emailOrderReceipt(Long orderId, EmailReceiptRequest request);
+  EmailReceiptResponse emailOrderReceipt(UUID orderId, EmailReceiptRequest request);
 
   /**
    * Get available receipt templates

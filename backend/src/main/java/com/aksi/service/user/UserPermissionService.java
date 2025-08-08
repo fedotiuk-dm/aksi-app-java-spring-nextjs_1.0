@@ -34,9 +34,7 @@ public class UserPermissionService {
                     "customers.update",
                     "customers.view"),
             UserRole.CLEANER, List.of("orders.view", "orders.updateStatus"),
-            UserRole.DRIVER, List.of("orders.view", "orders.updateDelivery"),
-            UserRole.ACCOUNTANT,
-                List.of("orders.view", "customers.view", "reports.view", "billing.*"));
+            UserRole.DRIVER, List.of("orders.view", "orders.updateDelivery"));
   }
 
   public List<String> getPermissionsForRoles(Set<UserRole> roles) {

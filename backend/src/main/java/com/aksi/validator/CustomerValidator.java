@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import com.aksi.api.customer.dto.CreateCustomerRequest;
 import com.aksi.api.customer.dto.InfoSource;
 import com.aksi.api.customer.dto.UpdateCustomerRequest;
-import com.aksi.exception.BusinessValidationException;
+import com.aksi.exception.BadRequestException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +18,7 @@ public class CustomerValidator {
    * Validate create customer request
    *
    * @param request Create customer request
-   * @throws BusinessValidationException if validation fails
+   * @throws BadRequestException if validation fails
    */
   public void validateCreateRequest(CreateCustomerRequest request) {
     // Validate phone
@@ -37,7 +37,7 @@ public class CustomerValidator {
    * Validate update customer request
    *
    * @param request Update customer request
-   * @throws BusinessValidationException if validation fails
+   * @throws BadRequestException if validation fails
    */
   public void validateUpdateRequest(UpdateCustomerRequest request) {
     // Validate phone if provided
@@ -61,19 +61,18 @@ public class CustomerValidator {
    *
    * @param infoSource Info source type
    * @param infoSourceOther Other info source details
-   * @throws BusinessValidationException if validation fails
+   * @throws BadRequestException if validation fails
    */
   private void validateInfoSource(InfoSource infoSource, String infoSourceOther) {
     if (infoSource == InfoSource.OTHER
         && (infoSourceOther == null || infoSourceOther.trim().isEmpty())) {
-      throw new BusinessValidationException(
-          "Info source details are required when info source is OTHER");
+      throw new BadRequestException("Info source details are required when info source is OTHER");
     }
 
     if (infoSource != InfoSource.OTHER
         && infoSourceOther != null
         && !infoSourceOther.trim().isEmpty()) {
-      throw new BusinessValidationException(
+      throw new BadRequestException(
           "Info source details should only be provided when info source is OTHER");
     }
   }
@@ -82,11 +81,11 @@ public class CustomerValidator {
    * Validate phone number format
    *
    * @param phone Phone number
-   * @throws BusinessValidationException if validation fails
+   * @throws BadRequestException if validation fails
    */
   private void validatePhoneNumber(String phone) {
     if (phone == null || phone.trim().isEmpty()) {
-      throw new BusinessValidationException("Phone number is required");
+      throw new BadRequestException("Phone number is required");
     }
 
     // Remove spaces, dashes, parentheses for validation
@@ -94,7 +93,7 @@ public class CustomerValidator {
 
     // Check if starts with + and has only digits after
     if (!cleanPhone.matches("^\\+?\\d{10,15}$")) {
-      throw new BusinessValidationException("Invalid phone number format");
+      throw new BadRequestException("Invalid phone number format");
     }
   }
 
@@ -102,7 +101,7 @@ public class CustomerValidator {
    * Validate discount card number format
    *
    * @param discountCardNumber Discount card number
-   * @throws BusinessValidationException if validation fails
+   * @throws BadRequestException if validation fails
    */
   private void validateDiscountCardNumber(String discountCardNumber) {
     if (discountCardNumber != null && !discountCardNumber.trim().isEmpty()) {
@@ -111,7 +110,7 @@ public class CustomerValidator {
 
       // Check format (example: only digits and length)
       if (!cleanNumber.matches("^\\d{6,12}$")) {
-        throw new BusinessValidationException("Invalid discount card number format");
+        throw new BadRequestException("Invalid discount card number format");
       }
     }
   }

@@ -36,13 +36,13 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.18.0</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>1.28.0</version>
         </dependency>
-        
+
         <!-- Apache PDFBox for PDF generation -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
@@ -410,7 +410,8 @@
                             <apiPackage>com.aksi.api.file</apiPackage>
                             <modelPackage>com.aksi.api.file.dto</modelPackage>
                             <globalProperties>
-                                <skipFormModel>false</skipFormModel>
+                                <skipFormModel>true</skipFormModel>
+                                <skipOperationExample>true</skipOperationExample>
                             </globalProperties>
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
@@ -520,6 +521,10 @@
                             <generatorName>spring</generatorName>
                             <apiPackage>com.aksi.api.order</apiPackage>
                             <modelPackage>com.aksi.api.order.dto</modelPackage>
+                            <globalProperties>
+                                <skipFormModel>true</skipFormModel>
+                                <skipOperationExample>true</skipOperationExample>
+                            </globalProperties>
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                                 <useTags>true</useTags>

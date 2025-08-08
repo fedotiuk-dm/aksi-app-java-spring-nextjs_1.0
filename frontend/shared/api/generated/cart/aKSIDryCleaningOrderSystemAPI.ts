@@ -25,6 +25,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ActivateCustomerRequest,
   AddCartItemRequest,
   CartInfo,
   CartItemInfo,
@@ -302,7 +303,7 @@ export const useAddCartItem = <TError = ErrorResponse | ErrorResponse | ErrorRes
     }
     
 /**
- * Recalculate all prices in the cart
+ * Recalculate all prices in the active customer's cart. Does not create a cart; returns 404 if no active cart exists for the session.
  * @summary Calculate cart totals
  */
 export const calculateCart = (
@@ -319,7 +320,7 @@ export const calculateCart = (
   
 
 
-export const getCalculateCartMutationOptions = <TError = ErrorResponse,
+export const getCalculateCartMutationOptions = <TError = ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculateCart>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
 ): UseMutationOptions<Awaited<ReturnType<typeof calculateCart>>, TError,void, TContext> => {
 
@@ -346,12 +347,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type CalculateCartMutationResult = NonNullable<Awaited<ReturnType<typeof calculateCart>>>
     
-    export type CalculateCartMutationError = ErrorResponse
+    export type CalculateCartMutationError = ErrorResponse | ErrorResponse
 
     /**
  * @summary Calculate cart totals
  */
-export const useCalculateCart = <TError = ErrorResponse,
+export const useCalculateCart = <TError = ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculateCart>>, TError,void, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof calculateCart>>,
@@ -366,7 +367,73 @@ export const useCalculateCart = <TError = ErrorResponse,
     }
     
 /**
- * Get the current user's shopping cart with all items and calculations
+ * Binds subsequent cart operations to the selected customer in this session
+ * @summary Activate customer for cart in current session
+ */
+export const activateCustomerForCart = (
+    activateCustomerRequest: ActivateCustomerRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<null>(
+      {url: `/api/cart/activate-customer`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: activateCustomerRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getActivateCustomerForCartMutationOptions = <TError = ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateCustomerForCart>>, TError,{data: ActivateCustomerRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof activateCustomerForCart>>, TError,{data: ActivateCustomerRequest}, TContext> => {
+
+const mutationKey = ['activateCustomerForCart'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof activateCustomerForCart>>, {data: ActivateCustomerRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  activateCustomerForCart(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ActivateCustomerForCartMutationResult = NonNullable<Awaited<ReturnType<typeof activateCustomerForCart>>>
+    export type ActivateCustomerForCartMutationBody = ActivateCustomerRequest
+    export type ActivateCustomerForCartMutationError = ErrorResponse | ErrorResponse
+
+    /**
+ * @summary Activate customer for cart in current session
+ */
+export const useActivateCustomerForCart = <TError = ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateCustomerForCart>>, TError,{data: ActivateCustomerRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof activateCustomerForCart>>,
+        TError,
+        {data: ActivateCustomerRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getActivateCustomerForCartMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Get or create (getOrCreate) the active customer's shopping cart for this session
  * @summary Get current cart
  */
 export const getCart = (
@@ -455,7 +522,7 @@ export function useGetCart<TData = Awaited<ReturnType<typeof getCart>>, TError =
 
 
 /**
- * Remove all items from the cart
+ * Remove all items from the active customer's cart
  * @summary Clear cart
  */
 export const clearCart = (

@@ -45,12 +45,4 @@ public interface CartItemMapper {
   @Mapping(target = "cartItem", ignore = true)
   void updateCharacteristicsFromRequest(
       ItemCharacteristics dto, @MappingTarget CartItemCharacteristicsEntity entity);
-
-  // Map enum value
-  default String mapFillerConditionEnum(ItemCharacteristics.FillerConditionEnum fillerCondition) {
-    if (fillerCondition == null) {
-      return null;
-    }
-    return fillerCondition.getValue();
-  }
 }

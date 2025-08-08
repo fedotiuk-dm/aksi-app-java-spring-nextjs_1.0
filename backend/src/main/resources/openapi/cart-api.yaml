@@ -1,4 +1,4 @@
-openapi: 3.1.1
+openapi: 3.0.4
 info:
   title: Cart API
   description: Shopping cart API for temporary order storage and price calculation
@@ -22,34 +22,34 @@ paths:
     get:
       operationId: getCart
       summary: Get current cart
-      description: Get the current user's shopping cart with all items and calculations
+      description: Get or create (getOrCreate) the active customer's shopping cart for this session
       tags:
         - cart
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Current cart details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CartInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    
+                $ref: "#/components/schemas/CartInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+
     delete:
       operationId: clearCart
       summary: Clear cart
-      description: Remove all items from the cart
+      description: Remove all items from the active customer's cart
       tags:
         - cart
       security:
         - cookieAuth: []
       responses:
-        '204':
+        "204":
           description: Cart cleared successfully
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
   /api/cart/items:
     post:
@@ -65,20 +65,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddCartItemRequest'
+              $ref: "#/components/schemas/AddCartItemRequest"
       responses:
-        '201':
+        "201":
           description: Item added successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CartItemInfo'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: "#/components/schemas/CartItemInfo"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/cart/items/{itemId}:
     parameters:
@@ -89,7 +89,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     put:
       operationId: updateCartItem
       summary: Update cart item
@@ -103,21 +103,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCartItemRequest'
+              $ref: "#/components/schemas/UpdateCartItemRequest"
       responses:
-        '200':
+        "200":
           description: Item updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CartItemInfo'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    
+                $ref: "#/components/schemas/CartItemInfo"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+
     delete:
       operationId: removeCartItem
       summary: Remove item from cart
@@ -127,12 +127,12 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '204':
+        "204":
           description: Item removed successfully
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/cart/modifiers:
     put:
@@ -148,62 +148,74 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCartModifiersRequest'
+              $ref: "#/components/schemas/UpdateCartModifiersRequest"
       responses:
-        '200':
+        "200":
           description: Modifiers updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CartInfo'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/CartInfo"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
   /api/cart/calculate:
     post:
       operationId: calculateCart
       summary: Calculate cart totals
-      description: Recalculate all prices in the cart
+      description: Recalculate all prices in the active customer's cart. Does not create a cart; returns 404 if no active cart exists for the session.
       tags:
         - cart
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Cart recalculated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CartPricingInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/CartPricingInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+
+  /api/cart/activate-customer:
+    post:
+      operationId: activateCustomerForCart
+      summary: Activate customer for cart in current session
+      description: Binds subsequent cart operations to the selected customer in this session
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivateCustomerRequest"
+      responses:
+        "204":
+          description: Customer activated for cart
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
 components:
-  responses:
-    BadRequest:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    Unauthorized:
-      description: Unauthorized access
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-
   schemas:
+    ActivateCustomerRequest:
+      type: object
+      required:
+        - customerId
+      properties:
+        customerId:
+          type: string
+          format: uuid
+          description: Customer ID to activate
     CartInfo:
       type: object
       required:
@@ -225,14 +237,12 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/CartItemInfo'
+            $ref: "#/components/schemas/CartItemInfo"
           description: Cart items
         globalModifiers:
-          $ref: '#/components/schemas/CartGlobalModifiers'
-          description: Global cart modifiers
+          $ref: "#/components/schemas/CartGlobalModifiers"
         pricing:
-          $ref: '#/components/schemas/CartPricingInfo'
-          description: Cart pricing details
+          $ref: "#/components/schemas/CartPricingInfo"
         createdAt:
           type: string
           format: date-time
@@ -265,23 +275,20 @@ components:
           format: uuid
           description: Price list item ID
         priceListItem:
-          $ref: '#/components/schemas/PriceListItemSummary'
-          description: Price list item details
+          $ref: "#/components/schemas/PriceListItemSummary"
         quantity:
           type: integer
           minimum: 1
           description: Quantity (in units)
         characteristics:
-          $ref: '#/components/schemas/ItemCharacteristics'
-          description: Item characteristics
+          $ref: "#/components/schemas/ItemCharacteristics"
         modifiers:
           type: array
           items:
-            $ref: '#/components/schemas/ItemModifier'
+            $ref: "#/components/schemas/ItemModifier"
           description: Applied modifiers
         pricing:
-          $ref: '#/components/schemas/CartItemPricingInfo'
-          description: Item pricing details
+          $ref: "#/components/schemas/CartItemPricingInfo"
 
     PriceListItemSummary:
       type: object
@@ -298,10 +305,9 @@ components:
         name:
           type: string
         categoryCode:
-          type: string
+          $ref: "../openapi/common.yaml#/components/schemas/ServiceCategoryType"
         unitOfMeasure:
-          type: string
-          enum: [PIECE, KILOGRAM, PAIR, SQUARE_METER]
+          $ref: "../openapi/common.yaml#/components/schemas/UnitOfMeasure"
         basePrice:
           type: integer
           description: Base price in kopiykas
@@ -319,13 +325,9 @@ components:
           type: string
           description: Filler type (for padded items)
         fillerCondition:
-          type: string
-          enum: [NORMAL, COMPRESSED]
-          description: Filler condition
+          $ref: "../openapi/common.yaml#/components/schemas/FillerCondition"
         wearLevel:
-          type: integer
-          enum: [10, 30, 50, 75]
-          description: Wear level percentage
+          $ref: "../openapi/common.yaml#/components/schemas/WearLevel"
 
     ItemModifier:
       type: object
@@ -342,9 +344,7 @@ components:
           type: string
           description: Modifier name
         type:
-          type: string
-          enum: [PERCENTAGE, FIXED]
-          description: Modifier type
+          $ref: "../openapi/common.yaml#/components/schemas/ModifierType"
         value:
           type: number
           description: Modifier value (percentage or fixed amount)
@@ -353,15 +353,15 @@ components:
       type: object
       properties:
         urgencyType:
-          type: string
-          enum: [NORMAL, EXPRESS_48H, EXPRESS_24H]
-          default: NORMAL
-          description: Urgency type
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/UrgencyType"
+            - default: NORMAL
+              description: Urgency type
         discountType:
-          type: string
-          enum: [NONE, EVERCARD, SOCIAL_MEDIA, MILITARY, OTHER]
-          default: NONE
-          description: Discount type
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/DiscountType"
+            - default: NONE
+              description: Discount type
         discountPercentage:
           type: integer
           minimum: 0
@@ -371,6 +371,9 @@ components:
           type: string
           format: date-time
           description: Expected completion date
+        expectedCompletionNote:
+          type: string
+          description: Optional note for expected completion (e.g., "після 14:00")
 
     CartItemPricingInfo:
       type: object
@@ -388,7 +391,7 @@ components:
         modifierDetails:
           type: array
           items:
-            $ref: '#/components/schemas/ModifierDetail'
+            $ref: "#/components/schemas/ModifierDetail"
           description: Applied modifier details
         modifiersTotalAmount:
           type: integer
@@ -457,11 +460,10 @@ components:
           description: Price list item ID
         quantity:
           type: integer
-          minimum: 0.1
-          description: Quantity
+          minimum: 1
+          description: Quantity in smallest unit (piece=1; kilogram=grams)
         characteristics:
-          $ref: '#/components/schemas/ItemCharacteristics'
-          description: Item characteristics
+          $ref: "#/components/schemas/ItemCharacteristics"
         modifierCodes:
           type: array
           items:
@@ -473,11 +475,10 @@ components:
       properties:
         quantity:
           type: integer
-          minimum: 0.1
-          description: New quantity
+          minimum: 1
+          description: New quantity in smallest unit (piece=1; kilogram=grams)
         characteristics:
-          $ref: '#/components/schemas/ItemCharacteristics'
-          description: Updated characteristics
+          $ref: "#/components/schemas/ItemCharacteristics"
         modifierCodes:
           type: array
           items:
@@ -488,13 +489,9 @@ components:
       type: object
       properties:
         urgencyType:
-          type: string
-          enum: [NORMAL, EXPRESS_48H, EXPRESS_24H]
-          description: Urgency type
+          $ref: "../openapi/common.yaml#/components/schemas/UrgencyType"
         discountType:
-          type: string
-          enum: [NONE, EVERCARD, SOCIAL_MEDIA, MILITARY, OTHER]
-          description: Discount type
+          $ref: "../openapi/common.yaml#/components/schemas/DiscountType"
         discountPercentage:
           type: integer
           minimum: 0
@@ -505,31 +502,8 @@ components:
           format: date-time
           description: Expected completion date
 
-    ErrorResponse:
-      type: object
-      required:
-        - error
-        - message
-        - timestamp
-      properties:
-        error:
-          type: string
-          description: Error code
-        message:
-          type: string
-          description: Error message
-        timestamp:
-          type: string
-          format: date-time
-          description: Error timestamp
-        details:
-          type: object
-          additionalProperties: true
-          description: Additional error details
+    # ErrorResponse centralized in common.yaml
 
   securitySchemes:
     cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session-based authentication using httpOnly cookies
+      $ref: "../openapi/common.yaml#/components/securitySchemes/cookieAuth"

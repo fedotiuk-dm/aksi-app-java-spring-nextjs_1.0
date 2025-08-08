@@ -31,7 +31,7 @@ import com.aksi.domain.order.OrderEntity;
 import com.aksi.domain.order.OrderItemEntity;
 import com.aksi.domain.order.OrderPaymentEntity;
 import com.aksi.domain.user.UserEntity;
-import com.aksi.exception.BusinessValidationException;
+import com.aksi.exception.BadRequestException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.OrderMapper;
 import com.aksi.repository.BranchRepository;
@@ -233,7 +233,7 @@ public class OrderCommandService {
     if (orderEntity.getStatus() != OrderEntity.OrderStatus.PENDING
         && orderEntity.getStatus() != OrderEntity.OrderStatus.READY
         && orderEntity.getStatus() != OrderEntity.OrderStatus.COMPLETED) {
-      throw new BusinessValidationException(
+      throw new BadRequestException(
           "Cannot add signature to order in status: " + orderEntity.getStatus());
     }
 
@@ -249,18 +249,18 @@ public class OrderCommandService {
 
   private void validatePhotoFile(MultipartFile file) {
     if (file == null || file.isEmpty()) {
-      throw new BusinessValidationException("Photo file is required");
+      throw new BadRequestException("Photo file is required");
     }
 
     // Validate file size (max 10MB)
     if (file.getSize() > 10 * 1024 * 1024) {
-      throw new BusinessValidationException("Photo file size must be less than 10MB");
+      throw new BadRequestException("Photo file size must be less than 10MB");
     }
 
     // Validate content type
     String contentType = file.getContentType();
     if (contentType == null || !contentType.startsWith("image/")) {
-      throw new BusinessValidationException("Only image files are allowed");
+      throw new BadRequestException("Only image files are allowed");
     }
   }
 
@@ -477,38 +477,38 @@ public class OrderCommandService {
   /** Validate cart is valid for order creation */
   private void validateCartForOrder(CartEntity cartEntity) {
     if (cartEntity.isExpired()) {
-      throw new BusinessValidationException("Cart has expired");
+      throw new BadRequestException("Cart has expired");
     }
     if (cartEntity.getItems().isEmpty()) {
-      throw new BusinessValidationException("Cannot create order from empty cart");
+      throw new BadRequestException("Cannot create order from empty cart");
     }
   }
 
   /** Validate branch is active */
   private void validateBranchIsActive(BranchEntity branchEntity) {
     if (!branchEntity.isActive()) {
-      throw new BusinessValidationException("Branch is not active");
+      throw new BadRequestException("Branch is not active");
     }
   }
 
   /** Validate order can be modified */
   private void validateOrderCanBeModified(OrderEntity orderEntity) {
     if (!orderEntity.canBeModified()) {
-      throw new BusinessValidationException("Order cannot be modified in current status");
+      throw new BadRequestException("Order cannot be modified in current status");
     }
   }
 
   /** Validate order is not cancelled */
   private void validateOrderNotCancelled(OrderEntity orderEntity) {
     if (orderEntity.isCancelled()) {
-      throw new BusinessValidationException("Cannot perform operation on cancelled order");
+      throw new BadRequestException("Cannot perform operation on cancelled order");
     }
   }
 
   /** Validate payment amount against remaining balance */
   private void validatePaymentAmount(Integer paymentAmount, Integer remainingBalance) {
     if (paymentAmount > remainingBalance) {
-      throw new BusinessValidationException(
+      throw new BadRequestException(
           String.format(
               "Payment amount (%d) exceeds remaining balance (%d)",
               paymentAmount, remainingBalance));
@@ -534,7 +534,7 @@ public class OrderCommandService {
         };
 
     if (!isValidTransition) {
-      throw new BusinessValidationException(
+      throw new BadRequestException(
           String.format("Invalid status transition from %s to %s", fromStatus, toStatus));
     }
   }

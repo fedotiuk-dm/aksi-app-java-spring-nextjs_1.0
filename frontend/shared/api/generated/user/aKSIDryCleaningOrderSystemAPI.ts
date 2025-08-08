@@ -864,7 +864,7 @@ export function useGetUserPermissions<TData = Awaited<ReturnType<typeof getUserP
  * @summary Get role permissions
  */
 export const getRolePermissions = (
-    role: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER' | 'ACCOUNTANT',
+    role: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER',
  options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
 ) => {
       
@@ -876,12 +876,12 @@ export const getRolePermissions = (
     }
   
 
-export const getGetRolePermissionsQueryKey = (role?: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER' | 'ACCOUNTANT',) => {
+export const getGetRolePermissionsQueryKey = (role?: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER',) => {
     return [`/api/roles/${role}/permissions`] as const;
     }
 
     
-export const getGetRolePermissionsQueryOptions = <TData = Awaited<ReturnType<typeof getRolePermissions>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(role: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER' | 'ACCOUNTANT', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRolePermissions>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getGetRolePermissionsQueryOptions = <TData = Awaited<ReturnType<typeof getRolePermissions>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(role: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRolePermissions>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -904,7 +904,7 @@ export type GetRolePermissionsQueryError = ErrorResponse | ErrorResponse | Error
 
 
 export function useGetRolePermissions<TData = Awaited<ReturnType<typeof getRolePermissions>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
- role: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER' | 'ACCOUNTANT', options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRolePermissions>>, TError, TData>> & Pick<
+ role: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER', options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRolePermissions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRolePermissions>>,
           TError,
@@ -914,7 +914,7 @@ export function useGetRolePermissions<TData = Awaited<ReturnType<typeof getRoleP
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetRolePermissions<TData = Awaited<ReturnType<typeof getRolePermissions>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
- role: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER' | 'ACCOUNTANT', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRolePermissions>>, TError, TData>> & Pick<
+ role: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRolePermissions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRolePermissions>>,
           TError,
@@ -924,7 +924,7 @@ export function useGetRolePermissions<TData = Awaited<ReturnType<typeof getRoleP
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetRolePermissions<TData = Awaited<ReturnType<typeof getRolePermissions>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
- role: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER' | 'ACCOUNTANT', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRolePermissions>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ role: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRolePermissions>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -932,7 +932,7 @@ export function useGetRolePermissions<TData = Awaited<ReturnType<typeof getRoleP
  */
 
 export function useGetRolePermissions<TData = Awaited<ReturnType<typeof getRolePermissions>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
- role: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER' | 'ACCOUNTANT', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRolePermissions>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ role: 'OPERATOR' | 'MANAGER' | 'ADMIN' | 'CLEANER' | 'DRIVER', options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRolePermissions>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 

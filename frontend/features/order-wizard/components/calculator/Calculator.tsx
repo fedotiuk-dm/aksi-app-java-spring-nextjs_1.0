@@ -7,52 +7,58 @@ import {
   Divider,
   Chip,
   LinearProgress,
+  Alert,
 } from '@mui/material';
+import { useGetCart } from '@/shared/api/generated/cart';
 import { useOrderWizardStore } from '@/features/order-wizard';
 
 export const Calculator: React.FC = () => {
-  const {
-    itemForm,
-    isCalculating,
-  } = useOrderWizardStore();
-
-  const { selectedService, quantity, modifierCodes } = itemForm;
-
-  // Base price calculation (basePrice is in kopiykas, convert to hryvnias)
-  const basePrice = selectedService ? (selectedService.basePrice / 100) * quantity : 0;
-
-  // Calculate modifiers impact
-  const modifierImpacts = modifierCodes.map((code) => {
-    // This is simplified - in real implementation would get from backend
-    const modifierPercent = getModifierPercent(code);
-    const impact = basePrice * (modifierPercent / 100);
-    return {
-      code,
-      label: getModifierLabel(code),
-      percent: modifierPercent,
-      amount: impact,
-    };
+  const { selectedCustomer } = useOrderWizardStore();
+  
+  // Get real cart data from API only if customer is selected
+  const { data: cartData, isLoading: isLoadingCart, error: cartError } = useGetCart({
+    query: {
+      enabled: !!selectedCustomer,
+    },
   });
-
-  // Total price
-  const totalModifierAmount = modifierImpacts.reduce((sum, mod) => sum + mod.amount, 0);
-  const finalPrice = basePrice + totalModifierAmount;
-
-  if (!selectedService) {
+  
+  // Get cart totals from backend calculations
+  const pricing = cartData?.pricing;
+  const items = cartData?.items || [];
+  
+  if (!selectedCustomer) {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
         <Typography variant="body2" color="text.secondary">
-          Виберіть послугу для розрахунку вартості
+          Виберіть клієнта для розрахунку вартості
         </Typography>
       </Box>
     );
   }
 
-  if (isCalculating) {
+  if (cartError) {
+    return (
+      <Alert severity="error" sx={{ mb: 2 }}>
+        Помилка завантаження даних калькулятора
+      </Alert>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 4 }}>
+        <Typography variant="body2" color="text.secondary">
+          Додайте предмети для розрахунку вартості
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (isLoadingCart) {
     return (
       <Box sx={{ py: 4 }}>
         <Typography variant="body2" color="text.secondary" align="center" gutterBottom>
-          Розрахунок вартості...
+          Завантаження розрахунків...
         </Typography>
         <LinearProgress />
       </Box>
@@ -61,127 +67,133 @@ export const Calculator: React.FC = () => {
 
   return (
     <Box>
-      {/* Base Price */}
-      <Box sx={{ mb: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-          <Typography variant="body2">
-            {selectedService.nameUa || selectedService.name}
-          </Typography>
-          <Typography variant="body2">
-            {(selectedService.basePrice / 100).toFixed(2)} ₴
-          </Typography>
-        </Box>
-        {quantity > 1 && (
+      {/* Individual Items */}
+      {items.map((item, index) => (
+        <Box key={item.id} sx={{ mb: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-            <Typography variant="body2" color="text.secondary">
-              Кількість: {quantity} шт
+            <Typography variant="body2">
+              {item.priceListItem?.name}
             </Typography>
             <Typography variant="body2">
-              {basePrice.toFixed(2)} ₴
+              {((item.pricing?.basePrice || 0) / 100).toFixed(2)} ₴
             </Typography>
           </Box>
-        )}
-      </Box>
-
-      {/* Modifiers */}
-      {modifierImpacts.length > 0 && (
-        <>
-          <Divider sx={{ my: 1 }} />
-          <Typography variant="subtitle2" gutterBottom>
-            Модифікатори:
-          </Typography>
-          {modifierImpacts.map((modifier) => (
-            <Box
-              key={modifier.code}
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                mb: 1,
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body2">
-                  {modifier.label}
-                </Typography>
-                <Chip
-                  label={`${modifier.percent > 0 ? '+' : ''}${modifier.percent}%`}
-                  size="small"
-                  color={modifier.percent > 0 ? 'warning' : 'success'}
-                />
-              </Box>
+          
+          {item.quantity > 1 && (
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Typography variant="body2" color="text.secondary">
+                Кількість: {item.quantity} шт
+              </Typography>
               <Typography variant="body2">
-                {modifier.amount > 0 ? '+' : ''}{modifier.amount.toFixed(2)} ₴
+                {((item.pricing?.subtotal || 0) / 100).toFixed(2)} ₴
               </Typography>
             </Box>
-          ))}
+          )}
+          
+          {/* Show applied modifiers if any */}
+          {item.pricing?.modifierDetails && item.pricing.modifierDetails.length > 0 && (
+            <Box sx={{ ml: 2, mt: 1 }}>
+              {item.pricing.modifierDetails.map((modifier) => (
+                <Box
+                  key={modifier.code}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 0.5,
+                  }}
+                >
+                  <Typography variant="caption" color="text.secondary">
+                    {modifier.name}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {((modifier.amount || 0) / 100).toFixed(2)} ₴
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          )}
+          
+          {/* Item total */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+            <Typography variant="body2" fontWeight="medium">
+              Разом предмет:
+            </Typography>
+            <Typography variant="body2" fontWeight="medium">
+              {((item.pricing?.total || 0) / 100).toFixed(2)} ₴
+            </Typography>
+          </Box>
+          
+          {index < items.length - 1 && <Divider sx={{ mt: 2 }} />}
+        </Box>
+      ))}
+
+      {/* Cart Totals */}
+      {pricing && (
+        <>
+          <Divider sx={{ my: 2 }} />
+          
+          {/* Subtotal */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+            <Typography variant="body2">
+              Підсумок предметів:
+            </Typography>
+            <Typography variant="body2">
+              {((pricing.itemsSubtotal || 0) / 100).toFixed(2)} ₴
+            </Typography>
+          </Box>
+          
+          {/* Urgency surcharge */}
+          {pricing.urgencyAmount && pricing.urgencyAmount > 0 && (
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2">
+                  Терміновість:
+                </Typography>
+                <Chip label="+" size="small" color="warning" />
+              </Box>
+              <Typography variant="body2">
+                +{((pricing.urgencyAmount || 0) / 100).toFixed(2)} ₴
+              </Typography>
+            </Box>
+          )}
+          
+          {/* Discount */}
+          {pricing.discountAmount && pricing.discountAmount > 0 && (
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2">
+                  Знижка:
+                </Typography>
+                <Chip label="-" size="small" color="success" />
+              </Box>
+              <Typography variant="body2">
+                -{((pricing.discountAmount || 0) / 100).toFixed(2)} ₴
+              </Typography>
+            </Box>
+          )}
+          
+          {/* Final Total */}
+          <Divider sx={{ my: 1 }} />
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="h6">
+              Загальна вартість:
+            </Typography>
+            <Typography variant="h6" color="primary">
+              {((pricing.total || 0) / 100).toFixed(2)} ₴
+            </Typography>
+          </Box>
         </>
       )}
-
-      {/* Final Price */}
-      <Divider sx={{ my: 2 }} />
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h6">
-          Вартість предмета:
-        </Typography>
-        <Typography variant="h6" color="primary">
-          {finalPrice.toFixed(2)} ₴
-        </Typography>
-      </Box>
 
       {/* Additional Info */}
       <Box sx={{ mt: 2 }}>
         <Typography variant="caption" color="text.secondary">
-          * Остаточна вартість може змінитися після застосування глобальних знижок та терміновості
+          * Всі ціни розраховані бекендом на основі актуальних модифікаторів
         </Typography>
       </Box>
     </Box>
   );
 };
 
-// Helper functions (in real implementation these would come from backend/constants)
-function getModifierPercent(code: string): number {
-  const modifierPercents: Record<string, number> = {
-    CHILD: -30,
-    MANUAL: 20,
-    DIRTY: 50,
-    URGENT: 100,
-    FUR_COLLAR: 30,
-    WATERPROOF: 30,
-    SILK: 50,
-    COMBINED: 100,
-    TOYS: 100,
-    BW_COLOR: 20,
-    WEDDING: 30,
-    IRON: 70,
-    DYE_AFTER: 50,
-    DYE_BEFORE: 100,
-    INSERTS: 30,
-    PEARL: 30,
-    PADDING_FUR: -20,
-  };
-  return modifierPercents[code] || 0;
-}
-
-function getModifierLabel(code: string): string {
-  const modifierLabels: Record<string, string> = {
-    CHILD: 'Дитячі речі',
-    MANUAL: 'Ручна чистка',
-    DIRTY: 'Дуже забруднені',
-    URGENT: 'Термінова чистка',
-    FUR_COLLAR: 'З хутряними елементами',
-    WATERPROOF: 'Водовідштовхуюче покриття',
-    SILK: 'Натуральний шовк',
-    COMBINED: 'Комбіновані вироби',
-    TOYS: 'Великі м\'які іграшки',
-    BW_COLOR: 'Чорний/світлі тони',
-    WEDDING: 'Весільна сукня',
-    IRON: 'Прасування шкіри',
-    DYE_AFTER: 'Фарбування після чистки',
-    DYE_BEFORE: 'Фарбування до чистки',
-    INSERTS: 'Зі вставками',
-    PEARL: 'Перламутрове покриття',
-    PADDING_FUR: 'Дублянка на штучному хутрі',
-  };
-  return modifierLabels[code] || code;
-}
+// Helper functions removed - now using real backend calculations

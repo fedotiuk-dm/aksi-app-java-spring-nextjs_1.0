@@ -9,11 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aksi.api.pricing.dto.CalculatedItemPrice;
 import com.aksi.api.pricing.dto.CalculationTotals;
 import com.aksi.api.pricing.dto.DiscountDto;
+import com.aksi.api.pricing.dto.DiscountType;
 import com.aksi.api.pricing.dto.DiscountsResponse;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.api.pricing.dto.PriceModifierDto;
 import com.aksi.api.pricing.dto.PriceModifiersResponse;
+import com.aksi.api.pricing.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.domain.pricing.DiscountEntity;
 import com.aksi.domain.pricing.PriceModifierEntity;
@@ -65,7 +67,11 @@ public class PricingServiceImpl implements PricingService {
         CalculatedItemPrice calculatedItem =
             itemPriceCalculator.calculate(item, priceListItem, request.getGlobalModifiers());
         calculatedItems.add(calculatedItem);
-      } catch (Exception e) {
+      } catch (NotFoundException e) {
+        log.warn(
+            "Error calculating price for item {}: {}", item.getPriceListItemId(), e.getMessage());
+        warnings.add("Unable to calculate price for item: " + e.getMessage());
+      } catch (RuntimeException e) {
         log.warn(
             "Error calculating price for item {}: {}", item.getPriceListItemId(), e.getMessage());
         warnings.add("Unable to calculate price for item: " + e.getMessage());
@@ -79,6 +85,21 @@ public class PricingServiceImpl implements PricingService {
     PriceCalculationResponse response = new PriceCalculationResponse();
     response.setItems(calculatedItems);
     response.setTotals(totals);
+    // Add warnings if discount selected but not applicable for some items
+    var modifiers = request.getGlobalModifiers();
+    if (modifiers != null
+        && modifiers.getDiscountType() != null
+        && modifiers.getDiscountType() != DiscountType.NONE) {
+      long ineligibleCount =
+          calculatedItems.stream()
+              .filter(i -> Boolean.FALSE.equals(i.getCalculations().getDiscountEligible()))
+              .count();
+      if (ineligibleCount > 0) {
+        warnings.add(
+            "Знижка не застосовується до частини позицій (прання/прасування/фарбування). "
+                + "Сума для знижки розрахована тільки по дозволених категоріях.");
+      }
+    }
     response.setWarnings(warnings);
 
     return response;
@@ -86,13 +107,14 @@ public class PricingServiceImpl implements PricingService {
 
   @Override
   @Transactional(readOnly = true)
-  public PriceModifiersResponse listPriceModifiers(String categoryCode, Boolean active) {
+  public PriceModifiersResponse listPriceModifiers(
+      ServiceCategoryType categoryCode, Boolean active) {
     log.debug("Listing price modifiers for category: {}, active: {}", categoryCode, active);
 
     List<PriceModifierEntity> modifiers;
 
     if (categoryCode != null) {
-      modifiers = priceModifierRepository.findActiveByCategoryCode(categoryCode);
+      modifiers = priceModifierRepository.findActiveByCategoryCode(categoryCode.getValue());
     } else if (active == null || active) {
       modifiers = priceModifierRepository.findAllActiveOrderedBySortOrder();
     } else {

@@ -35,7 +35,7 @@ export const generateReceiptPreviewBody = zod.object({
   "totalAmount": zod.number().describe('Total amount in kopiykas'),
   "prepaidAmount": zod.number().optional().describe('Prepaid amount in kopiykas'),
   "dueAmount": zod.number().optional().describe('Due amount in kopiykas'),
-  "paymentMethod": zod.string().optional().describe('Payment method'),
+  "paymentMethod": zod.enum(['CASH', 'TERMINAL', 'BANK_TRANSFER']).optional(),
   "createdAt": zod.iso.datetime({}).describe('Order creation timestamp'),
   "completionDate": zod.iso.datetime({}).optional().describe('Expected completion date'),
   "notes": zod.string().optional().describe('Additional notes')
@@ -52,7 +52,7 @@ export const generateReceiptPreviewResponse = zod.instanceof(File)
  * @summary Email receipt to customer
  */
 export const emailOrderReceiptParams = zod.object({
-  "orderId": zod.number().describe('Order ID')
+  "orderId": zod.uuid().describe('Order ID')
 })
 
 export const emailOrderReceiptBody = zod.object({

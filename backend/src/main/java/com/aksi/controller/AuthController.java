@@ -14,15 +14,10 @@ import com.aksi.service.auth.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-/**
- * REST controller for authentication endpoints. Thin layer between OpenAPI and service with
- * logging.
- */
+/** REST controller for authentication endpoints. Thin layer between OpenAPI and service. */
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 public class AuthController implements AuthApi {
 
   private final AuthService authService;
@@ -30,44 +25,28 @@ public class AuthController implements AuthApi {
 
   @Override
   public ResponseEntity<LoginResponse> login(LoginRequest loginRequest) {
-    log.info("Login attempt for username: {}", loginRequest.getUsername());
-
     HttpSession session = request.getSession(true);
     LoginResponse response = authService.login(loginRequest, session);
-
-    log.info("Login successful for username: {}", loginRequest.getUsername());
     return ResponseEntity.ok(response);
   }
 
   @Override
   public ResponseEntity<Void> logout() {
     HttpSession session = request.getSession(false);
-    log.info("Logout request from session: {}", session != null ? session.getId() : "no session");
-
     authService.logout(session);
-
-    log.info("Logout completed");
     return ResponseEntity.noContent().build();
   }
 
   @Override
   public ResponseEntity<SessionInfo> getCurrentSession() {
-    log.debug("Getting current session info");
-
     HttpSession session = request.getSession(false);
     SessionInfo sessionInfo = authService.getSessionInfo(session);
-
-    log.debug("Retrieved session info for user: {}", sessionInfo.getUsername());
     return ResponseEntity.ok(sessionInfo);
   }
 
   @Override
   public ResponseEntity<Void> invalidateAllSessions(UUID userId) {
-    log.warn("ADMIN ACTION: Invalidating all sessions for userId: {} - initiated by admin", userId);
-
     authService.invalidateAllUserSessions(userId);
-
-    log.warn("ADMIN ACTION: All sessions invalidated for userId: {}", userId);
     return ResponseEntity.noContent().build();
   }
 }

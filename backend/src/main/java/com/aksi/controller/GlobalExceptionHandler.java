@@ -18,6 +18,9 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -26,6 +29,7 @@ import com.aksi.exception.ConflictException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.exception.UnauthorizedException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /** Global exception handler for REST API. */
@@ -91,14 +95,15 @@ public class GlobalExceptionHandler {
     log.warn("Method argument type mismatch: {}", e.getMessage());
 
     String message = e.getMessage();
-    if (message.contains("No enum constant")) {
+    if (message != null && message.contains("No enum constant")) {
       String parameterName = e.getName();
       Object invalidValue = e.getValue();
 
       // Extract valid enum values from the cause if it's an enum type
       String validValues = "";
-      if (e.getRequiredType() != null && e.getRequiredType().isEnum()) {
-        Object[] enumConstants = e.getRequiredType().getEnumConstants();
+      Class<?> requiredType = e.getRequiredType();
+      if (requiredType != null && requiredType.isEnum()) {
+        Object[] enumConstants = requiredType.getEnumConstants();
         if (enumConstants != null) {
           validValues =
               " Valid values are: "
@@ -210,12 +215,17 @@ public class GlobalExceptionHandler {
   }
 
   private String getPath() {
-    jakarta.servlet.http.HttpServletRequest request =
-        (jakarta.servlet.http.HttpServletRequest)
-            org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes()
-                .resolveReference(
-                    org.springframework.web.context.request.RequestAttributes.REFERENCE_REQUEST);
-    assert request != null;
-    return request.getServletPath();
+    try {
+      RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+      if (attrs instanceof ServletRequestAttributes sra) {
+        HttpServletRequest request = sra.getRequest();
+        if (request != null) {
+          return request.getServletPath();
+        }
+      }
+    } catch (IllegalStateException ignored) {
+      // No request context available
+    }
+    return "";
   }
 }

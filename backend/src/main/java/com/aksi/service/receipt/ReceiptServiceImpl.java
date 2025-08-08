@@ -62,7 +62,7 @@ public class ReceiptServiceImpl implements ReceiptService {
   }
 
   @Override
-  public EmailReceiptResponse emailOrderReceipt(Long orderId, EmailReceiptRequest request) {
+  public EmailReceiptResponse emailOrderReceipt(UUID orderId, EmailReceiptRequest request) {
     // Email functionality not implemented yet
     EmailReceiptResponse response = new EmailReceiptResponse();
     response.setSuccess(false);

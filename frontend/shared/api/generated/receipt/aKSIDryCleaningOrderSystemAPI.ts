@@ -112,7 +112,7 @@ export const useGenerateReceiptPreview = <TError = ErrorResponse,
  * @summary Email receipt to customer
  */
 export const emailOrderReceipt = (
-    orderId: number,
+    orderId: string,
     emailReceiptRequest: EmailReceiptRequest,
  options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
 ) => {
@@ -128,9 +128,9 @@ export const emailOrderReceipt = (
   
 
 
-export const getEmailOrderReceiptMutationOptions = <TError = ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof emailOrderReceipt>>, TError,{orderId: number;data: EmailReceiptRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof emailOrderReceipt>>, TError,{orderId: number;data: EmailReceiptRequest}, TContext> => {
+export const getEmailOrderReceiptMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof emailOrderReceipt>>, TError,{orderId: string;data: EmailReceiptRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof emailOrderReceipt>>, TError,{orderId: string;data: EmailReceiptRequest}, TContext> => {
 
 const mutationKey = ['emailOrderReceipt'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -142,7 +142,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof emailOrderReceipt>>, {orderId: number;data: EmailReceiptRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof emailOrderReceipt>>, {orderId: string;data: EmailReceiptRequest}> = (props) => {
           const {orderId,data} = props ?? {};
 
           return  emailOrderReceipt(orderId,data,requestOptions)
@@ -155,17 +155,17 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type EmailOrderReceiptMutationResult = NonNullable<Awaited<ReturnType<typeof emailOrderReceipt>>>
     export type EmailOrderReceiptMutationBody = EmailReceiptRequest
-    export type EmailOrderReceiptMutationError = ErrorResponse | ErrorResponse
+    export type EmailOrderReceiptMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
  * @summary Email receipt to customer
  */
-export const useEmailOrderReceipt = <TError = ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof emailOrderReceipt>>, TError,{orderId: number;data: EmailReceiptRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+export const useEmailOrderReceipt = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof emailOrderReceipt>>, TError,{orderId: string;data: EmailReceiptRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof emailOrderReceipt>>,
         TError,
-        {orderId: number;data: EmailReceiptRequest},
+        {orderId: string;data: EmailReceiptRequest},
         TContext
       > => {
 
@@ -196,7 +196,7 @@ export const getGetReceiptTemplatesQueryKey = () => {
     }
 
     
-export const getGetReceiptTemplatesQueryOptions = <TData = Awaited<ReturnType<typeof getReceiptTemplates>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReceiptTemplates>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getGetReceiptTemplatesQueryOptions = <TData = Awaited<ReturnType<typeof getReceiptTemplates>>, TError = ErrorResponse | ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReceiptTemplates>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -215,10 +215,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetReceiptTemplatesQueryResult = NonNullable<Awaited<ReturnType<typeof getReceiptTemplates>>>
-export type GetReceiptTemplatesQueryError = unknown
+export type GetReceiptTemplatesQueryError = ErrorResponse | ErrorResponse
 
 
-export function useGetReceiptTemplates<TData = Awaited<ReturnType<typeof getReceiptTemplates>>, TError = unknown>(
+export function useGetReceiptTemplates<TData = Awaited<ReturnType<typeof getReceiptTemplates>>, TError = ErrorResponse | ErrorResponse>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReceiptTemplates>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getReceiptTemplates>>,
@@ -228,7 +228,7 @@ export function useGetReceiptTemplates<TData = Awaited<ReturnType<typeof getRece
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetReceiptTemplates<TData = Awaited<ReturnType<typeof getReceiptTemplates>>, TError = unknown>(
+export function useGetReceiptTemplates<TData = Awaited<ReturnType<typeof getReceiptTemplates>>, TError = ErrorResponse | ErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReceiptTemplates>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getReceiptTemplates>>,
@@ -238,7 +238,7 @@ export function useGetReceiptTemplates<TData = Awaited<ReturnType<typeof getRece
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetReceiptTemplates<TData = Awaited<ReturnType<typeof getReceiptTemplates>>, TError = unknown>(
+export function useGetReceiptTemplates<TData = Awaited<ReturnType<typeof getReceiptTemplates>>, TError = ErrorResponse | ErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReceiptTemplates>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -246,7 +246,7 @@ export function useGetReceiptTemplates<TData = Awaited<ReturnType<typeof getRece
  * @summary Get available receipt templates
  */
 
-export function useGetReceiptTemplates<TData = Awaited<ReturnType<typeof getReceiptTemplates>>, TError = unknown>(
+export function useGetReceiptTemplates<TData = Awaited<ReturnType<typeof getReceiptTemplates>>, TError = ErrorResponse | ErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getReceiptTemplates>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -289,7 +289,7 @@ export const getGenerateOrderReceiptQueryKey = (orderId?: string,
     }
 
     
-export const getGenerateOrderReceiptQueryOptions = <TData = Awaited<ReturnType<typeof generateOrderReceipt>>, TError = ErrorResponse | ErrorResponse>(orderId: string,
+export const getGenerateOrderReceiptQueryOptions = <TData = Awaited<ReturnType<typeof generateOrderReceipt>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(orderId: string,
     params?: GenerateOrderReceiptParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateOrderReceipt>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
@@ -309,10 +309,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GenerateOrderReceiptQueryResult = NonNullable<Awaited<ReturnType<typeof generateOrderReceipt>>>
-export type GenerateOrderReceiptQueryError = ErrorResponse | ErrorResponse
+export type GenerateOrderReceiptQueryError = ErrorResponse | ErrorResponse | ErrorResponse
 
 
-export function useGenerateOrderReceipt<TData = Awaited<ReturnType<typeof generateOrderReceipt>>, TError = ErrorResponse | ErrorResponse>(
+export function useGenerateOrderReceipt<TData = Awaited<ReturnType<typeof generateOrderReceipt>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  orderId: string,
     params: undefined |  GenerateOrderReceiptParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateOrderReceipt>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
@@ -323,7 +323,7 @@ export function useGenerateOrderReceipt<TData = Awaited<ReturnType<typeof genera
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGenerateOrderReceipt<TData = Awaited<ReturnType<typeof generateOrderReceipt>>, TError = ErrorResponse | ErrorResponse>(
+export function useGenerateOrderReceipt<TData = Awaited<ReturnType<typeof generateOrderReceipt>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  orderId: string,
     params?: GenerateOrderReceiptParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateOrderReceipt>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
@@ -334,7 +334,7 @@ export function useGenerateOrderReceipt<TData = Awaited<ReturnType<typeof genera
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGenerateOrderReceipt<TData = Awaited<ReturnType<typeof generateOrderReceipt>>, TError = ErrorResponse | ErrorResponse>(
+export function useGenerateOrderReceipt<TData = Awaited<ReturnType<typeof generateOrderReceipt>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  orderId: string,
     params?: GenerateOrderReceiptParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateOrderReceipt>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
@@ -343,7 +343,7 @@ export function useGenerateOrderReceipt<TData = Awaited<ReturnType<typeof genera
  * @summary Generate receipt for order
  */
 
-export function useGenerateOrderReceipt<TData = Awaited<ReturnType<typeof generateOrderReceipt>>, TError = ErrorResponse | ErrorResponse>(
+export function useGenerateOrderReceipt<TData = Awaited<ReturnType<typeof generateOrderReceipt>>, TError = ErrorResponse | ErrorResponse | ErrorResponse>(
  orderId: string,
     params?: GenerateOrderReceiptParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof generateOrderReceipt>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 

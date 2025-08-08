@@ -15,7 +15,6 @@ import com.aksi.service.auth.LoginAttemptService;
 import com.aksi.service.auth.SecurityEventAuditService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * REST controller for security management endpoints. Provides security monitoring, user unlocking,
@@ -24,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/auth/security")
 @RequiredArgsConstructor
-@Slf4j
 @Profile("!dev") // Disable this controller in dev mode
 public class SecurityController {
 
@@ -77,8 +75,6 @@ public class SecurityController {
   @GetMapping("/attempts")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<SecurityAttemptsResponse> getSecurityAttempts() {
-    log.debug("Getting security attempts statistics");
-
     SecurityAttemptsResponse response = securityEventAuditService.getSecurityAttempts();
 
     return ResponseEntity.ok(response);
@@ -88,8 +84,6 @@ public class SecurityController {
   @PostMapping("/unlock/{username}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Void> unlockUser(@PathVariable String username) {
-    log.info("Admin unlocking user: {}", username);
-
     loginAttemptService.unlockUser(username);
 
     return ResponseEntity.ok().build();
@@ -99,8 +93,6 @@ public class SecurityController {
   @PostMapping("/unlock-ip/{ipAddress}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Void> unlockIp(@PathVariable String ipAddress) {
-    log.info("Admin unlocking IP address: {}", ipAddress);
-
     loginAttemptService.unlockIp(ipAddress);
 
     return ResponseEntity.ok().build();
@@ -109,8 +101,6 @@ public class SecurityController {
   /** Get current security policy settings. */
   @GetMapping("/policy")
   public ResponseEntity<SecurityPolicyResponse> getSecurityPolicy() {
-    log.debug("Getting security policy information");
-
     SecurityPolicyResponse response = new SecurityPolicyResponse();
 
     // Rate limiting policy

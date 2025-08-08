@@ -12,6 +12,7 @@ import com.aksi.api.cart.dto.CartItemInfo;
 import com.aksi.api.cart.dto.CartPricingInfo;
 import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
+import com.aksi.exception.BadRequestException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.CartMapper;
 import com.aksi.repository.CartRepository;
@@ -33,6 +34,7 @@ public class CartQueryService {
   private final CartRepository cartRepository;
   private final CartMapper cartMapper;
   private final CartPricingService pricingService;
+  private final CartContextService cartContextService;
 
   /**
    * Find active cart for customer.
@@ -114,5 +116,20 @@ public class CartQueryService {
     return findActiveCart(customerId)
         .orElseThrow(
             () -> new NotFoundException("No active cart found for customer: " + customerId));
+  }
+
+  /**
+   * Get currently active customer ID from session context.
+   *
+   * @return current customer ID
+   * @throws BadRequestException if no customer is activated
+   */
+  public UUID getCurrentCustomerId() {
+    return cartContextService
+        .getActiveCustomerId()
+        .orElseThrow(
+            () ->
+                new BadRequestException(
+                    "No customer activated for cart. Please select a customer first."));
   }
 }

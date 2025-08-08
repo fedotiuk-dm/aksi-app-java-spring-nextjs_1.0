@@ -77,4 +77,19 @@ public interface CartService {
    * @return Number of deleted carts
    */
   int cleanupExpiredCarts();
+
+  /**
+   * Activate customer for cart operations in current session
+   *
+   * @param customerId Customer ID to activate
+   */
+  void activateCustomerForCart(UUID customerId);
+
+  /**
+   * Get currently active customer ID from session
+   *
+   * @return Current customer ID
+   * @throws BadRequestException if no customer is activated
+   */
+  UUID getCurrentCustomerId();
 }

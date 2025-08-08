@@ -149,7 +149,7 @@ export const updateBranch = (
   
 
 
-export const getUpdateBranchMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
+export const getUpdateBranchMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBranch>>, TError,{branchId: string;data: UpdateBranchRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateBranch>>, TError,{branchId: string;data: UpdateBranchRequest}, TContext> => {
 
@@ -176,12 +176,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdateBranchMutationResult = NonNullable<Awaited<ReturnType<typeof updateBranch>>>
     export type UpdateBranchMutationBody = UpdateBranchRequest
-    export type UpdateBranchMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
+    export type UpdateBranchMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
  * @summary Update branch
  */
-export const useUpdateBranch = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
+export const useUpdateBranch = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBranch>>, TError,{branchId: string;data: UpdateBranchRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateBranch>>,
@@ -368,7 +368,7 @@ export const createBranch = (
   
 
 
-export const getCreateBranchMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
+export const getCreateBranchMutationOptions = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBranch>>, TError,{data: CreateBranchRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createBranch>>, TError,{data: CreateBranchRequest}, TContext> => {
 
@@ -395,12 +395,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type CreateBranchMutationResult = NonNullable<Awaited<ReturnType<typeof createBranch>>>
     export type CreateBranchMutationBody = CreateBranchRequest
-    export type CreateBranchMutationError = ErrorResponse | ErrorResponse | ErrorResponse
+    export type CreateBranchMutationError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse
 
     /**
  * @summary Create new branch
  */
-export const useCreateBranch = <TError = ErrorResponse | ErrorResponse | ErrorResponse,
+export const useCreateBranch = <TError = ErrorResponse | ErrorResponse | ErrorResponse | ErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBranch>>, TError,{data: CreateBranchRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createBranch>>,

@@ -6,7 +6,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.stereotype.Service;
 
 import com.aksi.domain.user.UserEntity;
-import com.aksi.exception.BusinessValidationException;
+import com.aksi.exception.BadRequestException;
 import com.aksi.exception.UnauthorizedException;
 
 import jakarta.servlet.http.HttpSession;
@@ -126,30 +126,29 @@ public class AuthValidationService {
    * Validate password strength and format according to enhanced security policy.
    *
    * @param password password to validate
-   * @throws BusinessValidationException if password is invalid
+   * @throws BadRequestException if password is invalid
    */
   public void validatePassword(String password) {
     if (password == null || password.trim().isEmpty()) {
-      throw new BusinessValidationException("Password cannot be empty");
+      throw new BadRequestException("Password cannot be empty");
     }
 
     if (password.length() < 12) {
-      throw new BusinessValidationException("Password must be at least 12 characters long");
+      throw new BadRequestException("Password must be at least 12 characters long");
     }
 
     if (password.length() > 128) {
-      throw new BusinessValidationException("Password cannot be longer than 128 characters");
+      throw new BadRequestException("Password cannot be longer than 128 characters");
     }
 
     if (!PASSWORD_PATTERN.matcher(password).matches()) {
-      throw new BusinessValidationException(
+      throw new BadRequestException(
           "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character (@$!%*?&)");
     }
 
     // Check for common weak passwords
     if (isCommonPassword(password)) {
-      throw new BusinessValidationException(
-          "Password is too common, please choose a stronger password");
+      throw new BadRequestException("Password is too common, please choose a stronger password");
     }
 
     log.debug("Password validation passed");
@@ -159,31 +158,31 @@ public class AuthValidationService {
    * Validate username format and requirements.
    *
    * @param username username to validate
-   * @throws BusinessValidationException if username is invalid
+   * @throws BadRequestException if username is invalid
    */
   public void validateUsername(String username) {
     if (username == null || username.trim().isEmpty()) {
-      throw new BusinessValidationException("Username cannot be empty");
+      throw new BadRequestException("Username cannot be empty");
     }
 
     String trimmed = username.trim();
     if (trimmed.length() < 3) {
-      throw new BusinessValidationException("Username must be at least 3 characters long");
+      throw new BadRequestException("Username must be at least 3 characters long");
     }
 
     if (trimmed.length() > 50) {
-      throw new BusinessValidationException("Username cannot be longer than 50 characters");
+      throw new BadRequestException("Username cannot be longer than 50 characters");
     }
 
     // Username can contain letters, numbers, dots, hyphens, underscores
     if (!trimmed.matches("^[a-zA-Z0-9._-]+$")) {
-      throw new BusinessValidationException(
+      throw new BadRequestException(
           "Username can only contain letters, numbers, dots, hyphens, and underscores");
     }
 
     // Username cannot start or end with special characters
     if (trimmed.matches("^[._-].*") || trimmed.matches(".*[._-]$")) {
-      throw new BusinessValidationException("Username cannot start or end with special characters");
+      throw new BadRequestException("Username cannot start or end with special characters");
     }
 
     log.debug("Username validation passed for: {}", trimmed);

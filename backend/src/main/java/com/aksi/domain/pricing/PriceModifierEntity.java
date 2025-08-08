@@ -2,6 +2,7 @@ package com.aksi.domain.pricing;
 
 import java.util.List;
 
+import com.aksi.api.pricing.dto.ModifierType;
 import com.aksi.domain.common.BaseEntity;
 
 import jakarta.persistence.CollectionTable;
@@ -68,12 +69,4 @@ public class PriceModifierEntity extends BaseEntity {
 
   @Column(name = "sort_order", nullable = false)
   private Integer sortOrder = 0;
-
-  /** Modifier type enumeration */
-  public enum ModifierType {
-    /** Percentage-based modifier (value in basis points: 1550 = 15.5%) */
-    PERCENTAGE,
-    /** Fixed amount modifier (value in kopiykas) */
-    FIXED
-  }
 }

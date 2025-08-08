@@ -1,4 +1,4 @@
-openapi: 3.1.1
+openapi: 3.0.4
 info:
   title: Customer API
   description: Customer management API for dry cleaning service
@@ -65,15 +65,15 @@ paths:
             maximum: 100
             default: 20
       responses:
-        '200':
+        "200":
           description: List of customers
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomersResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    
+                $ref: "#/components/schemas/CustomersResponse"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+
     post:
       operationId: createCustomer
       summary: Create customer
@@ -87,18 +87,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateCustomerRequest'
+              $ref: "#/components/schemas/CreateCustomerRequest"
       responses:
-        '201':
+        "201":
           description: Customer created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomerInfo'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/CustomerInfo"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
   /api/customers/{customerId}:
     parameters:
@@ -109,7 +109,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     get:
       operationId: getCustomer
       summary: Get customer
@@ -119,17 +119,17 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Customer details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomerInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    
+                $ref: "#/components/schemas/CustomerInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+
     put:
       operationId: updateCustomer
       summary: Update customer
@@ -143,20 +143,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCustomerRequest'
+              $ref: "#/components/schemas/UpdateCustomerRequest"
       responses:
-        '200':
+        "200":
           description: Customer updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomerInfo'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: "#/components/schemas/CustomerInfo"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/customers/{customerId}/exists:
     parameters:
@@ -167,7 +167,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     head:
       operationId: checkCustomerExists
       summary: Check if customer exists
@@ -177,36 +177,17 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '204':
+        "204":
           description: Customer exists
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
 components:
-  responses:
-    BadRequest:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    Unauthorized:
-      description: Unauthorized access
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-
+  securitySchemes:
+    cookieAuth:
+      $ref: "../openapi/common.yaml#/components/securitySchemes/cookieAuth"
   schemas:
     CustomerInfo:
       type: object
@@ -229,22 +210,26 @@ components:
           type: string
           description: Last name
         phonePrimary:
-          type: string
-          description: Primary phone number
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/PhoneNumber"
+          description: Primary phone number (must be unique for active customers)
+          x-unique-active: true
         email:
-          type: string
-          format: email
-          description: Email address
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/Email"
+          description: Email address (must be unique for active customers)
+          x-unique-active: true
         address:
           type: string
           description: Address
         contactPreferences:
           type: array
           items:
-            $ref: '#/components/schemas/ContactPreference'
+            $ref: "../openapi/common.yaml#/components/schemas/ContactPreference"
           description: Preferred contact methods
         infoSource:
-          $ref: '#/components/schemas/InfoSource'
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/InfoSource"
           description: How customer learned about the service
         infoSourceOther:
           type: string
@@ -254,7 +239,7 @@ components:
           description: Internal notes about customer
         discountCardNumber:
           type: string
-          description: Discount card number
+          description: Discount card number (unique)
         active:
           type: boolean
           description: Whether customer is active
@@ -262,6 +247,14 @@ components:
           type: string
           format: date-time
           description: Registration date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        version:
+          type: integer
+          format: int64
+          description: Version for optimistic locking
 
     CreateCustomerRequest:
       type: object
@@ -281,15 +274,15 @@ components:
           maxLength: 100
           description: Last name
         phonePrimary:
-          type: string
-          pattern: '^\+?[0-9\s\-\(\)]+$'
-          minLength: 10
-          maxLength: 20
-          description: Primary phone number
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/PhoneNumber"
+          description: Primary phone number (must be unique for active customers)
+          x-unique-active: true
         email:
-          type: string
-          format: email
-          description: Email address
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/Email"
+          description: Email address (must be unique for active customers)
+          x-unique-active: true
         address:
           type: string
           maxLength: 500
@@ -297,10 +290,11 @@ components:
         contactPreferences:
           type: array
           items:
-            $ref: '#/components/schemas/ContactPreference'
+            $ref: "../openapi/common.yaml#/components/schemas/ContactPreference"
           description: Preferred contact methods
         infoSource:
-          $ref: '#/components/schemas/InfoSource'
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/InfoSource"
           description: How customer learned about the service
         infoSourceOther:
           type: string
@@ -313,7 +307,8 @@ components:
         discountCardNumber:
           type: string
           maxLength: 20
-          description: Discount card number
+          description: Discount card number (must be unique)
+          x-unique: true
 
     UpdateCustomerRequest:
       type: object
@@ -329,15 +324,15 @@ components:
           maxLength: 100
           description: Last name
         phonePrimary:
-          type: string
-          pattern: '^\+?[0-9\s\-\(\)]+$'
-          minLength: 10
-          maxLength: 20
-          description: Primary phone number
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/PhoneNumber"
+          description: Primary phone number (must be unique for active customers)
+          x-unique-active: true
         email:
-          type: string
-          format: email
-          description: Email address
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/Email"
+          description: Email address (must be unique for active customers)
+          x-unique-active: true
         address:
           type: string
           maxLength: 500
@@ -345,10 +340,11 @@ components:
         contactPreferences:
           type: array
           items:
-            $ref: '#/components/schemas/ContactPreference'
+            $ref: "../openapi/common.yaml#/components/schemas/ContactPreference"
           description: Preferred contact methods
         infoSource:
-          $ref: '#/components/schemas/InfoSource'
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/InfoSource"
           description: How customer learned about the service
         infoSourceOther:
           type: string
@@ -361,7 +357,8 @@ components:
         discountCardNumber:
           type: string
           maxLength: 20
-          description: Discount card number
+          description: Discount card number (must be unique)
+          x-unique: true
         active:
           type: boolean
           description: Whether customer is active
@@ -377,7 +374,7 @@ components:
         customers:
           type: array
           items:
-            $ref: '#/components/schemas/CustomerInfo'
+            $ref: "#/components/schemas/CustomerInfo"
         total:
           type: integer
           description: Total number of customers
@@ -388,41 +385,4 @@ components:
           type: integer
           description: Number of items returned
 
-    ContactPreference:
-      type: string
-      enum: [PHONE, SMS, VIBER]
-      description: Contact preference type
-
-    InfoSource:
-      type: string
-      enum: [INSTAGRAM, GOOGLE, RECOMMENDATION, OTHER]
-      description: How customer learned about the service
-
-    ErrorResponse:
-      type: object
-      required:
-        - error
-        - message
-        - timestamp
-      properties:
-        error:
-          type: string
-          description: Error code
-        message:
-          type: string
-          description: Error message
-        timestamp:
-          type: string
-          format: date-time
-          description: Error timestamp
-        details:
-          type: object
-          additionalProperties: true
-          description: Additional error details
-
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session-based authentication using httpOnly cookies
+  # Security schemes and error responses centralized in common.yaml

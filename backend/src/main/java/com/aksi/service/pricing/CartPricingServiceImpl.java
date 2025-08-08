@@ -8,11 +8,14 @@ import org.springframework.stereotype.Service;
 import com.aksi.api.cart.dto.CartItemPricingInfo;
 import com.aksi.api.cart.dto.CartPricingInfo;
 import com.aksi.api.cart.dto.ModifierDetail;
+import com.aksi.api.pricing.dto.DiscountType;
 import com.aksi.api.pricing.dto.GlobalPriceModifiers;
 import com.aksi.api.pricing.dto.ItemCharacteristics;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
+import com.aksi.api.pricing.dto.UrgencyType;
+import com.aksi.api.pricing.dto.WearLevel;
 import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
 import com.aksi.domain.cart.CartItemModifierEntity;
@@ -136,8 +139,7 @@ public class CartPricingServiceImpl implements CartPricingService {
       // Note: filler field is not available in pricing ItemCharacteristics
       if (cartItem.getCharacteristics().getWearLevel() != null) {
         characteristics.setWearLevel(
-            ItemCharacteristics.WearLevelEnum.fromValue(
-                cartItem.getCharacteristics().getWearLevel()));
+            WearLevel.fromValue(cartItem.getCharacteristics().getWearLevel()));
       }
       item.setCharacteristics(characteristics);
     }
@@ -158,7 +160,7 @@ public class CartPricingServiceImpl implements CartPricingService {
 
     if (urgencyType != null) {
       try {
-        modifiers.setUrgencyType(GlobalPriceModifiers.UrgencyTypeEnum.fromValue(urgencyType));
+        modifiers.setUrgencyType(UrgencyType.fromValue(urgencyType));
       } catch (IllegalArgumentException e) {
         log.warn("Unknown urgency type: {}", urgencyType);
       }
@@ -166,7 +168,7 @@ public class CartPricingServiceImpl implements CartPricingService {
 
     if (discountType != null) {
       try {
-        modifiers.setDiscountType(GlobalPriceModifiers.DiscountTypeEnum.fromValue(discountType));
+        modifiers.setDiscountType(DiscountType.fromValue(discountType));
         modifiers.setDiscountPercentage(discountPercentage);
       } catch (IllegalArgumentException e) {
         log.warn("Unknown discount type: {}", discountType);

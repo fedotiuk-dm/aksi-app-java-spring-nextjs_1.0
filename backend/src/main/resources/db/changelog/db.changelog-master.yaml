@@ -36,12 +36,13 @@ databaseChangeLog:
       file: db/changelog/changes/009-5-increase-unit-of-measure-size.yaml
   - include:
       file: db/changelog/changes/010-create-services-from-price-list.yaml
-  - include:
-      file: db/changelog/changes/010-7-ensure-items-columns.yaml
-  - include:
-      file: db/changelog/changes/010-8-ensure-catalog-number-column.yaml
-  - include:
-      file: db/changelog/changes/010-9-ensure-unit-of-measure-column.yaml
+  # Commented out due to existing columns issue - replaced by 024
+  # - include:
+  #     file: db/changelog/changes/010-7-ensure-items-columns.yaml
+  # - include:
+  #     file: db/changelog/changes/010-8-ensure-catalog-number-column.yaml
+  # - include:
+  #     file: db/changelog/changes/010-9-ensure-unit-of-measure-column.yaml
   - include:
       file: db/changelog/changes/011-create-items-from-price-list.yaml
   - include:
@@ -60,14 +61,20 @@ databaseChangeLog:
       file: db/changelog/changes/017-update-customer-for-api.yaml
   - include:
       file: db/changelog/changes/018-create-branches-table.yaml
-  - include:
-      file: db/changelog/changes/019-add-version-to-branches.yaml
+  # Commented out - version column already exists - handled by 024
+  # - include:
+  #     file: db/changelog/changes/019-add-version-to-branches.yaml
   - include:
       file: db/changelog/changes/020-create-pricing-tables.yaml
   - include:
       file: db/changelog/changes/021-create-order-tables.yaml
   - include:
       file: db/changelog/changes/022-add-price-modifiers-data.yaml
+  # Commented out - has same syntax issue as 010-7
+  # - include:
+  #     file: db/changelog/changes/023-fix-items-columns.yaml
+  - include:
+      file: db/changelog/changes/024-skip-existing-columns.yaml
   # - include:
   #     file: db/changelog/changes/005-create-branch-tables.yaml
   # - include:

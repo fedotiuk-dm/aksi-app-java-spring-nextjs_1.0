@@ -1,4 +1,4 @@
-openapi: 3.1.1
+openapi: 3.0.4
 info:
   title: Order API
   description: Order management API for dry cleaning system
@@ -28,10 +28,10 @@ paths:
       security:
         - cookieAuth: []
       parameters:
-        - $ref: '#/components/parameters/PageNumber'
-        - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/SortBy'
-        - $ref: '#/components/parameters/SortOrder'
+        - $ref: "../openapi/common.yaml#/components/parameters/PageNumber"
+        - $ref: "../openapi/common.yaml#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/SortBy"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
         - name: customerId
           in: query
           description: Filter by customer ID
@@ -44,7 +44,7 @@ paths:
           description: Filter by order status
           required: false
           schema:
-            $ref: '#/components/schemas/OrderStatus'
+            $ref: "../openapi/common.yaml#/components/schemas/OrderStatus"
         - name: branchId
           in: query
           description: Filter by branch ID
@@ -67,14 +67,14 @@ paths:
             type: string
             format: date-time
       responses:
-        '200':
+        "200":
           description: List of orders
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderListResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/OrderListResponse"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
     post:
       operationId: createOrder
@@ -89,20 +89,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateOrderRequest'
+              $ref: "#/components/schemas/CreateOrderRequest"
       responses:
-        '201':
+        "201":
           description: Order created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderInfo'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: "#/components/schemas/OrderInfo"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/orders/{orderId}:
     parameters:
@@ -113,7 +113,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     get:
       operationId: getOrderById
       summary: Get order details
@@ -123,17 +123,17 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Order details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    
+                $ref: "#/components/schemas/OrderInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+
     patch:
       operationId: updateOrderStatus
       summary: Update order status
@@ -147,20 +147,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateOrderStatusRequest'
+              $ref: "#/components/schemas/UpdateOrderStatusRequest"
       responses:
-        '200':
+        "200":
           description: Order updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderInfo'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: "#/components/schemas/OrderInfo"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/orders/{orderId}/items/{itemId}/characteristics:
     parameters:
@@ -178,7 +178,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     put:
       operationId: updateItemCharacteristics
       summary: Update item characteristics
@@ -192,20 +192,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateItemCharacteristicsRequest'
+              $ref: "#/components/schemas/UpdateItemCharacteristicsRequest"
       responses:
-        '200':
+        "200":
           description: Characteristics updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderItemInfo'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: "#/components/schemas/OrderItemInfo"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/orders/{orderId}/items/{itemId}/photos:
     parameters:
@@ -223,7 +223,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     post:
       operationId: uploadItemPhoto
       summary: Upload item photo
@@ -237,26 +237,35 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UploadItemPhotoRequest'
+              title: UploadItemPhotoRequest
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Photo file (max 5MB)
+                photoType:
+                  $ref: "../openapi/common.yaml#/components/schemas/PhotoType"
+                photoDescription:
+                  type: string
+                  description: Photo description
       responses:
-        '201':
+        "201":
           description: Photo uploaded successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ItemPhotoInfo'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '413':
-          description: File too large
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ItemPhotoInfo"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+        "413":
+          $ref: "../openapi/common.yaml#/components/responses/PayloadTooLarge"
 
   /api/orders/{orderId}/items/{itemId}/photos/{photoId}:
     parameters:
@@ -278,7 +287,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     delete:
       operationId: deleteItemPhoto
       summary: Delete item photo
@@ -288,12 +297,12 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '204':
+        "204":
           description: Photo deleted successfully
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/orders/{orderId}/receipt:
     parameters:
@@ -304,7 +313,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     get:
       operationId: getOrderReceipt
       summary: Get order receipt
@@ -314,17 +323,17 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Receipt PDF
           content:
             application/pdf:
               schema:
                 type: string
                 format: binary
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/orders/{orderId}/signature:
     parameters:
@@ -335,7 +344,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     post:
       operationId: saveCustomerSignature
       summary: Save customer signature
@@ -349,20 +358,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SaveSignatureRequest'
+              $ref: "#/components/schemas/SaveSignatureRequest"
       responses:
-        '200':
+        "200":
           description: Signature saved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderInfo'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: "#/components/schemas/OrderInfo"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/orders/by-number/{orderNumber}:
     get:
@@ -381,16 +390,16 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Order details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: "#/components/schemas/OrderInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/orders/customer/{customerId}/history:
     get:
@@ -409,19 +418,19 @@ paths:
           schema:
             type: string
             format: uuid
-        - $ref: '#/components/parameters/PageNumber'
-        - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/SortBy'
-        - $ref: '#/components/parameters/SortOrder'
+        - $ref: "../openapi/common.yaml#/components/parameters/PageNumber"
+        - $ref: "../openapi/common.yaml#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/SortBy"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
       responses:
-        '200':
+        "200":
           description: Customer order history
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderListResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/OrderListResponse"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
   /api/orders/customer/{customerId}/recent:
     get:
@@ -450,16 +459,16 @@ paths:
             maximum: 50
             default: 10
       responses:
-        '200':
+        "200":
           description: Recent orders list
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrderInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                  $ref: "#/components/schemas/OrderInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
   /api/orders/due-for-completion:
     get:
@@ -480,19 +489,19 @@ paths:
             minimum: 1
             maximum: 30
             default: 7
-        - $ref: '#/components/parameters/PageNumber'
-        - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/SortBy'
-        - $ref: '#/components/parameters/SortOrder'
+        - $ref: "../openapi/common.yaml#/components/parameters/PageNumber"
+        - $ref: "../openapi/common.yaml#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/SortBy"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
       responses:
-        '200':
+        "200":
           description: Orders due for completion
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderListResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/OrderListResponse"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
   /api/orders/overdue:
     get:
@@ -504,19 +513,19 @@ paths:
       security:
         - cookieAuth: []
       parameters:
-        - $ref: '#/components/parameters/PageNumber'
-        - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/SortBy'
-        - $ref: '#/components/parameters/SortOrder'
+        - $ref: "../openapi/common.yaml#/components/parameters/PageNumber"
+        - $ref: "../openapi/common.yaml#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/SortBy"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
       responses:
-        '200':
+        "200":
           description: Overdue orders
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderListResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/OrderListResponse"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
   /api/orders/by-status:
     get:
@@ -533,7 +542,7 @@ paths:
           description: Order status
           required: true
           schema:
-            $ref: '#/components/schemas/OrderStatus'
+            $ref: "../openapi/common.yaml#/components/schemas/OrderStatus"
         - name: branchId
           in: query
           description: Filter by branch ID
@@ -542,16 +551,16 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Orders with specified status
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrderInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                  $ref: "#/components/schemas/OrderInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
   /api/orders/{orderId}/items:
     get:
@@ -571,18 +580,18 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Order items list
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrderItemInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                  $ref: "#/components/schemas/OrderItemInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/orders/{orderId}/payments:
     get:
@@ -602,18 +611,18 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Order payments list
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PaymentInfo'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                  $ref: "#/components/schemas/PaymentInfo"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/orders/{orderId}/payment:
     parameters:
@@ -624,7 +633,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     post:
       operationId: addOrderPayment
       summary: Add payment to order
@@ -638,64 +647,28 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddPaymentRequest'
+              $ref: "#/components/schemas/AddPaymentRequest"
       responses:
-        '201':
+        "201":
           description: Payment registered successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaymentInfo'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: "#/components/schemas/PaymentInfo"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
 components:
-  responses:
-    BadRequest:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    Unauthorized:
-      description: Unauthorized access
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-
   parameters:
     PageNumber:
-      name: page
-      in: query
-      description: Page number (0-based)
-      schema:
-        type: integer
-        minimum: 0
-        default: 0
-    
+      $ref: "../openapi/common.yaml#/components/parameters/PageNumber"
     PageSize:
-      name: size
-      in: query
-      description: Page size
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 20
-    
+      $ref: "../openapi/common.yaml#/components/parameters/PageSize"
+
     SortBy:
       name: sortBy
       in: query
@@ -704,62 +677,11 @@ components:
         type: string
         default: createdAt
         enum: [createdAt, orderNumber, status, totalAmount]
-    
+
     SortOrder:
-      name: sortOrder
-      in: query
-      description: Sort order
-      schema:
-        type: string
-        enum: [asc, desc]
-        default: desc
+      $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
 
   schemas:
-    OrderStatus:
-      type: string
-      enum:
-        - PENDING
-        - ACCEPTED
-        - IN_PROGRESS
-        - READY
-        - COMPLETED
-        - CANCELLED
-      description: |
-        Order status:
-        * `PENDING` - Pending acceptance
-        * `ACCEPTED` - Accepted
-        * `IN_PROGRESS` - In progress
-        * `READY` - Ready for pickup
-        * `COMPLETED` - Completed
-        * `CANCELLED` - Cancelled
-
-    PaymentMethod:
-      type: string
-      enum:
-        - CASH
-        - TERMINAL
-        - BANK_TRANSFER
-      description: |
-        Payment method:
-        * `CASH` - Cash
-        * `TERMINAL` - Card terminal
-        * `BANK_TRANSFER` - Bank transfer
-
-    PhotoType:
-      type: string
-      enum:
-        - GENERAL
-        - DEFECT
-        - STAIN
-        - LABEL
-      default: GENERAL
-      description: |
-        Photo type:
-        * `GENERAL` - General photo
-        * `DEFECT` - Defect photo
-        * `STAIN` - Stain photo
-        * `LABEL` - Label photo
-
     OrderInfo:
       type: object
       required:
@@ -786,8 +708,7 @@ components:
           format: uuid
           description: Customer ID
         customer:
-          $ref: '#/components/schemas/CustomerSummary'
-          description: Customer information
+          $ref: "#/components/schemas/CustomerSummary"
         branchId:
           type: string
           format: uuid
@@ -796,21 +717,17 @@ components:
           type: string
           description: Unique label (QR code)
         status:
-          $ref: '#/components/schemas/OrderStatus'
-          description: Order status
+          $ref: "../openapi/common.yaml#/components/schemas/OrderStatus"
         items:
           type: array
           items:
-            $ref: '#/components/schemas/OrderItemInfo'
-          description: Order items
+            $ref: "#/components/schemas/OrderItemInfo"
         pricing:
-          $ref: '#/components/schemas/OrderPricingInfo'
-          description: Order pricing details
+          $ref: "#/components/schemas/OrderPricingInfo"
         payments:
           type: array
           items:
-            $ref: '#/components/schemas/PaymentInfo'
-          description: Order payments
+            $ref: "#/components/schemas/PaymentInfo"
         notes:
           type: string
           description: Order notes
@@ -872,41 +789,44 @@ components:
           format: uuid
           description: Price list item ID
         priceListItem:
-          $ref: '#/components/schemas/PriceListItemSummary'
+          allOf:
+            - $ref: "#/components/schemas/PriceListItemSummary"
           description: Price list item details
         quantity:
           type: integer
           description: Quantity (in units)
         characteristics:
-          $ref: '#/components/schemas/ItemCharacteristics'
+          allOf:
+            - $ref: "#/components/schemas/ItemCharacteristics"
           description: Item characteristics
         stains:
           type: array
           items:
-            $ref: '#/components/schemas/ItemStain'
+            $ref: "#/components/schemas/ItemStain"
           description: Item stains
         defects:
           type: array
           items:
-            $ref: '#/components/schemas/ItemDefect'
+            $ref: "#/components/schemas/ItemDefect"
           description: Item defects
         risks:
           type: array
           items:
-            $ref: '#/components/schemas/ItemRisk'
+            $ref: "#/components/schemas/ItemRisk"
           description: Item risks
         photos:
           type: array
           items:
-            $ref: '#/components/schemas/ItemPhotoInfo'
+            $ref: "#/components/schemas/ItemPhotoInfo"
           description: Item photos
         modifiers:
           type: array
           items:
-            $ref: '#/components/schemas/ItemModifier'
+            $ref: "#/components/schemas/ItemModifier"
           description: Applied modifiers
         pricing:
-          $ref: '#/components/schemas/OrderItemPricingInfo'
+          allOf:
+            - $ref: "#/components/schemas/OrderItemPricingInfo"
           description: Item pricing details
 
     PriceListItemSummary:
@@ -924,10 +844,9 @@ components:
         name:
           type: string
         categoryCode:
-          type: string
+          $ref: "../openapi/common.yaml#/components/schemas/ServiceCategoryType"
         unitOfMeasure:
-          type: string
-          enum: [PIECE, KILOGRAM, PAIR, SQUARE_METER]
+          $ref: "../openapi/common.yaml#/components/schemas/UnitOfMeasure"
         basePrice:
           type: integer
           description: Base price in kopiykas
@@ -945,13 +864,13 @@ components:
           type: string
           description: Filler type
         fillerCondition:
-          type: string
-          enum: [NORMAL, COMPRESSED]
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/FillerCondition"
           description: Filler condition
         wearLevel:
-          type: integer
-          enum: [10, 30, 50, 75]
-          description: Wear level percentage
+          allOf:
+            - $ref: "../openapi/common.yaml#/components/schemas/WearLevel"
+          description: Wear level
 
     ItemStain:
       type: object
@@ -959,9 +878,7 @@ components:
         - type
       properties:
         type:
-          type: string
-          enum: [GREASE, BLOOD, PROTEIN, WINE, COFFEE, GRASS, INK, COSMETICS, OTHER]
-          description: Stain type
+          $ref: "../openapi/common.yaml#/components/schemas/StainType"
         description:
           type: string
           description: Additional description
@@ -972,9 +889,7 @@ components:
         - type
       properties:
         type:
-          type: string
-          enum: [WORN, TORN, MISSING_ACCESSORIES, DAMAGED_ACCESSORIES, OTHER]
-          description: Defect type
+          $ref: "../openapi/common.yaml#/components/schemas/DefectType"
         description:
           type: string
           description: Additional description
@@ -985,9 +900,7 @@ components:
         - type
       properties:
         type:
-          type: string
-          enum: [COLOR_CHANGE, DEFORMATION, NO_WARRANTY]
-          description: Risk type
+          $ref: "../openapi/common.yaml#/components/schemas/RiskType"
         description:
           type: string
           description: Risk description
@@ -1008,7 +921,7 @@ components:
           type: string
           description: Photo URL
         type:
-          $ref: '#/components/schemas/PhotoType'
+          $ref: "../openapi/common.yaml#/components/schemas/PhotoType"
         description:
           type: string
           description: Photo description
@@ -1035,9 +948,7 @@ components:
           type: string
           description: Modifier name
         type:
-          type: string
-          enum: [PERCENTAGE, FIXED, FORMULA]
-          description: Modifier type
+          $ref: "../openapi/common.yaml#/components/schemas/ModifierType"
         value:
           type: number
           description: Modifier value
@@ -1058,7 +969,7 @@ components:
         modifierDetails:
           type: array
           items:
-            $ref: '#/components/schemas/ModifierDetail'
+            $ref: "#/components/schemas/ModifierDetail"
           description: Applied modifier details
         modifiersTotalAmount:
           type: integer
@@ -1137,7 +1048,7 @@ components:
           type: integer
           description: Payment amount in kopiykas
         method:
-          $ref: '#/components/schemas/PaymentMethod'
+          $ref: "../openapi/common.yaml#/components/schemas/PaymentMethod"
         paidAt:
           type: string
           format: date-time
@@ -1179,7 +1090,7 @@ components:
         - status
       properties:
         status:
-          $ref: '#/components/schemas/OrderStatus'
+          $ref: "../openapi/common.yaml#/components/schemas/OrderStatus"
         notes:
           type: string
           description: Status change notes
@@ -1188,19 +1099,19 @@ components:
       type: object
       properties:
         characteristics:
-          $ref: '#/components/schemas/ItemCharacteristics'
+          $ref: "#/components/schemas/ItemCharacteristics"
         stains:
           type: array
           items:
-            $ref: '#/components/schemas/ItemStain'
+            $ref: "#/components/schemas/ItemStain"
         defects:
           type: array
           items:
-            $ref: '#/components/schemas/ItemDefect'
+            $ref: "#/components/schemas/ItemDefect"
         risks:
           type: array
           items:
-            $ref: '#/components/schemas/ItemRisk'
+            $ref: "#/components/schemas/ItemRisk"
 
     AddPaymentRequest:
       type: object
@@ -1213,7 +1124,7 @@ components:
           minimum: 1
           description: Payment amount in kopiykas
         method:
-          $ref: '#/components/schemas/PaymentMethod'
+          $ref: "../openapi/common.yaml#/components/schemas/PaymentMethod"
 
     SaveSignatureRequest:
       type: object
@@ -1226,107 +1137,16 @@ components:
           example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
 
     # Pagination schema
-    PaginatedResponse:
-      type: object
-      required:
-        - data
-        - totalElements
-        - totalPages
-        - size
-        - number
-        - numberOfElements
-        - first
-        - last
-        - empty
-      properties:
-        data:
-          type: array
-          items: {}
-          description: Page content
-        totalElements:
-          type: integer
-          format: int64
-          description: Total number of elements
-          example: 100
-        totalPages:
-          type: integer
-          description: Total number of pages
-          example: 5
-        size:
-          type: integer
-          description: Page size
-          example: 20
-        number:
-          type: integer
-          description: Page number (0-based)
-          example: 0
-        numberOfElements:
-          type: integer
-          description: Number of elements in current page
-          example: 20
-        first:
-          type: boolean
-          description: Is first page
-          example: true
-        last:
-          type: boolean
-          description: Is last page
-          example: false
-        empty:
-          type: boolean
-          description: Is empty
-          example: false
-    
     OrderListResponse:
       allOf:
-        - $ref: '#/components/schemas/PaginatedResponse'
+        - $ref: "../openapi/common.yaml#/components/schemas/PaginatedResponse"
         - type: object
           properties:
             data:
               type: array
               items:
-                $ref: '#/components/schemas/OrderInfo'
-
-    ErrorResponse:
-      type: object
-      required:
-        - error
-        - message
-        - timestamp
-      properties:
-        error:
-          type: string
-          description: Error code
-        message:
-          type: string
-          description: Error message
-        timestamp:
-          type: string
-          format: date-time
-          description: Error timestamp
-        details:
-          type: object
-          additionalProperties: true
-          description: Additional error details
-
-    UploadItemPhotoRequest:
-      type: object
-      required:
-        - file
-      properties:
-        file:
-          type: string
-          format: binary
-          description: Photo file (max 5MB)
-        photoType:
-          $ref: '#/components/schemas/PhotoType'
-        photoDescription:
-          type: string
-          description: Photo description
+                $ref: "#/components/schemas/OrderInfo"
 
   securitySchemes:
     cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session-based authentication using httpOnly cookies
+      $ref: "../openapi/common.yaml#/components/securitySchemes/cookieAuth"

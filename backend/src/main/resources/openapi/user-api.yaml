@@ -1,4 +1,4 @@
-openapi: 3.1.1
+openapi: 3.0.4
 info:
   title: User API
   description: User management API for system operators
@@ -28,10 +28,10 @@ paths:
       security:
         - cookieAuth: []
       parameters:
-        - $ref: '#/components/parameters/PageNumber'
-        - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/SortBy'
-        - $ref: '#/components/parameters/SortOrder'
+        - $ref: "../openapi/common.yaml#/components/parameters/PageNumber"
+        - $ref: "../openapi/common.yaml#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/SortBy"
+        - $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
         - name: search
           in: query
           description: Search by username, first name, or last name
@@ -44,7 +44,7 @@ paths:
           description: Filter by role
           required: false
           schema:
-            $ref: '#/components/schemas/UserRole'
+            $ref: "../openapi/common.yaml#/components/schemas/UserRole"
         - name: branchId
           in: query
           description: Filter by branch
@@ -59,19 +59,19 @@ paths:
           schema:
             type: boolean
       responses:
-        '200':
+        "200":
           description: List of users
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserListResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-    
+                $ref: "#/components/schemas/UserListResponse"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+
     post:
       operationId: createUser
       summary: Create new user
@@ -85,22 +85,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUserRequest'
+              $ref: "#/components/schemas/CreateUserRequest"
       responses:
-        '201':
+        "201":
           description: User created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDetail'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '409':
-          $ref: '#/components/responses/Conflict'
+                $ref: "#/components/schemas/UserDetail"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "409":
+          $ref: "../openapi/common.yaml#/components/responses/Conflict"
 
   /api/users/{userId}:
     parameters:
@@ -111,7 +111,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     get:
       operationId: getUserById
       summary: Get user details
@@ -121,19 +121,19 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: User details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDetail'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    
+                $ref: "#/components/schemas/UserDetail"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+
     patch:
       operationId: updateUser
       summary: Update user
@@ -147,25 +147,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
+              $ref: "#/components/schemas/UpdateUserRequest"
       responses:
-        '200':
+        "200":
           description: User updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDetail'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-  
+                $ref: "#/components/schemas/UserDetail"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "../openapi/common.yaml#/components/responses/Conflict"
+
   /api/users/{userId}/password:
     parameters:
       - name: userId
@@ -175,7 +175,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     put:
       operationId: changePassword
       summary: Change user password
@@ -189,19 +189,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChangePasswordRequest'
+              $ref: "#/components/schemas/ChangePasswordRequest"
       responses:
-        '204':
+        "204":
           description: Password changed successfully
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-  
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+
   /api/users/{userId}/activate:
     parameters:
       - name: userId
@@ -211,7 +211,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     post:
       operationId: activateUser
       summary: Activate user
@@ -221,21 +221,21 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: User activated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDetail'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-  
+                $ref: "#/components/schemas/UserDetail"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "../openapi/common.yaml#/components/responses/Conflict"
+
   /api/users/{userId}/deactivate:
     parameters:
       - name: userId
@@ -245,7 +245,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     post:
       operationId: deactivateUser
       summary: Deactivate user
@@ -255,21 +255,21 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: User deactivated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDetail'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-  
+                $ref: "#/components/schemas/UserDetail"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "../openapi/common.yaml#/components/responses/Conflict"
+
   /api/users/{userId}/roles:
     parameters:
       - name: userId
@@ -279,7 +279,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     put:
       operationId: updateUserRoles
       summary: Update user roles
@@ -293,23 +293,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateRolesRequest'
+              $ref: "#/components/schemas/UpdateRolesRequest"
       responses:
-        '200':
+        "200":
           description: Roles updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDetail'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-  
+                $ref: "#/components/schemas/UserDetail"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+
   /api/users/{userId}/branches:
     parameters:
       - name: userId
@@ -319,7 +319,7 @@ paths:
         schema:
           type: string
           format: uuid
-    
+
     get:
       operationId: getUserBranches
       summary: Get user branches
@@ -329,19 +329,19 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: List of branches
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserBranchesResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    
+                $ref: "#/components/schemas/UserBranchesResponse"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+
     put:
       operationId: updateUserBranches
       summary: Update user branches
@@ -355,22 +355,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateBranchesRequest'
+              $ref: "#/components/schemas/UpdateBranchesRequest"
       responses:
-        '200':
+        "200":
           description: Branches updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserBranchesResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                $ref: "#/components/schemas/UserBranchesResponse"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
   /api/roles/{role}/permissions:
     parameters:
@@ -379,8 +379,8 @@ paths:
         required: true
         description: User role
         schema:
-          $ref: '#/components/schemas/UserRole'
-    
+          $ref: "../openapi/common.yaml#/components/schemas/UserRole"
+
     get:
       operationId: getRolePermissions
       summary: Get role permissions
@@ -390,7 +390,7 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Role permissions retrieved successfully
           content:
             application/json:
@@ -398,12 +398,12 @@ paths:
                 type: array
                 items:
                   type: string
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
 
   /api/users/{userId}/permissions:
     parameters:
@@ -423,7 +423,7 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: User permissions retrieved successfully
           content:
             application/json:
@@ -432,34 +432,15 @@ paths:
                 items:
                   type: string
                   description: Permission string (e.g. "orders.create", "users.*")
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
 
 components:
   parameters:
-    PageNumber:
-      name: page
-      in: query
-      description: Page number (0-based)
-      schema:
-        type: integer
-        minimum: 0
-        default: 0
-    
-    PageSize:
-      name: size
-      in: query
-      description: Page size
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 20
-    
     SortBy:
       name: sortBy
       in: query
@@ -470,69 +451,24 @@ components:
         example: lastName
 
     SortOrder:
-      name: sortOrder
-      in: query
-      description: Sort order
-      schema:
-        type: string
-        enum: [asc, desc]
-        default: desc
-  
+      $ref: "../openapi/common.yaml#/components/parameters/SortOrder"
+
   responses:
     BadRequest:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
+      $ref: "../openapi/common.yaml#/components/responses/BadRequest"
     Unauthorized:
-      description: Unauthorized access
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
+      $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
     Forbidden:
-      description: Forbidden access
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
+      $ref: "../openapi/common.yaml#/components/responses/Forbidden"
     NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
+      $ref: "../openapi/common.yaml#/components/responses/NotFound"
     Conflict:
-      description: Resource conflict
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
+      $ref: "../openapi/common.yaml#/components/responses/Conflict"
 
   schemas:
     UserRole:
-      type: string
-      enum:
-        - OPERATOR
-        - MANAGER
-        - ADMIN
-        - CLEANER
-        - DRIVER
-        - ACCOUNTANT
-      description: |
-        User roles:
-        * `OPERATOR` - Order acceptance operator
-        * `MANAGER` - Branch manager
-        * `ADMIN` - System administrator
-        * `CLEANER` - Cleaning specialist
-        * `DRIVER` - Delivery driver
-        * `ACCOUNTANT` - Financial specialist
-    
+      $ref: "../openapi/common.yaml#/components/schemas/UserRole"
+
     UserSummary:
       type: object
       required:
@@ -569,7 +505,7 @@ components:
         roles:
           type: array
           items:
-            $ref: '#/components/schemas/UserRole'
+            $ref: "../openapi/common.yaml#/components/schemas/UserRole"
           minItems: 1
         active:
           type: boolean
@@ -581,13 +517,12 @@ components:
           description: Creation timestamp
         lastLoginAt:
           type: string
-          nullable: true
           format: date-time
           description: Last login timestamp
-    
+
     UserDetail:
       allOf:
-        - $ref: '#/components/schemas/UserSummary'
+        - $ref: "#/components/schemas/UserSummary"
         - type: object
           required:
             - branches
@@ -595,15 +530,14 @@ components:
           properties:
             phone:
               type: string
-              nullable: true
               pattern: '^\+?[0-9]{10,15}$'
               description: Phone number
-              example: '+380501234567'
+              example: "+380501234567"
             # Permissions can be calculated by frontend based on roles or fetched via separate endpoint
             branches:
               type: array
               items:
-                $ref: '#/components/schemas/BranchAssignment'
+                $ref: "#/components/schemas/BranchAssignment"
               description: Assigned branches
             updatedAt:
               type: string
@@ -615,7 +549,6 @@ components:
               description: ID of user who created this user
             updatedBy:
               type: string
-              nullable: true
               format: uuid
               description: ID of user who last updated this user
             failedLoginAttempts:
@@ -625,15 +558,13 @@ components:
               example: 0
             accountLockTime:
               type: string
-              nullable: true
               format: date-time
               description: When account was locked due to failed attempts
             lastFailedLoginAt:
               type: string
-              nullable: true
               format: date-time
               description: Last failed login attempt timestamp
-    
+
     BranchAssignment:
       type: object
       required:
@@ -652,7 +583,7 @@ components:
         isPrimary:
           type: boolean
           description: Is this the primary branch
-    
+
     CreateUserRequest:
       type: object
       required:
@@ -666,10 +597,10 @@ components:
           type: string
           minLength: 3
           maxLength: 50
-          pattern: '^[a-zA-Z0-9_]+$'
+          pattern: "^[a-zA-Z0-9_]+$"
           description: Username (must be unique)
           example: operator1
-          x-spring-validation: '@Username'
+          x-spring-validation: "@Username"
         password:
           type: string
           minLength: 6
@@ -678,7 +609,7 @@ components:
           # pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$'
           description: Password (min 6 chars for dev, 12 for prod)
           example: SecurePassword123!
-          x-spring-validation: '@StrongPassword'
+          x-spring-validation: "@StrongPassword"
         firstName:
           type: string
           minLength: 1
@@ -699,23 +630,21 @@ components:
           maxLength: 255
           description: Email address (must be unique)
           example: ivan.petrenko@example.com
-          x-spring-validation: '@Email @UniqueEmail'
+          x-spring-validation: "@Email @UniqueEmail"
         phone:
           type: string
-          nullable: true
           pattern: '^\+?[0-9]{10,15}$'
           description: Phone number (optional, international format)
-          example: '+380501234567'
-          default: null
+          example: "+380501234567"
         roles:
           type: array
           items:
-            $ref: '#/components/schemas/UserRole'
+            $ref: "../openapi/common.yaml#/components/schemas/UserRole"
           minItems: 1
           maxItems: 10
           description: User roles (defaults to OPERATOR if not specified)
-          default: ['OPERATOR']
-          x-spring-default: '#{T(java.util.List).of(T(com.aksi.api.user.dto.UserRole).OPERATOR)}'
+          default: ["OPERATOR"]
+          x-spring-default: "#{T(java.util.List).of(T(com.aksi.api.user.dto.UserRole).OPERATOR)}"
         branchIds:
           type: array
           items:
@@ -726,11 +655,9 @@ components:
           default: []
         primaryBranchId:
           type: string
-          nullable: true
           format: uuid
           description: Primary branch ID (must be in branchIds if provided)
-          default: null
-          x-spring-validation: '@ValidPrimaryBranch'
+          x-spring-validation: "@ValidPrimaryBranch"
         active:
           type: boolean
           description: Account active status
@@ -741,7 +668,7 @@ components:
           description: Email verification status
           default: false
           x-spring-hidden: true
-    
+
     UpdateUserRequest:
       type: object
       minProperties: 1
@@ -762,10 +689,9 @@ components:
           description: Email address
         phone:
           type: string
-          nullable: true
           pattern: '^\+?[0-9]{10,15}$'
           description: Phone number
-    
+
     ChangePasswordRequest:
       type: object
       required:
@@ -782,7 +708,7 @@ components:
           # pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$'
           description: New password (min 6 chars for dev, 12 for prod)
           example: Admin123!
-    
+
     UpdateRolesRequest:
       type: object
       required:
@@ -791,10 +717,10 @@ components:
         roles:
           type: array
           items:
-            $ref: '#/components/schemas/UserRole'
+            $ref: "../openapi/common.yaml#/components/schemas/UserRole"
           minItems: 1
           description: New set of roles
-    
+
     UpdateBranchesRequest:
       type: object
       required:
@@ -808,10 +734,9 @@ components:
           description: Branch IDs to assign
         primaryBranchId:
           type: string
-          nullable: true
           format: uuid
           description: Primary branch ID (must be in branchIds if provided)
-    
+
     UserBranchesResponse:
       type: object
       required:
@@ -820,119 +745,24 @@ components:
         branches:
           type: array
           items:
-            $ref: '#/components/schemas/BranchAssignment'
-    
+            $ref: "#/components/schemas/BranchAssignment"
+
     # Error schemas
-    ErrorDetail:
-      type: object
-      required:
-        - field
-        - message
-      properties:
-        field:
-          type: string
-          description: Field with error
-          example: username
-        message:
-          type: string
-          description: Field error message
-          example: Username already exists
-    
-    ErrorResponse:
-      type: object
-      required:
-        - timestamp
-        - status
-        - error
-        - message
-        - path
-      properties:
-        timestamp:
-          type: string
-          format: date-time
-          description: Error timestamp
-        status:
-          type: integer
-          description: HTTP status code
-          example: 400
-        error:
-          type: string
-          description: Error name
-          example: Bad Request
-        message:
-          type: string
-          description: Error message
-          example: Validation failed
-        path:
-          type: string
-          description: Request path
-          example: /api/users
-        errors:
-          type: ['array', 'null']
-          items:
-            $ref: '#/components/schemas/ErrorDetail'
-    
+    # Error schemas centralized in common.yaml
+
     # Pagination schema
     PaginatedResponse:
-      type: object
-      required:
-        - data
-        - totalElements
-        - totalPages
-        - size
-        - number
-        - numberOfElements
-        - first
-        - last
-        - empty
-      properties:
-        data:
-          type: array
-          items: {}
-          description: Page content
-        totalElements:
-          type: integer
-          format: int64
-          description: Total number of elements
-          example: 100
-        totalPages:
-          type: integer
-          description: Total number of pages
-          example: 5
-        size:
-          type: integer
-          description: Page size
-          example: 20
-        number:
-          type: integer
-          description: Current page number (0-based)
-          example: 0
-        numberOfElements:
-          type: integer
-          description: Number of elements in current page
-          example: 20
-        first:
-          type: boolean
-          description: Is first page
-          example: true
-        last:
-          type: boolean
-          description: Is last page
-          example: false
-        empty:
-          type: boolean
-          description: Is page empty
-          example: false
-    
+      $ref: "../openapi/common.yaml#/components/schemas/PaginatedResponse"
+
     UserListResponse:
       allOf:
-        - $ref: '#/components/schemas/PaginatedResponse'
+        - $ref: "#/components/schemas/PaginatedResponse"
         - type: object
           properties:
             data:
               type: array
               items:
-                $ref: '#/components/schemas/UserSummary'
+                $ref: "#/components/schemas/UserSummary"
 
 security:
   - cookieAuth: []

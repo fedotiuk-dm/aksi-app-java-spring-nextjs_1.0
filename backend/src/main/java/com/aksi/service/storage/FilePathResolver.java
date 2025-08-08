@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.aksi.exception.BusinessValidationException;
+import com.aksi.exception.BadRequestException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,13 +39,13 @@ public class FilePathResolver {
 
       // Security check - ensure directory is within storage location
       if (!targetDirectory.startsWith(fileStorageLocation)) {
-        throw new BusinessValidationException("Invalid directory path: " + directory);
+        throw new BadRequestException("Invalid directory path: " + directory);
       }
 
       Files.createDirectories(targetDirectory);
       return targetDirectory;
     } catch (IOException ex) {
-      throw new BusinessValidationException("Could not create directory: " + directory, ex);
+      throw new BadRequestException("Could not create directory: " + directory, ex);
     }
   }
 
@@ -55,7 +55,7 @@ public class FilePathResolver {
 
     // Security check - ensure file is within storage location
     if (!resolvedPath.startsWith(fileStorageLocation)) {
-      throw new BusinessValidationException("Invalid file path: " + filePath);
+      throw new BadRequestException("Invalid file path: " + filePath);
     }
 
     return resolvedPath;

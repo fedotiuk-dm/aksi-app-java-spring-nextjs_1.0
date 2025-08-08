@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import com.aksi.api.receipt.dto.PaymentMethod;
 import com.aksi.api.receipt.dto.ReceiptItem;
 import com.aksi.api.receipt.dto.ReceiptOrderData;
 import com.aksi.config.ReceiptConfiguration;
@@ -131,12 +132,12 @@ public class ReceiptDataConverterImpl implements ReceiptDataConverter {
     if (!order.getPayments().isEmpty()) {
       OrderPaymentEntity firstPayment = order.getPayments().getFirst();
       if (firstPayment.getMethod() != null) {
-        data.setPaymentMethod(firstPayment.getMethod().toString());
+        data.setPaymentMethod(PaymentMethod.fromValue(firstPayment.getMethod().toString()));
       } else {
-        data.setPaymentMethod(config.getDefaultPaymentMethod());
+        data.setPaymentMethod(PaymentMethod.fromValue(config.getDefaultPaymentMethod()));
       }
     } else {
-      data.setPaymentMethod(config.getDefaultPaymentMethod());
+      data.setPaymentMethod(PaymentMethod.fromValue(config.getDefaultPaymentMethod()));
     }
   }
 }

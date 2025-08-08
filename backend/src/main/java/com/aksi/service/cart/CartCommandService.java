@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.cart.dto.AddCartItemRequest;
+import com.aksi.api.cart.dto.DiscountType;
 import com.aksi.api.cart.dto.ItemCharacteristics;
 import com.aksi.api.cart.dto.UpdateCartItemRequest;
 import com.aksi.api.cart.dto.UpdateCartModifiersRequest;
+import com.aksi.api.cart.dto.UrgencyType;
 import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
 import com.aksi.domain.cart.CartItemCharacteristicsEntity;
@@ -225,11 +227,11 @@ public class CartCommandService {
    */
   public void updateCartModifiers(CartEntity cartEntity, UpdateCartModifiersRequest request) {
     Optional.ofNullable(request.getUrgencyType())
-        .map(UpdateCartModifiersRequest.UrgencyTypeEnum::getValue)
+        .map(UrgencyType::getValue)
         .ifPresent(cartEntity::setUrgencyType);
 
     Optional.ofNullable(request.getDiscountType())
-        .map(UpdateCartModifiersRequest.DiscountTypeEnum::getValue)
+        .map(DiscountType::getValue)
         .ifPresent(cartEntity::setDiscountType);
 
     Optional.ofNullable(request.getDiscountPercentage())

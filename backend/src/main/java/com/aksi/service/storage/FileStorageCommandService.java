@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.aksi.exception.BusinessValidationException;
+import com.aksi.exception.BadRequestException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +67,7 @@ public class FileStorageCommandService {
 
     } catch (IOException ex) {
       log.error("Error storing file: {} in directory: {}", finalFileName, directory, ex);
-      throw new BusinessValidationException(
+      throw new BadRequestException(
           "Could not store file " + finalFileName + ". Please try again!", ex);
     }
   }
@@ -100,10 +100,10 @@ public class FileStorageCommandService {
 
     } catch (IllegalArgumentException ex) {
       log.error("Invalid base64 data for file: {}", filename, ex);
-      throw new BusinessValidationException("Invalid base64 data provided", ex);
+      throw new BadRequestException("Invalid base64 data provided", ex);
     } catch (IOException ex) {
       log.error("Error storing base64 file: {} in directory: {}", filename, directory, ex);
-      throw new BusinessValidationException("Could not store base64 data as file", ex);
+      throw new BadRequestException("Could not store base64 data as file", ex);
     }
   }
 
@@ -126,7 +126,7 @@ public class FileStorageCommandService {
 
     } catch (IOException ex) {
       log.error("Error deleting file: {}", filePath, ex);
-      throw new BusinessValidationException("Could not delete file: " + filePath, ex);
+      throw new BadRequestException("Could not delete file: " + filePath, ex);
     }
   }
 }

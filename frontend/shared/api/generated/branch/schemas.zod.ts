@@ -17,16 +17,29 @@ export const getBranchByIdParams = zod.object({
   "branchId": zod.uuid().describe('Branch ID')
 })
 
+export const getBranchByIdResponseNameMax = 255;
+export const getBranchByIdResponsePhoneMin = 10;
+
+export const getBranchByIdResponsePhoneMax = 20;
+
+export const getBranchByIdResponsePhoneRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
+export const getBranchByIdResponseEmailMin = 0;
+
+export const getBranchByIdResponseEmailMax = 255;
+
+
 export const getBranchByIdResponse = zod.object({
   "id": zod.uuid().describe('Branch ID'),
-  "name": zod.string().describe('Branch name'),
+  "name": zod.string().min(1).max(getBranchByIdResponseNameMax).describe('Branch name'),
   "address": zod.string().describe('Branch address'),
-  "phone": zod.string().describe('Branch phone number'),
-  "email": zod.string().optional().describe('Branch email'),
+  "phone": zod.string().min(getBranchByIdResponsePhoneMin).max(getBranchByIdResponsePhoneMax).regex(getBranchByIdResponsePhoneRegExp).describe('Branch phone number'),
+  "email": zod.string().min(getBranchByIdResponseEmailMin).max(getBranchByIdResponseEmailMax).optional().describe('Branch email'),
   "workingHours": zod.string().optional().describe('Working hours (e.g., \"Пн-Пт 8:00-20:00, Сб 9:00-18:00\")'),
   "active": zod.boolean().describe('Is branch active'),
   "description": zod.string().optional().describe('Branch description'),
-  "sortOrder": zod.number().optional().describe('Sort order for display')
+  "sortOrder": zod.number().optional().describe('Sort order for display'),
+  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp')
 })
 
 
@@ -43,6 +56,8 @@ export const updateBranchBodyAddressMax = 500;
 export const updateBranchBodyPhoneMin = 10;
 
 export const updateBranchBodyPhoneMax = 20;
+
+export const updateBranchBodyPhoneRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
 export const updateBranchBodyEmailMin = 0;
 
 export const updateBranchBodyEmailMax = 255;
@@ -57,7 +72,7 @@ export const updateBranchBodyDescriptionMax = 1000;
 export const updateBranchBody = zod.object({
   "name": zod.string().min(1).max(updateBranchBodyNameMax).optional().describe('Branch name'),
   "address": zod.string().min(1).max(updateBranchBodyAddressMax).optional().describe('Branch address'),
-  "phone": zod.string().min(updateBranchBodyPhoneMin).max(updateBranchBodyPhoneMax).optional().describe('Branch phone number'),
+  "phone": zod.string().min(updateBranchBodyPhoneMin).max(updateBranchBodyPhoneMax).regex(updateBranchBodyPhoneRegExp).optional().describe('Branch phone number'),
   "email": zod.string().min(updateBranchBodyEmailMin).max(updateBranchBodyEmailMax).optional().describe('Branch email'),
   "workingHours": zod.string().min(updateBranchBodyWorkingHoursMin).max(updateBranchBodyWorkingHoursMax).optional().describe('Working hours'),
   "active": zod.boolean().optional().describe('Is branch active'),
@@ -65,16 +80,29 @@ export const updateBranchBody = zod.object({
   "sortOrder": zod.number().optional().describe('Sort order for display')
 })
 
+export const updateBranchResponseNameMax = 255;
+export const updateBranchResponsePhoneMin = 10;
+
+export const updateBranchResponsePhoneMax = 20;
+
+export const updateBranchResponsePhoneRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
+export const updateBranchResponseEmailMin = 0;
+
+export const updateBranchResponseEmailMax = 255;
+
+
 export const updateBranchResponse = zod.object({
   "id": zod.uuid().describe('Branch ID'),
-  "name": zod.string().describe('Branch name'),
+  "name": zod.string().min(1).max(updateBranchResponseNameMax).describe('Branch name'),
   "address": zod.string().describe('Branch address'),
-  "phone": zod.string().describe('Branch phone number'),
-  "email": zod.string().optional().describe('Branch email'),
+  "phone": zod.string().min(updateBranchResponsePhoneMin).max(updateBranchResponsePhoneMax).regex(updateBranchResponsePhoneRegExp).describe('Branch phone number'),
+  "email": zod.string().min(updateBranchResponseEmailMin).max(updateBranchResponseEmailMax).optional().describe('Branch email'),
   "workingHours": zod.string().optional().describe('Working hours (e.g., \"Пн-Пт 8:00-20:00, Сб 9:00-18:00\")'),
   "active": zod.boolean().describe('Is branch active'),
   "description": zod.string().optional().describe('Branch description'),
-  "sortOrder": zod.number().optional().describe('Sort order for display')
+  "sortOrder": zod.number().optional().describe('Sort order for display'),
+  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp')
 })
 
 
@@ -101,22 +129,35 @@ export const listBranchesQueryParams = zod.object({
   "page": zod.number().min(listBranchesQueryPageMin).optional().describe('Page number (0-based)'),
   "size": zod.number().min(1).max(listBranchesQuerySizeMax).default(listBranchesQuerySizeDefault).describe('Page size (number of items per page)'),
   "sortBy": zod.string().default(listBranchesQuerySortByDefault).describe('Sort field'),
-  "sortOrder": zod.string().default(listBranchesQuerySortOrderDefault).describe('Sort direction'),
+  "sortOrder": zod.enum(['asc', 'desc']).default(listBranchesQuerySortOrderDefault).describe('Sort direction'),
   "active": zod.boolean().default(listBranchesQueryActiveDefault).describe('Filter by active status'),
   "search": zod.string().optional().describe('Search by name or address')
 })
 
+export const listBranchesResponseBranchesItemNameMax = 255;
+export const listBranchesResponseBranchesItemPhoneMin = 10;
+
+export const listBranchesResponseBranchesItemPhoneMax = 20;
+
+export const listBranchesResponseBranchesItemPhoneRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
+export const listBranchesResponseBranchesItemEmailMin = 0;
+
+export const listBranchesResponseBranchesItemEmailMax = 255;
+
+
 export const listBranchesResponse = zod.object({
   "branches": zod.array(zod.object({
   "id": zod.uuid().describe('Branch ID'),
-  "name": zod.string().describe('Branch name'),
+  "name": zod.string().min(1).max(listBranchesResponseBranchesItemNameMax).describe('Branch name'),
   "address": zod.string().describe('Branch address'),
-  "phone": zod.string().describe('Branch phone number'),
-  "email": zod.string().optional().describe('Branch email'),
+  "phone": zod.string().min(listBranchesResponseBranchesItemPhoneMin).max(listBranchesResponseBranchesItemPhoneMax).regex(listBranchesResponseBranchesItemPhoneRegExp).describe('Branch phone number'),
+  "email": zod.string().min(listBranchesResponseBranchesItemEmailMin).max(listBranchesResponseBranchesItemEmailMax).optional().describe('Branch email'),
   "workingHours": zod.string().optional().describe('Working hours (e.g., \"Пн-Пт 8:00-20:00, Сб 9:00-18:00\")'),
   "active": zod.boolean().describe('Is branch active'),
   "description": zod.string().optional().describe('Branch description'),
-  "sortOrder": zod.number().optional().describe('Sort order for display')
+  "sortOrder": zod.number().optional().describe('Sort order for display'),
+  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp')
 })).describe('List of branches'),
   "totalItems": zod.number().describe('Total number of items matching the filter'),
   "hasMore": zod.boolean().describe('Whether there are more items to load')
@@ -132,6 +173,8 @@ export const createBranchBodyAddressMax = 500;
 export const createBranchBodyPhoneMin = 10;
 
 export const createBranchBodyPhoneMax = 20;
+
+export const createBranchBodyPhoneRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
 export const createBranchBodyEmailMin = 0;
 
 export const createBranchBodyEmailMax = 255;
@@ -146,7 +189,7 @@ export const createBranchBodyDescriptionMax = 1000;
 export const createBranchBody = zod.object({
   "name": zod.string().min(1).max(createBranchBodyNameMax).describe('Branch name'),
   "address": zod.string().min(1).max(createBranchBodyAddressMax).describe('Branch address'),
-  "phone": zod.string().min(createBranchBodyPhoneMin).max(createBranchBodyPhoneMax).describe('Branch phone number'),
+  "phone": zod.string().min(createBranchBodyPhoneMin).max(createBranchBodyPhoneMax).regex(createBranchBodyPhoneRegExp).describe('Branch phone number'),
   "email": zod.string().min(createBranchBodyEmailMin).max(createBranchBodyEmailMax).optional().describe('Branch email'),
   "workingHours": zod.string().min(createBranchBodyWorkingHoursMin).max(createBranchBodyWorkingHoursMax).optional().describe('Working hours'),
   "active": zod.boolean().optional().describe('Is branch active'),
@@ -163,16 +206,29 @@ export const deactivateBranchParams = zod.object({
   "branchId": zod.uuid().describe('Branch ID')
 })
 
+export const deactivateBranchResponseNameMax = 255;
+export const deactivateBranchResponsePhoneMin = 10;
+
+export const deactivateBranchResponsePhoneMax = 20;
+
+export const deactivateBranchResponsePhoneRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
+export const deactivateBranchResponseEmailMin = 0;
+
+export const deactivateBranchResponseEmailMax = 255;
+
+
 export const deactivateBranchResponse = zod.object({
   "id": zod.uuid().describe('Branch ID'),
-  "name": zod.string().describe('Branch name'),
+  "name": zod.string().min(1).max(deactivateBranchResponseNameMax).describe('Branch name'),
   "address": zod.string().describe('Branch address'),
-  "phone": zod.string().describe('Branch phone number'),
-  "email": zod.string().optional().describe('Branch email'),
+  "phone": zod.string().min(deactivateBranchResponsePhoneMin).max(deactivateBranchResponsePhoneMax).regex(deactivateBranchResponsePhoneRegExp).describe('Branch phone number'),
+  "email": zod.string().min(deactivateBranchResponseEmailMin).max(deactivateBranchResponseEmailMax).optional().describe('Branch email'),
   "workingHours": zod.string().optional().describe('Working hours (e.g., \"Пн-Пт 8:00-20:00, Сб 9:00-18:00\")'),
   "active": zod.boolean().describe('Is branch active'),
   "description": zod.string().optional().describe('Branch description'),
-  "sortOrder": zod.number().optional().describe('Sort order for display')
+  "sortOrder": zod.number().optional().describe('Sort order for display'),
+  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp')
 })
 
 
@@ -184,16 +240,29 @@ export const activateBranchParams = zod.object({
   "branchId": zod.uuid().describe('Branch ID')
 })
 
+export const activateBranchResponseNameMax = 255;
+export const activateBranchResponsePhoneMin = 10;
+
+export const activateBranchResponsePhoneMax = 20;
+
+export const activateBranchResponsePhoneRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
+export const activateBranchResponseEmailMin = 0;
+
+export const activateBranchResponseEmailMax = 255;
+
+
 export const activateBranchResponse = zod.object({
   "id": zod.uuid().describe('Branch ID'),
-  "name": zod.string().describe('Branch name'),
+  "name": zod.string().min(1).max(activateBranchResponseNameMax).describe('Branch name'),
   "address": zod.string().describe('Branch address'),
-  "phone": zod.string().describe('Branch phone number'),
-  "email": zod.string().optional().describe('Branch email'),
+  "phone": zod.string().min(activateBranchResponsePhoneMin).max(activateBranchResponsePhoneMax).regex(activateBranchResponsePhoneRegExp).describe('Branch phone number'),
+  "email": zod.string().min(activateBranchResponseEmailMin).max(activateBranchResponseEmailMax).optional().describe('Branch email'),
   "workingHours": zod.string().optional().describe('Working hours (e.g., \"Пн-Пт 8:00-20:00, Сб 9:00-18:00\")'),
   "active": zod.boolean().describe('Is branch active'),
   "description": zod.string().optional().describe('Branch description'),
-  "sortOrder": zod.number().optional().describe('Sort order for display')
+  "sortOrder": zod.number().optional().describe('Sort order for display'),
+  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp')
 })
 
 
@@ -201,15 +270,28 @@ export const activateBranchResponse = zod.object({
  * Get all active branches for dropdowns (no pagination)
  * @summary Get all active branches
  */
+export const getAllActiveBranchesResponseNameMax = 255;
+export const getAllActiveBranchesResponsePhoneMin = 10;
+
+export const getAllActiveBranchesResponsePhoneMax = 20;
+
+export const getAllActiveBranchesResponsePhoneRegExp = new RegExp('^\\+?[0-9\\s\\-\\(\\)]+$');
+export const getAllActiveBranchesResponseEmailMin = 0;
+
+export const getAllActiveBranchesResponseEmailMax = 255;
+
+
 export const getAllActiveBranchesResponseItem = zod.object({
   "id": zod.uuid().describe('Branch ID'),
-  "name": zod.string().describe('Branch name'),
+  "name": zod.string().min(1).max(getAllActiveBranchesResponseNameMax).describe('Branch name'),
   "address": zod.string().describe('Branch address'),
-  "phone": zod.string().describe('Branch phone number'),
-  "email": zod.string().optional().describe('Branch email'),
+  "phone": zod.string().min(getAllActiveBranchesResponsePhoneMin).max(getAllActiveBranchesResponsePhoneMax).regex(getAllActiveBranchesResponsePhoneRegExp).describe('Branch phone number'),
+  "email": zod.string().min(getAllActiveBranchesResponseEmailMin).max(getAllActiveBranchesResponseEmailMax).optional().describe('Branch email'),
   "workingHours": zod.string().optional().describe('Working hours (e.g., \"Пн-Пт 8:00-20:00, Сб 9:00-18:00\")'),
   "active": zod.boolean().describe('Is branch active'),
   "description": zod.string().optional().describe('Branch description'),
-  "sortOrder": zod.number().optional().describe('Sort order for display')
+  "sortOrder": zod.number().optional().describe('Sort order for display'),
+  "createdAt": zod.iso.datetime({}).optional().describe('Creation timestamp'),
+  "updatedAt": zod.iso.datetime({}).optional().describe('Last update timestamp')
 })
 export const getAllActiveBranchesResponse = zod.array(getAllActiveBranchesResponseItem)

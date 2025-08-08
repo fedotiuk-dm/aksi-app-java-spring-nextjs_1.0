@@ -1,0 +1,340 @@
+openapi: 3.0.4
+info:
+  title: Common Components
+  version: 1.0.0
+
+paths: {}
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session cookie for authentication
+
+  # Common Parameters
+  parameters:
+    PageNumber:
+      name: page
+      in: query
+      description: Page number (0-based)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+
+    PageSize:
+      name: size
+      in: query
+      description: Page size (number of items per page)
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    SortOrder:
+      name: sortOrder
+      in: query
+      description: Sort direction
+      schema:
+        $ref: "#/components/schemas/SortOrder"
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Unauthorized:
+      description: Unauthorized access
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Forbidden:
+      description: Forbidden access
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Conflict:
+      description: Resource conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    TooManyRequests:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    PayloadTooLarge:
+      description: Payload too large
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  schemas:
+    # Common validation patterns and types
+    UniqueName:
+      type: string
+      minLength: 1
+      maxLength: 255
+      description: Unique name field (must be unique within entity type)
+      x-unique: true
+      x-validation: "@UniqueName"
+    
+    PhoneNumber:
+      type: string
+      pattern: '^\+?[0-9\s\-\(\)]+$'
+      minLength: 10
+      maxLength: 20
+      description: Phone number in international format
+      example: "+380 (50) 123-45-67"
+    
+    Email:
+      type: string
+      format: email
+      maxLength: 255
+      description: Email address
+      example: "user@example.com"
+    
+    # Centralized domain enums shared across APIs
+    ServiceCategoryType:
+      type: string
+      enum:
+        - CLOTHING
+        - LAUNDRY
+        - IRONING
+        - LEATHER
+        - PADDING
+        - FUR
+        - DYEING
+        - ADDITIONAL_SERVICES
+      description: |
+        Service category types from price list
+
+    UnitOfMeasure:
+      type: string
+      enum:
+        - PIECE
+        - KILOGRAM
+        - PAIR
+        - SQUARE_METER
+      description: |
+        Unit of measure
+
+    ModifierType:
+      type: string
+      enum: [PERCENTAGE, FIXED, FORMULA]
+      description: Type of price modifier
+
+    DiscountType:
+      type: string
+      enum: [NONE, EVERCARD, SOCIAL_MEDIA, MILITARY, OTHER]
+
+    UrgencyType:
+      type: string
+      enum: [NORMAL, EXPRESS_48H, EXPRESS_24H]
+      description: Order urgency levels
+
+    # Order Management
+    OrderStatus:
+      type: string
+      enum:
+        - PENDING
+        - ACCEPTED
+        - IN_PROGRESS
+        - READY
+        - COMPLETED
+        - CANCELLED
+      description: Order lifecycle status
+
+    PaymentMethod:
+      type: string
+      enum:
+        - CASH
+        - TERMINAL
+        - BANK_TRANSFER
+      description: Available payment methods
+
+    # Item Characteristics
+    FillerCondition:
+      type: string
+      enum:
+        - NORMAL
+        - COMPRESSED
+      description: Condition of item filler
+
+    WearLevel:
+      type: integer
+      enum: [10, 30, 50, 75]
+      description: Wear level percentage
+
+    # Item Issues
+    StainType:
+      type: string
+      enum:
+        - GREASE
+        - BLOOD
+        - PROTEIN
+        - WINE
+        - COFFEE
+        - GRASS
+        - INK
+        - COSMETICS
+        - OTHER
+      description: Types of stains on items
+
+    DefectType:
+      type: string
+      enum:
+        - WORN
+        - TORN
+        - MISSING_ACCESSORIES
+        - DAMAGED_ACCESSORIES
+        - OTHER
+      description: Types of item defects
+
+    RiskType:
+      type: string
+      enum:
+        - COLOR_CHANGE
+        - DEFORMATION
+        - NO_WARRANTY
+      description: Processing risk types
+
+    # Photo Management
+    PhotoType:
+      type: string
+      enum:
+        - GENERAL
+        - DEFECT
+        - STAIN
+        - LABEL
+      description: Types of item photos
+
+    # User Management
+    UserRole:
+      type: string
+      enum:
+        - OPERATOR
+        - MANAGER
+        - ADMIN
+        - CLEANER
+        - DRIVER
+      description: System user roles
+
+    # Customer Management
+    ContactPreference:
+      type: string
+      enum:
+        - PHONE
+        - SMS
+        - VIBER
+      description: Customer contact preferences
+
+    InfoSource:
+      type: string
+      enum:
+        - INSTAGRAM
+        - GOOGLE
+        - RECOMMENDATION
+        - OTHER
+      description: How customer found out about service
+
+    # Sorting
+    SortOrder:
+      type: string
+      enum: [asc, desc]
+      default: asc
+      description: Sort direction
+
+    # Pagination (base) - use allOf in specific APIs to set data shape
+    PaginatedResponse:
+      type: object
+      required:
+        - data
+        - totalElements
+        - totalPages
+        - size
+        - number
+        - numberOfElements
+        - first
+        - last
+        - empty
+      properties:
+        data:
+          type: array
+          items: {}
+          description: Page content
+        totalElements:
+          type: integer
+          format: int64
+          description: Total number of elements
+        totalPages:
+          type: integer
+          description: Total number of pages
+        size:
+          type: integer
+          description: Page size
+        number:
+          type: integer
+          description: Page number (0-based)
+        numberOfElements:
+          type: integer
+          description: Number of elements in current page
+        first:
+          type: boolean
+          description: Is first page
+        last:
+          type: boolean
+          description: Is last page
+        empty:
+          type: boolean
+          description: Is empty
+    ErrorDetail:
+      type: object
+      required: [field, message]
+      properties:
+        field:
+          type: string
+          description: Field with error
+          example: username
+        message:
+          type: string
+          description: Field error message
+          example: Invalid username format
+
+    ErrorResponse:
+      type: object
+      required: [timestamp, status, error, message, path]
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorDetail"
+          nullable: true

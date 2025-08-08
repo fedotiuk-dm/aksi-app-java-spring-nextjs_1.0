@@ -8,6 +8,7 @@ import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.api.pricing.dto.PriceModifierDto;
 import com.aksi.api.pricing.dto.PriceModifiersResponse;
+import com.aksi.api.pricing.dto.ServiceCategoryType;
 
 /** Service for price calculations and pricing rules management */
 public interface PricingService {
@@ -27,7 +28,7 @@ public interface PricingService {
    * @param active Filter by active status
    * @return Price modifiers response
    */
-  PriceModifiersResponse listPriceModifiers(String categoryCode, Boolean active);
+  PriceModifiersResponse listPriceModifiers(ServiceCategoryType categoryCode, Boolean active);
 
   /**
    * List available discounts

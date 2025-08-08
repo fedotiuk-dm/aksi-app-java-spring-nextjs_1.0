@@ -39,3 +39,9 @@ export const INFO_SOURCES = {
   RECOMMENDATION: 'Рекомендації',
   OTHER: 'Інше',
 } as const;
+
+// Re-export all other constants
+export * from './item-categories';
+export * from './item-defects';
+export * from './item-modifiers';
+export * from './item-validation';

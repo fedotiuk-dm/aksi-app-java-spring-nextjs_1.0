@@ -8,7 +8,7 @@ import com.aksi.api.service.dto.CreatePriceListItemRequest;
 import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.UpdatePriceListItemRequest;
 import com.aksi.domain.catalog.PriceListItemEntity;
-import com.aksi.exception.BusinessValidationException;
+import com.aksi.exception.BadRequestException;
 import com.aksi.repository.PriceListItemRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class PriceListItemValidationService {
    * number combination.
    *
    * @param request Create request to validate
-   * @throws BusinessValidationException if validation fails
+   * @throws BadRequestException if validation fails
    */
   public void validateCreate(CreatePriceListItemRequest request) {
     validateUniqueness(request.getCategoryCode(), request.getCatalogNumber(), null);
@@ -37,7 +37,7 @@ public class PriceListItemValidationService {
    * @param categoryCode Category code to check
    * @param catalogNumber Catalog number to check
    * @param excludeId ID to exclude from check (for updates)
-   * @throws BusinessValidationException if combination already exists
+   * @throws BadRequestException if combination already exists
    */
   public void validateUniqueness(
       ServiceCategoryType categoryCode, Integer catalogNumber, UUID excludeId) {
@@ -48,7 +48,7 @@ public class PriceListItemValidationService {
             .isPresent();
 
     if (exists) {
-      throw new BusinessValidationException(
+      throw new BadRequestException(
           String.format(
               "Price list item with category %s and catalog number %d already exists",
               categoryCode, catalogNumber));
@@ -60,19 +60,19 @@ public class PriceListItemValidationService {
    *
    * @param basePrice Base price
    * @param expressPrice Express price (optional)
-   * @throws BusinessValidationException if prices are invalid
+   * @throws BadRequestException if prices are invalid
    */
   public void validatePrices(Integer basePrice, Integer expressPrice) {
     if (basePrice != null && basePrice < 0) {
-      throw new BusinessValidationException("Base price cannot be negative");
+      throw new BadRequestException("Base price cannot be negative");
     }
 
     if (expressPrice != null && expressPrice < 0) {
-      throw new BusinessValidationException("Express price cannot be negative");
+      throw new BadRequestException("Express price cannot be negative");
     }
 
     if (expressPrice != null && basePrice != null && expressPrice < basePrice) {
-      throw new BusinessValidationException("Express price cannot be less than base price");
+      throw new BadRequestException("Express price cannot be less than base price");
     }
   }
 
@@ -82,7 +82,7 @@ public class PriceListItemValidationService {
    *
    * @param request Update request
    * @param existingItem Existing price list item
-   * @throws BusinessValidationException if prices are invalid
+   * @throws BadRequestException if prices are invalid
    */
   public void validateUpdatePrices(
       UpdatePriceListItemRequest request, PriceListItemEntity existingItem) {

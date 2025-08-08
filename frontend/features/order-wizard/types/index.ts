@@ -44,11 +44,3 @@ export interface OrderWizardConfig {
   defaultDeliveryDays: number;
   signatureRequired: boolean;
 }
-
-export interface OrderWizardStep {
-  id: string;
-  title: string;
-  description?: string;
-  isComplete: boolean;
-  isRequired: boolean;
-}

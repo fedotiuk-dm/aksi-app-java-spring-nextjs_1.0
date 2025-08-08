@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.aksi.exception.BusinessValidationException;
+import com.aksi.exception.BadRequestException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,11 +18,11 @@ public class FileValidationService {
   /** Validate multipart file */
   public void validateMultipartFile(MultipartFile file) {
     if (file == null || file.isEmpty()) {
-      throw new BusinessValidationException("File is required and cannot be empty");
+      throw new BadRequestException("File is required and cannot be empty");
     }
 
     if (file.getSize() > MAX_FILE_SIZE) {
-      throw new BusinessValidationException(
+      throw new BadRequestException(
           String.format(
               "File size (%d bytes) exceeds maximum allowed size (%d bytes)",
               file.getSize(), MAX_FILE_SIZE));
@@ -30,51 +30,50 @@ public class FileValidationService {
 
     String contentType = file.getContentType();
     if (contentType == null) {
-      throw new BusinessValidationException("File content type is required");
+      throw new BadRequestException("File content type is required");
     }
   }
 
   /** Validate file name for security */
   public void validateFileName(String fileName) {
     if (fileName == null || fileName.trim().isEmpty()) {
-      throw new BusinessValidationException("Filename cannot be empty");
+      throw new BadRequestException("Filename cannot be empty");
     }
 
     if (fileName.contains("..")) {
-      throw new BusinessValidationException("Filename contains invalid path sequence: " + fileName);
+      throw new BadRequestException("Filename contains invalid path sequence: " + fileName);
     }
 
     if (fileName.contains("/") || fileName.contains("\\")) {
-      throw new BusinessValidationException("Filename cannot contain path separators: " + fileName);
+      throw new BadRequestException("Filename cannot contain path separators: " + fileName);
     }
   }
 
   /** Validate directory path */
   public void validateDirectoryPath(String directory) {
     if (directory == null || directory.trim().isEmpty()) {
-      throw new BusinessValidationException("Directory path cannot be empty");
+      throw new BadRequestException("Directory path cannot be empty");
     }
 
     if (directory.contains("..")) {
-      throw new BusinessValidationException(
-          "Directory path contains invalid sequence: " + directory);
+      throw new BadRequestException("Directory path contains invalid sequence: " + directory);
     }
   }
 
   /** Validate base64 data */
   public void validateBase64Data(String base64Data) {
     if (base64Data == null || base64Data.trim().isEmpty()) {
-      throw new BusinessValidationException("Base64 data cannot be empty");
+      throw new BadRequestException("Base64 data cannot be empty");
     }
 
     // Basic base64 validation
     try {
       String cleanBase64 = cleanBase64Data(base64Data);
       if (cleanBase64.length() % 4 != 0) {
-        throw new BusinessValidationException("Invalid base64 data format");
+        throw new BadRequestException("Invalid base64 data format");
       }
     } catch (Exception e) {
-      throw new BusinessValidationException("Invalid base64 data: " + e.getMessage());
+      throw new BadRequestException("Invalid base64 data: " + e.getMessage());
     }
   }
 

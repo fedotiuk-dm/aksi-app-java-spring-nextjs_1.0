@@ -29,6 +29,7 @@ public class CartServiceImpl implements CartService {
 
   private final CartQueryService queryService;
   private final CartCommandService commandService;
+  private final CartContextService cartContextService;
 
   @Override
   public CartInfo getOrCreateCart(UUID customerId) {
@@ -89,5 +90,15 @@ public class CartServiceImpl implements CartService {
   @Override
   public int cleanupExpiredCarts() {
     return commandService.cleanupExpiredCarts();
+  }
+
+  @Override
+  public void activateCustomerForCart(UUID customerId) {
+    cartContextService.setActiveCustomerId(customerId);
+  }
+
+  @Override
+  public UUID getCurrentCustomerId() {
+    return queryService.getCurrentCustomerId();
   }
 }

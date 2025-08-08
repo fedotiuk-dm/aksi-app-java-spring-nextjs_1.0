@@ -7,7 +7,8 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
-import com.aksi.api.pricing.dto.GlobalPriceModifiers;
+import com.aksi.api.pricing.dto.DiscountType;
+import com.aksi.api.pricing.dto.UrgencyType;
 import com.aksi.domain.pricing.PriceModifierEntity;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,19 +24,19 @@ public class PriceCalculationService {
   private static final int MONEY_SCALE = 2;
 
   // Urgency percentages from OpenAPI
-  private static final Map<GlobalPriceModifiers.UrgencyTypeEnum, Integer> URGENCY_PERCENTAGES =
+  private static final Map<UrgencyType, Integer> URGENCY_PERCENTAGES =
       Map.of(
-          GlobalPriceModifiers.UrgencyTypeEnum.NORMAL, 0,
-          GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_48H, 50,
-          GlobalPriceModifiers.UrgencyTypeEnum.EXPRESS_24H, 100);
+          UrgencyType.NORMAL, 0,
+          UrgencyType.EXPRESS_48_H, 50,
+          UrgencyType.EXPRESS_24_H, 100);
 
   // Discount percentages from OpenAPI
-  private static final Map<GlobalPriceModifiers.DiscountTypeEnum, Integer> DISCOUNT_PERCENTAGES =
+  private static final Map<DiscountType, Integer> DISCOUNT_PERCENTAGES =
       Map.of(
-          GlobalPriceModifiers.DiscountTypeEnum.NONE, 0,
-          GlobalPriceModifiers.DiscountTypeEnum.EVERCARD, 10,
-          GlobalPriceModifiers.DiscountTypeEnum.MILITARY, 10,
-          GlobalPriceModifiers.DiscountTypeEnum.SOCIAL_MEDIA, 5);
+          DiscountType.NONE, 0,
+          DiscountType.EVERCARD, 10,
+          DiscountType.MILITARY, 10,
+          DiscountType.SOCIAL_MEDIA, 5);
 
   // Categories excluded from discounts (from OrderWizard doc, line 183-185)
   // Defined in pricing-api.yaml x-discount-excluded-categories
@@ -68,7 +69,7 @@ public class PriceCalculationService {
    * @param urgencyType Type of urgency
    * @return Urgency amount in kopiykas
    */
-  public int calculateUrgencyAmount(int amount, GlobalPriceModifiers.UrgencyTypeEnum urgencyType) {
+  public int calculateUrgencyAmount(int amount, UrgencyType urgencyType) {
     if (urgencyType == null) {
       return 0;
     }
@@ -84,8 +85,8 @@ public class PriceCalculationService {
    * @return Discount amount in kopiykas
    */
   public int calculateDiscountAmount(
-      int amount, GlobalPriceModifiers.DiscountTypeEnum discountType, Integer discountPercentage) {
-    if (discountType == null || discountType == GlobalPriceModifiers.DiscountTypeEnum.NONE) {
+      int amount, DiscountType discountType, Integer discountPercentage) {
+    if (discountType == null || discountType == DiscountType.NONE) {
       return 0;
     }
     return calculatePercentage(amount, getDiscountPercentage(discountType, discountPercentage));
@@ -134,7 +135,7 @@ public class PriceCalculationService {
    * @param urgencyType Type of urgency
    * @return Percentage value
    */
-  public int getUrgencyPercentage(GlobalPriceModifiers.UrgencyTypeEnum urgencyType) {
+  public int getUrgencyPercentage(UrgencyType urgencyType) {
     return urgencyType == null ? 0 : URGENCY_PERCENTAGES.getOrDefault(urgencyType, 0);
   }
 
@@ -145,13 +146,12 @@ public class PriceCalculationService {
    * @param customPercentage Custom percentage for OTHER type
    * @return Percentage value
    */
-  public int getDiscountPercentage(
-      GlobalPriceModifiers.DiscountTypeEnum discountType, Integer customPercentage) {
+  public int getDiscountPercentage(DiscountType discountType, Integer customPercentage) {
     if (discountType == null) {
       return 0;
     }
 
-    if (discountType == GlobalPriceModifiers.DiscountTypeEnum.OTHER) {
+    if (discountType == DiscountType.OTHER) {
       return customPercentage != null ? customPercentage : 0;
     }
 

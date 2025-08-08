@@ -1,4 +1,4 @@
-openapi: 3.1.1
+openapi: 3.0.4
 info:
   title: Receipt API
   description: API for generating and managing receipts for dry cleaning orders
@@ -28,7 +28,7 @@ paths:
           type: string
           format: uuid
           example: "123e4567-e89b-12d3-a456-426614174000"
-    
+
     get:
       operationId: generateOrderReceipt
       summary: Generate receipt for order
@@ -45,7 +45,7 @@ paths:
             default: "uk"
             example: "uk"
       responses:
-        '200':
+        "200":
           description: Receipt generated successfully
           content:
             application/pdf:
@@ -61,10 +61,12 @@ paths:
               description: Content type
               schema:
                 type: string
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
 
   /api/receipts/preview:
     post:
@@ -78,9 +80,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReceiptPreviewRequest'
+              $ref: "#/components/schemas/ReceiptPreviewRequest"
       responses:
-        '200':
+        "200":
           description: Receipt preview generated successfully
           content:
             application/pdf:
@@ -92,8 +94,8 @@ paths:
               description: Content disposition header
               schema:
                 type: string
-        '400':
-          $ref: '#/components/responses/BadRequest'
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
 
   /api/receipts/order/{orderId}/email:
     parameters:
@@ -102,9 +104,9 @@ paths:
         required: true
         description: Order ID
         schema:
-          type: integer
-          format: int64
-    
+          type: string
+          format: uuid
+
     post:
       operationId: emailOrderReceipt
       summary: Email receipt to customer
@@ -115,18 +117,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmailReceiptRequest'
+              $ref: "#/components/schemas/EmailReceiptRequest"
       responses:
-        '200':
+        "200":
           description: Receipt emailed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmailReceiptResponse'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                $ref: "#/components/schemas/EmailReceiptResponse"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
 
   /api/receipts/templates:
     get:
@@ -136,64 +142,28 @@ paths:
       tags:
         - receipts
       responses:
-        '200':
+        "200":
           description: Templates retrieved successfully
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ReceiptTemplate'
+                  $ref: "#/components/schemas/ReceiptTemplate"
+        "401":
+          $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
 
 components:
-  responses:
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    Forbidden:
-      description: Access forbidden
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    BadRequest:
-      description: Bad request - validation errors
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-
   schemas:
-    ErrorResponse:
-      type: object
-      required:
-        - error
-        - message
-        - timestamp
-      properties:
-        error:
-          type: string
-          description: Error code
-        message:
-          type: string
-          description: Error message
-        timestamp:
-          type: string
-          format: date-time
-          description: Error timestamp
-
     ReceiptPreviewRequest:
       type: object
       required:
         - orderData
       properties:
         orderData:
-          $ref: '#/components/schemas/ReceiptOrderData'
+          $ref: "#/components/schemas/ReceiptOrderData"
         templateId:
           type: string
           description: Template ID to use
@@ -243,7 +213,7 @@ components:
           type: array
           description: Order items
           items:
-            $ref: '#/components/schemas/ReceiptItem'
+            $ref: "#/components/schemas/ReceiptItem"
         subtotal:
           type: integer
           description: Subtotal in kopiykas
@@ -265,9 +235,7 @@ components:
           description: Due amount in kopiykas
           example: 85000
         paymentMethod:
-          type: string
-          description: Payment method
-          example: "CASH"
+          $ref: "../openapi/common.yaml#/components/schemas/PaymentMethod"
         createdAt:
           type: string
           format: date-time
@@ -394,10 +362,7 @@ components:
 
   securitySchemes:
     cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session-based authentication using httpOnly cookies
+      $ref: "../openapi/common.yaml#/components/securitySchemes/cookieAuth"
 
 security:
   - cookieAuth: []

@@ -10,7 +10,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.exception.BusinessValidationException;
+import com.aksi.exception.BadRequestException;
 import com.aksi.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -47,11 +47,11 @@ public class FileStorageQueryService {
       Path file = pathResolver.resolveFilePath(filePath);
 
       if (!Files.exists(file)) {
-        throw new BusinessValidationException("File not found: " + filePath);
+        throw new BadRequestException("File not found: " + filePath);
       }
 
       if (!Files.isReadable(file)) {
-        throw new BusinessValidationException("File is not readable: " + filePath);
+        throw new BadRequestException("File is not readable: " + filePath);
       }
 
       byte[] fileContent = Files.readAllBytes(file);
@@ -62,7 +62,7 @@ public class FileStorageQueryService {
 
     } catch (IOException ex) {
       log.error("Error reading file as base64: {}", filePath, ex);
-      throw new BusinessValidationException("Could not read file as base64: " + filePath, ex);
+      throw new BadRequestException("Could not read file as base64: " + filePath, ex);
     }
   }
 

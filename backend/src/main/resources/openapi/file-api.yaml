@@ -1,4 +1,4 @@
-openapi: 3.1.1
+openapi: 3.0.4
 info:
   title: File API
   description: File serving API for uploaded files
@@ -28,7 +28,7 @@ paths:
           type: string
           pattern: '^[a-zA-Z0-9\/_\-\.]+$'
           example: "orders/123e4567-e89b-12d3-a456-426614174000/items/456e7890-e89b-12d3-a456-426614174001/photos/photo.jpg"
-    
+
     get:
       operationId: serveFile
       summary: Serve uploaded file
@@ -36,7 +36,7 @@ paths:
       tags:
         - files
       responses:
-        '200':
+        "200":
           description: File served successfully
           content:
             application/octet-stream:
@@ -72,10 +72,10 @@ paths:
               description: Content disposition header
               schema:
                 type: string
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
 
   /api/files/upload:
     post:
@@ -89,16 +89,35 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/FileUploadRequest'
+              title: FileUploadRequest
+              type: object
+              required:
+                - file
+                - directory
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File to upload
+                directory:
+                  type: string
+                  description: Directory to upload file to
+                  pattern: '^[a-zA-Z0-9/_\-]+$'
+                  example: "orders/photos"
+                filename:
+                  type: string
+                  description: Optional custom filename (without extension)
+                  pattern: '^[a-zA-Z0-9_\-]+$'
+                  example: "custom-name"
       responses:
-        '200':
+        "200":
           description: File uploaded successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileUploadResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                $ref: "#/components/schemas/FileUploadResponse"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
 
   /api/files/upload/base64:
     post:
@@ -112,16 +131,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Base64FileUploadRequest'
+              $ref: "#/components/schemas/Base64FileUploadRequest"
       responses:
-        '200':
+        "200":
           description: File uploaded successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileUploadResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                $ref: "#/components/schemas/FileUploadResponse"
+        "400":
+          $ref: "../openapi/common.yaml#/components/responses/BadRequest"
 
   /api/files/{filePath}/info:
     parameters:
@@ -132,7 +151,7 @@ paths:
         schema:
           type: string
           pattern: '^[a-zA-Z0-9\/_\-\.]+$'
-    
+
     get:
       operationId: getFileInfo
       summary: Get file information
@@ -140,15 +159,15 @@ paths:
       tags:
         - files
       responses:
-        '200':
+        "200":
           description: File information retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileInfo'
-        '404':
-          $ref: '#/components/responses/NotFound'
-  
+                $ref: "#/components/schemas/FileInfo"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+
   /api/files/{filePath}/base64:
     parameters:
       - name: filePath
@@ -158,7 +177,7 @@ paths:
         schema:
           type: string
           pattern: '^[a-zA-Z0-9\/_\-\.]+$'
-    
+
     get:
       operationId: getFileAsBase64
       summary: Get file content as base64
@@ -166,84 +185,24 @@ paths:
       tags:
         - files
       responses:
-        '200':
+        "200":
           description: File content retrieved as base64
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Base64FileResponse'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Base64FileResponse"
+        "404":
+          $ref: "../openapi/common.yaml#/components/responses/NotFound"
+        "403":
+          $ref: "../openapi/common.yaml#/components/responses/Forbidden"
 
 components:
-  responses:
-    NotFound:
-      description: File not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    Forbidden:
-      description: Access to file is forbidden
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    
-    BadRequest:
-      description: Bad request - validation errors
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-
+  securitySchemes:
+    cookieAuth:
+      $ref: "../openapi/common.yaml#/components/securitySchemes/cookieAuth"
   schemas:
-    ErrorResponse:
-      type: object
-      required:
-        - error
-        - message
-        - timestamp
-      properties:
-        error:
-          type: string
-          description: Error code
-        message:
-          type: string
-          description: Error message
-        timestamp:
-          type: string
-          format: date-time
-          description: Error timestamp
-        details:
-          type: object
-          additionalProperties: true
-          description: Additional error details
-    
-    FileUploadRequest:
-      type: object
-      required:
-        - file
-        - directory
-      properties:
-        file:
-          type: string
-          format: binary
-          description: File to upload
-        directory:
-          type: string
-          description: Directory to upload file to
-          pattern: '^[a-zA-Z0-9/_\-]+$'
-          example: "orders/photos"
-        filename:
-          type: string
-          description: Optional custom filename (without extension)
-          pattern: '^[a-zA-Z0-9_\-]+$'
-          example: "custom-name"
-    
+    # ErrorResponse centralized in common.yaml
+
     Base64FileUploadRequest:
       type: object
       required:
@@ -265,7 +224,7 @@ components:
           description: Filename without extension
           pattern: '^[a-zA-Z0-9_\-]+$'
           example: "signature"
-    
+
     FileUploadResponse:
       type: object
       required:
@@ -307,7 +266,7 @@ components:
           type: string
           description: User ID who uploaded the file
           example: "user123"
-    
+
     FileInfo:
       type: object
       required:
@@ -346,7 +305,7 @@ components:
           type: string
           format: date-time
           description: Last modification timestamp
-    
+
     Base64FileResponse:
       type: object
       required:
@@ -372,11 +331,5 @@ components:
           format: int64
           description: Original file size in bytes
           example: 2048
-  
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session-based authentication using httpOnly cookies
 
+  # cookieAuth centralized in common.yaml

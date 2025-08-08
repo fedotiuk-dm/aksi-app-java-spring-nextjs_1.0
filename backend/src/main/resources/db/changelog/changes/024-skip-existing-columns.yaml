@@ -1,0 +1,96 @@
+databaseChangeLog:
+  - changeSet:
+      id: 024-1
+      author: aksi
+      comment: Skip if catalog_number column already exists
+      preConditions:
+        onFail: MARK_RAN
+        columnExists:
+          tableName: items
+          columnName: catalog_number
+      changes:
+        - tagDatabase:
+            tag: catalog_number_already_exists
+
+  - changeSet:
+      id: 024-2
+      author: aksi
+      comment: Skip if unit_of_measure column already exists
+      preConditions:
+        onFail: MARK_RAN
+        columnExists:
+          tableName: items
+          columnName: unit_of_measure
+      changes:
+        - tagDatabase:
+            tag: unit_of_measure_already_exists
+
+  - changeSet:
+      id: 024-3
+      author: aksi
+      comment: Add catalog_number column if not exists
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          columnExists:
+            tableName: items
+            columnName: catalog_number
+      changes:
+        - addColumn:
+            tableName: items
+            columns:
+              - column:
+                  name: catalog_number
+                  type: int
+
+  - changeSet:
+      id: 024-4
+      author: aksi
+      comment: Add unit_of_measure column if not exists
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          columnExists:
+            tableName: items
+            columnName: unit_of_measure
+      changes:
+        - addColumn:
+            tableName: items
+            columns:
+              - column:
+                  name: unit_of_measure
+                  type: varchar(50)
+
+  - changeSet:
+      id: 024-5
+      author: aksi
+      comment: Skip if version column already exists in branches
+      preConditions:
+        onFail: MARK_RAN
+        columnExists:
+          tableName: branches
+          columnName: version
+      changes:
+        - tagDatabase:
+            tag: branches_version_already_exists
+
+  - changeSet:
+      id: 024-6
+      author: aksi
+      comment: Add version column to branches if not exists
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          columnExists:
+            tableName: branches
+            columnName: version
+      changes:
+        - addColumn:
+            tableName: branches
+            columns:
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false

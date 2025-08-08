@@ -59,7 +59,7 @@ export const loginResponse = zod.object({
   "username": zod.string().describe('Username'),
   "firstName": zod.string().optional().describe('First name'),
   "lastName": zod.string().optional().describe('Last name'),
-  "roles": zod.array(zod.string()).min(1).max(loginResponseRolesMax).describe('User roles'),
+  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(loginResponseRolesMax).describe('User roles'),
   "permissions": zod.array(zod.string()).optional().describe('User permissions'),
   "branchId": zod.object({
   "present": zod.boolean().optional()
@@ -70,7 +70,9 @@ export const loginResponse = zod.object({
   "requiresBranchSelection": zod.boolean().describe('Whether branch selection is required'),
   "isBlocked": zod.boolean().describe('Whether user account is blocked due to failed attempts'),
   "attemptsRemaining": zod.number().min(loginResponseAttemptsRemainingMin).describe('Number of login attempts remaining before lockout'),
-  "lockoutExpiresAt": zod.iso.datetime({}).optional().describe('When account lockout expires (if blocked)')
+  "lockoutExpiresAt": zod.object({
+  "present": zod.boolean().optional()
+}).optional()
 })
 
 
@@ -90,8 +92,12 @@ export const getUserSessionsResponse = zod.object({
   "expiresAt": zod.iso.datetime({}).describe('Session expiration time'),
   "ipAddress": zod.string().describe('IP address'),
   "userAgent": zod.string().optional().describe('Browser user agent'),
-  "location": zod.string().optional().describe('Approximate location based on IP'),
-  "deviceType": zod.string().optional().describe('Device type (mobile, tablet, desktop)'),
+  "location": zod.object({
+  "present": zod.boolean().optional()
+}).optional(),
+  "deviceType": zod.object({
+  "present": zod.boolean().optional()
+}).optional(),
   "isCurrentSession": zod.boolean().describe('Is this the current session')
 })).describe('List of user sessions'),
   "totalCount": zod.number().describe('Total number of sessions'),
@@ -117,7 +123,7 @@ export const getCurrentSessionResponse = zod.object({
   "sessionId": zod.string().describe('Session ID'),
   "userId": zod.uuid().describe('User ID'),
   "username": zod.string().describe('Username'),
-  "roles": zod.array(zod.string()).optional(),
+  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).optional(),
   "branchId": zod.object({
   "present": zod.boolean().optional()
 }).optional(),
@@ -190,10 +196,16 @@ export const getSecurityAttemptsResponse = zod.object({
   "timestamp": zod.iso.datetime({}).describe('Attempt timestamp'),
   "username": zod.string().describe('Username attempted'),
   "ipAddress": zod.string().describe('IP address'),
-  "userAgent": zod.string().optional().describe('User agent'),
-  "location": zod.string().optional().describe('Approximate location'),
+  "userAgent": zod.object({
+  "present": zod.boolean().optional()
+}).optional(),
+  "location": zod.object({
+  "present": zod.boolean().optional()
+}).optional(),
   "success": zod.boolean().describe('Whether attempt was successful'),
-  "failureReason": zod.string().optional().describe('Reason for failure')
+  "failureReason": zod.object({
+  "present": zod.boolean().optional()
+}).optional()
 })).min(getSecurityAttemptsResponseRecentAttemptsMin).max(getSecurityAttemptsResponseRecentAttemptsMax).describe('Recent login attempts (last 50)'),
   "blockedUsers": zod.array(zod.object({
   "username": zod.string().describe('Blocked username'),
@@ -207,8 +219,12 @@ export const getSecurityAttemptsResponse = zod.object({
   "failedAttempts": zod.number().describe('Number of failed attempts'),
   "lastAttemptAt": zod.iso.datetime({}).describe('Last failed attempt time'),
   "blockedUntil": zod.iso.datetime({}).describe('When block expires'),
-  "location": zod.string().optional().describe('Approximate location'),
-  "lastUsername": zod.string().optional().describe('Last username attempted from this IP')
+  "location": zod.object({
+  "present": zod.boolean().optional()
+}).optional(),
+  "lastUsername": zod.object({
+  "present": zod.boolean().optional()
+}).optional()
 })).describe('Currently blocked IP addresses')
 })
 

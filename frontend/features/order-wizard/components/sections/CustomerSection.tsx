@@ -19,6 +19,7 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  CircularProgress,
 } from '@mui/material';
 import {
   Search,
@@ -28,117 +29,145 @@ import {
   ExpandMore,
   ExpandLess,
 } from '@mui/icons-material';
-// import { useDebounce } from '@/shared/hooks/use-debounce';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useDebounceValue } from '../../hooks';
 import { useListBranches } from '@/shared/api/generated/branch';
+import {
+  useCreateCustomer,
+  useListCustomers,
+  CreateCustomerRequestContactPreferencesItem,
+  CreateCustomerRequestInfoSource,
+  type CreateCustomerRequest,
+  type ListCustomersParams,
+} from '@/shared/api/generated/customer';
 import { useOrderWizardStore } from '@/features/order-wizard';
-import { generateOrderNumber, generateUniqueLabel } from '../../utils/order-number';
 import type { CustomerInfo } from '@/shared/api/generated/customer';
 import type { BranchInfo } from '@/shared/api/generated/branch';
 
-interface NewCustomerForm {
-  firstName: string;
-  lastName: string;
-  phonePrimary: string;
-  email?: string;
-  address?: string;
-  contactPreferences: string[];
-  infoSource?: string;
-}
+const INFO_SOURCE_LABELS: Record<CreateCustomerRequestInfoSource, string> = {
+  [CreateCustomerRequestInfoSource.INSTAGRAM]: 'Instagram',
+  [CreateCustomerRequestInfoSource.GOOGLE]: 'Google',
+  [CreateCustomerRequestInfoSource.RECOMMENDATION]: 'Рекомендації',
+  [CreateCustomerRequestInfoSource.OTHER]: 'Інше',
+};
+
+const CONTACT_PREFERENCES_LABELS: Record<CreateCustomerRequestContactPreferencesItem, string> = {
+  [CreateCustomerRequestContactPreferencesItem.PHONE]: 'Номер телефону',
+  [CreateCustomerRequestContactPreferencesItem.SMS]: 'SMS',
+  [CreateCustomerRequestContactPreferencesItem.VIBER]: 'Viber',
+};
+
+const newCustomerSchema = z.object({
+  firstName: z.string().min(1, 'Ім\'я обов\'язкове').max(100),
+  lastName: z.string().min(1, 'Прізвище обов\'язкове').max(100),
+  phonePrimary: z.string()
+    .min(10, 'Телефон повинен містити мінімум 10 цифр')
+    .max(20)
+    .regex(/^\+?[0-9\s\-()]+$/, 'Невірний формат телефону'),
+  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$|^$/, 'Невірний формат email').optional(),
+  contactPreferences: z.array(z.enum(Object.values(CreateCustomerRequestContactPreferencesItem) as [CreateCustomerRequestContactPreferencesItem, ...CreateCustomerRequestContactPreferencesItem[]])).optional(),
+  infoSource: z.enum(Object.values(CreateCustomerRequestInfoSource) as [CreateCustomerRequestInfoSource, ...CreateCustomerRequestInfoSource[]]).optional(),
+});
+
+type NewCustomerFormData = z.infer<typeof newCustomerSchema>;
 
 export const CustomerSection: React.FC = () => {
-  const [isNewCustomerOpen, setIsNewCustomerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [newCustomerForm, setNewCustomerForm] = useState<NewCustomerForm>({
-    firstName: '',
-    lastName: '',
-    phonePrimary: '',
-    email: '',
-    address: '',
-    contactPreferences: [],
-    infoSource: '',
+  const debouncedSearchQuery = useDebounceValue(searchQuery, 300);
+  
+  // Customer search using useListCustomers with search param
+  const searchParams: ListCustomersParams | undefined = debouncedSearchQuery.length >= 2 
+    ? { search: debouncedSearchQuery }
+    : undefined;
+    
+  const { data: searchResults, isLoading: isSearching } = useListCustomers(
+    searchParams,
+    {
+      query: {
+        enabled: debouncedSearchQuery.length >= 2,
+      },
+    }
+  );
+  
+  // Create customer mutation
+  const createCustomerMutation = useCreateCustomer();
+  
+  // Form for new customer
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<NewCustomerFormData>({
+    resolver: zodResolver(newCustomerSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      phonePrimary: '',
+      email: '',
+      contactPreferences: [],
+      infoSource: undefined,
+    },
   });
 
   const {
-    customer,
-    setCustomer,
-    orderNumber,
-    setOrderNumber,
+    selectedCustomer,
+    setSelectedCustomer,
+    isCustomerFormOpen,
+    setCustomerFormOpen,
     uniqueLabel,
     setUniqueLabel,
-    branchId,
-    setBranchId,
+    selectedBranch,
+    setSelectedBranch,
   } = useOrderWizardStore();
-
-  // Search customers - placeholder until API is connected
-  const searchResults: CustomerInfo[] = []; // Will be populated by search API
-  const isSearching = false;
 
   // Get branches
   const { data: branchesData } = useListBranches();
 
-  // Initialize order number on mount
-  React.useEffect(() => {
-    if (!orderNumber) {
-      setOrderNumber(generateOrderNumber());
-    }
-  }, [orderNumber, setOrderNumber]);
-
-  // Generate unique label when branch is selected
-  React.useEffect(() => {
-    if (branchId && !uniqueLabel) {
-      setUniqueLabel(generateUniqueLabel(branchId));
-    }
-  }, [branchId, uniqueLabel, setUniqueLabel]);
+  // Order numbers will be generated by backend when creating the actual order
+  // No need to generate them on frontend
 
   const handleCustomerSelect = (customer: CustomerInfo | null) => {
-    setCustomer(customer);
+    setSelectedCustomer(customer);
     if (customer) {
-      setIsNewCustomerOpen(false);
+      setCustomerFormOpen(false);
       setSearchQuery('');
     }
   };
 
   const handleBranchChange = (event: SelectChangeEvent) => {
-    setBranchId(event.target.value);
+    const branchId = event.target.value;
+    const branch = branchesData?.branches?.find(b => b.id === branchId) || null;
+    setSelectedBranch(branch);
   };
 
-  const handleSaveNewCustomer = () => {
-    const tempCustomer: CustomerInfo = {
-      id: `temp-${Date.now()}`,
-      firstName: newCustomerForm.firstName,
-      lastName: newCustomerForm.lastName,
-      phonePrimary: newCustomerForm.phonePrimary,
-      email: newCustomerForm.email,
-      address: newCustomerForm.address,
-      contactPreferences: newCustomerForm.contactPreferences as any,
-      infoSource: newCustomerForm.infoSource as any,
-      active: true,
-      createdAt: new Date().toISOString(),
-    };
-    
-    setCustomer(tempCustomer);
-    setIsNewCustomerOpen(false);
-    
-    // Reset form
-    setNewCustomerForm({
-      firstName: '',
-      lastName: '',
-      phonePrimary: '',
-      email: '',
-      address: '',
-      contactPreferences: [],
-      infoSource: '',
-    });
-  };
+  const handleCreateCustomer = handleSubmit(async (data: NewCustomerFormData) => {
+    try {
+      const createRequest: CreateCustomerRequest = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phonePrimary: data.phonePrimary,
+        email: data.email || undefined,
+        contactPreferences: data.contactPreferences || [],
+        infoSource: data.infoSource,
+      };
+      
+      const newCustomer = await createCustomerMutation.mutateAsync({
+        data: createRequest,
+      });
+      
+      setSelectedCustomer(newCustomer);
+      setCustomerFormOpen(false);
+      reset();
+    } catch (error) {
+      console.error('Error creating customer:', error);
+    }
+  });
 
-  const handleContactPreferenceToggle = (preference: string) => {
-    setNewCustomerForm(prev => ({
-      ...prev,
-      contactPreferences: prev.contactPreferences.includes(preference)
-        ? prev.contactPreferences.filter(p => p !== preference)
-        : [...prev.contactPreferences, preference],
-    }));
-  };
+  const watchedContactPreferences = watch('contactPreferences') || [];
 
   return (
     <Box>
@@ -149,12 +178,12 @@ export const CustomerSection: React.FC = () => {
       {/* Customer Search */}
       <Box sx={{ mb: 2 }}>
         <Autocomplete
-          options={searchResults}
+          options={searchResults?.customers || []}
           getOptionLabel={(option) => 
             `${option.lastName} ${option.firstName} - ${option.phonePrimary}`
           }
           loading={isSearching}
-          value={customer}
+          value={selectedCustomer}
           onChange={(_, value) => handleCustomerSelect(value)}
           inputValue={searchQuery}
           onInputChange={(_, value) => setSearchQuery(value)}
@@ -171,6 +200,11 @@ export const CustomerSection: React.FC = () => {
                       <Search />
                     </InputAdornment>
                   ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {isSearching && <CircularProgress size={20} />}
+                    </InputAdornment>
+                  ),
                 }
               }}
             />
@@ -179,22 +213,22 @@ export const CustomerSection: React.FC = () => {
       </Box>
 
       {/* Selected Customer Info */}
-      {customer && (
+      {selectedCustomer && (
         <Box sx={{ mb: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="subtitle2">
-              {customer.lastName} {customer.firstName}
+              {selectedCustomer.lastName} {selectedCustomer.firstName}
             </Typography>
             <IconButton size="small">
               <Edit fontSize="small" />
             </IconButton>
           </Box>
           <Typography variant="body2" color="text.secondary">
-            {customer.phonePrimary}
+            {selectedCustomer.phonePrimary}
           </Typography>
-          {customer.email && (
+          {selectedCustomer.email && (
             <Typography variant="body2" color="text.secondary">
-              {customer.email}
+              {selectedCustomer.email}
             </Typography>
           )}
         </Box>
@@ -202,9 +236,9 @@ export const CustomerSection: React.FC = () => {
 
       {/* New Customer Toggle */}
       <Button
-        startIcon={isNewCustomerOpen ? <ExpandLess /> : <ExpandMore />}
+        startIcon={isCustomerFormOpen ? <ExpandLess /> : <ExpandMore />}
         endIcon={<PersonAdd />}
-        onClick={() => setIsNewCustomerOpen(!isNewCustomerOpen)}
+        onClick={() => setCustomerFormOpen(!isCustomerFormOpen)}
         variant="outlined"
         fullWidth
         sx={{ mb: 2 }}
@@ -213,129 +247,146 @@ export const CustomerSection: React.FC = () => {
       </Button>
 
       {/* New Customer Form */}
-      <Collapse in={isNewCustomerOpen}>
+      <Collapse in={isCustomerFormOpen}>
         <Box sx={{ mb: 3, p: 2, border: 1, borderColor: 'divider', borderRadius: 1 }}>
           <Typography variant="subtitle2" gutterBottom>
             Новий клієнт
           </Typography>
           
-          <TextField
-            label="Прізвище"
-            required
-            fullWidth
-            value={newCustomerForm.lastName}
-            onChange={(e) => setNewCustomerForm(prev => ({ ...prev, lastName: e.target.value }))}
-            sx={{ mb: 2 }}
+          <Controller
+            name="lastName"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Прізвище"
+                required
+                fullWidth
+                error={!!errors.lastName}
+                helperText={errors.lastName?.message}
+                sx={{ mb: 2 }}
+              />
+            )}
           />
           
-          <TextField
-            label="Ім'я"
-            required
-            fullWidth
-            value={newCustomerForm.firstName}
-            onChange={(e) => setNewCustomerForm(prev => ({ ...prev, firstName: e.target.value }))}
-            sx={{ mb: 2 }}
+          <Controller
+            name="firstName"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Ім'я"
+                required
+                fullWidth
+                error={!!errors.firstName}
+                helperText={errors.firstName?.message}
+                sx={{ mb: 2 }}
+              />
+            )}
           />
           
-          <TextField
-            label="Телефон"
-            required
-            fullWidth
-            value={newCustomerForm.phonePrimary}
-            onChange={(e) => setNewCustomerForm(prev => ({ ...prev, phonePrimary: e.target.value }))}
-            sx={{ mb: 2 }}
+          <Controller
+            name="phonePrimary"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Телефон"
+                required
+                fullWidth
+                error={!!errors.phonePrimary}
+                helperText={errors.phonePrimary?.message}
+                sx={{ mb: 2 }}
+              />
+            )}
           />
           
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            value={newCustomerForm.email}
-            onChange={(e) => setNewCustomerForm(prev => ({ ...prev, email: e.target.value }))}
-            sx={{ mb: 2 }}
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Email"
+                type="email"
+                fullWidth
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                sx={{ mb: 2 }}
+              />
+            )}
           />
           
-          <TextField
-            label="Адреса"
-            fullWidth
-            multiline
-            rows={2}
-            value={newCustomerForm.address}
-            onChange={(e) => setNewCustomerForm(prev => ({ ...prev, address: e.target.value }))}
-            sx={{ mb: 2 }}
-          />
 
           <FormControl component="fieldset" sx={{ mb: 2 }}>
             <FormLabel component="legend">Способи зв'язку</FormLabel>
             <FormGroup>
-              <FormControlLabel 
-                control={
-                  <Checkbox 
-                    checked={newCustomerForm.contactPreferences.includes('PHONE')}
-                    onChange={() => handleContactPreferenceToggle('PHONE')}
-                  />
-                } 
-                label="Номер телефону" 
-              />
-              <FormControlLabel 
-                control={
-                  <Checkbox 
-                    checked={newCustomerForm.contactPreferences.includes('SMS')}
-                    onChange={() => handleContactPreferenceToggle('SMS')}
-                  />
-                } 
-                label="SMS" 
-              />
-              <FormControlLabel 
-                control={
-                  <Checkbox 
-                    checked={newCustomerForm.contactPreferences.includes('VIBER')}
-                    onChange={() => handleContactPreferenceToggle('VIBER')}
-                  />
-                } 
-                label="Viber" 
-              />
+              {Object.entries(CONTACT_PREFERENCES_LABELS).map(([value, label]) => (
+                <Controller
+                  key={value}
+                  name="contactPreferences"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={watchedContactPreferences.includes(value as CreateCustomerRequestContactPreferencesItem)}
+                          onChange={(e) => {
+                            const currentValues = field.value || [];
+                            if (e.target.checked) {
+                              field.onChange([...currentValues, value]);
+                            } else {
+                              field.onChange(currentValues.filter((v: string) => v !== value));
+                            }
+                          }}
+                        />
+                      }
+                      label={label}
+                    />
+                  )}
+                />
+              ))}
             </FormGroup>
           </FormControl>
 
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <FormLabel>Джерело інформації</FormLabel>
-            <Select 
-              value={newCustomerForm.infoSource || ''}
-              onChange={(e) => setNewCustomerForm(prev => ({ ...prev, infoSource: e.target.value }))}
-            >
-              <MenuItem value="">Не вказано</MenuItem>
-              <MenuItem value="INSTAGRAM">Інстаграм</MenuItem>
-              <MenuItem value="GOOGLE">Google</MenuItem>
-              <MenuItem value="RECOMMENDATION">Рекомендації</MenuItem>
-              <MenuItem value="OTHER">Інше</MenuItem>
-            </Select>
-          </FormControl>
+          <Controller
+            name="infoSource"
+            control={control}
+            render={({ field }) => (
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <FormLabel>Джерело інформації</FormLabel>
+                <Select 
+                  {...field}
+                  value={field.value || ''}
+                >
+                  <MenuItem value="">Не вказано</MenuItem>
+                  {Object.entries(INFO_SOURCE_LABELS).map(([value, label]) => (
+                    <MenuItem key={value} value={value}>
+                      {label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          />
 
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button 
               variant="contained" 
               fullWidth
-              onClick={handleSaveNewCustomer}
-              disabled={!newCustomerForm.firstName || !newCustomerForm.lastName || !newCustomerForm.phonePrimary}
+              onClick={handleCreateCustomer}
+              disabled={createCustomerMutation.isPending}
             >
-              Зберегти
+              {createCustomerMutation.isPending ? 'Створення...' : 'Зберегти'}
             </Button>
             <Button 
               variant="outlined" 
               fullWidth
               onClick={() => {
-                setIsNewCustomerOpen(false);
-                setNewCustomerForm({
-                  firstName: '',
-                  lastName: '',
-                  phonePrimary: '',
-                  email: '',
-                  address: '',
-                  contactPreferences: [],
-                  infoSource: '',
-                });
+                setCustomerFormOpen(false);
+                reset();
               }}
+              disabled={createCustomerMutation.isPending}
             >
               Скасувати
             </Button>
@@ -352,12 +403,11 @@ export const CustomerSection: React.FC = () => {
 
       <TextField
         label="Номер квитанції"
-        value={orderNumber}
-        onChange={(e) => setOrderNumber(e.target.value)}
+        value="Буде згенеровано при створенні замовлення"
         fullWidth
         disabled
         sx={{ mb: 2 }}
-        helperText="Генерується автоматично"
+        helperText="Номер генерується автоматично бекендом"
       />
 
       <TextField
@@ -382,9 +432,10 @@ export const CustomerSection: React.FC = () => {
       <FormControl fullWidth sx={{ mb: 2 }}>
         <FormLabel>Пункт прийому</FormLabel>
         <Select
-          value={branchId}
+          value={selectedBranch?.id || ''}
           onChange={handleBranchChange}
         >
+          <MenuItem value="">Виберіть філію</MenuItem>
           {branchesData?.branches?.map((branch: BranchInfo) => (
             <MenuItem key={branch.id} value={branch.id}>
               {branch.name}

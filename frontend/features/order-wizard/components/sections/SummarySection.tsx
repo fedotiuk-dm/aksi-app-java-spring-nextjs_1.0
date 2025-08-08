@@ -20,9 +20,11 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { Print } from '@mui/icons-material';
+import { CircularProgress } from '@mui/material';
 import SignatureCanvas from 'react-signature-canvas';
 import { useOrderWizardStore } from '@/features/order-wizard';
-import { useGetCart } from '@/shared/api/generated/cart';
+import { useGetCart, useUpdateCartModifiers, useClearCart } from '@/shared/api/generated/cart';
+import { useCreateOrder } from '@/shared/api/generated/order';
 import { ReceiptPreview } from '../receipt/ReceiptPreview';
 import type {
   CartGlobalModifiersUrgencyType,
@@ -35,32 +37,23 @@ export const SummarySection: React.FC = () => {
   const [isReceiptPreviewOpen, setIsReceiptPreviewOpen] = useState(false);
   const [clientDeliveryDate, setClientDeliveryDate] = useState<Date | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [urgency, setUrgency] = useState<CartGlobalModifiersUrgencyType>('NORMAL');
+  const [discountType, setDiscountType] = useState<CartGlobalModifiersDiscountType>('NONE');
+  const [customDiscountPercent, setCustomDiscountPercent] = useState(0);
+  const [paidAmount, setPaidAmount] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState<'TERMINAL' | 'CASH' | 'BANK'>('CASH');
+  const [orderNotes, setOrderNotes] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [signature, setSignature] = useState('');
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+  const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
 
   const {
-    cartId,
-    deliveryDate,
-    setDeliveryDate,
-    urgency,
-    setUrgency,
-    discountType,
-    setDiscountType,
-    customDiscountPercent,
-    setCustomDiscountPercent,
-    paidAmount,
-    setPaidAmount,
-    paymentMethod,
-    setPaymentMethod,
-    orderNotes,
-    setOrderNotes,
-    termsAccepted,
-    setTermsAccepted,
-    signature,
-    setSignature,
-    getTotalAmount,
-    getDiscountAmount,
-    getUrgencyAmount,
-    getDebtAmount,
-    canSubmitOrder,
+    selectedCustomer,
+    selectedBranch,
+    uniqueLabel,
+    resetOrderWizard,
   } = useOrderWizardStore();
 
   // Initialize client-side state to avoid hydration mismatch
@@ -69,15 +62,19 @@ export const SummarySection: React.FC = () => {
     const defaultDate = new Date();
     defaultDate.setDate(defaultDate.getDate() + 2); // +48 hours
     setClientDeliveryDate(defaultDate);
-    setDeliveryDate(defaultDate);
-  }, [setDeliveryDate]);
+  }, []);
 
-  // Get cart data - TODO: Update when cart API supports cartId
-  const { data: cartData } = useGetCart({
+  // Get cart data
+  const { data: cartData, refetch: refetchCart } = useGetCart({
     query: {
-      enabled: !!cartId,
+      enabled: !!selectedCustomer,
     },
   });
+  
+  // Mutations
+  const updateCartModifiersMutation = useUpdateCartModifiers();
+  const createOrderMutation = useCreateOrder();
+  const clearCartMutation = useClearCart();
 
   const handleUrgencyChange = (event: SelectChangeEvent) => {
     setUrgency(event.target.value as CartGlobalModifiersUrgencyType);
@@ -110,22 +107,78 @@ export const SummarySection: React.FC = () => {
     }
   };
 
-  const handlePrintReceipt = () => {
-    if (canSubmitOrder()) {
+  const handleCreateOrder = async () => {
+    if (!canSubmitOrder() || !cartData) return;
+    
+    setIsCreatingOrder(true);
+    setOrderError(null);
+    
+    try {
+      // First update cart with global modifiers
+      await updateCartModifiersMutation.mutateAsync({
+        data: {
+          urgencyType: urgency,
+          discountType,
+          discountPercentage: discountType === 'OTHER' ? customDiscountPercent : undefined,
+          expectedCompletionDate: clientDeliveryDate?.toISOString(),
+        }
+      });
+      
+      // Refetch cart to get updated pricing
+      await refetchCart();
+      
+      // Then create order
+      const orderData = await createOrderMutation.mutateAsync({
+        data: {
+          cartId: cartData.id,
+          branchId: selectedBranch!.id,
+          uniqueLabel,
+          notes: orderNotes,
+          customerSignature: signature,
+          termsAccepted,
+        }
+      });
+      
+      setCreatedOrderId(orderData.id);
       setIsReceiptPreviewOpen(true);
+    } catch (error: any) {
+      console.error('Error creating order:', error);
+      setOrderError(
+        error?.response?.data?.message || 
+        error?.message || 
+        'Помилка створення замовлення. Спробуйте ще раз.'
+      );
+    } finally {
+      setIsCreatingOrder(false);
     }
   };
 
-  const totalAmount = cartData?.pricing?.total ? cartData.pricing.total / 100 : getTotalAmount();
-  const discountAmount = cartData?.pricing?.discountAmount ? cartData.pricing.discountAmount / 100 : getDiscountAmount();
-  const urgencyAmount = cartData?.pricing?.urgencyAmount ? cartData.pricing.urgencyAmount / 100 : getUrgencyAmount();
-  const debtAmount = getDebtAmount();
+  const totalAmount = cartData?.pricing?.total ? cartData.pricing.total / 100 : 0;
+  const discountAmount = cartData?.pricing?.discountAmount ? cartData.pricing.discountAmount / 100 : 0;
+  const urgencyAmount = cartData?.pricing?.urgencyAmount ? cartData.pricing.urgencyAmount / 100 : 0;
+  const debtAmount = totalAmount - paidAmount;
+  
+  const canSubmitOrder = () => {
+    return !!selectedCustomer && 
+           !!selectedBranch && 
+           !!uniqueLabel && 
+           cartData?.items && 
+           cartData.items.length > 0 && 
+           termsAccepted && 
+           !!signature;
+  };
 
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
         Підсумки та завершення
       </Typography>
+      
+      {orderError && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setOrderError(null)}>
+          {orderError}
+        </Alert>
+      )}
 
       {/* Delivery Date */}
       {isClient && clientDeliveryDate && (
@@ -136,7 +189,6 @@ export const SummarySection: React.FC = () => {
             if (newValue) {
               const date = newValue.toDate();
               setClientDeliveryDate(date);
-              setDeliveryDate(date);
             }
           }}
           format="DD.MM.YYYY"
@@ -325,22 +377,47 @@ export const SummarySection: React.FC = () => {
         color="primary"
         size="large"
         fullWidth
-        startIcon={<Print />}
-        onClick={handlePrintReceipt}
-        disabled={!canSubmitOrder()}
+        startIcon={isCreatingOrder ? <CircularProgress size={20} /> : <Print />}
+        onClick={handleCreateOrder}
+        disabled={!canSubmitOrder() || isCreatingOrder}
         sx={{
           py: 2,
           fontSize: '1.1rem',
           fontWeight: 'bold',
         }}
       >
-        ДРУК КВИТАНЦІЇ
+        {isCreatingOrder ? 'СТВОРЕННЯ ЗАМОВЛЕННЯ...' : 'СТВОРИТИ ЗАМОВЛЕННЯ І ДРУК'}
       </Button>
 
       {/* Receipt Preview Dialog */}
       <ReceiptPreview
         open={isReceiptPreviewOpen}
-        onClose={() => setIsReceiptPreviewOpen(false)}
+        onCloseAction={async () => {
+          setIsReceiptPreviewOpen(false);
+          if (createdOrderId) {
+            // Clear the cart
+            try {
+              await clearCartMutation.mutateAsync();
+            } catch (error) {
+              console.error('Error clearing cart:', error);
+            }
+            // Reset the form after successful order creation
+            resetOrderWizard();
+            // Reset local form state
+            setUrgency('NORMAL');
+            setDiscountType('NONE');
+            setCustomDiscountPercent(0);
+            setPaidAmount(0);
+            setPaymentMethod('CASH');
+            setOrderNotes('');
+            setTermsAccepted(false);
+            setSignature('');
+            setCreatedOrderId(null);
+            // Optionally redirect to orders list or dashboard
+            // router.push('/orders');
+          }
+        }}
+        orderId={createdOrderId || undefined}
       />
     </Box>
   );

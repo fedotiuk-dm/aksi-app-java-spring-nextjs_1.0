@@ -21,7 +21,7 @@ export const updateUserRolesBodyRolesMax = 2147483647;
 
 
 export const updateUserRolesBody = zod.object({
-  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(updateUserRolesBodyRolesMax).describe('New set of roles')
+  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(updateUserRolesBodyRolesMax).describe('New set of roles')
 })
 
 export const updateUserRolesResponseRolesMax = 2147483647;
@@ -35,7 +35,7 @@ export const updateUserRolesResponse = zod.object({
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
   "email": zod.string().describe('Email address'),
-  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(updateUserRolesResponseRolesMax),
+  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(updateUserRolesResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
   "lastLoginAt": zod.iso.datetime({}).optional().describe('Last login timestamp'),
@@ -120,15 +120,15 @@ export const listUsersQueryPageDefault = 0;
 export const listUsersQueryPageMin = 0;
 export const listUsersQuerySizeDefault = 20;
 export const listUsersQuerySizeMax = 100;
-export const listUsersQuerySortByDefault = "createdAt";export const listUsersQuerySortOrderDefault = "desc";
+export const listUsersQuerySortByDefault = "createdAt";export const listUsersQuerySortOrderDefault = "asc";
 
 export const listUsersQueryParams = zod.object({
   "page": zod.number().min(listUsersQueryPageMin).optional().describe('Page number (0-based)'),
-  "size": zod.number().min(1).max(listUsersQuerySizeMax).default(listUsersQuerySizeDefault).describe('Page size'),
+  "size": zod.number().min(1).max(listUsersQuerySizeMax).default(listUsersQuerySizeDefault).describe('Page size (number of items per page)'),
   "sortBy": zod.string().default(listUsersQuerySortByDefault).describe('Field to sort by'),
-  "sortOrder": zod.string().default(listUsersQuerySortOrderDefault).describe('Sort order'),
+  "sortOrder": zod.enum(['asc', 'desc']).default(listUsersQuerySortOrderDefault).describe('Sort direction'),
   "search": zod.string().optional().describe('Search by username, first name, or last name'),
-  "role": zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT']).optional().describe('Filter by role'),
+  "role": zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER']).optional().describe('Filter by role'),
   "branchId": zod.uuid().optional().describe('Filter by branch'),
   "active": zod.boolean().optional().describe('Filter by active status')
 })
@@ -143,7 +143,7 @@ export const listUsersResponse = zod.object({
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
   "email": zod.string().describe('Email address'),
-  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(listUsersResponseDataItemRolesMax),
+  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(listUsersResponseDataItemRolesMax),
   "active": zod.boolean().describe('Is user active'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
   "lastLoginAt": zod.iso.datetime({}).optional().describe('Last login timestamp')
@@ -151,11 +151,11 @@ export const listUsersResponse = zod.object({
   "totalElements": zod.number().describe('Total number of elements'),
   "totalPages": zod.number().describe('Total number of pages'),
   "size": zod.number().describe('Page size'),
-  "number": zod.number().describe('Current page number (0-based)'),
+  "number": zod.number().describe('Page number (0-based)'),
   "numberOfElements": zod.number().describe('Number of elements in current page'),
   "first": zod.boolean().describe('Is first page'),
   "last": zod.boolean().describe('Is last page'),
-  "empty": zod.boolean().describe('Is page empty')
+  "empty": zod.boolean().describe('Is empty')
 })
 
 
@@ -194,7 +194,7 @@ export const createUserBody = zod.object({
   "lastName": zod.string().min(1).max(createUserBodyLastNameMax).regex(createUserBodyLastNameRegExp).describe('Last name (letters only)'),
   "email": zod.string().min(createUserBodyEmailMin).max(createUserBodyEmailMax).describe('Email address (must be unique)'),
   "phone": zod.string().regex(createUserBodyPhoneRegExp).optional().describe('Phone number (optional, international format)'),
-  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(createUserBodyRolesMax).optional().describe('User roles (defaults to OPERATOR if not specified)'),
+  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(createUserBodyRolesMax).optional().describe('User roles (defaults to OPERATOR if not specified)'),
   "branchIds": zod.array(zod.uuid()).min(createUserBodyBranchIdsMin).max(createUserBodyBranchIdsMax).optional().describe('Branch IDs to assign (optional)'),
   "primaryBranchId": zod.uuid().optional().describe('Primary branch ID (must be in branchIds if provided)'),
   "active": zod.boolean().optional().describe('Account active status'),
@@ -221,7 +221,7 @@ export const deactivateUserResponse = zod.object({
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
   "email": zod.string().describe('Email address'),
-  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(deactivateUserResponseRolesMax),
+  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(deactivateUserResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
   "lastLoginAt": zod.iso.datetime({}).optional().describe('Last login timestamp'),
@@ -259,7 +259,7 @@ export const activateUserResponse = zod.object({
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
   "email": zod.string().describe('Email address'),
-  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(activateUserResponseRolesMax),
+  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(activateUserResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
   "lastLoginAt": zod.iso.datetime({}).optional().describe('Last login timestamp'),
@@ -297,7 +297,7 @@ export const getUserByIdResponse = zod.object({
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
   "email": zod.string().describe('Email address'),
-  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(getUserByIdResponseRolesMax),
+  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(getUserByIdResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
   "lastLoginAt": zod.iso.datetime({}).optional().describe('Last login timestamp'),
@@ -347,7 +347,7 @@ export const updateUserResponse = zod.object({
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
   "email": zod.string().describe('Email address'),
-  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT'])).min(1).max(updateUserResponseRolesMax),
+  "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(updateUserResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
   "lastLoginAt": zod.iso.datetime({}).optional().describe('Last login timestamp'),
@@ -383,7 +383,7 @@ export const getUserPermissionsResponse = zod.array(getUserPermissionsResponseIt
  * @summary Get role permissions
  */
 export const getRolePermissionsParams = zod.object({
-  "role": zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER', 'ACCOUNTANT']).describe('User role')
+  "role": zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER']).describe('User role')
 })
 
 export const getRolePermissionsResponseItem = zod.string()
