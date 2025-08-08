@@ -3,14 +3,13 @@
  */
 
 import { useEffect } from 'react';
-import { 
+import {
   useAuthStore,
   selectIsAdmin,
   selectIsManager,
   selectIsOperator,
   selectIsCleaner,
   selectIsDriver,
-  selectIsAccountant,
   selectHasPermission,
   selectPermissions,
   selectCurrentBranchId,
@@ -68,12 +67,11 @@ export const useAuth = () => {
     isOperator: selectIsOperator(store),
     isCleaner: selectIsCleaner(store),
     isDriver: selectIsDriver(store),
-    isAccountant: selectIsAccountant(store),
-    
+
     // Permission checks
     permissions: selectPermissions(store),
     hasPermission: (permission: string) => selectHasPermission(store, permission),
-    
+
     // Branch info
     currentBranchId: selectCurrentBranchId(store),
     currentBranchName: selectCurrentBranchName(store),

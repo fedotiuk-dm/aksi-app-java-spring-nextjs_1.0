@@ -13,17 +13,9 @@ import {
   Grid,
   Stack,
 } from '@mui/material';
-import {
-  MoreVert,
-  Edit,
-  Delete,
-  Schedule,
-  Speed,
-  CheckCircle,
-  Cancel,
-} from '@mui/icons-material';
+import { MoreVert, Edit, Delete, Schedule, Speed, CheckCircle, Cancel } from '@mui/icons-material';
 import { formatPrice } from '@/shared/lib/utils/format';
-import { 
+import {
   type PriceListItemInfo,
   PriceListItemInfoUnitOfMeasure,
   useDeletePriceListItem,
@@ -45,7 +37,7 @@ interface PriceListItemProps {
 export const PriceListItem: React.FC<PriceListItemProps> = ({ item, onRefetchAction }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { setSelectedItem, setFormOpen } = usePriceListStore();
-  
+
   const deleteMutation = useDeletePriceListItem();
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -57,9 +49,14 @@ export const PriceListItem: React.FC<PriceListItemProps> = ({ item, onRefetchAct
   };
 
   const handleEdit = () => {
-    setSelectedItem(item);
-    setFormOpen(true);
+    // Avoid aria-hidden focus issue: blur current, close menu, then open dialog
+    const active = document.activeElement as HTMLElement | null;
+    if (active) active.blur();
     handleMenuClose();
+    setTimeout(() => {
+      setSelectedItem(item);
+      setFormOpen(true);
+    }, 0);
   };
 
   const handleDelete = async () => {
@@ -107,7 +104,7 @@ export const PriceListItem: React.FC<PriceListItemProps> = ({ item, onRefetchAct
                   {formatPrice(item.basePrice)} / {UNIT_LABELS[item.unitOfMeasure]}
                 </Typography>
               </Box>
-              
+
               {(item.priceBlack || item.priceColor) && (
                 <Box>
                   <Typography variant="subtitle2" color="text.secondary">
@@ -119,9 +116,7 @@ export const PriceListItem: React.FC<PriceListItemProps> = ({ item, onRefetchAct
                         <Typography variant="caption" color="text.secondary">
                           Чорне:
                         </Typography>
-                        <Typography variant="body1">
-                          {formatPrice(item.priceBlack)}
-                        </Typography>
+                        <Typography variant="body1">{formatPrice(item.priceBlack)}</Typography>
                       </Box>
                     )}
                     {item.priceColor && (
@@ -129,9 +124,7 @@ export const PriceListItem: React.FC<PriceListItemProps> = ({ item, onRefetchAct
                         <Typography variant="caption" color="text.secondary">
                           Кольорове:
                         </Typography>
-                        <Typography variant="body1">
-                          {formatPrice(item.priceColor)}
-                        </Typography>
+                        <Typography variant="body1">{formatPrice(item.priceColor)}</Typography>
                       </Box>
                     )}
                   </Stack>
@@ -153,7 +146,7 @@ export const PriceListItem: React.FC<PriceListItemProps> = ({ item, onRefetchAct
                   </Typography>
                 </Box>
               )}
-              
+
               {item.expressAvailable && (
                 <Box>
                   <Typography variant="subtitle2" color="text.secondary">
@@ -169,14 +162,16 @@ export const PriceListItem: React.FC<PriceListItemProps> = ({ item, onRefetchAct
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6, md: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+            >
               <Chip
                 icon={item.active ? <CheckCircle /> : <Cancel />}
                 label={item.active ? 'Активна' : 'Неактивна'}
                 color={item.active ? 'success' : 'default'}
                 size="small"
               />
-              
+
               <IconButton size="small" onClick={handleMenuOpen}>
                 <MoreVert />
               </IconButton>
@@ -184,12 +179,7 @@ export const PriceListItem: React.FC<PriceListItemProps> = ({ item, onRefetchAct
           </Grid>
         </Grid>
 
-
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
           <MenuItem onClick={handleEdit}>
             <Edit fontSize="small" sx={{ mr: 1 }} />
             Редагувати

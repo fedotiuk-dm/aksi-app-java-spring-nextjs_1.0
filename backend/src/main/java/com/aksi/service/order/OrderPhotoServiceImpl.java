@@ -37,6 +37,7 @@ public class OrderPhotoServiceImpl implements OrderPhotoService {
   private final OrderGuard orderGuard;
   private final OrderFactory orderFactory;
   private final OrderMapper orderMapper;
+  private final OrderItemService orderItemService;
   private final FileStorageService fileStorageService;
   private final FilePathResolver filePathResolver;
   private final UserContextService userContextService;
@@ -67,7 +68,7 @@ public class OrderPhotoServiceImpl implements OrderPhotoService {
     ItemPhotoEntity photo =
         orderFactory.createPhoto(
             orderItem, file, uploadResponse, photoType, photoDescription, currentUser);
-    orderItem.addPhoto(photo);
+    orderItemService.addPhoto(orderItem, photo);
 
     // Step 5: Persist
     orderRepository.save(order);
@@ -89,7 +90,7 @@ public class OrderPhotoServiceImpl implements OrderPhotoService {
     deletePhysicalFile(photo);
 
     // Step 3: Remove from entity
-    orderItem.removePhoto(photo);
+    orderItemService.removePhoto(orderItem, photo);
 
     // Step 4: Persist
     orderRepository.save(order);

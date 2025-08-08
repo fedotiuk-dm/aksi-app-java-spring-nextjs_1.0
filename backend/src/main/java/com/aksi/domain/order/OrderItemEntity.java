@@ -49,8 +49,7 @@ public class OrderItemEntity extends BaseEntity {
   @OneToOne(
       mappedBy = "orderItemEntity",
       cascade = CascadeType.ALL,
-      orphanRemoval = true,
-      fetch = FetchType.LAZY)
+      orphanRemoval = true)
   private ItemCharacteristicsEntity characteristics;
 
   @OneToMany(
@@ -110,61 +109,4 @@ public class OrderItemEntity extends BaseEntity {
   @Column(name = "discount_eligible", nullable = false)
   private boolean discountEligible = true;
 
-  // Business methods
-  public void addStain(ItemStainEntity stain) {
-    stains.add(stain);
-    stain.setOrderItemEntity(this);
-  }
-
-  public void removeStain(ItemStainEntity stain) {
-    stains.remove(stain);
-    stain.setOrderItemEntity(null);
-  }
-
-  public void addDefect(ItemDefectEntity defect) {
-    defects.add(defect);
-    defect.setOrderItemEntity(this);
-  }
-
-  public void removeDefect(ItemDefectEntity defect) {
-    defects.remove(defect);
-    defect.setOrderItemEntity(null);
-  }
-
-  public void addRisk(ItemRiskEntity risk) {
-    risks.add(risk);
-    risk.setOrderItemEntity(this);
-  }
-
-  public void removeRisk(ItemRiskEntity risk) {
-    risks.remove(risk);
-    risk.setOrderItemEntity(null);
-  }
-
-  public void addPhoto(ItemPhotoEntity photo) {
-    photos.add(photo);
-    photo.setOrderItemEntity(this);
-  }
-
-  public void removePhoto(ItemPhotoEntity photo) {
-    photos.remove(photo);
-    photo.setOrderItemEntity(null);
-  }
-
-  public void addModifier(ItemModifierEntity modifier) {
-    modifiers.add(modifier);
-    modifier.setOrderItemEntity(this);
-  }
-
-  public void removeModifier(ItemModifierEntity modifier) {
-    modifiers.remove(modifier);
-    modifier.setOrderItemEntity(null);
-  }
-
-  public void setCharacteristics(ItemCharacteristicsEntity characteristics) {
-    this.characteristics = characteristics;
-    if (characteristics != null) {
-      characteristics.setOrderItemEntity(this);
-    }
-  }
 }

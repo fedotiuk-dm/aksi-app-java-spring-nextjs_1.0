@@ -51,11 +51,21 @@ const UNIT_LABELS: Record<PriceListItemInfoUnitOfMeasure, string> = {
 };
 
 const formSchema = z.object({
-  categoryCode: z.enum(Object.values(PriceListItemInfoCategoryCode) as [PriceListItemInfoCategoryCode, ...PriceListItemInfoCategoryCode[]]),
+  categoryCode: z.enum(
+    Object.values(PriceListItemInfoCategoryCode) as [
+      PriceListItemInfoCategoryCode,
+      ...PriceListItemInfoCategoryCode[],
+    ]
+  ),
   catalogNumber: z.number().min(1),
-  name: z.string().min(1, 'Назва обов\'язкова'),
+  name: z.string().min(1, "Назва обов'язкова"),
   nameUa: z.string().optional(),
-  unitOfMeasure: z.enum(Object.values(PriceListItemInfoUnitOfMeasure) as [PriceListItemInfoUnitOfMeasure, ...PriceListItemInfoUnitOfMeasure[]]),
+  unitOfMeasure: z.enum(
+    Object.values(PriceListItemInfoUnitOfMeasure) as [
+      PriceListItemInfoUnitOfMeasure,
+      ...PriceListItemInfoUnitOfMeasure[],
+    ]
+  ),
   basePrice: z.number().min(0),
   priceBlack: z.number().min(0).optional().nullable(),
   priceColor: z.number().min(0).optional().nullable(),
@@ -76,7 +86,7 @@ interface PriceListFormProps {
 
 export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccessAction }) => {
   const { isFormOpen, selectedItem, setFormOpen, setSelectedItem } = usePriceListStore();
-  
+
   const createMutation = useCreatePriceListItem();
   const updateMutation = useUpdatePriceListItem();
 
@@ -151,13 +161,13 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccessAction })
 
   const onSubmit = async (data: FormData) => {
     try {
-      const priceInKopiykas = (price: number | null | undefined) => 
+      const priceInKopiykas = (price: number | null | undefined) =>
         price !== null && price !== undefined ? Math.round(price * 100) : undefined;
 
       // Підготовка даних з конвертацією цін в копійки
       const preparedData = {
         ...data,
-        basePrice: priceInKopiykas(data.basePrice)!,
+        basePrice: Math.round(data.basePrice * 100),
         priceBlack: priceInKopiykas(data.priceBlack),
         priceColor: priceInKopiykas(data.priceColor),
         expressPrice: priceInKopiykas(data.expressPrice),
@@ -167,32 +177,43 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccessAction })
       };
 
       if (selectedItem) {
-        // При оновленні передаємо всі поля крім незмінних (categoryCode, catalogNumber, unitOfMeasure)
-        const { categoryCode, catalogNumber, unitOfMeasure, ...updateData } = preparedData;
+        // При оновленні не передаємо незмінні поля (categoryCode, catalogNumber, unitOfMeasure)
+        const updateData: UpdatePriceListItemRequest = {
+          name: preparedData.name,
+          nameUa: preparedData.nameUa,
+          description: preparedData.description,
+          basePrice: preparedData.basePrice,
+          priceBlack: preparedData.priceBlack,
+          priceColor: preparedData.priceColor,
+          active: preparedData.active,
+          processingTimeDays: preparedData.processingTimeDays,
+          expressAvailable: preparedData.expressAvailable,
+          expressTimeHours: preparedData.expressTimeHours,
+          expressPrice: preparedData.expressPrice,
+          sortOrder: preparedData.sortOrder,
+        };
         await updateMutation.mutateAsync({
           priceListItemId: selectedItem.id,
-          data: updateData as UpdatePriceListItemRequest,
+          data: updateData,
         });
       } else {
-        await createMutation.mutateAsync({ 
-          data: preparedData as CreatePriceListItemRequest 
+        await createMutation.mutateAsync({
+          data: preparedData as CreatePriceListItemRequest,
         });
       }
 
       void onSuccessAction();
       handleClose();
-    } catch (error: any) {
-      console.error('Помилка збереження:', error.response?.data?.message || error);
+    } catch (error) {
+      console.error('Помилка збереження:', (error as Error)?.message || error);
     }
   };
 
   return (
-    <Dialog open={isFormOpen} onClose={handleClose} maxWidth="md" fullWidth>
+    <Dialog open={isFormOpen} onClose={handleClose} maxWidth="md" fullWidth disableRestoreFocus>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>
-          {selectedItem ? 'Редагувати послугу' : 'Додати послугу'}
-        </DialogTitle>
-        
+        <DialogTitle>{selectedItem ? 'Редагувати послугу' : 'Додати послугу'}</DialogTitle>
+
         <DialogContent dividers>
           <Grid container spacing={3}>
             <Grid size={12}>
@@ -330,7 +351,7 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccessAction })
                     slotProps={{
                       input: {
                         endAdornment: <InputAdornment position="end">₴</InputAdornment>,
-                      }
+                      },
                     }}
                     onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
                   />
@@ -352,7 +373,7 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccessAction })
                     slotProps={{
                       input: {
                         endAdornment: <InputAdornment position="end">₴</InputAdornment>,
-                      }
+                      },
                     }}
                     onChange={(e) => onChange(e.target.value ? parseFloat(e.target.value) : null)}
                   />
@@ -374,7 +395,7 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccessAction })
                     slotProps={{
                       input: {
                         endAdornment: <InputAdornment position="end">₴</InputAdornment>,
-                      }
+                      },
                     }}
                     onChange={(e) => onChange(e.target.value ? parseFloat(e.target.value) : null)}
                   />
@@ -403,7 +424,7 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccessAction })
                     slotProps={{
                       input: {
                         endAdornment: <InputAdornment position="end">днів</InputAdornment>,
-                      }
+                      },
                     }}
                     onChange={(e) => onChange(e.target.value ? parseInt(e.target.value, 10) : null)}
                   />
@@ -440,9 +461,11 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccessAction })
                         slotProps={{
                           input: {
                             endAdornment: <InputAdornment position="end">годин</InputAdornment>,
-                          }
+                          },
                         }}
-                        onChange={(e) => onChange(e.target.value ? parseInt(e.target.value, 10) : null)}
+                        onChange={(e) =>
+                          onChange(e.target.value ? parseInt(e.target.value, 10) : null)
+                        }
                       />
                     )}
                   />
@@ -462,9 +485,11 @@ export const PriceListForm: React.FC<PriceListFormProps> = ({ onSuccessAction })
                         slotProps={{
                           input: {
                             endAdornment: <InputAdornment position="end">₴</InputAdornment>,
-                          }
+                          },
                         }}
-                        onChange={(e) => onChange(e.target.value ? parseFloat(e.target.value) : null)}
+                        onChange={(e) =>
+                          onChange(e.target.value ? parseFloat(e.target.value) : null)
+                        }
                       />
                     )}
                   />

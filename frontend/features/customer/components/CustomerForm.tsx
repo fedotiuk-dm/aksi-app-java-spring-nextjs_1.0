@@ -183,7 +183,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ onSuccessAction }) =
   };
 
   return (
-    <Dialog open={isFormOpen} onClose={handleClose} maxWidth="md" fullWidth>
+    <Dialog open={isFormOpen} onClose={handleClose} maxWidth="md" fullWidth disableRestoreFocus>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogTitle>{selectedCustomer ? 'Редагувати клієнта' : 'Додати клієнта'}</DialogTitle>
 

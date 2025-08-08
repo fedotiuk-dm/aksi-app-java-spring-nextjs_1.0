@@ -1,6 +1,6 @@
 /**
  * @fileoverview Auth store з використанням Zustand для HttpOnly cookies
- * 
+ *
  * Особливості:
  * - Токени зберігаються в HttpOnly cookies (не в localStorage)
  * - Store зберігає тільки інформацію про користувача
@@ -20,7 +20,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  
+
   // Actions
   setUser: (user: LoginResponse | null) => void;
   setSession: (session: SessionInfo | null) => void;
@@ -104,29 +104,27 @@ export const selectError = (state: AuthState) => state.error;
 
 // Role-based selectors
 export const selectUserRoles = (state: AuthState) => state.user?.roles || [];
-export const selectHasRole = (state: AuthState, role: UserRole) => 
+export const selectHasRole = (state: AuthState, role: UserRole) =>
   state.user?.roles?.includes(role) || false;
 
-export const selectIsAdmin = (state: AuthState) => 
+export const selectIsAdmin = (state: AuthState) =>
   state.user?.roles?.includes(ROLES.ADMIN) || false;
-export const selectIsManager = (state: AuthState) => 
+export const selectIsManager = (state: AuthState) =>
   state.user?.roles?.includes(ROLES.MANAGER) || false;
-export const selectIsOperator = (state: AuthState) => 
+export const selectIsOperator = (state: AuthState) =>
   state.user?.roles?.includes(ROLES.OPERATOR) || false;
-export const selectIsCleaner = (state: AuthState) => 
+export const selectIsCleaner = (state: AuthState) =>
   state.user?.roles?.includes(ROLES.CLEANER) || false;
-export const selectIsDriver = (state: AuthState) => 
+export const selectIsDriver = (state: AuthState) =>
   state.user?.roles?.includes(ROLES.DRIVER) || false;
-export const selectIsAccountant = (state: AuthState) => 
-  state.user?.roles?.includes(ROLES.ACCOUNTANT) || false;
 
 // Permission selectors
 export const selectPermissions = (state: AuthState) => state.user?.permissions || [];
-export const selectHasPermission = (state: AuthState, permission: string) => 
+export const selectHasPermission = (state: AuthState, permission: string) =>
   state.user?.permissions?.includes(permission) || false;
 
 // Branch selectors
 export const selectCurrentBranchId = (state: AuthState) => state.user?.branchId;
 export const selectCurrentBranchName = (state: AuthState) => state.user?.branchName;
-export const selectRequiresBranchSelection = (state: AuthState) => 
+export const selectRequiresBranchSelection = (state: AuthState) =>
   state.user?.requiresBranchSelection || false;

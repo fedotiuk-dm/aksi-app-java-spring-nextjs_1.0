@@ -18,7 +18,7 @@ export const PERMISSIONS = {
   UPDATE_USER: 'UPDATE_USER',
   DELETE_USER: 'DELETE_USER',
   VIEW_USERS: 'VIEW_USERS',
-  
+
   // Order management
   CREATE_ORDER: 'CREATE_ORDER',
   UPDATE_ORDER: 'UPDATE_ORDER',
@@ -26,16 +26,16 @@ export const PERMISSIONS = {
   VIEW_ORDERS: 'VIEW_ORDERS',
   UPDATE_ORDER_STATUS: 'UPDATE_ORDER_STATUS',
   UPDATE_DELIVERY_STATUS: 'UPDATE_DELIVERY_STATUS',
-  
+
   // Customer management
   CREATE_CUSTOMER: 'CREATE_CUSTOMER',
   UPDATE_CUSTOMER: 'UPDATE_CUSTOMER',
   DELETE_CUSTOMER: 'DELETE_CUSTOMER',
   VIEW_CUSTOMERS: 'VIEW_CUSTOMERS',
-  
+
   // Branch management
   MANAGE_BRANCHES: 'MANAGE_BRANCHES',
-  
+
   // Reports and billing
   VIEW_REPORTS: 'VIEW_REPORTS',
   MANAGE_BILLING: 'MANAGE_BILLING',
@@ -51,14 +51,12 @@ export const ROLE_DISPLAY_NAMES: Record<UserRole, string> = {
   [ROLES.OPERATOR]: 'Оператор',
   [ROLES.CLEANER]: 'Працівник цеху',
   [ROLES.DRIVER]: 'Водій',
-  [ROLES.ACCOUNTANT]: 'Бухгалтер',
 };
 
 // Role hierarchy for comparison
 export const ROLE_HIERARCHY: Record<UserRole, number> = {
   [ROLES.ADMIN]: 100,
   [ROLES.MANAGER]: 80,
-  [ROLES.ACCOUNTANT]: 60,
   [ROLES.OPERATOR]: 40,
   [ROLES.CLEANER]: 20,
   [ROLES.DRIVER]: 20,

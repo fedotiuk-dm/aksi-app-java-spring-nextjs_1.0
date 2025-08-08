@@ -1,6 +1,6 @@
 /**
  * @fileoverview Auth Feature Module для HttpOnly cookies
- * 
+ *
  * Нова архітектура з підтримкою HttpOnly cookies
  */
 
@@ -18,7 +18,7 @@ export { useRefreshToken } from './hooks/use-refresh-token';
 export { useChangePasswordForm } from './hooks/use-change-password';
 
 // Store and selectors
-export { 
+export {
   useAuthStore,
   // Basic selectors
   selectUser,
@@ -34,7 +34,6 @@ export {
   selectIsOperator,
   selectIsCleaner,
   selectIsDriver,
-  selectIsAccountant,
   // Permission selectors
   selectPermissions,
   selectHasPermission,

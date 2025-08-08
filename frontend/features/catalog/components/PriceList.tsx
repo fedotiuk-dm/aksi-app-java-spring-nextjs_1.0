@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Paper, 
+import {
+  Box,
+  Container,
+  Typography,
+  Paper,
   CircularProgress,
   Alert,
   TextField,
@@ -15,16 +15,16 @@ import {
   Tabs,
   Tab,
   Button,
-  Grid
+  Grid,
 } from '@mui/material';
 import { Search, Add } from '@mui/icons-material';
-import { useListPriceListItems } from '@/shared/api/generated/priceList';
+import {
+  useListPriceListItems,
+  PriceListItemInfoCategoryCode,
+} from '@/shared/api/generated/priceList';
 import { usePriceListStore } from '@/features/catalog';
 import { PriceListItem } from './PriceListItem';
 import { PriceListForm } from './PriceListForm';
-import { 
-  PriceListItemInfoCategoryCode,
-} from '@/shared/api/generated/priceList';
 
 const CATEGORY_LABELS: Record<PriceListItemInfoCategoryCode, string> = {
   [PriceListItemInfoCategoryCode.CLOTHING]: 'Одяг',
@@ -51,7 +51,10 @@ export const PriceList: React.FC = () => {
 
   const { data, isLoading, error, refetch } = useListPriceListItems(getListParams());
 
-  const handleCategoryChange = (_: React.SyntheticEvent, newValue: PriceListItemInfoCategoryCode | 'all') => {
+  const handleCategoryChange = (
+    _: React.SyntheticEvent,
+    newValue: PriceListItemInfoCategoryCode | 'all'
+  ) => {
     setSelectedCategory(newValue === 'all' ? null : newValue);
   };
 
@@ -61,8 +64,8 @@ export const PriceList: React.FC = () => {
 
   const filteredItems = React.useMemo(() => {
     if (!data?.priceListItems) return [];
-    
-    return data.priceListItems.filter(item => {
+
+    return data.priceListItems.filter((item) => {
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         return (
@@ -78,9 +81,7 @@ export const PriceList: React.FC = () => {
   if (error) {
     return (
       <Container maxWidth="lg" sx={{ mt: 4 }}>
-        <Alert severity="error">
-          Помилка завантаження прайс-листа: {error.message}
-        </Alert>
+        <Alert severity="error">Помилка завантаження прайс-листа: {error.message}</Alert>
       </Container>
     );
   }
@@ -98,19 +99,15 @@ export const PriceList: React.FC = () => {
 
       <Paper sx={{ mb: 3 }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs 
-            value={selectedCategory || 'all'} 
+          <Tabs
+            value={selectedCategory || 'all'}
             onChange={handleCategoryChange}
             variant="scrollable"
             scrollButtons="auto"
           >
             <Tab label="Всі категорії" value="all" />
             {Object.entries(CATEGORY_LABELS).map(([code, label]) => (
-              <Tab 
-                key={code} 
-                label={label} 
-                value={code as PriceListItemInfoCategoryCode}
-              />
+              <Tab key={code} label={label} value={code as PriceListItemInfoCategoryCode} />
             ))}
           </Tabs>
         </Box>
@@ -130,27 +127,20 @@ export const PriceList: React.FC = () => {
                         <Search />
                       </InputAdornment>
                     ),
-                  }
+                  },
                 }}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <FormControlLabel
                 control={
-                  <Switch
-                    checked={activeOnly}
-                    onChange={(e) => setActiveOnly(e.target.checked)}
-                  />
+                  <Switch checked={activeOnly} onChange={(e) => setActiveOnly(e.target.checked)} />
                 }
                 label="Тільки активні"
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 12, md: 5 }} sx={{ textAlign: 'right' }}>
-              <Button
-                variant="contained"
-                startIcon={<Add />}
-                onClick={handleAddNew}
-              >
+              <Button variant="contained" startIcon={<Add />} onClick={handleAddNew}>
                 Додати послугу
               </Button>
             </Grid>
@@ -171,11 +161,7 @@ export const PriceList: React.FC = () => {
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {filteredItems.map((item) => (
-            <PriceListItem 
-              key={item.id} 
-              item={item} 
-              onRefetchAction={refetch}
-            />
+            <PriceListItem key={item.id} item={item} onRefetchAction={refetch} />
           ))}
         </Box>
       )}
