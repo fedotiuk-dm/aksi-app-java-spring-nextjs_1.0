@@ -16,6 +16,7 @@ import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.api.pricing.dto.UrgencyType;
+import com.aksi.api.pricing.dto.WearLevel;
 import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
 import com.aksi.domain.cart.CartItemModifierEntity;
@@ -132,24 +133,14 @@ public class OrderPricingCalculator {
     characteristics.setMaterial(cartItem.getCharacteristics().getMaterial());
     characteristics.setColor(cartItem.getCharacteristics().getColor());
 
-    // Step 2: Set wear level directly if API schema is integer-based
-    // Note: filler and fillerCondition not supported in pricing DTO
+    // Step 2: Convert wear level from Integer to WearLevel enum
     var wear = cartItem.getCharacteristics().getWearLevel();
     if (wear != null) {
-      // Pricing DTO WearLevel is integer enum in OpenAPI → generator may still emit enum type.
-      // Use "setWearLevelValue" if available; otherwise fallback to string/int setter.
       try {
-        ItemCharacteristics.class
-            .getMethod("setWearLevel", Integer.class)
-            .invoke(characteristics, wear);
-      } catch (ReflectiveOperationException e) {
-        try {
-          ItemCharacteristics.class
-              .getMethod("setWearLevelValue", Integer.class)
-              .invoke(characteristics, wear);
-        } catch (ReflectiveOperationException ignored) {
-          // last resort: do nothing to avoid compile errors across generator variants
-        }
+        WearLevel wearLevel = WearLevel.fromValue(wear);
+        characteristics.setWearLevel(wearLevel);
+      } catch (IllegalArgumentException e) {
+        log.warn("Invalid wear level: {}, skipping", wear);
       }
     }
 

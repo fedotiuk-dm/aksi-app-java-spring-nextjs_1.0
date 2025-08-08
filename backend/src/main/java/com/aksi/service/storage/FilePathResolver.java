@@ -80,7 +80,7 @@ public class FilePathResolver {
   /**
    * Try to extract relative storage path from a public URL
    *
-   * @param url public URL (e.g. http://host/api/files/dir/file.jpg)
+   * @param url public URL (e.g. <a href="http://host/api/files/dir/file.jpg">...</a>)
    * @return relative path (e.g. dir/file.jpg) or null if not applicable
    */
   public String extractRelativePathFromUrl(String url) {

@@ -36,17 +36,4 @@ public class UserContextService {
     }
   }
 
-  /**
-   * Get current authenticated user ID
-   *
-   * @return current user ID or null if not authenticated
-   */
-  public UUID getCurrentUserId() {
-    try {
-      return authQueryService.getCurrentUserIdFromContext();
-    } catch (Exception e) {
-      log.debug("Could not get current user ID: {}", e.getMessage());
-      return null;
-    }
-  }
 }

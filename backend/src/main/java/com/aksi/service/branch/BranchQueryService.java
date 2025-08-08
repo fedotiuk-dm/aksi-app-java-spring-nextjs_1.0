@@ -138,7 +138,7 @@ public class BranchQueryService {
     int safeSize = size != null ? size : 20;
     String property = (sortBy == null || sortBy.isBlank()) ? "name" : sortBy;
     Sort.Direction direction =
-        (sortOrder != null && "desc".equalsIgnoreCase(sortOrder))
+        ("desc".equalsIgnoreCase(sortOrder))
             ? Sort.Direction.DESC
             : Sort.Direction.ASC;
     return PageRequest.of(safePage, safeSize, Sort.by(direction, property));

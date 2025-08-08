@@ -2,9 +2,6 @@ package com.aksi.service.customer;
 
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import com.aksi.api.customer.dto.CreateCustomerRequest;
 import com.aksi.api.customer.dto.CustomerInfo;
 import com.aksi.api.customer.dto.CustomerListResponse;
@@ -38,18 +35,6 @@ public interface CustomerService {
    */
   CustomerInfo updateCustomer(UUID customerId, UpdateCustomerRequest request);
 
-  /**
-   * Search customers
-   *
-   * @param search Search query (optional)
-   * @param phone Phone filter (optional)
-   * @param email Email filter (optional)
-   * @param discountCard Discount card filter (optional)
-   * @param pageable Pagination parameters
-   * @return Page of customers
-   */
-  Page<CustomerInfo> searchCustomers(
-      String search, String phone, String email, String discountCard, Pageable pageable);
 
   /**
    * List customers with offset/limit parameters following the API contract. Intended for thin
