@@ -179,7 +179,7 @@ public class PricingServiceImpl implements PricingService {
     }
 
     PriceModifierEntity entity = pricingMapper.toPriceModifierEntity(priceModifierDto);
-    
+
     try {
       PriceModifierEntity saved = priceModifierRepository.save(entity);
       return pricingMapper.toPriceModifierDto(saved);
