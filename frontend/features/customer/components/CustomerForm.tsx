@@ -46,15 +46,35 @@ const CONTACT_PREFERENCES_LABELS: Record<CreateCustomerRequestContactPreferences
 };
 
 const formSchema = z.object({
-  firstName: z.string().min(1, 'Ім\'я обов\'язкове').max(100),
-  lastName: z.string().min(1, 'Прізвище обов\'язкове').max(100),
-  phonePrimary: z.string()
+  firstName: z.string().min(1, "Ім'я обов'язкове").max(100),
+  lastName: z.string().min(1, "Прізвище обов'язкове").max(100),
+  phonePrimary: z
+    .string()
     .min(10, 'Телефон повинен містити мінімум 10 цифр')
     .max(20)
     .regex(/^\+?[0-9\s\-()]+$/, 'Невірний формат телефону'),
-  email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$|^$/, 'Невірний формат email').optional(),
-  contactPreferences: z.array(z.enum(Object.values(CreateCustomerRequestContactPreferencesItem) as [CreateCustomerRequestContactPreferencesItem, ...CreateCustomerRequestContactPreferencesItem[]])).optional(),
-  infoSource: z.enum(Object.values(CreateCustomerRequestInfoSource) as [CreateCustomerRequestInfoSource, ...CreateCustomerRequestInfoSource[]]).optional(),
+  email: z
+    .string()
+    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$|^$/, 'Невірний формат email')
+    .optional(),
+  contactPreferences: z
+    .array(
+      z.enum(
+        Object.values(CreateCustomerRequestContactPreferencesItem) as [
+          CreateCustomerRequestContactPreferencesItem,
+          ...CreateCustomerRequestContactPreferencesItem[],
+        ]
+      )
+    )
+    .optional(),
+  infoSource: z
+    .enum(
+      Object.values(CreateCustomerRequestInfoSource) as [
+        CreateCustomerRequestInfoSource,
+        ...CreateCustomerRequestInfoSource[],
+      ]
+    )
+    .optional(),
   infoSourceOther: z.string().max(200).optional(),
   notes: z.string().max(1000).optional(),
   discountCardNumber: z.string().max(20).optional(),
@@ -68,7 +88,7 @@ interface CustomerFormProps {
 
 export const CustomerForm: React.FC<CustomerFormProps> = ({ onSuccessAction }) => {
   const { isFormOpen, selectedCustomer, setFormOpen, setSelectedCustomer } = useCustomerStore();
-  
+
   const createMutation = useCreateCustomer();
   const updateMutation = useUpdateCustomer();
 
@@ -124,6 +144,9 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ onSuccessAction }) =
   const infoSource = watch('infoSource');
 
   const handleClose = () => {
+    // Ensure focus leaves dialog before it becomes aria-hidden
+    const active = document.activeElement as HTMLElement | null;
+    if (active) active.blur();
     setFormOpen(false);
     setSelectedCustomer(null);
     reset();
@@ -147,25 +170,23 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ onSuccessAction }) =
           data: cleanedData as UpdateCustomerRequest,
         });
       } else {
-        await createMutation.mutateAsync({ 
-          data: cleanedData as CreateCustomerRequest 
+        await createMutation.mutateAsync({
+          data: cleanedData as CreateCustomerRequest,
         });
       }
 
       void onSuccessAction();
       handleClose();
-    } catch (error: any) {
-      console.error('Помилка збереження:', error.response?.data?.message || error);
+    } catch (error) {
+      console.error('Помилка збереження:', (error as Error)?.message || error);
     }
   };
 
   return (
     <Dialog open={isFormOpen} onClose={handleClose} maxWidth="md" fullWidth>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>
-          {selectedCustomer ? 'Редагувати клієнта' : 'Додати клієнта'}
-        </DialogTitle>
-        
+        <DialogTitle>{selectedCustomer ? 'Редагувати клієнта' : 'Додати клієнта'}</DialogTitle>
+
         <DialogContent dividers>
           <Grid container spacing={3}>
             <Grid size={12}>
@@ -259,7 +280,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ onSuccessAction }) =
             <Grid size={12}>
               <Divider sx={{ my: 2 }} />
               <Typography variant="subtitle2" gutterBottom>
-                Спосіб зв'язку
+                Спосіб зв&apos;язку
               </Typography>
             </Grid>
 
@@ -274,13 +295,20 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ onSuccessAction }) =
                         key={prefKey}
                         control={
                           <Checkbox
-                            checked={value?.includes(prefKey as CreateCustomerRequestContactPreferencesItem) || false}
+                            checked={
+                              value?.includes(
+                                prefKey as CreateCustomerRequestContactPreferencesItem
+                              ) || false
+                            }
                             onChange={(e) => {
                               const currentValue = value || [];
                               if (e.target.checked) {
-                                onChange([...currentValue, prefKey as CreateCustomerRequestContactPreferencesItem]);
+                                onChange([
+                                  ...currentValue,
+                                  prefKey as CreateCustomerRequestContactPreferencesItem,
+                                ]);
                               } else {
-                                onChange(currentValue.filter(item => item !== prefKey));
+                                onChange(currentValue.filter((item) => item !== prefKey));
                               }
                             }}
                           />

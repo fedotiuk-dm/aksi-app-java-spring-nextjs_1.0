@@ -12,17 +12,8 @@ import {
   Grid,
   Stack,
 } from '@mui/material';
-import {
-  MoreVert,
-  Edit,
-  Phone,
-  Email,
-  Person,
-  CardMembership,
-} from '@mui/icons-material';
-import { 
-  type CustomerInfo,
-} from '@/shared/api/generated/customer';
+import { MoreVert, Edit, Phone, Email, Person, CardMembership } from '@mui/icons-material';
+import { type CustomerInfo } from '@/shared/api/generated/customer';
 import { useCustomerStore } from '@/features/customer';
 
 interface CustomerItemProps {
@@ -44,7 +35,6 @@ export const CustomerItem: React.FC<CustomerItemProps> = ({ customer }) => {
   const handleEdit = () => {
     setSelectedCustomer(customer);
     setFormOpen(true);
-    handleMenuClose();
   };
 
   const formatPhone = (phone: string) => {
@@ -72,7 +62,7 @@ export const CustomerItem: React.FC<CustomerItemProps> = ({ customer }) => {
       SMS: 'SMS',
       VIBER: 'Viber',
     };
-    return preferences?.map(p => labels[p] || p).join(', ') || '';
+    return preferences?.map((p) => labels[p] || p).join(', ') || '';
   };
 
   return (
@@ -87,12 +77,10 @@ export const CustomerItem: React.FC<CustomerItemProps> = ({ customer }) => {
                   {customer.firstName} {customer.lastName}
                 </Typography>
               </Box>
-              
+
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Phone fontSize="small" color="action" />
-                <Typography variant="body2">
-                  {formatPhone(customer.phonePrimary)}
-                </Typography>
+                <Typography variant="body2">{formatPhone(customer.phonePrimary)}</Typography>
               </Box>
 
               {customer.email && (
@@ -132,7 +120,7 @@ export const CustomerItem: React.FC<CustomerItemProps> = ({ customer }) => {
               {customer.contactPreferences && customer.contactPreferences.length > 0 && (
                 <Box>
                   <Typography variant="caption" color="text.secondary">
-                    Спосіб зв'язку:
+                    Спосіб зв&apos;язку:
                   </Typography>
                   <Typography variant="body2">
                     {getContactPreferencesLabels(customer.contactPreferences)}
@@ -177,11 +165,7 @@ export const CustomerItem: React.FC<CustomerItemProps> = ({ customer }) => {
           </Grid>
         </Grid>
 
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
           <MenuItem onClick={handleEdit}>
             <Edit fontSize="small" sx={{ mr: 1 }} />
             Редагувати

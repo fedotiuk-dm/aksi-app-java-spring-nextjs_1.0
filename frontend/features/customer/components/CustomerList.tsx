@@ -1,17 +1,17 @@
 'use client';
 
 import React from 'react';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Paper, 
+import {
+  Box,
+  Container,
+  Typography,
+  Paper,
   CircularProgress,
   Alert,
   TextField,
   InputAdornment,
   Button,
-  Grid
+  Grid,
 } from '@mui/material';
 import { Search, Add, Phone } from '@mui/icons-material';
 import { useListCustomers } from '@/shared/api/generated/customer';
@@ -43,9 +43,7 @@ export const CustomerList: React.FC = () => {
   if (error) {
     return (
       <Container maxWidth="lg" sx={{ mt: 4 }}>
-        <Alert severity="error">
-          Помилка завантаження клієнтів: {error.message}
-        </Alert>
+        <Alert severity="error">Помилка завантаження клієнтів: {error.message}</Alert>
       </Container>
     );
   }
@@ -76,11 +74,11 @@ export const CustomerList: React.FC = () => {
                       <Search />
                     </InputAdornment>
                   ),
-                }
+                },
               }}
             />
           </Grid>
-          
+
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <TextField
               fullWidth
@@ -94,7 +92,7 @@ export const CustomerList: React.FC = () => {
                       <Phone />
                     </InputAdornment>
                   ),
-                }
+                },
               }}
             />
           </Grid>
@@ -111,12 +109,7 @@ export const CustomerList: React.FC = () => {
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ textAlign: 'right' }}>
-            <Button
-              fullWidth
-              variant="contained"
-              startIcon={<Add />}
-              onClick={handleAddNew}
-            >
+            <Button fullWidth variant="contained" startIcon={<Add />} onClick={handleAddNew}>
               Додати клієнта
             </Button>
           </Grid>
@@ -127,26 +120,27 @@ export const CustomerList: React.FC = () => {
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
           <CircularProgress />
         </Box>
-      ) : !data?.customers || data.customers.length === 0 ? (
+      ) : !data?.data || data.data.length === 0 ? (
         <Paper sx={{ p: 4, textAlign: 'center' }}>
           <Typography variant="body1" color="text.secondary">
-            {searchQuery || phoneFilter ? 'Не знайдено жодного клієнта за заданими критеріями' : 'Ще немає жодного клієнта'}
+            {searchQuery || phoneFilter
+              ? 'Не знайдено жодного клієнта за заданими критеріями'
+              : 'Ще немає жодного клієнта'}
           </Typography>
         </Paper>
       ) : (
         <>
-          <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box
+            sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+          >
             <Typography variant="body2" color="text.secondary">
-              Знайдено клієнтів: {data.total}
+              Знайдено клієнтів: {data.totalElements}
             </Typography>
           </Box>
-          
+
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {data.customers.map((customer) => (
-              <CustomerItem 
-                key={customer.id} 
-                customer={customer}
-              />
+            {data.data.map((customer) => (
+              <CustomerItem key={customer.id} customer={customer} />
             ))}
           </Box>
         </>
