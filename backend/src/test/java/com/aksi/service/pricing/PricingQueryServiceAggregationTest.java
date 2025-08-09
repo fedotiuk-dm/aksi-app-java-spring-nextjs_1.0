@@ -20,7 +20,6 @@ import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.mapper.PricingMapper;
-import com.aksi.repository.PriceModifierRepository;
 import com.aksi.service.pricing.factory.PricingFactory;
 import com.aksi.service.pricing.guard.PricingGuard;
 import com.aksi.service.pricing.util.PricingQueryUtils;
@@ -29,12 +28,12 @@ import com.aksi.service.pricing.validator.PricingValidator;
 @ExtendWith(MockitoExtension.class)
 class PricingQueryServiceAggregationTest {
 
-  @Mock private PriceModifierRepository priceModifierRepository;
   @Mock private PricingMapper pricingMapper;
   @Mock private PricingCalculator pricingCalculator;
   @Mock private PricingValidator validator;
   @Mock private PricingGuard guard;
   @Mock private PricingFactory factory;
+  @Mock private PriceCalculationService calculationService;
 
   private PricingQueryUtils utils;
   private PricingQueryService queryService;
@@ -44,13 +43,7 @@ class PricingQueryServiceAggregationTest {
     utils = new PricingQueryUtils();
     queryService =
         new PricingQueryService(
-            priceModifierRepository,
-            pricingMapper,
-            pricingCalculator,
-            validator,
-            guard,
-            factory,
-            utils);
+            pricingMapper, pricingCalculator, validator, guard, factory, utils, calculationService);
   }
 
   @Test

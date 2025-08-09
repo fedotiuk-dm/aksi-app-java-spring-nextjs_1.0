@@ -1,17 +1,15 @@
 package com.aksi.service.pricing;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aksi.api.pricing.dto.DiscountType;
 import com.aksi.api.pricing.dto.DiscountsResponse;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
 import com.aksi.api.pricing.dto.PriceModifiersResponse;
 import com.aksi.api.pricing.dto.ServiceCategoryType;
 import com.aksi.mapper.PricingMapper;
-import com.aksi.repository.PriceModifierRepository;
 import com.aksi.service.pricing.factory.PricingFactory;
 import com.aksi.service.pricing.guard.PricingGuard;
 import com.aksi.service.pricing.util.PricingQueryUtils;
@@ -32,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 public class PricingQueryService {
 
   // Core dependencies
-  private final PriceModifierRepository priceModifierRepository;
   private final PricingMapper pricingMapper;
 
   // Specialized components following order service pattern
@@ -41,6 +38,7 @@ public class PricingQueryService {
   private final PricingGuard guard;
   private final PricingFactory factory;
   private final PricingQueryUtils utils;
+  private final PriceCalculationService calculationService;
 
   /**
    * Calculate price for items with applied modifiers and discounts. Structured approach with
@@ -75,6 +73,26 @@ public class PricingQueryService {
 
     // Step 4: Build response using factory
     var response = factory.createPriceCalculationResponse(calculatedItems, totals);
+
+    // Attach warnings (e.g., discount not applicable, express not available) based on
+    // request/global modifiers
+    var global = request.getGlobalModifiers();
+    if (global != null
+        && global.getDiscountType() != null
+        && global.getDiscountType() != DiscountType.NONE) {
+      var warnings = new java.util.ArrayList<String>();
+      for (var item : calculatedItems) {
+        if (Boolean.FALSE.equals(item.getCalculations().getDiscountEligible())) {
+          var category = item.getCategoryCode();
+          warnings.add(
+              "Discount not applicable to category "
+                  + (category != null ? category.getValue() : ""));
+        }
+      }
+      if (!warnings.isEmpty()) {
+        response.setWarnings(warnings);
+      }
+    }
 
     log.debug(
         "Price calculation completed with {} items, total: {}",
@@ -142,56 +160,12 @@ public class PricingQueryService {
     return response;
   }
 
-  /** Get applicable modifier codes for specific category. */
-  public List<String> getApplicableModifierCodes(String categoryCode) {
-    log.debug("Getting applicable modifier codes for category: {}", categoryCode);
-
-    var codes =
-        priceModifierRepository.findActiveByCategoryCode(categoryCode).stream()
-            .map(com.aksi.domain.pricing.PriceModifierEntity::getCode)
-            .toList();
-
-    log.debug("Found {} applicable modifier codes", codes.size());
-    return codes;
-  }
-
   /**
    * Check if discount is applicable to specific category. Based on business rules: discounts do not
    * apply to washing, ironing, and dyeing services.
    */
   public boolean isDiscountApplicableToCategory(String discountCode, String categoryCode) {
     log.debug("Checking discount applicability: {} for category: {}", discountCode, categoryCode);
-
-    // Business rule: discounts do not apply to washing, ironing, and dyeing categories
-    boolean applicable = !isDiscountExcludedCategory(categoryCode);
-
-    log.debug(
-        "Discount {} is {} applicable to category {}",
-        discountCode,
-        applicable ? "" : "NOT",
-        categoryCode);
-
-    return applicable;
-  }
-
-  // ===== PRIVATE HELPER METHODS =====
-
-  /**
-   * Check if category is excluded from discount application. Based on architecture documentation:
-   * discounts do not apply to washing, ironing, and dyeing.
-   */
-  private boolean isDiscountExcludedCategory(String categoryCode) {
-    if (categoryCode == null || categoryCode.isBlank()) {
-      return false;
-    }
-
-    String normalizedCode = categoryCode.toLowerCase().trim();
-
-    // Categories excluded from discounts based on business rules
-    return normalizedCode.equals("pranna_bilyzny")
-        || // Прання білизни
-        normalizedCode.equals("prasuvannya")
-        || // Прасування
-        normalizedCode.equals("farbuvannya_tekstylyu"); // Фарбування текстилю
+    return calculationService.isDiscountApplicableToCategory(categoryCode);
   }
 }

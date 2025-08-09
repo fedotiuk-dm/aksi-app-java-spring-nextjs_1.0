@@ -93,7 +93,7 @@ class PricingCalculatorE2ETest {
     u.setType(ModifierType.PERCENTAGE);
     u.setValue(50);
     u.setAmount(1150);
-    when(urgencyCalculator.calculate(anyInt(), any()))
+    when(urgencyCalculator.calculate(anyInt(), any(), any()))
         .thenReturn(new UrgencyCalculator.UrgencyCalculationResult(u, 1150));
 
     // Discount: 10% on (2300+1150)=3450 => 345

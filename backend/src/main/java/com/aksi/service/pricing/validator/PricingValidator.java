@@ -184,16 +184,20 @@ public class PricingValidator {
             "Discount percentage must be between 0 and 100: " + discountPercentage);
       }
     } else {
-      // For predefined types, percentage should match expected values or be null
-      if (discountPercentage != null) {
-        int expectedPercentage = getExpectedDiscountPercentage(discountType);
-        if (discountPercentage != expectedPercentage) {
-          log.warn(
-              "Discount percentage {} doesn't match expected {} for type {}",
-              discountPercentage,
-              expectedPercentage,
-              discountType);
-        }
+      // For predefined types, percentage must match expected values exactly
+      int expectedPercentage = getExpectedDiscountPercentage(discountType);
+      if (discountPercentage == null) {
+        // Allow null → we will set expected later in calculation layer
+        return;
+      }
+      if (!discountPercentage.equals(expectedPercentage)) {
+        throw new BadRequestException(
+            "Discount percentage "
+                + discountPercentage
+                + " doesn't match expected "
+                + expectedPercentage
+                + " for type "
+                + discountType);
       }
     }
   }

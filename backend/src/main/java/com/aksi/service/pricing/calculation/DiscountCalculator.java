@@ -7,7 +7,6 @@ import com.aksi.api.pricing.dto.DiscountType;
 import com.aksi.api.pricing.dto.GlobalPriceModifiers;
 import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.service.pricing.PriceCalculationService;
-import com.aksi.service.pricing.PricingQueryService;
 import com.aksi.service.pricing.factory.PricingFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 public class DiscountCalculator {
 
   private final PriceCalculationService priceCalculationService;
-  private final PricingQueryService pricingQueryService;
   private final PricingFactory factory;
 
   /** Calculate discount amount. Step 7 of OrderWizard pricing logic. */
@@ -41,7 +39,7 @@ public class DiscountCalculator {
     DiscountType discountType = globalModifiers.getDiscountType();
 
     // Check if discount is eligible for this category
-    boolean discountEligible = checkDiscountEligibility(discountType, priceListItem);
+    boolean discountEligible = checkDiscountEligibility(priceListItem);
     if (!discountEligible) {
       log.debug(
           "Discount {} not eligible for category {}",
@@ -82,11 +80,9 @@ public class DiscountCalculator {
     return discountType != null && discountType != DiscountType.NONE;
   }
 
-  private boolean checkDiscountEligibility(
-      DiscountType discountType, PriceListItemInfo priceListItem) {
-    String discountCode = discountType.getValue();
+  private boolean checkDiscountEligibility(PriceListItemInfo priceListItem) {
     String categoryCodeValue = priceListItem.getCategoryCode().getValue();
-    return pricingQueryService.isDiscountApplicableToCategory(discountCode, categoryCodeValue);
+    return priceCalculationService.isDiscountApplicableToCategory(categoryCodeValue);
   }
 
   /** Result of discount calculation. */

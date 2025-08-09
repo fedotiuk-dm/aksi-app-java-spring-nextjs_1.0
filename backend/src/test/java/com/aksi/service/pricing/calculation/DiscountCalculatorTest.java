@@ -20,7 +20,6 @@ import com.aksi.api.pricing.dto.GlobalPriceModifiers;
 import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.api.service.dto.ServiceCategoryType;
 import com.aksi.service.pricing.PriceCalculationService;
-import com.aksi.service.pricing.PricingQueryService;
 import com.aksi.service.pricing.calculation.DiscountCalculator.DiscountCalculationResult;
 import com.aksi.service.pricing.factory.PricingFactory;
 
@@ -33,14 +32,13 @@ import com.aksi.service.pricing.factory.PricingFactory;
 class DiscountCalculatorTest {
 
   @Mock private PriceCalculationService priceCalculationService;
-  @Mock private PricingQueryService pricingQueryService;
   @Mock private PricingFactory factory;
 
   private DiscountCalculator calculator;
 
   @BeforeEach
   void setUp() {
-    calculator = new DiscountCalculator(priceCalculationService, pricingQueryService, factory);
+    calculator = new DiscountCalculator(priceCalculationService, factory);
   }
 
   @Test
@@ -91,8 +89,7 @@ class DiscountCalculatorTest {
     PriceListItemInfo priceListItem = createPriceListItem("IRONING"); // not eligible
 
     // Mock discount eligibility check
-    when(pricingQueryService.isDiscountApplicableToCategory(eq("EVERCARD"), eq("IRONING")))
-        .thenReturn(false);
+    when(priceCalculationService.isDiscountApplicableToCategory(eq("IRONING"))).thenReturn(false);
 
     // When
     DiscountCalculationResult result =
@@ -114,8 +111,7 @@ class DiscountCalculatorTest {
     PriceListItemInfo priceListItem = createPriceListItem("CLOTHING");
 
     // Mock eligibility check as true
-    when(pricingQueryService.isDiscountApplicableToCategory(eq("OTHER"), eq("CLOTHING")))
-        .thenReturn(true);
+    when(priceCalculationService.isDiscountApplicableToCategory(eq("CLOTHING"))).thenReturn(true);
 
     // When
     DiscountCalculationResult result =
@@ -137,7 +133,7 @@ class DiscountCalculatorTest {
     PriceListItemInfo priceListItem = createPriceListItem("ADDITIONAL_SERVICES");
 
     // Mock eligibility check as true
-    when(pricingQueryService.isDiscountApplicableToCategory(eq("OTHER"), eq("ADDITIONAL_SERVICES")))
+    when(priceCalculationService.isDiscountApplicableToCategory(eq("ADDITIONAL_SERVICES")))
         .thenReturn(true);
 
     // When
@@ -161,8 +157,7 @@ class DiscountCalculatorTest {
     PriceListItemInfo priceListItem = createPriceListItem("CLOTHING");
 
     // Mock services
-    when(pricingQueryService.isDiscountApplicableToCategory(eq("EVERCARD"), eq("CLOTHING")))
-        .thenReturn(true);
+    when(priceCalculationService.isDiscountApplicableToCategory(eq("CLOTHING"))).thenReturn(true);
     when(priceCalculationService.calculateDiscountAmount(
             eq(discountableAmount), eq(DiscountType.EVERCARD), eq(20)))
         .thenReturn(500); // 20% of 2500
@@ -194,8 +189,7 @@ class DiscountCalculatorTest {
     PriceListItemInfo priceListItem = createPriceListItem("ADDITIONAL_SERVICES");
 
     // Mock services
-    when(pricingQueryService.isDiscountApplicableToCategory(
-            eq("SOCIAL_MEDIA"), eq("ADDITIONAL_SERVICES")))
+    when(priceCalculationService.isDiscountApplicableToCategory(eq("ADDITIONAL_SERVICES")))
         .thenReturn(true);
     when(priceCalculationService.calculateDiscountAmount(
             eq(discountableAmount), eq(DiscountType.SOCIAL_MEDIA), eq(10)))
@@ -225,8 +219,7 @@ class DiscountCalculatorTest {
     PriceListItemInfo priceListItem = createPriceListItem("CLOTHING");
 
     // Mock services
-    when(pricingQueryService.isDiscountApplicableToCategory(eq("EVERCARD"), eq("CLOTHING")))
-        .thenReturn(true);
+    when(priceCalculationService.isDiscountApplicableToCategory(eq("CLOTHING"))).thenReturn(true);
     when(priceCalculationService.calculateDiscountAmount(
             eq(3000), eq(DiscountType.EVERCARD), eq(15)))
         .thenReturn(450); // 15% of 3000
@@ -256,8 +249,7 @@ class DiscountCalculatorTest {
     PriceListItemInfo priceListItem = createPriceListItem("CLOTHING");
 
     // Mock services
-    when(pricingQueryService.isDiscountApplicableToCategory(eq("SOCIAL_MEDIA"), eq("CLOTHING")))
-        .thenReturn(true);
+    when(priceCalculationService.isDiscountApplicableToCategory(eq("CLOTHING"))).thenReturn(true);
     when(priceCalculationService.calculateDiscountAmount(
             eq(3250), eq(DiscountType.SOCIAL_MEDIA), eq(12)))
         .thenReturn(390); // 12% of 3250
@@ -287,8 +279,7 @@ class DiscountCalculatorTest {
     PriceListItemInfo priceListItem = createPriceListItem("ADDITIONAL_SERVICES");
 
     // Mock services
-    when(pricingQueryService.isDiscountApplicableToCategory(
-            eq("MILITARY"), eq("ADDITIONAL_SERVICES")))
+    when(priceCalculationService.isDiscountApplicableToCategory(eq("ADDITIONAL_SERVICES")))
         .thenReturn(true);
     when(priceCalculationService.calculateDiscountAmount(
             eq(1600), eq(DiscountType.MILITARY), eq(25)))
@@ -319,8 +310,7 @@ class DiscountCalculatorTest {
     PriceListItemInfo priceListItem = createPriceListItem("CLOTHING");
 
     // Mock services
-    when(pricingQueryService.isDiscountApplicableToCategory(eq("EVERCARD"), eq("CLOTHING")))
-        .thenReturn(true);
+    when(priceCalculationService.isDiscountApplicableToCategory(eq("CLOTHING"))).thenReturn(true);
     when(priceCalculationService.calculateDiscountAmount(eq(150), eq(DiscountType.EVERCARD), eq(5)))
         .thenReturn(0); // calculation returns 0
 
@@ -344,8 +334,7 @@ class DiscountCalculatorTest {
     PriceListItemInfo priceListItem = createPriceListItem("CLOTHING");
 
     // Mock services
-    when(pricingQueryService.isDiscountApplicableToCategory(eq("MILITARY"), eq("CLOTHING")))
-        .thenReturn(true);
+    when(priceCalculationService.isDiscountApplicableToCategory(eq("CLOTHING"))).thenReturn(true);
     when(priceCalculationService.calculateDiscountAmount(
             eq(150000), eq(DiscountType.MILITARY), eq(20)))
         .thenReturn(30000); // 20% of 150000
@@ -375,7 +364,7 @@ class DiscountCalculatorTest {
     PriceListItemInfo priceListItem = createPriceListItem("IRONING");
 
     // Mock eligibility as false for restricted category
-    when(pricingQueryService.isDiscountApplicableToCategory(eq("EVERCARD"), eq("IRONING")))
+    when(priceCalculationService.isDiscountApplicableToCategory(eq("IRONING")))
         .thenReturn(false); // IRONING не отримує знижки
 
     // When
@@ -398,7 +387,7 @@ class DiscountCalculatorTest {
     PriceListItemInfo priceListItem = createPriceListItem("LAUNDRY");
 
     // Mock eligibility as false for restricted category
-    when(pricingQueryService.isDiscountApplicableToCategory(eq("SOCIAL_MEDIA"), eq("LAUNDRY")))
+    when(priceCalculationService.isDiscountApplicableToCategory(eq("LAUNDRY")))
         .thenReturn(false); // WASHING не отримує знижки
 
     // When
@@ -421,7 +410,7 @@ class DiscountCalculatorTest {
     PriceListItemInfo priceListItem = createPriceListItem("DYEING");
 
     // Mock eligibility as false for restricted category
-    when(pricingQueryService.isDiscountApplicableToCategory(eq("MILITARY"), eq("DYEING")))
+    when(priceCalculationService.isDiscountApplicableToCategory(eq("DYEING")))
         .thenReturn(false); // DYEING не отримує знижки
 
     // When

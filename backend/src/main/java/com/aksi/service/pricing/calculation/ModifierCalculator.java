@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.aksi.api.pricing.dto.AppliedModifier;
+import com.aksi.api.pricing.dto.ModifierType;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.service.pricing.PriceCalculationService;
@@ -33,6 +34,7 @@ public class ModifierCalculator {
   public ModifierCalculationResult calculate(PriceCalculationItem item, int baseAmount) {
     List<AppliedModifier> appliedModifiers = new ArrayList<>();
     int modifiersTotal = 0;
+    int effectiveBaseAmount = baseAmount;
 
     if (item.getModifierCodes() == null || item.getModifierCodes().isEmpty()) {
       int subtotal = baseAmount + modifiersTotal;
@@ -43,10 +45,37 @@ public class ModifierCalculator {
     // Load active modifiers
     List<PriceModifierEntity> modifiers = guard.loadActiveModifiers(item.getModifierCodes());
 
+    // Pass 1: handle FORMULA (base override) if present
     for (PriceModifierEntity modifier : modifiers) {
-      // Calculate modifier amount based on type (percentage/fixed)
+      if (modifier.getType() == ModifierType.FORMULA) {
+        // Interpret value as absolute per-unit price override (in kopiykas)
+        int overridePerUnit = modifier.getValue() != null ? modifier.getValue() : 0;
+        int overrideAmount = overridePerUnit * item.getQuantity();
+        int delta = overrideAmount - baseAmount; // adjust to reach new base
+
+        AppliedModifier applied = factory.createAppliedModifier(modifier, delta);
+        appliedModifiers.add(applied);
+        modifiersTotal += delta;
+        effectiveBaseAmount = baseAmount + delta;
+
+        log.debug(
+            "Applied base override (FORMULA): perUnit={}, qty={}, delta={}, effectiveBaseAmount={}",
+            overridePerUnit,
+            item.getQuantity(),
+            delta,
+            effectiveBaseAmount);
+        break; // only first FORMULA considered
+      }
+    }
+
+    // Pass 2: handle other modifiers based on effective base
+    for (PriceModifierEntity modifier : modifiers) {
+      if (modifier.getType() == ModifierType.FORMULA) {
+        continue;
+      }
       int modifierAmount =
-          priceCalculationService.calculateModifierAmount(modifier, baseAmount, item.getQuantity());
+          priceCalculationService.calculateModifierAmount(
+              modifier, effectiveBaseAmount, item.getQuantity());
 
       AppliedModifier applied = factory.createAppliedModifier(modifier, modifierAmount);
       appliedModifiers.add(applied);

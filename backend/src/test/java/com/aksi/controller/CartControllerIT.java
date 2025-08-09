@@ -1,11 +1,8 @@
 package com.aksi.controller;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.UUID;
 
@@ -14,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.aksi.service.cart.CartService;
@@ -41,7 +38,11 @@ class CartControllerIT {
             + "}";
 
     mockMvc
-        .perform(post("/api/cart/modifiers").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
+        .perform(
+            post("/api/cart/modifiers")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
         .andExpect(status().isOk());
   }
 
@@ -66,7 +67,10 @@ class CartControllerIT {
 
     mockMvc
         .perform(
-            post("/api/pricing/calculate").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
+            post("/api/pricing/calculate")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
         .andExpect(status().isBadRequest());
   }
 }

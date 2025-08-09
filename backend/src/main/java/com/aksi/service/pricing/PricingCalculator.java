@@ -67,8 +67,9 @@ public class PricingCalculator {
     // Step 3-5: Modifier calculation
     var modifierResult = modifierCalculator.calculate(item, baseResult.baseAmount());
 
-    // Step 6: Urgency calculation
-    var urgencyResult = urgencyCalculator.calculate(modifierResult.subtotal(), globalModifiers);
+    // Step 6: Urgency calculation (only if express available for item or NORMAL)
+    var urgencyResult =
+        urgencyCalculator.calculate(modifierResult.subtotal(), globalModifiers, priceListItem);
 
     // Step 7: Discount calculation
     var discountResult =

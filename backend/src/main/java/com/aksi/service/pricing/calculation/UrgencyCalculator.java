@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.aksi.api.pricing.dto.AppliedModifier;
 import com.aksi.api.pricing.dto.GlobalPriceModifiers;
 import com.aksi.api.pricing.dto.UrgencyType;
+import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.service.pricing.PriceCalculationService;
 import com.aksi.service.pricing.factory.PricingFactory;
 
@@ -24,9 +25,16 @@ public class UrgencyCalculator {
   private final PricingFactory factory;
 
   /** Calculate urgency surcharge. Step 6 of OrderWizard pricing logic. */
-  public UrgencyCalculationResult calculate(int subtotal, GlobalPriceModifiers globalModifiers) {
+  public UrgencyCalculationResult calculate(
+      int subtotal, GlobalPriceModifiers globalModifiers, PriceListItemInfo priceListItem) {
     if (globalModifiers == null || !shouldApplyUrgency(globalModifiers.getUrgencyType())) {
       log.debug("No urgency applied");
+      return new UrgencyCalculationResult(null, 0);
+    }
+
+    // If express is not available for this item, ignore urgency
+    if (priceListItem != null && Boolean.FALSE.equals(priceListItem.getExpressAvailable())) {
+      log.debug("Express not available for item {}, ignoring urgency", priceListItem.getId());
       return new UrgencyCalculationResult(null, 0);
     }
 
@@ -47,6 +55,11 @@ public class UrgencyCalculator {
         urgencyType.getValue(), urgencyPercentage, subtotal, urgencyAmount);
 
     return new UrgencyCalculationResult(urgencyModifier, urgencyAmount);
+  }
+
+  // Backward-compatible overload (used in existing tests); delegates to new signature
+  public UrgencyCalculationResult calculate(int subtotal, GlobalPriceModifiers globalModifiers) {
+    return calculate(subtotal, globalModifiers, null);
   }
 
   private boolean shouldApplyUrgency(UrgencyType urgencyType) {

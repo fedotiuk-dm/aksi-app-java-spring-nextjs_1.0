@@ -3,6 +3,7 @@ package com.aksi.service.pricing;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -54,6 +55,7 @@ public class PriceCalculationService {
     return switch (modifier.getType()) {
       case PERCENTAGE -> calculatePercentageFromBasisPoints(baseAmount, modifier.getValue());
       case FIXED -> modifier.getValue() * quantity;
+      case FORMULA -> 0; // handled as base override in ModifierCalculator
       default -> {
         log.warn("Unknown modifier type: {}", modifier.getType());
         yield 0;
@@ -85,7 +87,7 @@ public class PriceCalculationService {
    * Get urgency percentage based on type. From OrderWizard: EXPRESS_48H = +50%, EXPRESS_24H = +100%
    */
   public int getUrgencyPercentage(UrgencyType urgencyType) {
-    return urgencyType == null ? 0 : URGENCY_PERCENTAGES.getOrDefault(urgencyType, 0);
+    return Optional.ofNullable(URGENCY_PERCENTAGES.get(urgencyType)).orElse(0);
   }
 
   /**
@@ -101,6 +103,7 @@ public class PriceCalculationService {
       return customPercentage != null ? customPercentage : 0;
     }
 
+    // Predefined types: enforce canonical percentages
     return DISCOUNT_PERCENTAGES.getOrDefault(discountType, 0);
   }
 

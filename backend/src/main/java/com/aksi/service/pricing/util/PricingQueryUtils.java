@@ -2,6 +2,7 @@ package com.aksi.service.pricing.util;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.springframework.stereotype.Component;
@@ -64,21 +65,17 @@ public class PricingQueryUtils {
     String normalizedColor = color.toLowerCase().trim();
 
     // Check for black items (special pricing)
-    if (isBlackColor(normalizedColor) && priceListItem.getPriceBlack() != null) {
-      log.debug(
-          "Using black price for item {}: {}",
-          priceListItem.getId(),
-          priceListItem.getPriceBlack());
-      return priceListItem.getPriceBlack();
+    Integer blackPrice = priceListItem.getPriceBlack();
+    if (isBlackColor(normalizedColor) && blackPrice != null) {
+      log.debug("Using black price for item {}: {}", priceListItem.getId(), blackPrice);
+      return blackPrice;
     }
 
     // Check for any colored items (all colors except black)
-    if (priceListItem.getPriceColor() != null) {
-      log.debug(
-          "Using color price for item {}: {}",
-          priceListItem.getId(),
-          priceListItem.getPriceColor());
-      return priceListItem.getPriceColor();
+    Integer colorPrice = priceListItem.getPriceColor();
+    if (colorPrice != null) {
+      log.debug("Using color price for item {}: {}", priceListItem.getId(), colorPrice);
+      return colorPrice;
     }
 
     return basePrice;
@@ -107,18 +104,19 @@ public class PricingQueryUtils {
         calculatedItems.stream()
             .mapToInt(
                 item ->
-                    item.getCalculations().getUrgencyModifier() != null
-                        ? item.getCalculations().getUrgencyModifier().getAmount()
-                        : 0)
+                    Optional.ofNullable(item.getCalculations().getUrgencyModifier())
+                        .map(com.aksi.api.pricing.dto.AppliedModifier::getAmount)
+                        .orElse(0))
             .sum();
 
     int discountAmount =
         calculatedItems.stream()
             .mapToInt(
                 item ->
-                    item.getCalculations().getDiscountModifier() != null
-                        ? Math.abs(item.getCalculations().getDiscountModifier().getAmount())
-                        : 0)
+                    Math.abs(
+                        Optional.ofNullable(item.getCalculations().getDiscountModifier())
+                            .map(com.aksi.api.pricing.dto.AppliedModifier::getAmount)
+                            .orElse(0)))
             .sum();
 
     int discountApplicableAmount =
