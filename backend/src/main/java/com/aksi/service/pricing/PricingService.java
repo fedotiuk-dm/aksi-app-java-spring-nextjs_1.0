@@ -1,7 +1,5 @@
 package com.aksi.service.pricing;
 
-import java.util.List;
-
 import com.aksi.api.pricing.dto.DiscountDto;
 import com.aksi.api.pricing.dto.DiscountsResponse;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
@@ -38,14 +36,6 @@ public interface PricingService {
    * @return Discounts response
    */
   DiscountsResponse listDiscounts(Boolean active, String sortBy, String sortOrder);
-
-  /**
-   * Get modifiers applicable to specific category
-   *
-   * @param categoryCode Category code
-   * @return List of applicable modifiers
-   */
-  List<String> getApplicableModifierCodes(String categoryCode);
 
   /**
    * Check if discount is applicable to category

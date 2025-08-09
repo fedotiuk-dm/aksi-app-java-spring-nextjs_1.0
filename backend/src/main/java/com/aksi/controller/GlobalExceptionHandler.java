@@ -26,6 +26,7 @@ import org.springframework.web.context.request.async.AsyncRequestNotUsableExcept
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import com.aksi.exception.BadRequestException;
 import com.aksi.exception.ConflictException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.exception.UnauthorizedException;
@@ -204,6 +205,12 @@ public class GlobalExceptionHandler {
     }
 
     return createErrorResponse(HttpStatus.BAD_REQUEST, message, null);
+  }
+
+  @ExceptionHandler(BadRequestException.class)
+  public ResponseEntity<Map<String, Object>> handleDomainBadRequest(BadRequestException e) {
+    log.warn("Bad request: {}", e.getMessage());
+    return createErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), null);
   }
 
   @ExceptionHandler(IllegalArgumentException.class)

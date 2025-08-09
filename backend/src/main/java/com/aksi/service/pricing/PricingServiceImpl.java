@@ -1,7 +1,5 @@
 package com.aksi.service.pricing;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,11 +53,6 @@ public class PricingServiceImpl implements PricingService {
   public DiscountsResponse listDiscounts(Boolean active, String sortBy, String sortOrder) {
     log.debug("Delegating discounts listing, active: {}", active);
     return queryService.listDiscounts(active, sortBy, sortOrder);
-  }
-
-  @Override
-  public List<String> getApplicableModifierCodes(String categoryCode) {
-    return queryService.getApplicableModifierCodes(categoryCode);
   }
 
   @Override
