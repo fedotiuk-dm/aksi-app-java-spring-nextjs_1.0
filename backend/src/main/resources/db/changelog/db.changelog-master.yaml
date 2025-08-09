@@ -75,6 +75,8 @@ databaseChangeLog:
   #     file: db/changelog/changes/023-fix-items-columns.yaml
   - include:
       file: db/changelog/changes/024-skip-existing-columns.yaml
+  - include:
+      file: db/changelog/changes/025-migrate-wear-level-to-enum.yaml
   # - include:
   #     file: db/changelog/changes/005-create-branch-tables.yaml
   # - include:

@@ -1,0 +1,150 @@
+databaseChangeLog:
+  - changeSet:
+      id: 025-migrate-wear-level-to-enum-cart
+      author: system
+      comment: Convert wear_level column from INTEGER to VARCHAR in cart_item_characteristics
+      changes:
+        # Add new varchar column
+        - addColumn:
+            tableName: cart_item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  type: varchar(20)
+                  
+        # Update values using mapping
+        - update:
+            tableName: cart_item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  value: 'NEW'
+            where: wear_level = 1
+            
+        - update:
+            tableName: cart_item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  value: 'GOOD'
+            where: wear_level = 2
+            
+        - update:
+            tableName: cart_item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  value: 'FAIR'
+            where: wear_level = 3
+            
+        - update:
+            tableName: cart_item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  value: 'POOR'
+            where: wear_level = 4
+            
+        - update:
+            tableName: cart_item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  value: 'WORN'
+            where: wear_level = 5
+            
+        # Set default for null values
+        - update:
+            tableName: cart_item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  value: 'GOOD'
+            where: wear_level IS NULL
+            
+        # Drop old column
+        - dropColumn:
+            tableName: cart_item_characteristics
+            columnName: wear_level
+            
+        # Rename new column
+        - renameColumn:
+            tableName: cart_item_characteristics
+            oldColumnName: wear_level_new
+            newColumnName: wear_level
+            columnDataType: varchar(20)
+
+  - changeSet:
+      id: 025-migrate-wear-level-to-enum-orders
+      author: system
+      comment: Convert wear_level column from INTEGER to VARCHAR in item_characteristics
+      changes:
+        # Add new varchar column
+        - addColumn:
+            tableName: item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  type: varchar(20)
+                  
+        # Update values using mapping
+        - update:
+            tableName: item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  value: 'NEW'
+            where: wear_level = 1
+            
+        - update:
+            tableName: item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  value: 'GOOD'
+            where: wear_level = 2
+            
+        - update:
+            tableName: item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  value: 'FAIR'
+            where: wear_level = 3
+            
+        - update:
+            tableName: item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  value: 'POOR'
+            where: wear_level = 4
+            
+        - update:
+            tableName: item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  value: 'WORN'
+            where: wear_level = 5
+            
+        # Set default for null values
+        - update:
+            tableName: item_characteristics
+            columns:
+              - column:
+                  name: wear_level_new
+                  value: 'GOOD'
+            where: wear_level IS NULL
+            
+        # Drop old column
+        - dropColumn:
+            tableName: item_characteristics
+            columnName: wear_level
+            
+        # Rename new column
+        - renameColumn:
+            tableName: item_characteristics
+            oldColumnName: wear_level_new
+            newColumnName: wear_level
+            columnDataType: varchar(20)
