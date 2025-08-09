@@ -36,6 +36,7 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
   private PDFont boldFont;
   private float currentY;
   private boolean inTextBlock = false;
+  private boolean closed = false;
 
   public PdfBoxDocumentBuilder(ReceiptConfiguration config) throws IOException {
     this.config = config;
@@ -56,7 +57,10 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
       if (regularResource.exists()) {
         try (InputStream fontStream = regularResource.getInputStream()) {
           this.regularFont = PDType0Font.load(document, fontStream);
+          log.debug("Successfully loaded regular font: {}", regularFontPath);
         }
+      } else {
+        log.warn("Regular font not found at: {}", regularFontPath);
       }
 
       // Load bold font
@@ -65,6 +69,7 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
       if (boldResource.exists()) {
         try (InputStream fontStream = boldResource.getInputStream()) {
           this.boldFont = PDType0Font.load(document, fontStream);
+          log.debug("Successfully loaded bold font: {}", boldFontPath);
         }
       } else {
         // Fallback to regular font if bold not found
@@ -72,16 +77,21 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
         log.warn("Bold font not found at {}, using regular font", boldFontPath);
       }
     } catch (Exception e) {
-      log.warn("Could not load custom fonts, using defaults", e);
+      log.error("Could not load custom fonts, using defaults", e);
+      this.regularFont = null;
+      this.boldFont = null;
     }
 
     // Fallback to standard fonts if custom fonts not loaded
     if (this.regularFont == null) {
+      log.warn("Using fallback fonts - Ukrainian text may not display correctly");
       this.regularFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
       this.boldFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
     }
 
     this.currentFont = this.regularFont;
+    log.info("Font initialization complete. Regular font type: {}", 
+             this.regularFont.getClass().getSimpleName());
   }
 
   @Override
@@ -152,9 +162,15 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
   public PdfDocumentBuilder drawText(String text) {
     try {
       if (inTextBlock && text != null) {
+        // Log font info for debugging
+        if (log.isDebugEnabled() && text.length() > 0) {
+          log.debug("Drawing text with font {}: '{}'", currentFont.getName(), 
+                   text.length() > 20 ? text.substring(0, 20) + "..." : text);
+        }
         contentStream.showText(text);
       }
     } catch (IOException e) {
+      log.error("Failed to draw text: '{}' with font: {}", text, currentFont.getName(), e);
       throw new RuntimeException("Failed to draw text", e);
     }
     return this;
@@ -218,6 +234,10 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
 
   @Override
   public byte[] build() throws IOException {
+    if (closed) {
+      throw new IllegalStateException("Document builder is already closed");
+    }
+    
     try {
       endText(); // Ensure text block is closed
       contentStream.close();
@@ -227,18 +247,32 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
       return baos.toByteArray();
     } finally {
       document.close();
+      closed = true;
     }
   }
 
   @Override
   public void close() throws IOException {
+    if (closed) {
+      return; // Already closed
+    }
+    
     try {
+      endText(); // Ensure text block is properly closed
       if (contentStream != null) {
         contentStream.close();
       }
+    } catch (Exception e) {
+      log.warn("Error closing content stream", e);
     } finally {
-      if (document != null) {
-        document.close();
+      try {
+        if (document != null) {
+          document.close();
+        }
+      } catch (Exception e) {
+        log.warn("Error closing document", e);
+      } finally {
+        closed = true;
       }
     }
   }

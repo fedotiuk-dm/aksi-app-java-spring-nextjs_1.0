@@ -98,6 +98,7 @@ public class OrderFactory {
     // Map characteristics if present
     if (cartItem.getCharacteristics() != null) {
       ItemCharacteristicsEntity characteristics = orderMapper.toItemCharacteristicsEntity(cartItem);
+      characteristics.setId(null); // Ensure it's a new entity
       orderItem.setCharacteristics(characteristics);
       characteristics.setOrderItemEntity(orderItem);
     }

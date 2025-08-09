@@ -177,7 +177,16 @@ public class GlobalExceptionHandler {
     String message = e.getMessage();
 
     if (message != null && message.contains("detached entity passed to persist")) {
-      log.error("Entity relationship error: {}", message);
+      // Extract entity class name for shorter log
+      String entityName = "entity";
+      if (message.contains("com.aksi.domain")) {
+        int start = message.indexOf("com.aksi.domain");
+        int end = message.indexOf(";", start);
+        if (end == -1) end = message.length();
+        String fullClassName = message.substring(start, end);
+        entityName = fullClassName.substring(fullClassName.lastIndexOf('.') + 1);
+      }
+      log.error("Entity relationship error: detached entity passed to persist: {}", entityName);
       return createErrorResponse(
           HttpStatus.INTERNAL_SERVER_ERROR, "Entity relationship error", null);
     }
