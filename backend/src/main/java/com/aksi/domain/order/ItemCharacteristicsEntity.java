@@ -1,5 +1,7 @@
 package com.aksi.domain.order;
 
+import com.aksi.api.order.dto.FillerCondition;
+import com.aksi.api.order.dto.WearLevel;
 import com.aksi.domain.common.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -27,11 +29,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ItemCharacteristicsEntity extends BaseEntity {
 
-  public enum FillerCondition {
-    NORMAL,
-    COMPRESSED
-  }
-
   @OneToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "order_item_id", nullable = false)
   private OrderItemEntity orderItemEntity;
@@ -49,23 +46,7 @@ public class ItemCharacteristicsEntity extends BaseEntity {
   @Column(name = "filler_condition", length = 20)
   private FillerCondition fillerCondition;
 
-  @Column(name = "wear_level")
-  private Integer wearLevel;
-
-  // Validation methods
-  public boolean isValidWearLevel() {
-    return wearLevel != null
-        && (wearLevel == 10 || wearLevel == 30 || wearLevel == 50 || wearLevel == 75);
-  }
-
-  public void setWearLevel(Integer wearLevel) {
-    if (wearLevel != null && !isValidWearLevel(wearLevel)) {
-      throw new IllegalArgumentException("Wear level must be one of: 10, 30, 50, 75");
-    }
-    this.wearLevel = wearLevel;
-  }
-
-  private boolean isValidWearLevel(Integer level) {
-    return level == 10 || level == 30 || level == 50 || level == 75;
-  }
+  @Enumerated(EnumType.STRING)
+  @Column(name = "wear_level", length = 20)
+  private WearLevel wearLevel;
 }

@@ -43,7 +43,7 @@ public class ItemModifierEntity extends BaseEntity {
   @Column(name = "modifier_code", nullable = false, length = 50)
   private String code;
 
-  @Column(name = "modifier_name", nullable = false, length = 255)
+  @Column(name = "modifier_name", nullable = false)
   private String name;
 
   @Enumerated(EnumType.STRING)
@@ -58,62 +58,4 @@ public class ItemModifierEntity extends BaseEntity {
 
   @Column(name = "jexl_formula", columnDefinition = "TEXT")
   private String jexlFormula;
-
-  // Convenience constructor for percentage/fixed modifiers
-  public ItemModifierEntity(
-      OrderItemEntity orderItemEntity,
-      String code,
-      String name,
-      ModifierType type,
-      Integer value,
-      Integer appliedAmount) {
-    this.orderItemEntity = orderItemEntity;
-    this.code = code;
-    this.name = name;
-    this.type = type;
-    this.value = value;
-    this.appliedAmount = appliedAmount;
-  }
-
-  // Convenience constructor for formula modifiers
-  public ItemModifierEntity(
-      OrderItemEntity orderItemEntity,
-      String code,
-      String name,
-      String jexlFormula,
-      Integer appliedAmount) {
-    this.orderItemEntity = orderItemEntity;
-    this.code = code;
-    this.name = name;
-    this.type = ModifierType.FORMULA;
-    this.value = 0;
-    this.appliedAmount = appliedAmount;
-    this.jexlFormula = jexlFormula;
-  }
-
-  // Business methods
-  public boolean isFormulaModifier() {
-    return type == ModifierType.FORMULA;
-  }
-
-  public boolean isPercentageModifier() {
-    return type == ModifierType.PERCENTAGE;
-  }
-
-  public boolean isFixedModifier() {
-    return type == ModifierType.FIXED;
-  }
-
-  public String getFormattedValue() {
-    return switch (type) {
-      case PERCENTAGE -> (value / 100.0) + "%";
-      case FIXED -> (value / 100.0) + " грн";
-      case FORMULA -> "Формула: " + (jexlFormula != null ? jexlFormula : "Невідома");
-    };
-  }
-
-  public String getFormattedAmount() {
-    if (appliedAmount == null) return "0.00 грн";
-    return String.format("%.2f грн", appliedAmount / 100.0);
-  }
 }

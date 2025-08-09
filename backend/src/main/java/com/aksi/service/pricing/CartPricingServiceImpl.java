@@ -72,8 +72,14 @@ public class CartPricingServiceImpl implements CartPricingService {
     CartItemPricingInfo pricing = new CartItemPricingInfo();
     pricing.setBasePrice(calculatedItem.getBasePrice());
     pricing.setSubtotal(calculations.getSubtotal());
-    pricing.setUrgencyAmount(calculations.getUrgencyModifier().getAmount());
-    pricing.setDiscountAmount(calculations.getDiscountModifier().getAmount());
+    pricing.setUrgencyAmount(
+        calculations.getUrgencyModifier() != null
+            ? calculations.getUrgencyModifier().getAmount()
+            : 0);
+    pricing.setDiscountAmount(
+        calculations.getDiscountModifier() != null
+            ? calculations.getDiscountModifier().getAmount()
+            : 0);
     pricing.setTotal(calculations.getFinalAmount());
 
     // Convert modifiers

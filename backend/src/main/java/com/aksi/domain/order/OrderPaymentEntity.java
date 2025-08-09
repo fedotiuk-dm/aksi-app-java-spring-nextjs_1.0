@@ -2,6 +2,7 @@ package com.aksi.domain.order;
 
 import java.time.Instant;
 
+import com.aksi.api.order.dto.PaymentMethod;
 import com.aksi.domain.common.BaseEntity;
 import com.aksi.domain.user.UserEntity;
 
@@ -34,12 +35,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OrderPaymentEntity extends BaseEntity {
 
-  public enum PaymentMethod {
-    CASH,
-    TERMINAL,
-    BANK_TRANSFER
-  }
-
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "order_id", nullable = false)
   private OrderEntity orderEntity;
@@ -63,44 +58,4 @@ public class OrderPaymentEntity extends BaseEntity {
 
   @Column(name = "notes", columnDefinition = "TEXT")
   private String notes;
-
-  // Convenience constructor
-  public OrderPaymentEntity(
-      OrderEntity orderEntity, Integer amount, PaymentMethod method, UserEntity paidBy) {
-    this.orderEntity = orderEntity;
-    this.amount = amount;
-    this.method = method;
-    this.paidBy = paidBy;
-    this.paidAt = Instant.now();
-  }
-
-  // Business methods
-  public boolean isCashPayment() {
-    return method == PaymentMethod.CASH;
-  }
-
-  public boolean isCardPayment() {
-    return method == PaymentMethod.TERMINAL;
-  }
-
-  public boolean isBankTransfer() {
-    return method == PaymentMethod.BANK_TRANSFER;
-  }
-
-  public String getDisplayName() {
-    return switch (method) {
-      case CASH -> "Готівка";
-      case TERMINAL -> "Картка (термінал)";
-      case BANK_TRANSFER -> "Банківський переказ";
-    };
-  }
-
-  public String getFormattedAmount() {
-    if (amount == null) return "0.00 грн";
-    return String.format("%.2f грн", amount / 100.0);
-  }
-
-  public boolean requiresReference() {
-    return method == PaymentMethod.TERMINAL || method == PaymentMethod.BANK_TRANSFER;
-  }
 }

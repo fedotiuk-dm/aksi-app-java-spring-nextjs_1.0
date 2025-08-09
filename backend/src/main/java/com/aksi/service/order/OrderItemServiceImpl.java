@@ -56,6 +56,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                       orderItem.getCharacteristics(),
                       () -> {
                         var c = new ItemCharacteristicsEntity();
+                        c.setId(null); // Ensure it's a new entity
                         c.setOrderItemEntity(orderItem);
                         orderItem.setCharacteristics(c);
                         return c;
@@ -69,7 +70,11 @@ public class OrderItemServiceImpl implements OrderItemService {
               orderItem.getStains().clear();
               list.stream()
                   .map(orderMapper::toItemStainEntity)
-                  .forEach(stain -> addStain(orderItem, stain));
+                  .forEach(
+                      stain -> {
+                        stain.setId(null); // Ensure it's a new entity
+                        addStain(orderItem, stain);
+                      });
             });
 
     Optional.ofNullable(request.getDefects())
@@ -78,7 +83,11 @@ public class OrderItemServiceImpl implements OrderItemService {
               orderItem.getDefects().clear();
               list.stream()
                   .map(orderMapper::toItemDefectEntity)
-                  .forEach(defect -> addDefect(orderItem, defect));
+                  .forEach(
+                      defect -> {
+                        defect.setId(null); // Ensure it's a new entity
+                        addDefect(orderItem, defect);
+                      });
             });
 
     Optional.ofNullable(request.getRisks())
@@ -87,7 +96,11 @@ public class OrderItemServiceImpl implements OrderItemService {
               orderItem.getRisks().clear();
               list.stream()
                   .map(orderMapper::toItemRiskEntity)
-                  .forEach(risk -> addRisk(orderItem, risk));
+                  .forEach(
+                      risk -> {
+                        risk.setId(null); // Ensure it's a new entity
+                        addRisk(orderItem, risk);
+                      });
             });
 
     orderRepository.save(order);

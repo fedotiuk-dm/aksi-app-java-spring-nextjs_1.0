@@ -1,5 +1,6 @@
 package com.aksi.service.order.validator;
 
+import java.time.Instant;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
@@ -46,13 +47,23 @@ public class OrderValidator {
   }
 
   /**
+   * Check if cart is expired.
+   *
+   * @param cart cart entity
+   * @return true if cart is expired
+   */
+  private boolean isCartExpired(CartEntity cart) {
+    return Instant.now().isAfter(cart.getExpiresAt());
+  }
+
+  /**
    * Validate cart is suitable for order creation
    *
    * @param cart cart entity
    * @throws BadRequestException if validation fails
    */
   public void validateCartForOrder(CartEntity cart) {
-    require(!cart.isExpired(), "Cart has expired");
+    require(!isCartExpired(cart), "Cart has expired");
     require(!cart.getItems().isEmpty(), "Cannot create order from empty cart");
     require(cart.getCustomerEntity() != null, "Cart must have a customer");
     log.debug("Cart {} is valid for order creation", cart.getId());

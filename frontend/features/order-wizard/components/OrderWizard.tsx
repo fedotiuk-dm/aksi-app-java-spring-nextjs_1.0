@@ -5,31 +5,28 @@ import { Box, Grid, Paper } from '@mui/material';
 import { CustomerSection } from './sections/CustomerSection';
 import { ItemsSection } from './sections/ItemsSection';
 import { SummarySection } from './sections/SummarySection';
-import { useOrderWizardStore } from '@/features/order-wizard';
 
 export const OrderWizard: React.FC = () => {
-  const { cartId } = useOrderWizardStore();
-
   return (
-    <Box 
-      sx={{ 
+    <Box
+      sx={{
         minHeight: '100vh',
         height: 'auto',
         overflow: 'visible',
         display: 'flex',
         flexDirection: 'column',
-        p: { xs: 1, sm: 2 }
+        p: { xs: 1, sm: 2 },
       }}
     >
-      <Grid 
-        container 
-        spacing={{ xs: 1, sm: 2 }} 
-        sx={{ 
+      <Grid
+        container
+        spacing={{ xs: 1, sm: 2 }}
+        sx={{
           height: 'auto',
           minHeight: { xs: 'auto', lg: '100vh' },
           flexDirection: { xs: 'column', lg: 'row' },
           overflow: 'visible',
-          flexWrap: 'wrap'
+          flexWrap: 'wrap',
         }}
       >
         {/* Section 1: Customer and basic order info (30%) */}

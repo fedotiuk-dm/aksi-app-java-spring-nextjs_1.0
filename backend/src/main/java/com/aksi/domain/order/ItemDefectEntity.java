@@ -1,5 +1,6 @@
 package com.aksi.domain.order;
 
+import com.aksi.api.order.dto.DefectType;
 import com.aksi.domain.common.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -28,14 +29,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ItemDefectEntity extends BaseEntity {
 
-  public enum DefectType {
-    WORN,
-    TORN,
-    MISSING_ACCESSORIES,
-    DAMAGED_ACCESSORIES,
-    OTHER
-  }
-
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "order_item_id", nullable = false)
   private OrderItemEntity orderItemEntity;
@@ -46,28 +39,4 @@ public class ItemDefectEntity extends BaseEntity {
 
   @Column(name = "description", columnDefinition = "TEXT")
   private String description;
-
-  // Convenience constructor
-  public ItemDefectEntity(OrderItemEntity orderItemEntity, DefectType type, String description) {
-    this.orderItemEntity = orderItemEntity;
-    this.type = type;
-    this.description = description;
-  }
-
-  // Business methods
-  public boolean affectsWarranty() {
-    return type == DefectType.WORN
-        || type == DefectType.TORN
-        || type == DefectType.DAMAGED_ACCESSORIES;
-  }
-
-  public String getDisplayName() {
-    return switch (type) {
-      case WORN -> "Зношеність";
-      case TORN -> "Розрив";
-      case MISSING_ACCESSORIES -> "Відсутні аксесуари";
-      case DAMAGED_ACCESSORIES -> "Пошкоджені аксесуари";
-      case OTHER -> "Інше";
-    };
-  }
 }

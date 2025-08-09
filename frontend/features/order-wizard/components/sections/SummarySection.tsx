@@ -9,18 +9,18 @@ import {
   FormLabel,
   Select,
   MenuItem,
-  SelectChangeEvent,
   Divider,
   Button,
   FormControlLabel,
   Checkbox,
   Paper,
   Alert,
+  CircularProgress,
 } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { Print } from '@mui/icons-material';
-import { CircularProgress } from '@mui/material';
 import SignatureCanvas from 'react-signature-canvas';
 import { useOrderWizardStore } from '@/features/order-wizard';
 import { useGetCart, useUpdateCartModifiers, useClearCart } from '@/shared/api/generated/cart';
@@ -30,6 +30,8 @@ import type {
   CartGlobalModifiersUrgencyType,
   CartGlobalModifiersDiscountType,
 } from '@/shared/api/generated/cart';
+
+const ROW_BETWEEN_SX = { display: 'flex', justifyContent: 'space-between', mb: 1 } as const;
 
 export const SummarySection: React.FC = () => {
   const signatureRef = useRef<SignatureCanvas>(null);
@@ -49,12 +51,7 @@ export const SummarySection: React.FC = () => {
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
 
-  const {
-    selectedCustomer,
-    selectedBranch,
-    uniqueLabel,
-    resetOrderWizard,
-  } = useOrderWizardStore();
+  const { selectedCustomer, selectedBranch, uniqueLabel, resetOrderWizard } = useOrderWizardStore();
 
   // Initialize client-side state to avoid hydration mismatch
   useEffect(() => {
@@ -70,7 +67,7 @@ export const SummarySection: React.FC = () => {
       enabled: !!selectedCustomer,
     },
   });
-  
+
   // Mutations
   const updateCartModifiersMutation = useUpdateCartModifiers();
   const createOrderMutation = useCreateOrder();
@@ -109,10 +106,10 @@ export const SummarySection: React.FC = () => {
 
   const handleCreateOrder = async () => {
     if (!canSubmitOrder() || !cartData) return;
-    
+
     setIsCreatingOrder(true);
     setOrderError(null);
-    
+
     try {
       // First update cart with global modifiers
       await updateCartModifiersMutation.mutateAsync({
@@ -121,51 +118,60 @@ export const SummarySection: React.FC = () => {
           discountType,
           discountPercentage: discountType === 'OTHER' ? customDiscountPercent : undefined,
           expectedCompletionDate: clientDeliveryDate?.toISOString(),
-        }
+        },
       });
-      
+
       // Refetch cart to get updated pricing
       await refetchCart();
-      
+
       // Then create order
       const orderData = await createOrderMutation.mutateAsync({
         data: {
           cartId: cartData.id,
-          branchId: selectedBranch!.id,
+          branchId: selectedBranch?.id as string,
           uniqueLabel,
           notes: orderNotes,
           customerSignature: signature,
           termsAccepted,
-        }
+        },
       });
-      
+
       setCreatedOrderId(orderData.id);
       setIsReceiptPreviewOpen(true);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error creating order:', error);
       setOrderError(
-        error?.response?.data?.message || 
-        error?.message || 
-        'Помилка створення замовлення. Спробуйте ще раз.'
+        // @ts-expect-error api error shape
+        error?.response?.data?.message ||
+          // @ts-expect-error api error shape
+          error?.message ||
+          'Помилка створення замовлення. Спробуйте ще раз.'
       );
     } finally {
       setIsCreatingOrder(false);
     }
   };
 
+  const CURRENCY_SYMBOL = '₴';
+  const formatPrice = (kopecks?: number) =>
+    `${((kopecks ?? 0) / 100).toFixed(2)} ${CURRENCY_SYMBOL}`;
   const totalAmount = cartData?.pricing?.total ? cartData.pricing.total / 100 : 0;
-  const discountAmount = cartData?.pricing?.discountAmount ? cartData.pricing.discountAmount / 100 : 0;
+  const discountAmount = cartData?.pricing?.discountAmount
+    ? cartData.pricing.discountAmount / 100
+    : 0;
   const urgencyAmount = cartData?.pricing?.urgencyAmount ? cartData.pricing.urgencyAmount / 100 : 0;
   const debtAmount = totalAmount - paidAmount;
-  
+
   const canSubmitOrder = () => {
-    return !!selectedCustomer && 
-           !!selectedBranch && 
-           !!uniqueLabel && 
-           cartData?.items && 
-           cartData.items.length > 0 && 
-           termsAccepted && 
-           !!signature;
+    return (
+      !!selectedCustomer &&
+      !!selectedBranch &&
+      !!uniqueLabel &&
+      cartData?.items &&
+      cartData.items.length > 0 &&
+      termsAccepted &&
+      !!signature
+    );
   };
 
   return (
@@ -173,7 +179,7 @@ export const SummarySection: React.FC = () => {
       <Typography variant="h6" gutterBottom>
         Підсумки та завершення
       </Typography>
-      
+
       {orderError && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setOrderError(null)}>
           {orderError}
@@ -239,7 +245,7 @@ export const SummarySection: React.FC = () => {
           fullWidth
           sx={{ mb: 2 }}
           slotProps={{
-            htmlInput: { min: 0, max: 100 }
+            htmlInput: { min: 0, max: 100 },
           }}
         />
       )}
@@ -255,31 +261,35 @@ export const SummarySection: React.FC = () => {
         <Typography variant="subtitle1" gutterBottom>
           Фінансовий блок
         </Typography>
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+
+        <Box sx={ROW_BETWEEN_SX}>
           <Typography>Сума до знижки:</Typography>
-          <Typography>{totalAmount.toFixed(2)} ₴</Typography>
+          <Typography>{formatPrice(cartData?.pricing?.itemsSubtotal)}</Typography>
         </Box>
-        
+
         {discountAmount > 0 && (
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+          <Box sx={ROW_BETWEEN_SX}>
             <Typography>Знижка:</Typography>
-            <Typography color="success.main">-{discountAmount.toFixed(2)} ₴</Typography>
+            <Typography color="success.main">
+              -{formatPrice(cartData?.pricing?.discountAmount)}
+            </Typography>
           </Box>
         )}
-        
+
         {urgencyAmount > 0 && (
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+          <Box sx={ROW_BETWEEN_SX}>
             <Typography>Термінове виконання:</Typography>
-            <Typography color="warning.main">+{urgencyAmount.toFixed(2)} ₴</Typography>
+            <Typography color="warning.main">
+              +{formatPrice(cartData?.pricing?.urgencyAmount)}
+            </Typography>
           </Box>
         )}
-        
+
         <Divider sx={{ my: 1 }} />
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+
+        <Box sx={ROW_BETWEEN_SX}>
           <Typography variant="h6">Загальна вартість:</Typography>
-          <Typography variant="h6">{totalAmount.toFixed(2)} ₴</Typography>
+          <Typography variant="h6">{formatPrice(cartData?.pricing?.total)}</Typography>
         </Box>
 
         <TextField
@@ -290,14 +300,14 @@ export const SummarySection: React.FC = () => {
           fullWidth
           sx={{ mb: 2 }}
           slotProps={{
-            htmlInput: { min: 0, step: 0.01 }
+            htmlInput: { min: 0, step: 0.01 },
           }}
         />
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+        <Box sx={ROW_BETWEEN_SX}>
           <Typography>Борг:</Typography>
           <Typography color={debtAmount > 0 ? 'error.main' : 'success.main'}>
-            {debtAmount.toFixed(2)} ₴
+            {debtAmount.toFixed(2)} {CURRENCY_SYMBOL}
           </Typography>
         </Box>
 
@@ -325,10 +335,7 @@ export const SummarySection: React.FC = () => {
       {/* Terms */}
       <FormControlLabel
         control={
-          <Checkbox
-            checked={termsAccepted}
-            onChange={(e) => setTermsAccepted(e.target.checked)}
-          />
+          <Checkbox checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} />
         }
         label="Я погоджуюсь з умовами надання послуг"
         sx={{ mb: 2 }}
@@ -358,7 +365,7 @@ export const SummarySection: React.FC = () => {
         </Box>
         {signatureError && (
           <Typography variant="caption" color="error">
-            Підпис обов'язковий
+            Підпис обов&apos;язковий
           </Typography>
         )}
         <Box sx={{ display: 'flex', gap: 1 }}>

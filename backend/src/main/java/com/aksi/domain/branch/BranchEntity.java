@@ -35,10 +35,10 @@ public class BranchEntity extends BaseEntity {
   @Column(name = "phone", nullable = false, length = 20)
   private String phone;
 
-  @Column(name = "email", length = 255)
+  @Column(name = "email")
   private String email;
 
-  @Column(name = "working_hours", length = 255)
+  @Column(name = "working_hours")
   private String workingHours;
 
   @Column(name = "active", nullable = false)

@@ -49,19 +49,4 @@ public class CartItem extends BaseEntity {
       orphanRemoval = true,
       fetch = FetchType.LAZY)
   private List<CartItemModifierEntity> modifiers = new ArrayList<>();
-
-  /** Add modifier to cart item. Note: Prefer using CartService for business operations. */
-  public void addModifier(CartItemModifierEntity modifier) {
-    modifiers.add(modifier);
-    modifier.setCartItem(this);
-  }
-
-  /**
-   * Remove modifier from cart item. Reserved for future use when individual modifier removal is
-   * needed. Currently, update operations replace all modifiers.
-   */
-  public void removeModifier(CartItemModifierEntity modifier) {
-    modifiers.remove(modifier);
-    modifier.setCartItem(null);
-  }
 }

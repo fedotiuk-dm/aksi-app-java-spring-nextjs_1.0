@@ -72,6 +72,16 @@ public class CartCommandService {
   }
 
   /**
+   * Check if cart is active (not expired).
+   *
+   * @param cart cart entity
+   * @return true if cart is active
+   */
+  private boolean isCartActive(CartEntity cart) {
+    return Instant.now().isBefore(cart.getExpiresAt());
+  }
+
+  /**
    * Get or create cart for customer, extending TTL if cart exists.
    *
    * @param customerId customer ID
@@ -82,11 +92,11 @@ public class CartCommandService {
     CartEntity cartEntity =
         cartRepository
             .findActiveByCustomerId(customerId, Instant.now())
-            .filter(cart -> !cart.isExpired())
+            .filter(this::isCartActive)
             .orElseGet(() -> createCart(customerId));
 
     // Extend TTL on access to keep cart alive
-    if (!cartEntity.isExpired()) {
+    if (isCartActive(cartEntity)) {
       extendCartTtl(cartEntity);
     }
 
@@ -99,7 +109,7 @@ public class CartCommandService {
    * @param cartEntity cart to extend
    */
   public void extendCartTtl(CartEntity cartEntity) {
-    cartEntity.extendTtl(Instant.now().plus(cartTtlHours, ChronoUnit.HOURS));
+    cartEntity.setExpiresAt(Instant.now().plus(cartTtlHours, ChronoUnit.HOURS));
     cartRepository.save(cartEntity);
   }
 
@@ -301,7 +311,7 @@ public class CartCommandService {
                 .ifPresentOrElse(
                     modifier -> {
                       modifier.setCartItem(cartItem);
-                      cartItem.addModifier(modifier);
+                      cartItem.getModifiers().add(modifier);
                     },
                     () -> log.warn("Unknown or inactive modifier code: {}", code)));
   }

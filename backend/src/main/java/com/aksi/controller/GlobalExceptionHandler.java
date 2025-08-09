@@ -11,6 +11,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
@@ -70,6 +71,24 @@ public class GlobalExceptionHandler {
   public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException e) {
     log.warn("Authentication error: {}", e.getMessage());
     return createErrorResponse(HttpStatus.UNAUTHORIZED, "Authentication failed", null);
+  }
+
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<Map<String, Object>> handleJsonParseError(
+      HttpMessageNotReadableException e) {
+    log.warn("JSON parse error: {}", e.getMessage());
+
+    String message = "Invalid JSON format";
+    if (e.getMessage() != null && e.getMessage().contains("Unexpected value")) {
+      // Extract enum error details
+      String errorMsg = e.getMessage();
+      if (errorMsg.contains("Cannot construct instance")) {
+        message =
+            "Invalid enum value in JSON. " + errorMsg.substring(errorMsg.indexOf("problem:") + 8);
+      }
+    }
+
+    return createErrorResponse(HttpStatus.BAD_REQUEST, message, null);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -155,10 +174,17 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(InvalidDataAccessApiUsageException.class)
   public ResponseEntity<Map<String, Object>> handleInvalidDataAccess(
       InvalidDataAccessApiUsageException e) {
-    log.warn("Invalid data access: {}", e.getMessage());
+    String message = e.getMessage();
+
+    if (message != null && message.contains("detached entity passed to persist")) {
+      log.error("Entity relationship error: {}", message);
+      return createErrorResponse(
+          HttpStatus.INTERNAL_SERVER_ERROR, "Entity relationship error", null);
+    }
+
+    log.warn("Invalid data access: {}", message);
 
     // Extract meaningful error message for enum mismatches
-    String message = e.getMessage();
     if (message != null && message.contains("No enum constant")) {
       // Extract enum type and value from error message
       String enumDetails = message.substring(message.indexOf("No enum constant"));
@@ -186,6 +212,12 @@ public class GlobalExceptionHandler {
     return createErrorResponse(HttpStatus.BAD_REQUEST, message, null);
   }
 
+  @ExceptionHandler(NullPointerException.class)
+  public ResponseEntity<Map<String, Object>> handleNullPointer(NullPointerException e) {
+    log.error("Null pointer error: {}", e.getMessage());
+    return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", null);
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String, Object>> handleGeneral(Exception e) {
     // Skip logging for broken pipe exceptions (common with SSE)
@@ -195,7 +227,7 @@ public class GlobalExceptionHandler {
       return null;
     }
 
-    log.error("Unexpected error", e);
+    log.error("Unexpected error: {}", e.getMessage());
     return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", null);
   }
 

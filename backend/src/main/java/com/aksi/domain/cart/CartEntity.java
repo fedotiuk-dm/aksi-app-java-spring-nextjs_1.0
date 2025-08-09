@@ -64,12 +64,4 @@ public class CartEntity extends BaseEntity {
 
   @Column(name = "expires_at", nullable = false)
   private Instant expiresAt;
-
-  public boolean isExpired() {
-    return Instant.now().isAfter(expiresAt);
-  }
-
-  public void extendTtl(Instant newExpiresAt) {
-    this.expiresAt = newExpiresAt;
-  }
 }

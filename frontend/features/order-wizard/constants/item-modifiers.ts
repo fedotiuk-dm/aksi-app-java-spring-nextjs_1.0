@@ -20,10 +20,11 @@ export const TEXTILE_MODIFIERS: ModifierConfig[] = [
   { code: 'WATERPROOF', label: 'Водовідштовхуюче покриття', value: '+30%' },
   { code: 'SILK', label: 'Натуральний шовк, атлас, шифон', value: '+50%' },
   { code: 'COMBINED', label: 'Комбіновані вироби (шкіра+текстиль)', value: '+100%' },
-  { code: 'TOYS', label: 'Великі м\'які іграшки', value: '+100%' },
+  { code: 'TOYS', label: "Великі м'які іграшки", value: '+100%' },
   { code: 'BUTTONS', label: 'Пришивання гудзиків', value: 'фікс.' },
-  { code: 'BW_COLOR', label: 'Чорний та світлі тони', value: '+20%' },
-  { code: 'WEDDING', label: 'Весільна сукня зі шлейфом', value: '+30%' },
+  // Коди нижче тимчасово приховані через відсутність підтримки на бекенді
+  // { code: 'BW_COLOR', label: 'Чорний та світлі тони', value: '+20%' },
+  // { code: 'WEDDING', label: 'Весільна сукня зі шлейфом', value: '+30%' },
 ];
 
 export const LEATHER_MODIFIERS: ModifierConfig[] = [
@@ -37,18 +38,20 @@ export const LEATHER_MODIFIERS: ModifierConfig[] = [
   { code: 'MANUAL_LEATHER', label: 'Ручна чистка виробів зі шкіри', value: '+30%' },
 ];
 
-export function getAvailableModifiers(category: PriceListItemInfoCategoryCode | ''): ModifierConfig[] {
+export function getAvailableModifiers(
+  category: PriceListItemInfoCategoryCode | ''
+): ModifierConfig[] {
   if (!category) return [];
-  
+
   const modifiers = [...GENERAL_MODIFIERS];
-  
+
   if (category === 'CLOTHING' || category === 'LAUNDRY') {
     modifiers.push(...TEXTILE_MODIFIERS);
   }
-  
+
   if (category === 'LEATHER' || category === 'PADDING') {
     modifiers.push(...LEATHER_MODIFIERS);
   }
-  
+
   return modifiers;
 }

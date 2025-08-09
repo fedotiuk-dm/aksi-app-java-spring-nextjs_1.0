@@ -37,6 +37,16 @@ public class CartQueryService {
   private final CartContextService cartContextService;
 
   /**
+   * Check if cart is expired.
+   *
+   * @param cart cart entity
+   * @return true if cart is expired
+   */
+  private boolean isCartExpired(CartEntity cart) {
+    return Instant.now().isAfter(cart.getExpiresAt());
+  }
+
+  /**
    * Find active cart for customer.
    *
    * @param customerId customer ID
@@ -45,7 +55,7 @@ public class CartQueryService {
   public Optional<CartEntity> findActiveCart(UUID customerId) {
     return cartRepository
         .findActiveByCustomerId(customerId, Instant.now())
-        .filter(cart -> !cart.isExpired());
+        .filter(cart -> !isCartExpired(cart));
   }
 
   /**

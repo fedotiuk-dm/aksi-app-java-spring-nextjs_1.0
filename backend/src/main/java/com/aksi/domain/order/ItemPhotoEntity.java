@@ -2,6 +2,7 @@ package com.aksi.domain.order;
 
 import java.time.Instant;
 
+import com.aksi.api.order.dto.PhotoType;
 import com.aksi.domain.common.BaseEntity;
 import com.aksi.domain.user.UserEntity;
 
@@ -34,13 +35,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ItemPhotoEntity extends BaseEntity {
 
-  public enum PhotoType {
-    GENERAL,
-    DEFECT,
-    STAIN,
-    LABEL
-  }
-
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "order_item_id", nullable = false)
   private OrderItemEntity orderItemEntity;
@@ -68,43 +62,6 @@ public class ItemPhotoEntity extends BaseEntity {
   @Column(name = "content_type", length = 100)
   private String contentType;
 
-  @Column(name = "original_filename", length = 255)
+  @Column(name = "original_filename")
   private String originalFilename;
-
-  // Convenience constructor
-  public ItemPhotoEntity(
-      OrderItemEntity orderItemEntity,
-      String url,
-      PhotoType type,
-      String description,
-      UserEntity uploadedBy) {
-    this.orderItemEntity = orderItemEntity;
-    this.url = url;
-    this.type = type;
-    this.description = description;
-    this.uploadedBy = uploadedBy;
-    this.uploadedAt = Instant.now();
-  }
-
-  // Business methods
-  public boolean isDocumentationPhoto() {
-    return type == PhotoType.DEFECT || type == PhotoType.STAIN || type == PhotoType.LABEL;
-  }
-
-  public String getDisplayName() {
-    return switch (type) {
-      case GENERAL -> "Загальне фото";
-      case DEFECT -> "Фото дефекту";
-      case STAIN -> "Фото плями";
-      case LABEL -> "Фото етикетки";
-    };
-  }
-
-  public String getFormattedFileSize() {
-    if (fileSize == null) return "Невідомо";
-
-    if (fileSize < 1024) return fileSize + " Б";
-    if (fileSize < 1024 * 1024) return (fileSize / 1024) + " КБ";
-    return (fileSize / (1024 * 1024)) + " МБ";
-  }
 }

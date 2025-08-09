@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Paper,
@@ -21,7 +21,11 @@ import { useOrderWizardStore } from '@/features/order-wizard';
 import { useGetCart } from '@/shared/api/generated/cart';
 import { useGetBranchById } from '@/shared/api/generated/branch';
 import { useGetOrderById } from '@/shared/api/generated/order';
-import { useGenerateReceiptPreview, type ReceiptOrderData, type ReceiptItem } from '@/shared/api/generated/receipt';
+import {
+  useGenerateReceiptPreview,
+  type ReceiptOrderData,
+  type ReceiptItem,
+} from '@/shared/api/generated/receipt';
 
 interface ReceiptProps {
   isPreview?: boolean;
@@ -29,45 +33,43 @@ interface ReceiptProps {
 }
 
 export const Receipt: React.FC<ReceiptProps> = ({ isPreview = false, orderId }) => {
-  const {
-    selectedCustomer,
-    uniqueLabel,
-    selectedBranch,
-  } = useOrderWizardStore();
-  
+  const { selectedCustomer, uniqueLabel, selectedBranch } = useOrderWizardStore();
+
   const [receiptPreviewUrl, setReceiptPreviewUrl] = useState<string | null>(null);
-  
+  const CURRENCY_SYMBOL = '₴';
+  const formatPrice = (kopecks?: number) =>
+    `${((kopecks ?? 0) / 100).toFixed(2)}${CURRENCY_SYMBOL}`;
+  const ROW_BETWEEN_SX = { display: 'flex', justifyContent: 'space-between' } as const;
+
   // Get cart data from API for preview
-  const { data: cartData, isLoading: isLoadingCart, error: cartError } = useGetCart({
-    query: { enabled: isPreview && !orderId }
+  const {
+    data: cartData,
+    isLoading: isLoadingCart,
+    error: cartError,
+  } = useGetCart({
+    query: { enabled: isPreview && !orderId },
   });
-  
+
   // Get order data if orderId is provided
-  const { data: orderData, isLoading: isLoadingOrder } = useGetOrderById(
-    orderId || '',
-    { query: { enabled: !!orderId } }
-  );
-  
+  const { data: orderData, isLoading: isLoadingOrder } = useGetOrderById(orderId || '', {
+    query: { enabled: !!orderId },
+  });
+
   // Get branch details
   const { data: branchDetails } = useGetBranchById(
     selectedBranch?.id || orderData?.branchId || '',
     { query: { enabled: !!selectedBranch?.id || !!orderData?.branchId } }
   );
-  
+
   // Generate receipt preview mutation
   const generatePreviewMutation = useGenerateReceiptPreview();
-  
-  // Generate receipt preview PDF when we have cart data
-  useEffect(() => {
-    if (isPreview && cartData && selectedCustomer && branchDetails && !orderId) {
-      void generateReceiptPreview();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cartData, selectedCustomer, branchDetails, isPreview, orderId]);
-  
-  const generateReceiptPreview = async () => {
+
+  const canGeneratePreview =
+    isPreview && !orderId && !!cartData && !!selectedCustomer && !!branchDetails;
+
+  const generateReceiptPreview = useCallback(async () => {
     if (!cartData || !selectedCustomer || !branchDetails) return;
-    
+
     try {
       const receiptData: ReceiptOrderData = {
         orderNumber: 'PREVIEW-' + Date.now(),
@@ -76,15 +78,17 @@ export const Receipt: React.FC<ReceiptProps> = ({ isPreview = false, orderId }) 
         branchPhone: branchDetails.phone,
         customerName: `${selectedCustomer.lastName} ${selectedCustomer.firstName}`,
         customerPhone: selectedCustomer.phonePrimary,
-        items: cartData.items.map((item, index): ReceiptItem => ({
-          position: index + 1,
-          name: item.priceListItem?.name || '',
-          catalogNumber: undefined, // PriceListItemSummary doesn't have catalogNumber
-          quantity: item.quantity,
-          unitPrice: item.priceListItem?.basePrice || 0,
-          totalPrice: item.pricing?.total || 0,
-          modifiers: item.pricing?.modifierDetails?.map(m => m.name) || [],
-        })),
+        items: cartData.items.map(
+          (item, index): ReceiptItem => ({
+            position: index + 1,
+            name: item.priceListItem?.name || '',
+            catalogNumber: undefined, // PriceListItemSummary doesn't have catalogNumber
+            quantity: item.quantity,
+            unitPrice: item.priceListItem?.basePrice || 0,
+            totalPrice: item.pricing?.total || 0,
+            modifiers: item.pricing?.modifierDetails?.map((m) => m.name) || [],
+          })
+        ),
         subtotal: cartData.pricing?.itemsSubtotal,
         discount: cartData.pricing?.discountAmount,
         totalAmount: cartData.pricing?.total || 0,
@@ -95,33 +99,44 @@ export const Receipt: React.FC<ReceiptProps> = ({ isPreview = false, orderId }) 
         completionDate: dayjs().add(2, 'day').toISOString(),
         notes: uniqueLabel ? `Унікальна мітка: ${uniqueLabel}` : undefined,
       };
-      
+
       const result = await generatePreviewMutation.mutateAsync({
         data: {
           orderData: receiptData,
           locale: 'uk',
-        }
+        },
       });
-      
+
       // Create blob URL for PDF
       const url = URL.createObjectURL(result);
       setReceiptPreviewUrl(url);
     } catch (error) {
       console.error('Error generating receipt preview:', error);
     }
-  };
-  
+  }, [branchDetails, cartData, generatePreviewMutation, selectedCustomer, uniqueLabel]);
+
+  useEffect(() => {
+    if (canGeneratePreview) {
+      void generateReceiptPreview();
+    }
+  }, [canGeneratePreview, generateReceiptPreview]);
+
   const isLoading = isLoadingCart || isLoadingOrder || generatePreviewMutation.isPending;
   const error = cartError || generatePreviewMutation.error;
-  
+
+  // Cleanup preview URL (must be before any early returns to keep hook order stable)
+  useEffect(() => {
+    return () => {
+      if (receiptPreviewUrl) {
+        URL.revokeObjectURL(receiptPreviewUrl);
+      }
+    };
+  }, [receiptPreviewUrl]);
+
   if (error) {
-    return (
-      <Alert severity="error">
-        Помилка завантаження даних квитанції
-      </Alert>
-    );
+    return <Alert severity="error">Помилка завантаження даних квитанції</Alert>;
   }
-  
+
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
@@ -129,7 +144,7 @@ export const Receipt: React.FC<ReceiptProps> = ({ isPreview = false, orderId }) 
       </Box>
     );
   }
-  
+
   // If we have a PDF preview URL, show it
   if (receiptPreviewUrl && isPreview) {
     return (
@@ -144,31 +159,20 @@ export const Receipt: React.FC<ReceiptProps> = ({ isPreview = false, orderId }) 
       />
     );
   }
-  
+
   // Use order data if available, otherwise use cart data
   const data = orderData || cartData;
   const customer = orderData?.customer || selectedCustomer;
-  
+
   if (!data) {
-    return (
-      <Alert severity="info">
-        Немає даних для відображення
-      </Alert>
-    );
+    return <Alert severity="info">Немає даних для відображення</Alert>;
   }
-  
+
   // Use pricing from backend
   const pricing = orderData ? orderData.pricing : cartData?.pricing;
   const items = orderData ? orderData.items : cartData?.items || [];
 
-  // Cleanup receipt preview URL
-  useEffect(() => {
-    return () => {
-      if (receiptPreviewUrl) {
-        URL.revokeObjectURL(receiptPreviewUrl);
-      }
-    };
-  }, [receiptPreviewUrl]);
+  // (moved cleanup effect above early returns)
 
   return (
     <Paper
@@ -191,11 +195,9 @@ export const Receipt: React.FC<ReceiptProps> = ({ isPreview = false, orderId }) 
       {/* Header */}
       <Box sx={{ textAlign: 'center', mb: 2 }}>
         <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-          ХІМЧИСТКА "AKSI"
+          ХІМЧИСТКА &quot;AKSI&quot;
         </Typography>
-        <Typography variant="body2">
-          Професійна хімчистка та прання
-        </Typography>
+        <Typography variant="body2">Професійна хімчистка та прання</Typography>
         {branchDetails && (
           <>
             <Typography variant="caption" display="block">
@@ -226,10 +228,18 @@ export const Receipt: React.FC<ReceiptProps> = ({ isPreview = false, orderId }) 
           <strong>Унікальна мітка:</strong> {orderData?.uniqueLabel || uniqueLabel || '-'}
         </Typography>
         <Typography variant="body2">
-          <strong>Дата прийому:</strong> {dayjs(orderData?.createdAt || new Date()).locale('uk').format('DD.MM.YYYY HH:mm')}
+          <strong>Дата прийому:</strong>{' '}
+          {dayjs(orderData?.createdAt || new Date())
+            .locale('uk')
+            .format('DD.MM.YYYY HH:mm')}
         </Typography>
         <Typography variant="body2">
-          <strong>Орієнтовна дата видачі:</strong> {dayjs(orderData?.expectedCompletionDate || new Date()).add(2, 'day').locale('uk').format('DD.MM.YYYY')} після 14:00
+          <strong>Орієнтовна дата видачі:</strong>{' '}
+          {dayjs(orderData?.expectedCompletionDate || new Date())
+            .add(2, 'day')
+            .locale('uk')
+            .format('DD.MM.YYYY')}{' '}
+          після 14:00
         </Typography>
       </Box>
 
@@ -245,17 +255,11 @@ export const Receipt: React.FC<ReceiptProps> = ({ isPreview = false, orderId }) 
             {customer.lastName} {customer.firstName}
           </Typography>
           <Typography variant="body2">
-            Тел: {'phone' in customer ? customer.phone : (selectedCustomer?.phonePrimary || '-')}
+            Тел: {'phone' in customer ? customer.phone : selectedCustomer?.phonePrimary || '-'}
           </Typography>
-          {customer.email && (
-            <Typography variant="body2">
-              Email: {customer.email}
-            </Typography>
-          )}
+          {customer.email && <Typography variant="body2">Email: {customer.email}</Typography>}
           {!orderData && selectedCustomer?.address && (
-            <Typography variant="body2">
-              Адреса: {selectedCustomer.address}
-            </Typography>
+            <Typography variant="body2">Адреса: {selectedCustomer.address}</Typography>
           )}
         </Box>
       )}
@@ -276,10 +280,10 @@ export const Receipt: React.FC<ReceiptProps> = ({ isPreview = false, orderId }) 
             </TableRow>
           </TableHead>
           <TableBody>
-            {items.map((item: any, index: number) => (
+            {items.map((item, index: number) => (
               <TableRow key={item.id}>
                 <TableCell>
-                  {index + 1}. {orderData ? item.serviceName : item.priceListItem?.name || '-'}
+                  {index + 1}. {item.priceListItem?.name || '-'}
                   {item.characteristics?.material && (
                     <Typography variant="caption" display="block">
                       {item.characteristics.material}
@@ -287,19 +291,14 @@ export const Receipt: React.FC<ReceiptProps> = ({ isPreview = false, orderId }) 
                     </Typography>
                   )}
                   {/* Show modifiers if any */}
-                  {((orderData ? item.modifiers : item.pricing?.modifierDetails) || []).length > 0 && (
+                  {(item.pricing?.modifierDetails || []).length > 0 && (
                     <Typography variant="caption" display="block" sx={{ fontStyle: 'italic' }}>
-                      {orderData 
-                        ? item.modifiers?.map((m: any) => m.name).join(', ')
-                        : item.pricing?.modifierDetails?.map((m: any) => m.name).join(', ')
-                      }
+                      {(item.pricing?.modifierDetails || []).map((m) => m.name).join(', ')}
                     </Typography>
                   )}
                 </TableCell>
                 <TableCell align="center">{item.quantity}</TableCell>
-                <TableCell align="right">
-                  {((orderData ? item.totalPrice : item.pricing?.total || 0) / 100).toFixed(2)}₴
-                </TableCell>
+                <TableCell align="right">{formatPrice(item.pricing?.total)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -311,56 +310,50 @@ export const Receipt: React.FC<ReceiptProps> = ({ isPreview = false, orderId }) 
       {/* Financial Summary from Backend */}
       {pricing && (
         <Box sx={{ mb: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+          <Box sx={{ ...ROW_BETWEEN_SX, mb: 0.5 }}>
             <Typography variant="body2">Сума предметів:</Typography>
-            <Typography variant="body2">{(pricing.itemsSubtotal / 100).toFixed(2)}₴</Typography>
+            <Typography variant="body2">{formatPrice(pricing.itemsSubtotal)}</Typography>
           </Box>
-          
+
           {pricing.urgencyAmount > 0 && (
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+            <Box sx={{ ...ROW_BETWEEN_SX, mb: 0.5 }}>
               <Typography variant="body2">Термінове виконання:</Typography>
-              <Typography variant="body2">+{(pricing.urgencyAmount / 100).toFixed(2)}₴</Typography>
+              <Typography variant="body2">+{formatPrice(pricing.urgencyAmount)}</Typography>
             </Box>
           )}
-          
+
           {pricing.discountAmount > 0 && (
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+            <Box sx={{ ...ROW_BETWEEN_SX, mb: 0.5 }}>
               <Typography variant="body2">Знижка:</Typography>
-              <Typography variant="body2">-{(pricing.discountAmount / 100).toFixed(2)}₴</Typography>
+              <Typography variant="body2">-{formatPrice(pricing.discountAmount)}</Typography>
             </Box>
           )}
-          
+
           <Divider sx={{ my: 1 }} />
-          
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+
+          <Box sx={{ ...ROW_BETWEEN_SX, mb: 0.5 }}>
             <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
               ЗАГАЛЬНА СУМА:
             </Typography>
             <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-              {(pricing.total / 100).toFixed(2)}₴
+              {formatPrice(pricing.total)}
             </Typography>
           </Box>
-          
+
           {/* Payment info */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+          <Box sx={{ ...ROW_BETWEEN_SX, mb: 0.5 }}>
             <Typography variant="body2">Сплачено:</Typography>
             <Typography variant="body2">
-              {orderData 
-                ? ((orderData.pricing.paidAmount || 0) / 100).toFixed(2)
-                : '0.00'
-              }₴
+              {orderData ? formatPrice(orderData.pricing.paidAmount) : `0.00${CURRENCY_SYMBOL}`}
             </Typography>
           </Box>
-          
-          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+
+          <Box sx={{ ...ROW_BETWEEN_SX }}>
             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
               До сплати:
             </Typography>
             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-              {orderData
-                ? ((orderData.pricing.balanceDue || 0) / 100).toFixed(2)
-                : (pricing.total / 100).toFixed(2)
-              }₴
+              {orderData ? formatPrice(orderData.pricing.balanceDue) : formatPrice(pricing.total)}
             </Typography>
           </Box>
         </Box>
@@ -373,7 +366,7 @@ export const Receipt: React.FC<ReceiptProps> = ({ isPreview = false, orderId }) 
         <Typography variant="caption" display="block" sx={{ mb: 1 }}>
           Підписуючи квитанцію, клієнт погоджується з умовами надання послуг
         </Typography>
-        
+
         <Box sx={{ mt: 2, mb: 2 }}>
           <Box sx={{ borderBottom: '1px solid #000', height: 40, mb: 1 }} />
           <Typography variant="caption" display="block" align="center">

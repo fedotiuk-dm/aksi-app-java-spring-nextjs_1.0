@@ -1,7 +1,8 @@
 package com.aksi.domain.cart;
 
+import com.aksi.api.cart.dto.FillerCondition;
+import com.aksi.api.cart.dto.WearLevel;
 import com.aksi.domain.common.BaseEntity;
-import com.aksi.domain.order.ItemCharacteristicsEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,8 +41,9 @@ public class CartItemCharacteristicsEntity extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(name = "filler_condition", length = 20)
-  private ItemCharacteristicsEntity.FillerCondition fillerCondition; // NORMAL, COMPRESSED
+  private FillerCondition fillerCondition;
 
-  @Column(name = "wear_level")
-  private Integer wearLevel; // 10, 30, 50, 75
+  @Enumerated(EnumType.STRING)
+  @Column(name = "wear_level", length = 20)
+  private WearLevel wearLevel;
 }

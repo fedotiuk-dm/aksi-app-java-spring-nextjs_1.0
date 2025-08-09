@@ -46,7 +46,7 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ open, onCloseAct
     if (receiptPdf) {
       const url = URL.createObjectURL(receiptPdf);
       setPdfUrl(url);
-      
+
       // Cleanup
       return () => {
         URL.revokeObjectURL(url);
@@ -61,7 +61,7 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ open, onCloseAct
       iframe.style.display = 'none';
       iframe.src = pdfUrl;
       document.body.appendChild(iframe);
-      
+
       iframe.onload = () => {
         iframe.contentWindow?.print();
         // Remove iframe after printing
@@ -83,7 +83,7 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ open, onCloseAct
 
   const handleEmailReceipt = async () => {
     if (!orderId) return;
-    
+
     setIsEmailSending(true);
     try {
       // Note: API inconsistency - emailOrderReceipt expects number while generateOrderReceipt expects string
@@ -93,9 +93,9 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ open, onCloseAct
         console.error('Invalid order ID:', orderId);
         return;
       }
-      
+
       await emailReceiptMutation.mutateAsync({
-        orderId: orderIdNumber,
+        orderId: orderIdNumber.toString(),
         data: {
           // Will use customer's email by default
         },
@@ -128,20 +128,20 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ open, onCloseAct
           <Close />
         </IconButton>
       </DialogTitle>
-      
+
       <DialogContent>
         {isLoadingPdf && orderId && (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
             <CircularProgress />
           </Box>
         )}
-        
+
         {emailSent && (
           <Alert severity="success" sx={{ mb: 2 }}>
             Квитанція успішно відправлена на email клієнта
           </Alert>
         )}
-        
+
         {/* Show PDF if available, otherwise show HTML receipt */}
         {pdfUrl && orderId ? (
           <iframe
@@ -159,10 +159,10 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ open, onCloseAct
           </Box>
         )}
       </DialogContent>
-      
+
       <DialogActions>
         <Button onClick={onCloseAction}>Закрити</Button>
-        
+
         {orderId && (
           <>
             <Button
@@ -172,7 +172,7 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ open, onCloseAct
             >
               Відправити на Email
             </Button>
-            
+
             <Button
               startIcon={<Download />}
               onClick={handleDownload}
@@ -182,7 +182,7 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ open, onCloseAct
             </Button>
           </>
         )}
-        
+
         <Button
           variant="contained"
           startIcon={<Print />}

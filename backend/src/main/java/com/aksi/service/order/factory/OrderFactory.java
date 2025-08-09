@@ -119,7 +119,7 @@ public class OrderFactory {
     var payment = new OrderPaymentEntity();
     payment.setOrderEntity(order);
     payment.setAmount(request.getAmount());
-    payment.setMethod(mapPaymentMethod(request.getMethod()));
+    payment.setMethod(request.getMethod());
     payment.setPaidBy(paidBy);
     payment.setPaidAt(Instant.now());
 
@@ -148,7 +148,7 @@ public class OrderFactory {
     var photo = new ItemPhotoEntity();
     photo.setOrderItemEntity(orderItem);
     photo.setUrl(uploadResponse.getFileUrl());
-    photo.setType(mapPhotoType(photoType));
+    photo.setType(photoType != null ? photoType : PhotoType.GENERAL);
     photo.setDescription(Objects.requireNonNullElse(description, DEFAULT_PHOTO_DESCRIPTION));
     photo.setUploadedBy(uploadedBy);
     photo.setUploadedAt(Instant.now());
@@ -157,18 +157,5 @@ public class OrderFactory {
     photo.setFileSize(file.getSize());
 
     return photo;
-  }
-
-  /** Map API payment method to entity enum */
-  private OrderPaymentEntity.PaymentMethod mapPaymentMethod(
-      com.aksi.api.order.dto.PaymentMethod method) {
-    return OrderPaymentEntity.PaymentMethod.valueOf(method.name());
-  }
-
-  /** Map API photo type to entity enum */
-  private ItemPhotoEntity.PhotoType mapPhotoType(PhotoType photoType) {
-    return photoType != null
-        ? ItemPhotoEntity.PhotoType.valueOf(photoType.name())
-        : ItemPhotoEntity.PhotoType.GENERAL;
   }
 }

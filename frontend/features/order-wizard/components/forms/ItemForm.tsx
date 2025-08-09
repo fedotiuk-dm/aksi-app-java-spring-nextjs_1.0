@@ -10,7 +10,6 @@ import {
   FormLabel,
   Select,
   MenuItem,
-  SelectChangeEvent,
   FormControlLabel,
   Checkbox,
   Button,
@@ -19,11 +18,9 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
-import {
-  PhotoCamera,
-  Save,
-  Close,
-} from '@mui/icons-material';
+import type { SelectChangeEvent } from '@mui/material/Select';
+import Image from 'next/image';
+import { PhotoCamera, Save, Close } from '@mui/icons-material';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useListPriceListItems } from '@/shared/api/generated/priceList';
@@ -44,10 +41,10 @@ import type {
   PriceListItemInfo,
   PriceListItemInfoCategoryCode,
 } from '@/shared/api/generated/priceList';
-import { 
-  CATEGORY_LABELS, 
-  MATERIALS_BY_CATEGORY, 
-  COMMON_COLORS, 
+import {
+  CATEGORY_LABELS,
+  MATERIALS_BY_CATEGORY,
+  COMMON_COLORS,
   FILLER_OPTIONS,
   itemFormSchema,
   type ItemFormData,
@@ -69,27 +66,25 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
   const [selectedDefects, setSelectedDefects] = useState<ItemDefect[]>([]);
   const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]);
   const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
-  
+
   // Get selected customer from store
   const { selectedCustomer } = useOrderWizardStore();
-  
+
   // Get cart data to find existing item for editing
   const { data: cartData, refetch: refetchCart } = useGetCart({
     query: {
       enabled: !!selectedCustomer,
     },
   });
-  
+
   // Mutations
   const addItemMutation = useAddCartItem();
   const updateItemMutation = useUpdateCartItem();
   const uploadFileMutation = useUploadFile();
-  
+
   // Find existing item data for editing
-  const existingItem = itemId 
-    ? cartData?.items?.find(item => item.id === itemId)
-    : null;
-  
+  const existingItem = itemId ? cartData?.items?.find((item) => item.id === itemId) : null;
+
   // Form setup
   const {
     control,
@@ -107,36 +102,36 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
       modifierCodes: [],
     },
   });
-  
+
   const watchedPriceListItemId = watch('priceListItemId');
   const watchedCharacteristics = watch('characteristics');
 
   // Get price list items for selected category
   const { data: priceListData, isLoading: isLoadingPriceList } = useListPriceListItems(
-    selectedCategory ? { categoryCode: selectedCategory as any } : {},
+    selectedCategory ? { categoryCode: selectedCategory as PriceListItemInfoCategoryCode } : {},
     {
       query: {
         enabled: !!selectedCategory,
       },
     }
   );
-  
+
   // Load existing item data when editing
   useEffect(() => {
     if (!itemId || !existingItem) return; // Only for editing mode
-    
+
     const item = existingItem;
     const categoryCode = item.priceListItem?.categoryCode as PriceListItemInfoCategoryCode;
-    
+
     setSelectedCategory(categoryCode || '');
-    
+
     reset({
       priceListItemId: item.priceListItemId || '',
       quantity: item.quantity || 1,
       characteristics: item.characteristics || {},
-      modifierCodes: item.pricing?.modifierDetails?.map(m => m.code) || [],
+      modifierCodes: item.pricing?.modifierDetails?.map((m) => m.code) || [],
     });
-    
+
     // TODO: Load stains and defects from item when backend supports it
     // setSelectedStains(item.stains || []);
     // setSelectedDefects(item.defects || []);
@@ -163,23 +158,23 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
           characteristics: data.characteristics,
           modifierCodes: data.modifierCodes,
         };
-        
+
         await updateItemMutation.mutateAsync({
           itemId,
           data: updateRequest,
         });
       } else {
-        // Add new item  
+        // Add new item
         const addRequest: AddCartItemRequest = {
           priceListItemId: data.priceListItemId,
           quantity: data.quantity,
           characteristics: data.characteristics,
           modifierCodes: data.modifierCodes,
         };
-        
+
         await addItemMutation.mutateAsync({ data: addRequest });
       }
-      
+
       await refetchCart();
       onCloseAction();
     } catch (error) {
@@ -197,21 +192,19 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
 
   // Get available materials for selected category
   const availableMaterials = selectedCategory ? MATERIALS_BY_CATEGORY[selectedCategory] || [] : [];
-  
+
   const isPending = addItemMutation.isPending || updateItemMutation.isPending;
   const watchedModifierCodes = watch('modifierCodes') || [];
 
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6">
-          {itemId ? 'Редагувати предмет' : 'Додати предмет'}
-        </Typography>
+        <Typography variant="h6">{itemId ? 'Редагувати предмет' : 'Додати предмет'}</Typography>
         <IconButton onClick={onCloseAction} disabled={isPending}>
           <Close />
         </IconButton>
       </Box>
-      
+
       {isPending && (
         <Alert severity="info" sx={{ mb: 2 }}>
           {itemId ? 'Оновлення предмета...' : 'Додавання предмета...'}
@@ -223,10 +216,7 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
         <Grid size={12}>
           <FormControl fullWidth required>
             <FormLabel>Категорія послуги</FormLabel>
-            <Select
-              value={selectedCategory}
-              onChange={handleCategoryChange}
-            >
+            <Select value={selectedCategory} onChange={handleCategoryChange}>
               <MenuItem value="">Виберіть категорію</MenuItem>
               {Object.entries(CATEGORY_LABELS).map(([code, label]) => (
                 <MenuItem key={code} value={code}>
@@ -294,11 +284,7 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
               render={({ field }) => (
                 <FormControl fullWidth>
                   <FormLabel>Матеріал</FormLabel>
-                  <Select
-                    {...field}
-                    value={field.value || ''}
-                    disabled={isPending}
-                  >
+                  <Select {...field} value={field.value || ''} disabled={isPending}>
                     <MenuItem value="">Не вказано</MenuItem>
                     {availableMaterials.map((material) => (
                       <MenuItem key={material} value={material}>
@@ -320,11 +306,7 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
             render={({ field }) => (
               <FormControl fullWidth>
                 <FormLabel>Колір</FormLabel>
-                <Select
-                  {...field}
-                  value={field.value || ''}
-                  disabled={isPending}
-                >
+                <Select {...field} value={field.value || ''} disabled={isPending}>
                   <MenuItem value="">Не вказано</MenuItem>
                   {COMMON_COLORS.map((color) => (
                     <MenuItem key={color} value={color}>
@@ -362,11 +344,7 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
                 render={({ field }) => (
                   <FormControl fullWidth>
                     <FormLabel>Наповнювач</FormLabel>
-                    <Select
-                      {...field}
-                      value={field.value || ''}
-                      disabled={isPending}
-                    >
+                    <Select {...field} value={field.value || ''} disabled={isPending}>
                       <MenuItem value="">Не вказано</MenuItem>
                       {FILLER_OPTIONS.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
@@ -387,9 +365,13 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
                     control={
                       <Checkbox
                         checked={field.value === ItemCharacteristicsFillerCondition.COMPRESSED}
-                        onChange={(e) => field.onChange(
-                          e.target.checked ? ItemCharacteristicsFillerCondition.COMPRESSED : undefined
-                        )}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.checked
+                              ? ItemCharacteristicsFillerCondition.COMPRESSED
+                              : undefined
+                          )
+                        }
                         disabled={isPending}
                       />
                     }
@@ -409,11 +391,7 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
             render={({ field }) => (
               <FormControl fullWidth>
                 <FormLabel>Ступінь зносу</FormLabel>
-                <Select
-                  {...field}
-                  value={field.value || ''}
-                  disabled={isPending}
-                >
+                <Select {...field} value={field.value || ''} disabled={isPending}>
                   <MenuItem value="">Не вказано</MenuItem>
                   <MenuItem value={ItemCharacteristicsWearLevel.NUMBER_10}>10%</MenuItem>
                   <MenuItem value={ItemCharacteristicsWearLevel.NUMBER_30}>30%</MenuItem>
@@ -488,23 +466,23 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
                   onChange={async (e) => {
                     const files = e.target.files;
                     if (!files || files.length === 0) return;
-                    
+
                     setIsUploadingPhotos(true);
-                    
+
                     try {
                       const uploadPromises = Array.from(files).map(async (file) => {
                         const result = await uploadFileMutation.mutateAsync({
                           data: { file },
                           params: {
                             directory: 'orders/items/photos',
-                            filename: `item-${Date.now()}-${file.name.split('.')[0]}`
-                          }
+                            filename: `item-${Date.now()}-${file.name.split('.')[0]}`,
+                          },
                         });
                         return result.fileUrl;
                       });
-                      
+
                       const uploadedUrls = await Promise.all(uploadPromises);
-                      setUploadedPhotos(prev => [...prev, ...uploadedUrls]);
+                      setUploadedPhotos((prev) => [...prev, ...uploadedUrls]);
                     } catch (error) {
                       console.error('Error uploading photos:', error);
                       // TODO: Show error notification
@@ -518,7 +496,7 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
                 Макс. 5 фото, до 5MB кожне. Завантажено: {uploadedPhotos.length}/5
               </Typography>
             </Box>
-            
+
             {/* Display uploaded photos */}
             {uploadedPhotos.length > 0 && (
               <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -535,14 +513,17 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
                       borderColor: 'divider',
                     }}
                   >
-                    <img
+                    <Image
                       src={photoUrl}
                       alt={`Photo ${index + 1}`}
+                      width={80}
+                      height={80}
                       style={{
                         width: '100%',
                         height: '100%',
                         objectFit: 'cover',
                       }}
+                      unoptimized
                     />
                     <IconButton
                       size="small"
@@ -554,7 +535,7 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
                         '&:hover': { backgroundColor: 'background.paper' },
                       }}
                       onClick={() => {
-                        setUploadedPhotos(prev => prev.filter((_, i) => i !== index));
+                        setUploadedPhotos((prev) => prev.filter((_, i) => i !== index));
                       }}
                     >
                       <Close fontSize="small" />
@@ -569,11 +550,7 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
         {/* Action Buttons */}
         <Grid size={12}>
           <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-            <Button
-              variant="outlined"
-              onClick={handleCancel}
-              disabled={isPending}
-            >
+            <Button variant="outlined" onClick={handleCancel} disabled={isPending}>
               Скасувати
             </Button>
             <Button
@@ -582,10 +559,13 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
               onClick={handleSave}
               disabled={isPending}
             >
-              {isPending 
-                ? (itemId ? 'Збереження...' : 'Додавання...')
-                : (itemId ? 'Зберегти зміни' : 'Додати предмет')
-              }
+              {isPending
+                ? itemId
+                  ? 'Збереження...'
+                  : 'Додавання...'
+                : itemId
+                  ? 'Зберегти зміни'
+                  : 'Додати предмет'}
             </Button>
           </Box>
         </Grid>

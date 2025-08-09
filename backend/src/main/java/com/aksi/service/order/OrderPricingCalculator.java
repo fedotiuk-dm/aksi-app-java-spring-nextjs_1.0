@@ -133,15 +133,10 @@ public class OrderPricingCalculator {
     characteristics.setMaterial(cartItem.getCharacteristics().getMaterial());
     characteristics.setColor(cartItem.getCharacteristics().getColor());
 
-    // Step 2: Convert wear level from Integer to WearLevel enum
-    var wear = cartItem.getCharacteristics().getWearLevel();
-    if (wear != null) {
-      try {
-        WearLevel wearLevel = WearLevel.fromValue(wear);
-        characteristics.setWearLevel(wearLevel);
-      } catch (IllegalArgumentException e) {
-        log.warn("Invalid wear level: {}, skipping", wear);
-      }
+    // Step 2: Set wear level enum (convert from cart enum to pricing enum)
+    var wearLevel = cartItem.getCharacteristics().getWearLevel();
+    if (wearLevel != null) {
+      characteristics.setWearLevel(WearLevel.valueOf(wearLevel.name()));
     }
 
     return characteristics;
