@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Container,
@@ -24,16 +24,23 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
-import { Search, Visibility } from '@mui/icons-material';
+import { Search, Visibility, PictureAsPdf } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { useOrderStore } from '@/features/order';
 import { useListOrders } from '@/shared/api/generated/order';
+import { ReceiptPreview } from '@/features/order-wizard/components/receipt/ReceiptPreview';
 
 export const OrderList: React.FC = () => {
   const router = useRouter();
-  const { filters, setSearch, setStatus, setPage, getListParams, reset } = useOrderStore();
+  const { filters, setSearch, setStatus, getListParams, reset } = useOrderStore();
 
-  const { data, isLoading, error, refetch } = useListOrders(getListParams());
+  const { data, isLoading, error } = useListOrders(getListParams());
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewOrderId, setPreviewOrderId] = useState<string | null>(null);
+  const openPreview = (orderId: string) => {
+    setPreviewOrderId(orderId);
+    setPreviewOpen(true);
+  };
 
   if (error) {
     return (
@@ -80,10 +87,15 @@ export const OrderList: React.FC = () => {
             <Select
               value={filters.status || ''}
               label="Статус"
-              onChange={(e) => setStatus(e.target.value || undefined)}
+              onChange={(e) =>
+                setStatus(
+                  (e.target.value || undefined) as unknown as Parameters<typeof setStatus>[0]
+                )
+              }
             >
               <MenuItem value="">Всі</MenuItem>
-              <MenuItem value="CREATED">Створено</MenuItem>
+              <MenuItem value="PENDING">Прийнято</MenuItem>
+              <MenuItem value="ACCEPTED">Погоджено</MenuItem>
               <MenuItem value="IN_PROGRESS">В роботі</MenuItem>
               <MenuItem value="READY">Готове</MenuItem>
               <MenuItem value="COMPLETED">Завершено</MenuItem>
@@ -122,7 +134,7 @@ export const OrderList: React.FC = () => {
                   <TableCell>
                     {order.customer?.lastName} {order.customer?.firstName}
                   </TableCell>
-                  <TableCell>{order.branch?.name}</TableCell>
+                  <TableCell>{order.branchId}</TableCell>
                   <TableCell>{((order.pricing?.total || 0) / 100).toFixed(2)} ₴</TableCell>
                   <TableCell>
                     <Chip label={order.status} size="small" />
@@ -135,6 +147,14 @@ export const OrderList: React.FC = () => {
                     >
                       Переглянути
                     </Button>
+                    <Button
+                      size="small"
+                      sx={{ ml: 1 }}
+                      onClick={() => openPreview(order.id)}
+                      startIcon={<PictureAsPdf />}
+                    >
+                      Квитанція
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -142,6 +162,11 @@ export const OrderList: React.FC = () => {
           </Table>
         )}
       </TableContainer>
+      <ReceiptPreview
+        open={previewOpen}
+        onCloseAction={() => setPreviewOpen(false)}
+        orderId={previewOrderId ?? undefined}
+      />
     </Container>
   );
 };

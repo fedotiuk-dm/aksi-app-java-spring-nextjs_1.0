@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import type { ListOrdersStatus } from '@/shared/api/generated/order';
 
 export interface OrderListFilters {
   page: number;
   size: number;
   sortBy?: string;
   sortOrder?: 'ASC' | 'DESC';
-  status?: string;
+  status?: ListOrdersStatus;
   search?: string;
 }
 
@@ -38,7 +39,8 @@ export const useOrderStore = create<OrderStore>()(
       setSize: (size) => set((s) => ({ filters: { ...s.filters, size } })),
       setSort: (sortBy, sortOrder) =>
         set((s) => ({ filters: { ...s.filters, sortBy, sortOrder } })),
-      setStatus: (status) => set((s) => ({ filters: { ...s.filters, status } })),
+      setStatus: (status) =>
+        set((s) => ({ filters: { ...s.filters, status: status as ListOrdersStatus | undefined } })),
       setSearch: (search) => set((s) => ({ filters: { ...s.filters, search } })),
       reset: () => set({ filters: initialFilters }),
       getListParams: () => get().filters,

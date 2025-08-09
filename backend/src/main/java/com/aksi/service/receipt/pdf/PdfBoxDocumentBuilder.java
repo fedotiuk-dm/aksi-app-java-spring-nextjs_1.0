@@ -163,7 +163,7 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
     try {
       if (inTextBlock && text != null) {
         // Log font info for debugging
-        if (log.isDebugEnabled() && text.length() > 0) {
+        if (log.isDebugEnabled() && !text.isEmpty()) {
           log.debug("Drawing text with font {}: '{}'", currentFont.getName(), 
                    text.length() > 20 ? text.substring(0, 20) + "..." : text);
         }
@@ -252,7 +252,7 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
     if (closed) {
       return; // Already closed
     }

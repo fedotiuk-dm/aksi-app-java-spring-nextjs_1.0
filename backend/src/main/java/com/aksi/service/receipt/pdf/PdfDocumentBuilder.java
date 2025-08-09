@@ -4,6 +4,9 @@ import java.io.IOException;
 
 /** Interface for building PDF documents Provides abstraction from specific PDF library */
 public interface PdfDocumentBuilder extends AutoCloseable {
+  
+  @Override
+  void close();
 
   /** Start new text block */
   PdfDocumentBuilder beginText();
