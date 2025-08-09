@@ -66,7 +66,21 @@ public class CartQueryService {
    */
   public CartInfo getCartInfo(CartEntity cartEntity) {
     CartInfo cartInfo = cartMapper.toCartInfo(cartEntity);
-    cartInfo.setPricing(pricingService.calculateCartPricing(cartEntity));
+
+    // Only calculate pricing if cart has items
+    if (!cartEntity.getItems().isEmpty()) {
+      cartInfo.setPricing(pricingService.calculateCartPricing(cartEntity));
+    } else {
+      // Return empty pricing for empty cart
+      CartPricingInfo emptyPricing = new CartPricingInfo();
+      emptyPricing.setItemsSubtotal(0);
+      emptyPricing.setUrgencyAmount(0);
+      emptyPricing.setDiscountAmount(0);
+      emptyPricing.setDiscountApplicableAmount(0);
+      emptyPricing.setTotal(0);
+      cartInfo.setPricing(emptyPricing);
+    }
+
     return cartInfo;
   }
 
@@ -97,7 +111,20 @@ public class CartQueryService {
    */
   public CartPricingInfo calculateCartPricing(UUID customerId) {
     CartEntity cartEntity = getActiveCartOrThrow(customerId);
-    return pricingService.calculateCartPricing(cartEntity);
+
+    // Only calculate pricing if cart has items
+    if (!cartEntity.getItems().isEmpty()) {
+      return pricingService.calculateCartPricing(cartEntity);
+    } else {
+      // Return empty pricing for empty cart
+      CartPricingInfo emptyPricing = new CartPricingInfo();
+      emptyPricing.setItemsSubtotal(0);
+      emptyPricing.setUrgencyAmount(0);
+      emptyPricing.setDiscountAmount(0);
+      emptyPricing.setDiscountApplicableAmount(0);
+      emptyPricing.setTotal(0);
+      return emptyPricing;
+    }
   }
 
   /**

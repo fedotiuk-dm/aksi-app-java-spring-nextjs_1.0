@@ -56,10 +56,6 @@ public class PriceCalculationService {
       case PERCENTAGE -> calculatePercentageFromBasisPoints(baseAmount, modifier.getValue());
       case FIXED -> modifier.getValue() * quantity;
       case FORMULA -> 0; // handled as base override in ModifierCalculator
-      default -> {
-        log.warn("Unknown modifier type: {}", modifier.getType());
-        yield 0;
-      }
     };
   }
 
