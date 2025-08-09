@@ -90,8 +90,9 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
     }
 
     this.currentFont = this.regularFont;
-    log.info("Font initialization complete. Regular font type: {}", 
-             this.regularFont.getClass().getSimpleName());
+    log.info(
+        "Font initialization complete. Regular font type: {}",
+        this.regularFont.getClass().getSimpleName());
   }
 
   @Override
@@ -164,8 +165,10 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
       if (inTextBlock && text != null) {
         // Log font info for debugging
         if (log.isDebugEnabled() && !text.isEmpty()) {
-          log.debug("Drawing text with font {}: '{}'", currentFont.getName(), 
-                   text.length() > 20 ? text.substring(0, 20) + "..." : text);
+          log.debug(
+              "Drawing text with font {}: '{}'",
+              currentFont.getName(),
+              text.length() > 20 ? text.substring(0, 20) + "..." : text);
         }
         contentStream.showText(text);
       }
@@ -237,7 +240,7 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
     if (closed) {
       throw new IllegalStateException("Document builder is already closed");
     }
-    
+
     try {
       endText(); // Ensure text block is closed
       contentStream.close();
@@ -256,7 +259,7 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
     if (closed) {
       return; // Already closed
     }
-    
+
     try {
       endText(); // Ensure text block is properly closed
       if (contentStream != null) {

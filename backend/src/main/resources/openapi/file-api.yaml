@@ -27,7 +27,7 @@ paths:
         schema:
           type: string
           pattern: '^[a-zA-Z0-9\/_\-\.]+$'
-          example: "orders/123e4567-e89b-12d3-a456-426614174000/items/456e7890-e89b-12d3-a456-426614174001/photos/photo.jpg"
+          example: "orders/items/photos/item-1234567890-photo_2025-01-01_12-00-00.jpg"
 
     get:
       operationId: serveFile

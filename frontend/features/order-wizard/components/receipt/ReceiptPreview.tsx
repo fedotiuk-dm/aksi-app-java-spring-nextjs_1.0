@@ -86,16 +86,8 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ open, onCloseAct
 
     setIsEmailSending(true);
     try {
-      // Note: API inconsistency - emailOrderReceipt expects number while generateOrderReceipt expects string
-      // Converting string orderId to number for emailOrderReceipt
-      const orderIdNumber = parseInt(orderId, 10);
-      if (isNaN(orderIdNumber)) {
-        console.error('Invalid order ID:', orderId);
-        return;
-      }
-
       await emailReceiptMutation.mutateAsync({
-        orderId: orderIdNumber.toString(),
+        orderId: orderId,
         data: {
           // Will use customer's email by default
         },

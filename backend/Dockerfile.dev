@@ -44,8 +44,8 @@ COPY --chown=appuser:appgroup src ./src
 # Expose ports: Spring Boot and Debug
 EXPOSE 8080 5005
 
-# Create logs directory
-RUN mkdir -p logs
+# Create logs and uploads directories with proper ownership
+RUN mkdir -p logs uploads/orders/items/photos
 
 # Development command using Maven Wrapper with dev-fast profile
 # This skips tests, checkstyle, spotless, and OpenAPI generation for faster startup
