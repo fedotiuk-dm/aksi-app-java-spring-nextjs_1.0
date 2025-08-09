@@ -1,5 +1,7 @@
 package com.aksi.mapper;
 
+import java.time.Instant;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -30,7 +32,7 @@ public interface AuthMapper {
   SessionInfo toSessionInfo(
       UserEntity userEntity,
       String sessionId,
-      java.time.Instant createdAt,
-      java.time.Instant lastAccessedAt,
-      java.time.Instant expiresAt);
+      Instant createdAt,
+      Instant lastAccessedAt,
+      Instant expiresAt);
 }

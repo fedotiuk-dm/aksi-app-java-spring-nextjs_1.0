@@ -1,5 +1,6 @@
 package com.aksi.service.user;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -352,6 +353,6 @@ public class UserCommandService {
 
   /** Check if validation should be enforced (not in dev mode). */
   private boolean shouldEnforceValidation() {
-    return !java.util.Arrays.asList(environment.getActiveProfiles()).contains("dev");
+    return !Arrays.asList(environment.getActiveProfiles()).contains("dev");
   }
 }

@@ -2,6 +2,7 @@ package com.aksi.service.pricing.guard;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import com.aksi.api.pricing.dto.ServiceCategoryType;
 import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.domain.pricing.DiscountEntity;
 import com.aksi.domain.pricing.PriceModifierEntity;
+import com.aksi.exception.ConflictException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.repository.DiscountRepository;
 import com.aksi.repository.PriceModifierRepository;
@@ -46,7 +48,7 @@ public class PricingGuard {
   }
 
   /** Load and validate price list item by ID. Throws NotFoundException if item doesn't exist. */
-  public PriceListItemInfo loadPriceListItem(java.util.UUID priceListItemId) {
+  public PriceListItemInfo loadPriceListItem(UUID priceListItemId) {
     PriceListItemInfo item = priceListService.getPriceListItemById(priceListItemId);
 
     if (item == null) {
@@ -86,16 +88,14 @@ public class PricingGuard {
   /** Ensure price modifier code is unique. Throws ConflictException if code already exists. */
   public void ensurePriceModifierCodeUnique(String code) {
     if (priceModifierRepository.existsByCode(code)) {
-      throw new com.aksi.exception.ConflictException(
-          "Price modifier with code '" + code + "' already exists");
+      throw new ConflictException("Price modifier with code '" + code + "' already exists");
     }
   }
 
   /** Ensure discount code is unique. Throws ConflictException if code already exists. */
   public void ensureDiscountCodeUnique(String code) {
     if (discountRepository.existsByCode(code)) {
-      throw new com.aksi.exception.ConflictException(
-          "Discount with code '" + code + "' already exists");
+      throw new ConflictException("Discount with code '" + code + "' already exists");
     }
   }
 

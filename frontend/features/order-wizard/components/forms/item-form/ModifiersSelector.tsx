@@ -1,9 +1,18 @@
 'use client';
 
-import React from 'react';
-import { FormControl, FormLabel, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
-import { getAvailableModifiers } from '@/features/order-wizard/constants/item-modifiers';
+import React, { useMemo } from 'react';
+import {
+  FormControl,
+  FormLabel,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  CircularProgress,
+  Typography,
+} from '@mui/material';
 import type { PriceListItemInfoCategoryCode } from '@/shared/api/generated/priceList';
+import { useListPriceModifiers } from '@/shared/api/generated/pricing';
+import type { ListPriceModifiersCategoryCode } from '@/shared/api/generated/pricing/';
 
 interface ModifiersSelectorProps {
   selectedCategory: PriceListItemInfoCategoryCode | '';
@@ -18,20 +27,62 @@ export const ModifiersSelector: React.FC<ModifiersSelectorProps> = ({
   onChangeAction,
   disabled,
 }) => {
-  const availableModifiers = getAvailableModifiers(selectedCategory);
+  const { data, isLoading } = useListPriceModifiers(
+    selectedCategory
+      ? { categoryCode: selectedCategory as ListPriceModifiersCategoryCode }
+      : undefined,
+    { query: { enabled: !!selectedCategory } }
+  );
+
+  const availableModifiers = useMemo(() => {
+    const merged = [
+      ...(data?.generalModifiers ?? []),
+      ...(data?.modifiers ?? []),
+      ...(data?.textileModifiers ?? []),
+      ...(data?.leatherModifiers ?? []),
+    ];
+    // Фільтрація за categoryRestrictions (якщо вказані)
+    const filtered = merged.filter((m) => {
+      const restrictions = m.categoryRestrictions as unknown as string[] | undefined;
+      if (!selectedCategory) return false;
+      return !restrictions || restrictions.includes(selectedCategory);
+    });
+    // Сортування за sortOrder якщо є
+    type Mod = { sortOrder?: number };
+    return filtered.sort((a: Mod, b: Mod) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+  }, [data, selectedCategory]);
 
   const handleModifierToggle = (modifierCode: string) => {
     const index = selectedModifiers.indexOf(modifierCode);
-    
     if (index >= 0) {
-      onChangeAction(selectedModifiers.filter(code => code !== modifierCode));
+      onChangeAction(selectedModifiers.filter((code) => code !== modifierCode));
     } else {
       onChangeAction([...selectedModifiers, modifierCode]);
     }
   };
 
-  if (availableModifiers.length === 0) {
+  if (!selectedCategory) {
     return null;
+  }
+
+  if (isLoading) {
+    return (
+      <FormControl component="fieldset">
+        <FormLabel component="legend">Модифікатори</FormLabel>
+        <CircularProgress size={18} sx={{ mt: 1 }} />
+      </FormControl>
+    );
+  }
+
+  if (availableModifiers.length === 0) {
+    return (
+      <FormControl component="fieldset">
+        <FormLabel component="legend">Модифікатори</FormLabel>
+        <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+          Немає модифікаторів для цієї категорії
+        </Typography>
+      </FormControl>
+    );
   }
 
   return (
@@ -48,7 +99,7 @@ export const ModifiersSelector: React.FC<ModifiersSelectorProps> = ({
                 disabled={disabled}
               />
             }
-            label={`${modifier.label} ${modifier.value}`}
+            label={modifier.name}
           />
         ))}
       </FormGroup>

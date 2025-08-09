@@ -77,6 +77,10 @@ databaseChangeLog:
       file: db/changelog/changes/024-skip-existing-columns.yaml
   - include:
       file: db/changelog/changes/025-migrate-wear-level-to-enum.yaml
+  - include:
+      file: db/changelog/changes/026-fix-child-items-modifier.yaml
+  - include:
+      file: db/changelog/changes/027-reset-price-modifiers.yaml
   # - include:
   #     file: db/changelog/changes/005-create-branch-tables.yaml
   # - include:

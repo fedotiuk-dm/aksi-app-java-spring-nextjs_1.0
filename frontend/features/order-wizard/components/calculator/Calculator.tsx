@@ -1,33 +1,108 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type { TypographyProps } from '@mui/material/Typography';
-import { Box, Typography, Divider, Chip, LinearProgress, Alert } from '@mui/material';
-import { useGetCart } from '@/shared/api/generated/cart';
+import { Box, Typography, LinearProgress, Alert } from '@mui/material';
 import { useOrderWizardStore } from '@/features/order-wizard';
+import { useCart } from '@/features/order-wizard/cart/use-cart';
+import { useUpdateCartItem } from '@/shared/api/generated/cart';
+import {
+  useListPriceModifiers,
+  useListDiscounts,
+  useCalculatePrice,
+} from '@/shared/api/generated/pricing';
+import { GlobalControls } from './components/GlobalControls';
+import { ItemRow } from './components/ItemRow';
+import { Totals } from './components/Totals';
+import { DetailedBreakdown } from './components/DetailedBreakdown';
 
 export const Calculator: React.FC = () => {
   const { selectedCustomer } = useOrderWizardStore();
+
   const CURRENCY_SYMBOL = '₴';
   const formatPrice = (kopecks?: number) =>
     `${((kopecks || 0) / 100).toFixed(2)} ${CURRENCY_SYMBOL}`;
   const ROW_BETWEEN_SX = { display: 'flex', justifyContent: 'space-between' } as const;
   const BODY2: TypographyProps['variant'] = 'body2';
 
-  // Get real cart data from API only if customer is selected
-  const {
-    data: cartData,
-    isLoading: isLoadingCart,
-    error: cartError,
-  } = useGetCart({
-    query: {
-      enabled: !!selectedCustomer,
-    },
-  });
+  // Cart data
+  const { cartQuery, updateGlobalModifiers, recalculate, isUpdatingModifiers, isRecalculating } =
+    useCart(!!selectedCustomer);
+  const cartData = cartQuery.data;
+  const isLoadingCart = cartQuery.isLoading;
+  const cartError = cartQuery.error as unknown as Error | undefined;
 
-  // Get cart totals from backend calculations
-  const pricing = cartData?.pricing;
   const items = cartData?.items || [];
+  const pricing = cartData?.pricing;
+
+  // Global modifiers controls
+  const currentUrgency = cartData?.globalModifiers?.urgencyType || 'NORMAL';
+  const currentDiscountType = cartData?.globalModifiers?.discountType || 'NONE';
+  const currentDiscountPct = cartData?.globalModifiers?.discountPercentage ?? undefined;
+
+  const [urgency, setUrgency] = useState<string>(currentUrgency);
+  const [discountType, setDiscountType] = useState<string>(currentDiscountType);
+  const [discountPct, setDiscountPct] = useState<number | undefined>(currentDiscountPct);
+  const [showDetails, setShowDetails] = useState<boolean>(false);
+
+  useEffect(() => {
+    setUrgency(currentUrgency);
+    setDiscountType(currentDiscountType);
+    setDiscountPct(currentDiscountPct);
+  }, [currentUrgency, currentDiscountType, currentDiscountPct, cartData?.id]);
+
+  useUpdateCartItem(); // ensure hook initialized if needed elsewhere
+
+  // Available discounts and modifiers
+  useListDiscounts({});
+  useListPriceModifiers({});
+
+  const handleApplyGlobalModifiers = async (): Promise<void> => {
+    await updateGlobalModifiers({
+      urgencyType: urgency as 'NORMAL' | 'EXPRESS_48H' | 'EXPRESS_24H',
+      discountType: discountType as 'NONE' | 'EVERCARD' | 'SOCIAL_MEDIA' | 'MILITARY' | 'OTHER',
+      discountPercentage: discountType === 'OTHER' ? (discountPct ?? 0) : undefined,
+    });
+  };
+
+  // Редагування модифікаторів предмета відбувається у формі ItemForm
+
+  // Build request for detailed pricing (for transparency panel)
+  const calculatePriceMutation = useCalculatePrice();
+  const canCalculateDetailed = items.length > 0;
+  const triggerDetailedCalculation = async (): Promise<void> => {
+    if (!canCalculateDetailed) return;
+    await calculatePriceMutation.mutateAsync({
+      data: {
+        items: items.map((it) => ({
+          priceListItemId: it.priceListItemId,
+          quantity: it.quantity,
+          characteristics: it.characteristics,
+          modifierCodes: (it.modifiers || []).map((m) => m.code),
+        })),
+        globalModifiers: {
+          urgencyType: urgency as 'NORMAL' | 'EXPRESS_48H' | 'EXPRESS_24H',
+          discountType: discountType as 'NONE' | 'EVERCARD' | 'SOCIAL_MEDIA' | 'MILITARY' | 'OTHER',
+          discountPercentage: discountType === 'OTHER' ? (discountPct ?? 0) : undefined,
+        },
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (showDetails) {
+      // Auto-refresh detailed calculation when inputs change
+      void triggerDetailedCalculation();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showDetails, items.length, urgency, discountType, discountPct]);
+
+  const onRecalculate = async () => {
+    await recalculate();
+    if (showDetails) await triggerDetailedCalculation();
+  };
+
+  const restrictedDiscountCategories = new Set(['IRONING', 'LAUNDRY', 'DYEING']);
 
   if (!selectedCustomer) {
     return (
@@ -47,16 +122,6 @@ export const Calculator: React.FC = () => {
     );
   }
 
-  if (items.length === 0) {
-    return (
-      <Box sx={{ textAlign: 'center', py: 4 }}>
-        <Typography variant="body2" color="text.secondary">
-          Додайте предмети для розрахунку вартості
-        </Typography>
-      </Box>
-    );
-  }
-
   if (isLoadingCart) {
     return (
       <Box sx={{ py: 4 }}>
@@ -68,114 +133,97 @@ export const Calculator: React.FC = () => {
     );
   }
 
+  if (items.length === 0) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 4 }}>
+        <Typography variant="body2" color="text.secondary">
+          Додайте предмети для розрахунку вартості
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box>
-      {/* Individual Items */}
-      {items.map((item, index) => (
-        <Box key={item.id} sx={{ mb: 2 }}>
-          <Box sx={{ ...ROW_BETWEEN_SX, mb: 1 }}>
-            <Typography variant={BODY2}>{item.priceListItem?.name}</Typography>
-            <Typography variant={BODY2}>{formatPrice(item.pricing?.basePrice)}</Typography>
-          </Box>
+      <GlobalControls
+        urgency={urgency}
+        discountType={discountType}
+        discountPct={discountPct}
+        onUrgencyChange={setUrgency}
+        onDiscountTypeChange={setDiscountType}
+        onDiscountPctChange={setDiscountPct}
+        onApplyGlobalModifiers={handleApplyGlobalModifiers}
+        onRecalculate={onRecalculate}
+        showDetails={showDetails}
+        onToggleDetails={() => setShowDetails((v) => !v)}
+        applying={isUpdatingModifiers}
+        recalculating={isRecalculating}
+      />
 
-          {item.quantity > 1 && (
-            <Box sx={{ ...ROW_BETWEEN_SX, mb: 1 }}>
-              <Typography variant={BODY2} color="text.secondary">
-                Кількість: {item.quantity} шт
-              </Typography>
-              <Typography variant={BODY2}>{formatPrice(item.pricing?.subtotal)}</Typography>
-            </Box>
-          )}
-
-          {/* Show applied modifiers if any */}
-          {item.pricing?.modifierDetails && item.pricing.modifierDetails.length > 0 && (
-            <Box sx={{ ml: 2, mt: 1 }}>
-              {item.pricing.modifierDetails.map((modifier) => (
-                <Box
-                  key={modifier.code}
-                  sx={{
-                    ...ROW_BETWEEN_SX,
-                    alignItems: 'center',
-                    mb: 0.5,
-                  }}
-                >
-                  <Typography variant="caption" color="text.secondary">
-                    {modifier.name}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {formatPrice(modifier.amount)}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          )}
-
-          {/* Item total */}
-          <Box sx={{ ...ROW_BETWEEN_SX, mt: 1 }}>
-            <Typography variant={BODY2} fontWeight="medium">
-              Разом предмет:
-            </Typography>
-            <Typography variant={BODY2} fontWeight="medium">
-              {formatPrice(item.pricing?.total)}
-            </Typography>
-          </Box>
-
-          {index < items.length - 1 && <Divider sx={{ mt: 2 }} />}
-        </Box>
+      {items.map((item) => (
+        <ItemRow
+          key={item.id}
+          item={item}
+          formatPrice={formatPrice}
+          rowBetweenSx={ROW_BETWEEN_SX}
+          body2Variant={BODY2}
+          discountType={discountType}
+          restrictedDiscountCategories={restrictedDiscountCategories}
+        />
       ))}
 
-      {/* Cart Totals */}
       {pricing && (
-        <>
-          <Divider sx={{ my: 2 }} />
-
-          {/* Subtotal */}
-          <Box sx={{ ...ROW_BETWEEN_SX, mb: 1 }}>
-            <Typography variant={BODY2}>Підсумок предметів:</Typography>
-            <Typography variant={BODY2}>{formatPrice(pricing.itemsSubtotal)}</Typography>
-          </Box>
-
-          {/* Urgency surcharge */}
-          {pricing.urgencyAmount && pricing.urgencyAmount > 0 && (
-            <Box sx={{ ...ROW_BETWEEN_SX, mb: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant={BODY2}>Терміновість:</Typography>
-                <Chip label="+" size="small" color="warning" />
-              </Box>
-              <Typography variant={BODY2}>+{formatPrice(pricing.urgencyAmount)}</Typography>
-            </Box>
-          )}
-
-          {/* Discount */}
-          {pricing.discountAmount && pricing.discountAmount > 0 && (
-            <Box sx={{ ...ROW_BETWEEN_SX, mb: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant={BODY2}>Знижка:</Typography>
-                <Chip label="-" size="small" color="success" />
-              </Box>
-              <Typography variant={BODY2}>-{formatPrice(pricing.discountAmount)}</Typography>
-            </Box>
-          )}
-
-          {/* Final Total */}
-          <Divider sx={{ my: 1 }} />
-          <Box sx={{ ...ROW_BETWEEN_SX, alignItems: 'center' }}>
-            <Typography variant="h6">Загальна вартість:</Typography>
-            <Typography variant="h6" color="primary">
-              {formatPrice(pricing.total)}
-            </Typography>
-          </Box>
-        </>
+        <Totals
+          itemsSubtotal={pricing.itemsSubtotal}
+          urgencyAmount={pricing.urgencyAmount}
+          discountAmount={pricing.discountAmount}
+          formatPrice={formatPrice}
+          rowBetweenSx={ROW_BETWEEN_SX}
+          body2Variant={BODY2}
+        />
       )}
 
-      {/* Additional Info */}
+      <DetailedBreakdown
+        show={showDetails}
+        pending={calculatePriceMutation.isPending}
+        data={
+          calculatePriceMutation.data as unknown as {
+            items: Array<{
+              priceListItemId: string;
+              itemName: string;
+              calculations: {
+                baseAmount: number;
+                modifiers?: Array<{ code: string; name: string; amount: number }>;
+                subtotal: number;
+                urgencyModifier?: { code: string; name: string; amount: number };
+                discountModifier?: { code: string; name: string; amount: number };
+              };
+              total: number;
+            }>;
+            totals: {
+              itemsSubtotal: number;
+              urgencyAmount: number;
+              urgencyPercentage?: number;
+              discountAmount: number;
+              discountPercentage?: number;
+              discountApplicableAmount: number;
+              total: number;
+              expectedCompletionDate?: string;
+              expectedCompletionNote?: string;
+            };
+            warnings?: string[];
+          }
+        }
+        formatPrice={formatPrice}
+        rowBetweenSx={ROW_BETWEEN_SX}
+        body2Variant={BODY2}
+      />
+
       <Box sx={{ mt: 2 }}>
         <Typography variant="caption" color="text.secondary">
-          * Всі ціни розраховані бекендом на основі актуальних модифікаторів
+          * Всі ціни розраховані бекендом на основі актуальних модифікаторів та правил.
         </Typography>
       </Box>
     </Box>
   );
 };
-
-// Helper functions removed - now using real backend calculations

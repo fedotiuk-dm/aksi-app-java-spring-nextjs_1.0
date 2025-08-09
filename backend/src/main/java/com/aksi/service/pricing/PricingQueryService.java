@@ -1,5 +1,7 @@
 package com.aksi.service.pricing;
 
+import java.util.ArrayList;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,7 +82,7 @@ public class PricingQueryService {
     if (global != null
         && global.getDiscountType() != null
         && global.getDiscountType() != DiscountType.NONE) {
-      var warnings = new java.util.ArrayList<String>();
+      var warnings = new ArrayList<String>();
       for (var item : calculatedItems) {
         if (Boolean.FALSE.equals(item.getCalculations().getDiscountEligible())) {
           var category = item.getCategoryCode();

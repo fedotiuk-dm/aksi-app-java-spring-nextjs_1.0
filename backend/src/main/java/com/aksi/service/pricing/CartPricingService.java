@@ -9,15 +9,15 @@ import com.aksi.domain.cart.CartItem;
 public interface CartPricingService {
 
   /**
-   * Calculate pricing for entire cart
+   * Get pricing for entire cart
    *
    * @param cartEntity Cart entity
    * @return Cart pricing info
    */
-  CartPricingInfo calculateCartPricing(CartEntity cartEntity);
+  CartPricingInfo getCartPricing(CartEntity cartEntity);
 
   /**
-   * Calculate pricing for single cart item
+   * Get pricing for single cart item
    *
    * @param cartItem Cart item entity
    * @param urgencyType Urgency type from cart
@@ -25,15 +25,6 @@ public interface CartPricingService {
    * @param discountPercentage Discount percentage (for OTHER type)
    * @return Cart item pricing info
    */
-  CartItemPricingInfo calculateItemPricing(
+  CartItemPricingInfo getItemPricing(
       CartItem cartItem, String urgencyType, String discountType, Integer discountPercentage);
-
-  /**
-   * Check if discount is applicable for given category
-   *
-   * @param categoryCode Category code
-   * @param discountType Discount type
-   * @return true if discount can be applied
-   */
-  boolean isDiscountApplicable(String categoryCode, String discountType);
 }

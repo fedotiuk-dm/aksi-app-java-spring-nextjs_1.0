@@ -53,6 +53,7 @@ import { ServiceSelector } from './item-form/ServiceSelector';
 import { StainsSelector } from './item-form/StainsSelector';
 import { DefectsSelector } from './item-form/DefectsSelector';
 import { ModifiersSelector } from './item-form/ModifiersSelector';
+import { LiveItemPricePreview } from './LiveItemPricePreview';
 
 interface ItemFormProps {
   onCloseAction: () => void;
@@ -106,12 +107,16 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
   const watchedPriceListItemId = watch('priceListItemId');
   const watchedCharacteristics = watch('characteristics');
 
-  // Get price list items for selected category
+  // Get price list items for selected category (без хардкоду, віримо бекенду)
+  const isValidCategoryForPriceList = !!selectedCategory;
+
   const { data: priceListData, isLoading: isLoadingPriceList } = useListPriceListItems(
-    selectedCategory ? { categoryCode: selectedCategory as PriceListItemInfoCategoryCode } : {},
+    isValidCategoryForPriceList
+      ? { categoryCode: selectedCategory as PriceListItemInfoCategoryCode }
+      : undefined,
     {
       query: {
-        enabled: !!selectedCategory,
+        enabled: isValidCategoryForPriceList,
       },
     }
   );
@@ -195,6 +200,8 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
 
   const isPending = addItemMutation.isPending || updateItemMutation.isPending;
   const watchedModifierCodes = watch('modifierCodes') || [];
+  const watchedQuantity = watch('quantity');
+  const watchedItemId = watch('priceListItemId');
 
   return (
     <Box>
@@ -442,6 +449,19 @@ export const ItemForm: React.FC<ItemFormProps> = ({ onCloseAction, itemId }) => 
             disabled={isPending}
           />
         </Grid>
+
+        {/* Live price preview (реальний час) — одразу після модифікаторів */}
+        {watchedItemId && watchedQuantity > 0 && (
+          <Grid size={12}>
+            <LiveItemPricePreview
+              priceListItemId={watchedItemId}
+              quantity={watchedQuantity}
+              characteristics={watch('characteristics')}
+              modifierCodes={watchedModifierCodes}
+              globalModifiers={cartData?.globalModifiers}
+            />
+          </Grid>
+        )}
 
         {/* Photos */}
         <Grid size={12}>

@@ -22,28 +22,18 @@ public class CartPricingServiceImpl implements CartPricingService {
   private final CartPricingQueryService queryService;
 
   @Override
-  public CartPricingInfo calculateCartPricing(CartEntity cartEntity) {
+  public CartPricingInfo getCartPricing(CartEntity cartEntity) {
     log.debug(
         "Delegating cart pricing calculation for cart with {} items", cartEntity.getItems().size());
-    return queryService.calculateCartPricing(cartEntity);
+    return queryService.getCartPricing(cartEntity);
   }
 
   @Override
-  public CartItemPricingInfo calculateItemPricing(
+  public CartItemPricingInfo getItemPricing(
       CartItem cartItem, String urgencyType, String discountType, Integer discountPercentage) {
     log.debug(
         "Delegating item pricing calculation for cart item: {}",
         cartItem.getPriceListItemEntity().getId());
-    return queryService.calculateItemPricing(
-        cartItem, urgencyType, discountType, discountPercentage);
-  }
-
-  @Override
-  public boolean isDiscountApplicable(String categoryCode, String discountType) {
-    log.debug(
-        "Delegating discount applicability check for category: {}, discount: {}",
-        categoryCode,
-        discountType);
-    return queryService.isDiscountApplicable(categoryCode, discountType);
+    return queryService.getItemPricing(cartItem, urgencyType, discountType, discountPercentage);
   }
 }

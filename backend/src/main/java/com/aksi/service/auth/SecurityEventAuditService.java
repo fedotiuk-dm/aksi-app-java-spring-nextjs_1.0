@@ -1,11 +1,13 @@
 package com.aksi.service.auth;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.slf4j.Logger;
@@ -238,7 +240,7 @@ public class SecurityEventAuditService {
   private BlockedUser createBlockedUser(String username, String key) {
     try {
       // Get TTL from Redis to calculate lockout expiration
-      long ttl = redisTemplate.getExpire(key, java.util.concurrent.TimeUnit.SECONDS);
+      long ttl = redisTemplate.getExpire(key, TimeUnit.SECONDS);
       if (ttl <= 0) {
         return null;
       }
@@ -267,7 +269,7 @@ public class SecurityEventAuditService {
   private BlockedIp createBlockedIp(String ipAddress, String key) {
     try {
       // Get TTL from Redis to calculate lockout expiration
-      long ttl = redisTemplate.getExpire(key, java.util.concurrent.TimeUnit.SECONDS);
+      long ttl = redisTemplate.getExpire(key, TimeUnit.SECONDS);
       if (ttl <= 0) {
         return null;
       }
@@ -324,7 +326,7 @@ public class SecurityEventAuditService {
     redisTemplate.opsForValue().increment(key, 1);
 
     // Set expiration for cleanup (keep for 30 days)
-    redisTemplate.expire(key, java.time.Duration.ofDays(30));
+    redisTemplate.expire(key, Duration.ofDays(30));
   }
 
   private int getTodayFailedAttempts() {

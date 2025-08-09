@@ -1,6 +1,7 @@
 package com.aksi.controller;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +127,7 @@ public class GlobalExceptionHandler {
         if (enumConstants != null) {
           validValues =
               " Valid values are: "
-                  + java.util.Arrays.stream(enumConstants)
+                  + Arrays.stream(enumConstants)
                       .map(Object::toString)
                       .collect(Collectors.joining(", "));
         }
@@ -142,9 +143,15 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(NoResourceFoundException.class)
   public ResponseEntity<?> handleNoResourceFound(NoResourceFoundException ex) {
-    // Simply return 404 for missing static resources without logging
-    if (ex.getResourcePath().contains("favicon.ico")
+    // Don't handle actuator endpoints - let Spring Boot handle them
+    if (ex.getResourcePath().startsWith("actuator/")
+        || ex.getResourcePath().startsWith("/actuator/")
         || ex.getResourcePath().contains("management/health")) {
+      return null; // Let Spring Boot's actuator handlers process this
+    }
+
+    // Simply return 404 for missing static resources without logging
+    if (ex.getResourcePath().contains("favicon.ico")) {
       return ResponseEntity.notFound().build();
     }
 

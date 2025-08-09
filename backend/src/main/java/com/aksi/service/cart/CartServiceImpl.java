@@ -82,9 +82,11 @@ public class CartServiceImpl implements CartService {
   }
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public CartPricingInfo calculateCart(UUID customerId) {
-    return queryService.calculateCartPricing(customerId);
+    // Get or create cart to avoid NotFoundException when cart doesn't exist
+    commandService.getOrCreateCart(customerId);
+    return queryService.getCartPricing(customerId);
   }
 
   @Override

@@ -30,7 +30,7 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
     );
   }
 
-  if (services.length === 0) {
+  if (!Array.isArray(services) || services.length === 0) {
     return (
       <Typography variant="body2" color="text.secondary">
         Немає доступних послуг для обраної категорії

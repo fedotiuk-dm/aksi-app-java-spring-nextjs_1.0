@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: 026-fix-child-items-modifier
+      author: system
+      comment: Fix CHILD_ITEMS modifier value from -70% to -30% as per documentation
+      changes:
+        - update:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: modifier_value
+                  value: "-3000"
+              - column:
+                  name: updated_at
+                  valueComputed: "NOW()"
+            where: code = 'CHILD_ITEMS'

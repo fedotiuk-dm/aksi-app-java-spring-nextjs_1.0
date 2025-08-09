@@ -36,10 +36,9 @@ public class CartPricingQueryService {
   private final PricingFactory factory;
 
   /**
-   * Calculate pricing for entire cart. Structured approach: conversion -> calculation -> response
-   * mapping
+   * Get pricing for entire cart. Structured approach: conversion -> calculation -> response mapping
    */
-  public CartPricingInfo calculateCartPricing(CartEntity cartEntity) {
+  public CartPricingInfo getCartPricing(CartEntity cartEntity) {
     log.debug("Calculating pricing for cart with {} items", cartEntity.getItems().size());
 
     // Step 1: Convert cart to price calculation request
@@ -61,10 +60,10 @@ public class CartPricingQueryService {
   }
 
   /**
-   * Calculate pricing for individual cart item. Structured approach: validation -> conversion ->
+   * Get pricing for individual cart item. Structured approach: validation -> conversion ->
    * calculation -> response mapping
    */
-  public CartItemPricingInfo calculateItemPricing(
+  public CartItemPricingInfo getItemPricing(
       CartItem cartItem, String urgencyType, String discountType, Integer discountPercentage) {
 
     log.debug("Calculating pricing for cart item: {}", cartItem.getPriceListItemEntity().getId());
@@ -102,11 +101,6 @@ public class CartPricingQueryService {
         pricing.getTotal());
 
     return pricing;
-  }
-
-  /** Check if discount is applicable to category. Simple delegation to pricing service. */
-  public boolean isDiscountApplicable(String categoryCode, String discountType) {
-    return pricingService.isDiscountApplicableToCategory(discountType, categoryCode);
   }
 
   // ===== PRIVATE HELPER METHODS =====

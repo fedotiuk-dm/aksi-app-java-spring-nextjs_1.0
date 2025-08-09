@@ -168,6 +168,8 @@ components:
         - FUR
         - DYEING
         - ADDITIONAL_SERVICES
+        - SHEEPSKIN
+        - OTHER
       description: |
         Service category types from price list
 

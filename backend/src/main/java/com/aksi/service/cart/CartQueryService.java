@@ -69,7 +69,7 @@ public class CartQueryService {
 
     // Only calculate pricing if cart has items
     if (!cartEntity.getItems().isEmpty()) {
-      cartInfo.setPricing(pricingService.calculateCartPricing(cartEntity));
+      cartInfo.setPricing(pricingService.getCartPricing(cartEntity));
     } else {
       // Return empty pricing for empty cart
       CartPricingInfo emptyPricing = new CartPricingInfo();
@@ -94,7 +94,7 @@ public class CartQueryService {
   public CartItemInfo getCartItemInfo(CartItem cartItem, CartEntity cartEntity) {
     CartItemInfo itemInfo = cartMapper.toCartItemInfo(cartItem);
     itemInfo.setPricing(
-        pricingService.calculateItemPricing(
+        pricingService.getItemPricing(
             cartItem,
             cartEntity.getUrgencyType(),
             cartEntity.getDiscountType(),
@@ -103,18 +103,18 @@ public class CartQueryService {
   }
 
   /**
-   * Calculate cart pricing.
+   * Get cart pricing.
    *
    * @param customerId customer ID
    * @return cart pricing info
    * @throws NotFoundException if cart not found
    */
-  public CartPricingInfo calculateCartPricing(UUID customerId) {
+  public CartPricingInfo getCartPricing(UUID customerId) {
     CartEntity cartEntity = getActiveCartOrThrow(customerId);
 
     // Only calculate pricing if cart has items
     if (!cartEntity.getItems().isEmpty()) {
-      return pricingService.calculateCartPricing(cartEntity);
+      return pricingService.getCartPricing(cartEntity);
     } else {
       // Return empty pricing for empty cart
       CartPricingInfo emptyPricing = new CartPricingInfo();

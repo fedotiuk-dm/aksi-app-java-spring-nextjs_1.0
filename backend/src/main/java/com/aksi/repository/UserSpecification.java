@@ -1,5 +1,7 @@
 package com.aksi.repository;
 
+import java.util.UUID;
+
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
@@ -64,7 +66,7 @@ public class UserSpecification {
   }
 
   /** Filter by branch ID */
-  public static Specification<UserEntity> hasBranchId(java.util.UUID branchId) {
+  public static Specification<UserEntity> hasBranchId(UUID branchId) {
     return (root, query, cb) -> {
       if (branchId == null) {
         return cb.conjunction();
@@ -91,7 +93,7 @@ public class UserSpecification {
       String username,
       String email,
       UserRole role,
-      java.util.UUID branchId,
+      UUID branchId,
       Boolean active,
       Boolean emailVerified) {
 
