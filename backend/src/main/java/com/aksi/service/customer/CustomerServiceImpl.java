@@ -45,7 +45,6 @@ public class CustomerServiceImpl implements CustomerService {
     return commandService.updateCustomer(customerEntity, request);
   }
 
-
   @Override
   public CustomerListResponse listCustomers(
       String search,

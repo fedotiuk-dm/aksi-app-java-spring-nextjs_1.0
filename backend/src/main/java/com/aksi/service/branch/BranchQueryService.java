@@ -5,9 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +15,7 @@ import com.aksi.domain.branch.BranchEntity;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.BranchMapper;
 import com.aksi.repository.BranchRepository;
+import com.aksi.service.order.util.OrderQueryUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +32,7 @@ public class BranchQueryService {
 
   private final BranchRepository branchRepository;
   private final BranchMapper branchMapper;
+  private final OrderQueryUtils queryUtils;
 
   /**
    * Get branch by ID.
@@ -71,7 +71,7 @@ public class BranchQueryService {
         search);
 
     // Create pagination - OpenAPI defines defaults and validation
-    Pageable pageable = createPagination(page, size, sortBy, sortOrder);
+    Pageable pageable = queryUtils.buildPageable(page, size, sortBy, sortOrder, "name");
     Page<BranchEntity> branchPage =
         branchRepository.findBranchesWithSearch(active, search, pageable);
 
@@ -121,27 +121,6 @@ public class BranchQueryService {
     return branchRepository
         .findById(branchId)
         .orElseThrow(() -> new NotFoundException("Branch not found with id: " + branchId));
-  }
-
-  /**
-   * Create pagination from page/size/sort parameters (as defined in OpenAPI schema). OpenAPI
-   * validation ensures defaults: page=0, size=20, sortBy=name, sortOrder=asc
-   *
-   * @param page Page number (validated by OpenAPI)
-   * @param size Page size (validated by OpenAPI)
-   * @param sortBy Sort field (validated by OpenAPI)
-   * @param sortOrder Sort direction (validated by OpenAPI)
-   * @return Pageable object
-   */
-  private Pageable createPagination(Integer page, Integer size, String sortBy, String sortOrder) {
-    int safePage = page != null ? page : 0;
-    int safeSize = size != null ? size : 20;
-    String property = (sortBy == null || sortBy.isBlank()) ? "name" : sortBy;
-    Sort.Direction direction =
-        ("desc".equalsIgnoreCase(sortOrder))
-            ? Sort.Direction.DESC
-            : Sort.Direction.ASC;
-    return PageRequest.of(safePage, safeSize, Sort.by(direction, property));
   }
 
   /**

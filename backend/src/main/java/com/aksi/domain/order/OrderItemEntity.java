@@ -46,10 +46,7 @@ public class OrderItemEntity extends BaseEntity {
   @Column(name = "quantity", nullable = false)
   private Integer quantity;
 
-  @OneToOne(
-      mappedBy = "orderItemEntity",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true)
+  @OneToOne(mappedBy = "orderItemEntity", cascade = CascadeType.ALL, orphanRemoval = true)
   private ItemCharacteristicsEntity characteristics;
 
   @OneToMany(
@@ -108,5 +105,4 @@ public class OrderItemEntity extends BaseEntity {
 
   @Column(name = "discount_eligible", nullable = false)
   private boolean discountEligible = true;
-
 }

@@ -67,21 +67,27 @@ public class OrderItemServiceImpl implements OrderItemService {
         .ifPresent(
             list -> {
               orderItem.getStains().clear();
-              list.stream().map(orderMapper::toItemStainEntity).forEach(stain -> addStain(orderItem, stain));
+              list.stream()
+                  .map(orderMapper::toItemStainEntity)
+                  .forEach(stain -> addStain(orderItem, stain));
             });
 
     Optional.ofNullable(request.getDefects())
         .ifPresent(
             list -> {
               orderItem.getDefects().clear();
-              list.stream().map(orderMapper::toItemDefectEntity).forEach(defect -> addDefect(orderItem, defect));
+              list.stream()
+                  .map(orderMapper::toItemDefectEntity)
+                  .forEach(defect -> addDefect(orderItem, defect));
             });
 
     Optional.ofNullable(request.getRisks())
         .ifPresent(
             list -> {
               orderItem.getRisks().clear();
-              list.stream().map(orderMapper::toItemRiskEntity).forEach(risk -> addRisk(orderItem, risk));
+              list.stream()
+                  .map(orderMapper::toItemRiskEntity)
+                  .forEach(risk -> addRisk(orderItem, risk));
             });
 
     orderRepository.save(order);
@@ -123,7 +129,8 @@ public class OrderItemServiceImpl implements OrderItemService {
   }
 
   @Override
-  public void setCharacteristics(OrderItemEntity orderItem, ItemCharacteristicsEntity characteristics) {
+  public void setCharacteristics(
+      OrderItemEntity orderItem, ItemCharacteristicsEntity characteristics) {
     orderItem.setCharacteristics(characteristics);
     if (characteristics != null) {
       characteristics.setOrderItemEntity(orderItem);

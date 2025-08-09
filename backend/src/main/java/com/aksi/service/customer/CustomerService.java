@@ -35,7 +35,6 @@ public interface CustomerService {
    */
   CustomerInfo updateCustomer(UUID customerId, UpdateCustomerRequest request);
 
-
   /**
    * List customers with offset/limit parameters following the API contract. Intended for thin
    * controllers: converts offset/limit to page internally and returns a paginated response with
