@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 
 import com.aksi.api.cart.dto.CartItemPricingInfo;
 import com.aksi.api.cart.dto.CartPricingInfo;
+import com.aksi.api.cart.dto.DiscountType;
+import com.aksi.api.cart.dto.UrgencyType;
 import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
 
@@ -30,10 +32,17 @@ public class CartPricingServiceImpl implements CartPricingService {
 
   @Override
   public CartItemPricingInfo getItemPricing(
-      CartItem cartItem, String urgencyType, String discountType, Integer discountPercentage) {
+      CartItem cartItem,
+      UrgencyType urgencyType,
+      DiscountType discountType,
+      Integer discountPercentage) {
     log.debug(
         "Delegating item pricing calculation for cart item: {}",
         cartItem.getPriceListItemEntity().getId());
-    return queryService.getItemPricing(cartItem, urgencyType, discountType, discountPercentage);
+    return queryService.getItemPricing(
+        cartItem,
+        urgencyType != null ? urgencyType.getValue() : null,
+        discountType != null ? discountType.getValue() : null,
+        discountPercentage);
   }
 }

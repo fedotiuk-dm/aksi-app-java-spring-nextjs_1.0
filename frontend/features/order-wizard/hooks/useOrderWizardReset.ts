@@ -2,7 +2,6 @@ import { useOrderWizardStore } from '@/features/order-wizard';
 import { useCartOperations } from './useCartOperations';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/features/auth';
-import { useCartStore } from '@/features/cart';
 
 /**
  * Comprehensive reset hook for OrderWizard
@@ -10,16 +9,12 @@ import { useCartStore } from '@/features/cart';
  */
 export const useOrderWizardReset = () => {
   const { resetOrderWizard } = useOrderWizardStore();
-  const { setSelectedCustomer: resetGlobalCartCustomer, closeCart, closeAddItemModal } = useCartStore();
   const { clearCart } = useCartOperations(false); // Mutations only, no cart loading
   const queryClient = useQueryClient();
 
   const resetCompleteSession = async () => {
     // 1. Clear all store state first
     resetOrderWizard();
-    resetGlobalCartCustomer(null); // Clear global cart customer
-    closeCart(); // Close cart drawer
-    closeAddItemModal(); // Close add item modal
     
     // 2. Clear all React Query cache immediately
     queryClient.removeQueries({ queryKey: ['listPriceListItems'] });
@@ -45,9 +40,6 @@ export const useOrderWizardReset = () => {
   const forceLogoutAndRedirect = () => {
     // 1. Clear all stores
     resetOrderWizard();
-    resetGlobalCartCustomer(null);
-    closeCart();
-    closeAddItemModal();
     useAuthStore.getState().logout();
     
     // 2. Clear all cache

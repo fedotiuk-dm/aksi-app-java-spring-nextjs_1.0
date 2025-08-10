@@ -24,8 +24,8 @@ public interface CartMapper {
 
   // Cart to CartInfo
   @Mapping(source = "customerEntity.id", target = "customerId")
-  @Mapping(source = "urgencyType", target = "globalModifiers.urgencyType", defaultValue = "NORMAL")
-  @Mapping(source = "discountType", target = "globalModifiers.discountType", defaultValue = "NONE")
+  @Mapping(source = "urgencyType", target = "globalModifiers.urgencyType")
+  @Mapping(source = "discountType", target = "globalModifiers.discountType")
   @Mapping(source = "discountPercentage", target = "globalModifiers.discountPercentage")
   @Mapping(source = "expectedCompletionDate", target = "globalModifiers.expectedCompletionDate")
   @Mapping(target = "pricing", ignore = true) // Will be calculated separately

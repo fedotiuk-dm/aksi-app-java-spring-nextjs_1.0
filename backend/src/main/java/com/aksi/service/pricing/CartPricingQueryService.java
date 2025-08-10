@@ -68,10 +68,11 @@ public class CartPricingQueryService {
 
     log.debug("Calculating pricing for cart item: {}", cartItem.getPriceListItemEntity().getId());
 
-    // Step 1: Validate input parameters
-    UrgencyType validatedUrgencyType = validator.validateUrgencyType(urgencyType);
-    DiscountType validatedDiscountType = validator.validateDiscountType(discountType);
-    validator.validateDiscountPercentage(discountPercentage, validatedDiscountType);
+    // Step 1: Convert String to enum types
+    UrgencyType validatedUrgencyType =
+        urgencyType != null ? UrgencyType.fromValue(urgencyType) : UrgencyType.NORMAL;
+    DiscountType validatedDiscountType =
+        discountType != null ? DiscountType.fromValue(discountType) : DiscountType.NONE;
 
     // Step 2: Build single item request
     PriceCalculationRequest request = new PriceCalculationRequest();
@@ -112,10 +113,15 @@ public class CartPricingQueryService {
 
     PriceCalculationRequest request = new PriceCalculationRequest();
 
-    // Step 1: Validate and convert global modifiers
-    UrgencyType urgencyType = validator.validateUrgencyType(cartEntity.getUrgencyType());
-    DiscountType discountType = validator.validateDiscountType(cartEntity.getDiscountType());
-    validator.validateDiscountPercentage(cartEntity.getDiscountPercentage(), discountType);
+    // Step 1: Convert cart enums to pricing enums
+    UrgencyType urgencyType =
+        cartEntity.getUrgencyType() != null
+            ? UrgencyType.fromValue(cartEntity.getUrgencyType().getValue())
+            : UrgencyType.NORMAL;
+    DiscountType discountType =
+        cartEntity.getDiscountType() != null
+            ? DiscountType.fromValue(cartEntity.getDiscountType().getValue())
+            : DiscountType.NONE;
 
     // Step 2: Convert cart items to price calculation items
     List<PriceCalculationItem> items =

@@ -9,7 +9,7 @@ import { usePricingCalculationOperations } from './usePricingCalculationOperatio
 export const useItemOperations = () => {
   const { setEditingItemId } = useOrderWizardStore();
   const { cart, getCartItems, removeItem, isRemovingItem, errors } = useOrderWizardCart();
-  const { calculation } = usePricingCalculationOperations(cart);
+  const { calculation } = usePricingCalculationOperations(cart, false);
 
   const items = getCartItems();
 

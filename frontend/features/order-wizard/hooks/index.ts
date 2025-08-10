@@ -14,5 +14,11 @@ export { useItemNameOperations } from './useItemNameOperations';
 export { usePricingCalculationOperations } from './usePricingCalculationOperations';
 export { useOrderWizardReset } from './useOrderWizardReset';
 
+// Summary & Completion hooks (Stage 3)
+export { useExecutionParametersOperations } from './useExecutionParametersOperations';
+export { useDiscountParametersOperations } from './useDiscountParametersOperations';
+export { useFinancialSummaryOperations } from './useFinancialSummaryOperations';
+export { useOrderCompletionOperations } from './useOrderCompletionOperations';
+
 // Export types if needed
 export type { CharacteristicsFormProps } from './useCharacteristicsOperations';

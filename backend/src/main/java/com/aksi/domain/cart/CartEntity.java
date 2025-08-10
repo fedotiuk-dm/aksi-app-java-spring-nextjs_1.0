@@ -4,12 +4,16 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.aksi.api.cart.dto.DiscountType;
+import com.aksi.api.cart.dto.UrgencyType;
 import com.aksi.domain.common.BaseEntity;
 import com.aksi.domain.customer.CustomerEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
@@ -50,11 +54,13 @@ public class CartEntity extends BaseEntity {
       fetch = FetchType.LAZY)
   private List<CartItem> items = new ArrayList<>();
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "urgency_type", length = 20)
-  private String urgencyType = "NORMAL";
+  private UrgencyType urgencyType = UrgencyType.NORMAL;
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "discount_type", length = 20)
-  private String discountType = "NONE";
+  private DiscountType discountType = DiscountType.NONE;
 
   @Column(name = "discount_percentage")
   private Integer discountPercentage;

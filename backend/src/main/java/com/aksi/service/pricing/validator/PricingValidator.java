@@ -8,7 +8,6 @@ import com.aksi.api.pricing.dto.DiscountDto;
 import com.aksi.api.pricing.dto.DiscountType;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceModifierDto;
-import com.aksi.api.pricing.dto.UrgencyType;
 import com.aksi.exception.BadRequestException;
 
 import lombok.RequiredArgsConstructor;
@@ -107,60 +106,11 @@ public class PricingValidator {
       return; // Optional
     }
 
-    // Validate urgency type
-    if (globalModifiers.getUrgencyType() != null) {
-      validateUrgencyType(globalModifiers.getUrgencyType());
-    }
-
-    // Validate discount
+    // Validate discount percentage only
     if (globalModifiers.getDiscountType() != null) {
-      DiscountType discountType = validateDiscountType(globalModifiers.getDiscountType());
-      validateDiscountPercentage(globalModifiers.getDiscountPercentage(), discountType);
+      validateDiscountPercentage(
+          globalModifiers.getDiscountPercentage(), globalModifiers.getDiscountType());
     }
-  }
-
-  /** Validate and normalize urgency type. */
-  public UrgencyType validateUrgencyType(Object urgencyTypeInput) {
-    if (urgencyTypeInput == null) {
-      return UrgencyType.NORMAL; // Default
-    }
-
-    UrgencyType urgencyType;
-    if (urgencyTypeInput instanceof String) {
-      try {
-        urgencyType = UrgencyType.fromValue((String) urgencyTypeInput);
-      } catch (IllegalArgumentException e) {
-        throw new BadRequestException("Invalid urgency type: " + urgencyTypeInput);
-      }
-    } else if (urgencyTypeInput instanceof UrgencyType) {
-      urgencyType = (UrgencyType) urgencyTypeInput;
-    } else {
-      throw new BadRequestException("Invalid urgency type format: " + urgencyTypeInput);
-    }
-
-    return urgencyType;
-  }
-
-  /** Validate and normalize discount type. */
-  public DiscountType validateDiscountType(Object discountTypeInput) {
-    if (discountTypeInput == null) {
-      return DiscountType.NONE; // Default
-    }
-
-    DiscountType discountType;
-    if (discountTypeInput instanceof String) {
-      try {
-        discountType = DiscountType.fromValue((String) discountTypeInput);
-      } catch (IllegalArgumentException e) {
-        throw new BadRequestException("Invalid discount type: " + discountTypeInput);
-      }
-    } else if (discountTypeInput instanceof DiscountType) {
-      discountType = (DiscountType) discountTypeInput;
-    } else {
-      throw new BadRequestException("Invalid discount type format: " + discountTypeInput);
-    }
-
-    return discountType;
   }
 
   /** Validate discount percentage based on discount type. */

@@ -72,20 +72,15 @@ public class OrderPricingCalculator {
    * @return expected completion instant
    */
   public Instant calculateExpectedCompletionDate(CartEntity cartEntity) {
-    // Step 1: Convert urgency type from string to enum
-    UrgencyType urgencyType = null;
+    // Step 1: Get urgency type (convert from cart enum to pricing enum)
     if (cartEntity.getUrgencyType() != null) {
-      try {
-        urgencyType = UrgencyType.fromValue(cartEntity.getUrgencyType());
-      } catch (IllegalArgumentException e) {
-        log.warn(
-            "Invalid urgency type: {}, using default completion hours",
-            cartEntity.getUrgencyType());
-      }
+      UrgencyType pricingUrgencyType =
+          UrgencyType.fromValue(cartEntity.getUrgencyType().getValue());
+      return queryUtils.calculateCompletionDate(pricingUrgencyType, defaultCompletionHours);
     }
 
-    // Step 2: Calculate completion date using utility
-    return queryUtils.calculateCompletionDate(urgencyType, defaultCompletionHours);
+    // Default calculation if no urgency set
+    return queryUtils.calculateCompletionDate(UrgencyType.NORMAL, defaultCompletionHours);
   }
 
   /**
@@ -173,25 +168,16 @@ public class OrderPricingCalculator {
   private GlobalPriceModifiers buildGlobalModifiers(CartEntity cartEntity) {
     GlobalPriceModifiers globalModifiers = new GlobalPriceModifiers();
 
-    // Step 1: Set urgency type
+    // Step 1: Set urgency type (convert from cart enum to pricing enum)
     if (cartEntity.getUrgencyType() != null) {
-      try {
-        globalModifiers.setUrgencyType(UrgencyType.fromValue(cartEntity.getUrgencyType()));
-      } catch (IllegalArgumentException e) {
-        log.warn("Invalid urgency type: {}, using NORMAL", cartEntity.getUrgencyType());
-        globalModifiers.setUrgencyType(UrgencyType.NORMAL);
-      }
+      globalModifiers.setUrgencyType(UrgencyType.fromValue(cartEntity.getUrgencyType().getValue()));
     }
 
-    // Step 2: Set discount type and percentage
+    // Step 2: Set discount type and percentage (convert from cart enum to pricing enum)
     if (cartEntity.getDiscountType() != null) {
-      try {
-        globalModifiers.setDiscountType(DiscountType.fromValue(cartEntity.getDiscountType()));
-        globalModifiers.setDiscountPercentage(cartEntity.getDiscountPercentage());
-      } catch (IllegalArgumentException e) {
-        log.warn("Invalid discount type: {}, using NONE", cartEntity.getDiscountType());
-        globalModifiers.setDiscountType(DiscountType.NONE);
-      }
+      globalModifiers.setDiscountType(
+          DiscountType.fromValue(cartEntity.getDiscountType().getValue()));
+      globalModifiers.setDiscountPercentage(cartEntity.getDiscountPercentage());
     }
 
     return globalModifiers;

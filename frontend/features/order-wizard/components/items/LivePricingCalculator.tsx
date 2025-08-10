@@ -6,7 +6,7 @@ import { useOrderWizardCart, usePricingCalculationOperations } from '@features/o
 
 export const LivePricingCalculator: React.FC = () => {
   const { cart, getCartItems } = useOrderWizardCart();
-  const { error, calculation } = usePricingCalculationOperations(cart);
+  const { error, calculation } = usePricingCalculationOperations(cart, false);
   
   const items = getCartItems();
   const calculatedItems = calculation?.items || [];

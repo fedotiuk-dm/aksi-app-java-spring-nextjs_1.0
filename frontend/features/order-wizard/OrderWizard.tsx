@@ -5,6 +5,7 @@ import { Box, Grid, Paper, Button, Tooltip } from '@mui/material';
 import { RestartAlt } from '@mui/icons-material';
 import { CustomerSection } from './components/CustomerSection';
 import { ItemsSection } from './components/ItemsSection';
+import { SummarySection } from './components/summary/SummarySection';
 import { useOrderWizardReset } from '@features/order-wizard/hooks';
 
 export const OrderWizard: React.FC = () => {
@@ -75,15 +76,7 @@ export const OrderWizard: React.FC = () => {
               position: 'relative'
             }}
           >
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              height: '100%',
-              color: 'text.secondary'
-            }}>
-              Підсумки (TODO)
-            </Box>
+            <SummarySection />
           </Paper>
         </Grid>
       </Grid>

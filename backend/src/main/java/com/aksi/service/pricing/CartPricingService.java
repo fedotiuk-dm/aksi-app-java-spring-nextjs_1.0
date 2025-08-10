@@ -2,6 +2,8 @@ package com.aksi.service.pricing;
 
 import com.aksi.api.cart.dto.CartItemPricingInfo;
 import com.aksi.api.cart.dto.CartPricingInfo;
+import com.aksi.api.cart.dto.DiscountType;
+import com.aksi.api.cart.dto.UrgencyType;
 import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
 
@@ -26,5 +28,8 @@ public interface CartPricingService {
    * @return Cart item pricing info
    */
   CartItemPricingInfo getItemPricing(
-      CartItem cartItem, String urgencyType, String discountType, Integer discountPercentage);
+      CartItem cartItem,
+      UrgencyType urgencyType,
+      DiscountType discountType,
+      Integer discountPercentage);
 }

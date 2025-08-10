@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { CustomerInfo, BranchInfo, PriceListItemInfoCategoryCode } from '@api/customer';
+import type { UpdateCartModifiersRequestUrgencyType, UpdateCartModifiersRequestDiscountType } from '@api/cart';
 
 interface OrderWizardStore {
   // UI state only - no API data
@@ -16,6 +17,12 @@ interface OrderWizardStore {
   
   // Modifiers selection state
   selectedModifiers: string[];
+  
+  // Summary parameters state (stage 3)
+  selectedUrgency: UpdateCartModifiersRequestUrgencyType | '';
+  selectedDiscount: UpdateCartModifiersRequestDiscountType | '';
+  customDiscountPercentage: number;
+  expectedDate: string;
 
   // Actions
   setSelectedCustomer: (customer: CustomerInfo | null) => void;
@@ -32,6 +39,13 @@ interface OrderWizardStore {
   resetSelectedModifiers: () => void;
   resetOrderWizard: () => void;
   resetItemSelection: () => void;
+  
+  // Summary parameters actions
+  setSelectedUrgency: (urgency: UpdateCartModifiersRequestUrgencyType | '') => void;
+  setSelectedDiscount: (discount: UpdateCartModifiersRequestDiscountType | '') => void;
+  setCustomDiscountPercentage: (percentage: number) => void;
+  setExpectedDate: (date: string) => void;
+  resetSummaryParameters: () => void;
 }
 
 export const useOrderWizardStore = create<OrderWizardStore>((set) => ({
@@ -45,6 +59,12 @@ export const useOrderWizardStore = create<OrderWizardStore>((set) => ({
   selectedItemId: '',
   isBlackCategory: false,
   selectedModifiers: [],
+  
+  // Summary parameters initial state
+  selectedUrgency: '',
+  selectedDiscount: '',
+  customDiscountPercentage: 0,
+  expectedDate: '',
 
   // Actions
   setSelectedCustomer: (customer) => set({ selectedCustomer: customer }),
@@ -66,6 +86,18 @@ export const useOrderWizardStore = create<OrderWizardStore>((set) => ({
   })),
   resetSelectedModifiers: () => set({ selectedModifiers: [] }),
   
+  // Summary parameters actions
+  setSelectedUrgency: (urgency) => set({ selectedUrgency: urgency }),
+  setSelectedDiscount: (discount) => set({ selectedDiscount: discount }),
+  setCustomDiscountPercentage: (percentage) => set({ customDiscountPercentage: percentage }),
+  setExpectedDate: (date) => set({ expectedDate: date }),
+  resetSummaryParameters: () => set({
+    selectedUrgency: '',
+    selectedDiscount: '',
+    customDiscountPercentage: 0,
+    expectedDate: ''
+  }),
+  
   // Reset functions
   resetItemSelection: () => set({
     selectedCategoryCode: '',
@@ -85,5 +117,9 @@ export const useOrderWizardStore = create<OrderWizardStore>((set) => ({
     selectedItemId: '',
     isBlackCategory: false,
     selectedModifiers: [],
+    selectedUrgency: '',
+    selectedDiscount: '',
+    customDiscountPercentage: 0,
+    expectedDate: ''
   }),
 }));
