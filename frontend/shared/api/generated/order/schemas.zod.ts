@@ -46,7 +46,7 @@ export const updateItemCharacteristicsResponse = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -143,7 +143,7 @@ export const listOrdersResponse = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -275,7 +275,7 @@ export const saveCustomerSignatureResponse = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -413,7 +413,7 @@ export const getOrderByIdResponse = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -523,7 +523,7 @@ export const updateOrderStatusResponse = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -643,7 +643,7 @@ export const getOrderItemsResponseItem = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -736,7 +736,7 @@ export const getOverdueOrdersResponse = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -863,7 +863,7 @@ export const getOrdersDueForCompletionResponse = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -985,7 +985,7 @@ export const getCustomerRecentOrdersResponseItem = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -1105,7 +1105,7 @@ export const getCustomerOrderHistoryResponse = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -1220,7 +1220,7 @@ export const getOrdersByStatusResponseItem = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),
@@ -1326,7 +1326,7 @@ export const getOrderByNumberResponse = zod.object({
   "priceListItem": zod.object({
   "id": zod.uuid(),
   "name": zod.string(),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']),
   "basePrice": zod.number().describe('Base price in kopiykas')
 }),

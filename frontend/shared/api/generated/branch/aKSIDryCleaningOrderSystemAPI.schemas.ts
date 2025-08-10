@@ -151,6 +151,8 @@ export const PriceModifierDtoCategoryRestrictionsItem = {
   FUR: 'FUR',
   DYEING: 'DYEING',
   ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
+  SHEEPSKIN: 'SHEEPSKIN',
+  OTHER: 'OTHER',
 } as const;
 
 export interface PriceModifierDto {
@@ -184,6 +186,8 @@ export const DiscountDtoExcludedCategoriesItem = {
   FUR: 'FUR',
   DYEING: 'DYEING',
   ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
+  SHEEPSKIN: 'SHEEPSKIN',
+  OTHER: 'OTHER',
 } as const;
 
 export interface DiscountDto {
@@ -223,6 +227,8 @@ export const PriceListItemInfoCategoryCode = {
   FUR: 'FUR',
   DYEING: 'DYEING',
   ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
+  SHEEPSKIN: 'SHEEPSKIN',
+  OTHER: 'OTHER',
 } as const;
 
 /**
@@ -527,6 +533,8 @@ export const PriceListItemSummaryCategoryCode = {
   FUR: 'FUR',
   DYEING: 'DYEING',
   ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
+  SHEEPSKIN: 'SHEEPSKIN',
+  OTHER: 'OTHER',
 } as const;
 
 export type PriceListItemSummaryUnitOfMeasure = typeof PriceListItemSummaryUnitOfMeasure[keyof typeof PriceListItemSummaryUnitOfMeasure];
@@ -1136,6 +1144,8 @@ export const CalculatedItemPriceCategoryCode = {
   FUR: 'FUR',
   DYEING: 'DYEING',
   ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
+  SHEEPSKIN: 'SHEEPSKIN',
+  OTHER: 'OTHER',
 } as const;
 
 export interface CalculatedItemPrice {
@@ -1277,6 +1287,8 @@ export const CreatePriceListItemRequestCategoryCode = {
   FUR: 'FUR',
   DYEING: 'DYEING',
   ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
+  SHEEPSKIN: 'SHEEPSKIN',
+  OTHER: 'OTHER',
 } as const;
 
 /**
@@ -1871,6 +1883,8 @@ export const CategoryInfoCode = {
   FUR: 'FUR',
   DYEING: 'DYEING',
   ADDITIONAL_SERVICES: 'ADDITIONAL_SERVICES',
+  SHEEPSKIN: 'SHEEPSKIN',
+  OTHER: 'OTHER',
 } as const;
 
 export interface CategoryInfo {
@@ -2033,6 +2047,21 @@ export interface SessionInfo {
   ipAddress?: string;
   /** Browser user agent */
   userAgent?: string;
+}
+
+export interface ServerTimeResponse {
+  /** Current server time in ISO 8601 format (UTC) */
+  timestamp: string;
+  /** Current server time as Unix epoch milliseconds */
+  epochMillis: number;
+  /** Server timezone identifier */
+  timezone: string;
+  /** UTC offset for server timezone */
+  utcOffset: string;
+  /** Current server date (YYYY-MM-DD) */
+  date?: string;
+  /** Current server time (HH:mm:ss) */
+  time?: string;
 }
 
 export interface PasswordPolicyInfo {

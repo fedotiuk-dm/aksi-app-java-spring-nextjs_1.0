@@ -33,7 +33,7 @@ export const getPriceListItemByIdResponseExpressPriceMax = 999999999;
 
 export const getPriceListItemByIdResponse = zod.object({
   "id": zod.uuid().describe('Price list item ID'),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).describe('Service category code'),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']).describe('Service category code'),
   "catalogNumber": zod.number().describe('Catalog number'),
   "name": zod.string().describe('Item name'),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']).describe('Unit of measure'),
@@ -104,7 +104,7 @@ export const updatePriceListItemResponseExpressPriceMax = 999999999;
 
 export const updatePriceListItemResponse = zod.object({
   "id": zod.uuid().describe('Price list item ID'),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).describe('Service category code'),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']).describe('Service category code'),
   "catalogNumber": zod.number().describe('Catalog number'),
   "name": zod.string().describe('Item name'),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']).describe('Unit of measure'),
@@ -132,12 +132,12 @@ export const deletePriceListItemParams = zod.object({
 
 
 export const deactivateCategoryParams = zod.object({
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES'])
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER'])
 })
 
 
 export const activateCategoryParams = zod.object({
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES'])
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER'])
 })
 
 
@@ -152,7 +152,7 @@ export const listPriceListItemsQueryLimitMax = 100;
 
 
 export const listPriceListItemsQueryParams = zod.object({
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).optional().describe('Filter by category code'),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']).optional().describe('Filter by category code'),
   "active": zod.boolean().default(listPriceListItemsQueryActiveDefault).describe('Filter by active status'),
   "offset": zod.number().min(listPriceListItemsQueryOffsetMin).optional().describe('Number of items to skip'),
   "limit": zod.number().min(1).max(listPriceListItemsQueryLimitMax).default(listPriceListItemsQueryLimitDefault).describe('Number of items to return')
@@ -175,7 +175,7 @@ export const listPriceListItemsResponsePriceListItemsItemExpressPriceMax = 99999
 export const listPriceListItemsResponse = zod.object({
   "priceListItems": zod.array(zod.object({
   "id": zod.uuid().describe('Price list item ID'),
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).describe('Service category code'),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']).describe('Service category code'),
   "catalogNumber": zod.number().describe('Catalog number'),
   "name": zod.string().describe('Item name'),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']).describe('Unit of measure'),
@@ -215,7 +215,7 @@ export const createPriceListItemBodyExpressPriceMax = 999999999;
 
 
 export const createPriceListItemBody = zod.object({
-  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES']).describe('Service category code'),
+  "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']).describe('Service category code'),
   "catalogNumber": zod.number().describe('Catalog number'),
   "name": zod.string().describe('Item name'),
   "unitOfMeasure": zod.enum(['PIECE', 'KILOGRAM', 'PAIR', 'SQUARE_METER']).describe('Unit of measure'),

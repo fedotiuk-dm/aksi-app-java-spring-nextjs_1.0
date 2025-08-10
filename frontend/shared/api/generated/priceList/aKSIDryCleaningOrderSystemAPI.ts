@@ -262,7 +262,7 @@ export const useDeletePriceListItem = <TError = ErrorResponse | ErrorResponse | 
     }
     
 export const deactivateCategory = (
-    categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES',
+    categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES' | 'SHEEPSKIN' | 'OTHER',
  options?: SecondParameter<typeof orvalFetcher>,) => {
       
       
@@ -275,8 +275,8 @@ export const deactivateCategory = (
 
 
 export const getDeactivateCategoryMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deactivateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof deactivateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deactivateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES' | 'SHEEPSKIN' | 'OTHER'}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof deactivateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES' | 'SHEEPSKIN' | 'OTHER'}, TContext> => {
 
 const mutationKey = ['deactivateCategory'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -288,7 +288,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deactivateCategory>>, {categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deactivateCategory>>, {categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES' | 'SHEEPSKIN' | 'OTHER'}> = (props) => {
           const {categoryCode} = props ?? {};
 
           return  deactivateCategory(categoryCode,requestOptions)
@@ -304,11 +304,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type DeactivateCategoryMutationError = unknown
 
     export const useDeactivateCategory = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deactivateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deactivateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES' | 'SHEEPSKIN' | 'OTHER'}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deactivateCategory>>,
         TError,
-        {categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'},
+        {categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES' | 'SHEEPSKIN' | 'OTHER'},
         TContext
       > => {
 
@@ -318,7 +318,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     }
     
 export const activateCategory = (
-    categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES',
+    categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES' | 'SHEEPSKIN' | 'OTHER',
  options?: SecondParameter<typeof orvalFetcher>,) => {
       
       
@@ -331,8 +331,8 @@ export const activateCategory = (
 
 
 export const getActivateCategoryMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof activateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES' | 'SHEEPSKIN' | 'OTHER'}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof activateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES' | 'SHEEPSKIN' | 'OTHER'}, TContext> => {
 
 const mutationKey = ['activateCategory'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -344,7 +344,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof activateCategory>>, {categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof activateCategory>>, {categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES' | 'SHEEPSKIN' | 'OTHER'}> = (props) => {
           const {categoryCode} = props ?? {};
 
           return  activateCategory(categoryCode,requestOptions)
@@ -360,11 +360,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type ActivateCategoryMutationError = unknown
 
     export const useActivateCategory = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateCategory>>, TError,{categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES' | 'SHEEPSKIN' | 'OTHER'}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof activateCategory>>,
         TError,
-        {categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES'},
+        {categoryCode: 'CLOTHING' | 'LAUNDRY' | 'IRONING' | 'LEATHER' | 'PADDING' | 'FUR' | 'DYEING' | 'ADDITIONAL_SERVICES' | 'SHEEPSKIN' | 'OTHER'},
         TContext
       > => {
 

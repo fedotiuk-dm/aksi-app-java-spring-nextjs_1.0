@@ -148,6 +148,20 @@ export const invalidateAllSessionsQueryParams = zod.object({
 
 
 /**
+ * Returns current server timestamp for time synchronization between frontend and backend. Used to avoid hydration issues and ensure consistent time across client and server. 
+ * @summary Get current server time
+ */
+export const getServerTimeResponse = zod.object({
+  "timestamp": zod.iso.datetime({}).describe('Current server time in ISO 8601 format (UTC)'),
+  "epochMillis": zod.number().describe('Current server time as Unix epoch milliseconds'),
+  "timezone": zod.string().describe('Server timezone identifier'),
+  "utcOffset": zod.string().describe('UTC offset for server timezone'),
+  "date": zod.iso.date().optional().describe('Current server date (YYYY-MM-DD)'),
+  "time": zod.string().optional().describe('Current server time (HH:mm:ss)')
+})
+
+
+/**
  * Get current security policy settings (rate limits, password policy, etc.)
  * @summary Get current security policy
  */

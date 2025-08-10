@@ -32,6 +32,7 @@ import type {
   LoginResponse,
   SecurityAttemptsResponse,
   SecurityPolicyResponse,
+  ServerTimeResponse,
   SessionInfo,
   SessionTerminationResponse,
   UserSessionsResponse
@@ -608,6 +609,95 @@ export const useInvalidateAllSessions = <TError = ErrorResponse | ErrorResponse 
       return useMutation(mutationOptions , queryClient);
     }
     
+/**
+ * Returns current server timestamp for time synchronization between frontend and backend. Used to avoid hydration issues and ensure consistent time across client and server. 
+ * @summary Get current server time
+ */
+export const getServerTime = (
+    
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ServerTimeResponse>(
+      {url: `/api/auth/server-time`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetServerTimeQueryKey = () => {
+    return [`/api/auth/server-time`] as const;
+    }
+
+    
+export const getGetServerTimeQueryOptions = <TData = Awaited<ReturnType<typeof getServerTime>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServerTime>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetServerTimeQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getServerTime>>> = ({ signal }) => getServerTime(requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getServerTime>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetServerTimeQueryResult = NonNullable<Awaited<ReturnType<typeof getServerTime>>>
+export type GetServerTimeQueryError = unknown
+
+
+export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServerTime>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getServerTime>>,
+          TError,
+          Awaited<ReturnType<typeof getServerTime>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServerTime>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getServerTime>>,
+          TError,
+          Awaited<ReturnType<typeof getServerTime>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServerTime>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get current server time
+ */
+
+export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServerTime>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetServerTimeQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * Get current security policy settings (rate limits, password policy, etc.)
  * @summary Get current security policy

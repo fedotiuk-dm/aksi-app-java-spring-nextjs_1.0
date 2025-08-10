@@ -287,6 +287,23 @@ paths:
         "401":
           $ref: "../openapi/common.yaml#/components/responses/Unauthorized"
 
+  /api/auth/server-time:
+    get:
+      operationId: getServerTime
+      summary: Get current server time
+      description: |
+        Returns current server timestamp for time synchronization between frontend and backend.
+        Used to avoid hydration issues and ensure consistent time across client and server.
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Current server time information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerTimeResponse"
+
 components:
   securitySchemes:
     cookieAuth:
@@ -788,6 +805,42 @@ components:
           type: boolean
           description: Is session fixation protection enabled
           example: true
+
+    ServerTimeResponse:
+      type: object
+      required:
+        - timestamp
+        - epochMillis
+        - timezone
+        - utcOffset
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Current server time in ISO 8601 format (UTC)
+          example: "2024-01-15T14:30:45.123Z"
+        epochMillis:
+          type: integer
+          format: int64
+          description: Current server time as Unix epoch milliseconds
+          example: 1705327845123
+        timezone:
+          type: string
+          description: Server timezone identifier
+          example: "Europe/Kiev"
+        utcOffset:
+          type: string
+          description: UTC offset for server timezone
+          example: "+02:00"
+        date:
+          type: string
+          format: date
+          description: Current server date (YYYY-MM-DD)
+          example: "2024-01-15"
+        time:
+          type: string
+          description: Current server time (HH:mm:ss)
+          example: "14:30:45"
 
 security:
   - cookieAuth: []
