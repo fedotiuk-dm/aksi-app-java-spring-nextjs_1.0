@@ -21,15 +21,15 @@ components/
 components/
 ├── items/
 │   ├── ItemsTable.tsx               # 60 рядків - таблиця через useGetCart
+│   ├── ItemForm.tsx                 # 40 рядків - CollapsibleForm container
 │   ├── item-form/
-│   │   ├── ItemForm.tsx             # 40 рядків - контейнер форми
-│   │   ├── ServiceCategorySelector.tsx  # 30 рядків - useListCategories
-│   │   ├── ItemNameSelector.tsx     # 30 рядків - useListPriceListItems  
-│   │   ├── CharacteristicsForm.tsx  # 60 рядків - матеріал/колір через API
-│   │   ├── DefectsStainsForm.tsx    # 50 рядків - плями/дефекти через API
-│   │   ├── ModifiersForm.tsx        # 40 рядків - useListModifiers
-│   │   └── PhotoUpload.tsx          # 50 рядків - useUploadFile
-│   └── LivePricingCalculator.tsx    # 80 рядків - useCalculatePrice + atomic UI
+│   │   ├── ServiceCategorySelector.tsx  # 25 рядків - SelectorField + hook
+│   │   ├── ItemNameSelector.tsx     # 25 рядків - AutocompleteWithPreview + hook  
+│   │   ├── CharacteristicsForm.tsx  # 40 рядків - FormSection + Grid + hook
+│   │   ├── DefectsStainsForm.tsx    # 30 рядків - FormSection + TextFields
+│   │   ├── ModifiersForm.tsx        # 35 рядків - FormSection + Checkboxes + hook
+│   │   └── PhotoUpload.tsx          # 50 рядків - FormSection + upload logic
+│   └── LivePricingCalculator.tsx    # 60 рядків - ItemBreakdown + PricingTotals
 └── ItemsSection.tsx                 # 50 рядків - композиція
 ```
 
@@ -325,13 +325,85 @@ const customer = data as unknown as CustomerInfo; // НІ!
 3. Loading states
 4. Final testing
 
-## ✅ Success Criteria
+## ✅ Поточний стан архітектури (Етап 2 завершено)
 
-- **Кожен компонент < 100 рядків**
-- **0% хардкоду** - все з API  
-- **0% дублювання** - shared atomic UI
-- **100% Orval інтеграція** - прямі API calls
-- **Типізація** - тільки Orval типи
-- **Читабельність** - зрозуміла структура файлів
+### 🎯 Досягнуті цілі
+- ✅ **Кожен компонент < 100 рядків** - дотримано
+- ✅ **0% хардкоду** - все з API енумів та конфігурації
+- ✅ **0% дублювання** - використання shared atomic UI
+- ✅ **100% Orval інтеграція** - прямі API calls
+- ✅ **Строга типізація** - Orval типи + PriceListItemInfoCategoryCode
+- ✅ **Централізована логіка** - useOrderWizardCart як єдина точка доступу
 
-Готовий розпочати реалізацію? 🚀
+### 🧱 Реалізовані компоненти
+
+**Shared UI integration:**
+- ✅ `LivePricingCalculator` → використовує `ItemBreakdown` + `PricingTotals` organisms
+- ✅ `ItemNameSelector` → використовує `AutocompleteWithPreview` molecule 
+- ✅ `ServiceCategorySelector` → використовує `SelectorField` molecule
+- ✅ `ModifiersForm` → використовує `FormSection` molecule
+- ✅ `CharacteristicsForm` → використовує `FormSection` + `Grid`
+
+**State Management:**
+- ✅ **useState + Zustand архітектура** - правильний розподіл відповідальностей
+- ✅ **Global state**: selectedCustomer, selectedModifiers, selectedCategory
+- ✅ **Local state**: quantity, characteristics (тимчасові дані форми)
+- ✅ **Modifier persistence** - переміщено з useState в Zustand store
+
+**Error Handling:**
+- ✅ **Централізована обробка 500 Access Denied** в axios-helpers
+- ✅ **Детальне backend логування** - endpoint + HTTP method в GlobalExceptionHandler
+- ✅ **Умовний cart API** - увімкнення тільки після вибору customer
+
+### 🚧 Архітектурні принципи
+
+**Hook Separation:**
+```typescript
+// Модальна логіка
+useItemFormModalOperations() → isOpen, handleToggle, handleSubmit
+
+// Логіка форми  
+useItemFormOperations() → quantity, characteristics, addItemToCart
+
+// Операції корзини
+useOrderWizardCart() → cart, addItem (з автоматичним enabled)
+
+// Бізнес операції
+useModifiersOperations() → глобальний store для persistence
+```
+
+**Component Composition:**
+```typescript
+// Композиція organisms
+<LivePricingCalculator>
+  {calculatedItems.map(item => 
+    <ItemBreakdown item={...} />  // shared/ui organism
+  )}
+  <PricingTotals totals={...} />  // shared/ui organism  
+</LivePricingCalculator>
+```
+
+## 🔄 Data Flow (реалізовано)
+
+### 1. Customer Flow ✅
+```typescript
+CustomerSearch → useListCustomers({search}) → 
+CustomerSelect → useActivateCustomerForCart → 
+Store.selectedCustomer → useOrderWizardCart(enabled: true)
+```
+
+### 2. Items Flow ✅
+```typescript
+ItemForm → selectedModifiers (Zustand) → useAddCartItem → 
+useGetCart (auto-refetch) → LivePricingCalculator → 
+ItemBreakdown + PricingTotals (shared/ui organisms)
+```
+
+### 3. Modifier Persistence ✅
+```typescript
+ModifiersForm → addSelectedModifier (Zustand) →
+useItemFormOperations → modifierCodes: selectedModifiers →
+API call → cart storage → LivePricingCalculator display
+```
+
+**Готово для етапу 3: Summary & Completion! 🚀**

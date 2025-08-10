@@ -1,27 +1,16 @@
 import React from 'react';
-import { Box, Typography, Divider } from '@mui/material';
-import { PriceRow, ModifierLine } from '@shared/ui/molecules';
-import { PriceDisplay, StatusAlert } from '@shared/ui/atoms';
+import { Box, Typography } from '@mui/material';
+import { StatusAlert } from '@shared/ui/atoms';
+import { ItemBreakdown, PricingTotals } from '@shared/ui/organisms';
 import { useOrderWizardCart, usePricingCalculationOperations } from '@features/order-wizard/hooks';
 
 export const LivePricingCalculator: React.FC = () => {
   const { cart, getCartItems } = useOrderWizardCart();
-  const { error, calculation, isCalculating } = usePricingCalculationOperations(cart);
+  const { error, calculation } = usePricingCalculationOperations(cart);
   
   const items = getCartItems();
-  
-  // Use calculation data if available, fallback to cart data
   const calculatedItems = calculation?.items || [];
-  const calculatedTotal = calculation?.totals?.total || 0;
 
-  console.log('📊 LivePricingCalculator state:', {
-    cart: cart?.items.length,
-    calculation: calculatedItems.length,
-    isCalculating,
-    calculatedTotal
-  });
-
-  // Show error if pricing calculation failed
   if (error) {
     return (
       <StatusAlert 
@@ -45,48 +34,21 @@ export const LivePricingCalculator: React.FC = () => {
         <Box>
           {/* Розбивка по предметах */}
           {calculatedItems.map((calculatedItem) => (
-            <Box key={calculatedItem.priceListItemId} sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" gutterBottom>
-                {calculatedItem.itemName} ({calculatedItem.quantity} шт.)
-              </Typography>
-              
-              <PriceRow 
-                label="Базова ціна"
-                amount={calculatedItem.calculations.baseAmount}
-              />
-              
-              {calculatedItem.calculations.modifiers.map((modifier) => (
-                <ModifierLine
-                  key={modifier.code}
-                  name={modifier.name}
-                  amount={modifier.amount}
-                />
-              ))}
-              
-              {calculatedItem.calculations.urgencyModifier?.amount &&
-                  calculatedItem.calculations.urgencyModifier.amount !== 0 && (
-                <ModifierLine
-                  name={calculatedItem.calculations.urgencyModifier.name}
-                  amount={calculatedItem.calculations.urgencyModifier.amount}
-                />
-              )}
-              
-              {calculatedItem.calculations.discountModifier?.amount &&
-                  calculatedItem.calculations.discountModifier.amount !== 0 && (
-                <ModifierLine
-                  name={calculatedItem.calculations.discountModifier.name}
-                  amount={calculatedItem.calculations.discountModifier.amount}
-                />
-              )}
-              
-              <PriceRow 
-                label="Підсумок"
-                amount={calculatedItem.total}
-                sx={{ fontWeight: 'bold' }}
-              />
-              
-              <Divider sx={{ my: 1 }} />
-            </Box>
+            <ItemBreakdown
+              key={calculatedItem.priceListItemId}
+              item={{
+                id: calculatedItem.priceListItemId,
+                name: calculatedItem.itemName,
+                quantity: calculatedItem.quantity,
+                basePrice: calculatedItem.calculations.baseAmount,
+                total: calculatedItem.total,
+                modifierDetails: [
+                  ...calculatedItem.calculations.modifiers,
+                  ...(calculatedItem.calculations.urgencyModifier?.amount !== 0 ? [calculatedItem.calculations.urgencyModifier] : []),
+                  ...(calculatedItem.calculations.discountModifier?.amount !== 0 ? [calculatedItem.calculations.discountModifier] : [])
+                ].filter(Boolean)
+              }}
+            />
           ))}
 
           {/* Показати попередження якщо є */}
@@ -103,37 +65,15 @@ export const LivePricingCalculator: React.FC = () => {
             </Box>
           )}
 
-          {/* Загальна сума */}
-          <Box sx={{ mt: 2, p: 2, bgcolor: 'background.paper', borderRadius: 1, textAlign: 'center' }}>
-            <Typography variant="h6" gutterBottom color="primary.main">
-              Загальна сума
-            </Typography>
-            <PriceDisplay 
-              amount={calculatedTotal}
-              variant="h4"
-              fontWeight="bold"
-              color="primary.main"
+          {/* Загальні підсумки */}
+          {calculation?.totals && (
+            <PricingTotals
+              itemsSubtotal={calculation.totals.itemsSubtotal}
+              urgencyAmount={calculation.totals.urgencyAmount}
+              discountAmount={calculation.totals.discountAmount}
+              sx={{ mt: 2 }}
             />
-            
-            {/* Детальна розбивка загальних підсумків */}
-            {calculation?.totals && (
-              <Box sx={{ mt: 2, fontSize: '0.875rem', color: 'text.secondary' }}>
-                <PriceRow label="Підсумок предметів" amount={calculation.totals.itemsSubtotal} />
-                {calculation.totals.urgencyAmount > 0 && (
-                  <PriceRow 
-                    label={`Терміновість (${calculation.totals.urgencyPercentage || 0}%)`} 
-                    amount={calculation.totals.urgencyAmount} 
-                  />
-                )}
-                {calculation.totals.discountAmount > 0 && (
-                  <PriceRow 
-                    label={`Знижка (${calculation.totals.discountPercentage || 0}%)`} 
-                    amount={-calculation.totals.discountAmount}
-                  />
-                )}
-              </Box>
-            )}
-          </Box>
+          )}
         </Box>
       )}
     </Box>

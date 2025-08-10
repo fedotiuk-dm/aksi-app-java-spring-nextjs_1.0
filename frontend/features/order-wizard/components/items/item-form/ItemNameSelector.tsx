@@ -1,5 +1,6 @@
 import React from 'react';
-import { Autocomplete, TextField, Typography } from '@mui/material';
+import { TextField, Typography } from '@mui/material';
+import { AutocompleteWithPreview } from '@shared/ui/molecules';
 import { useItemNameOperations } from '@features/order-wizard/hooks';
 
 export const ItemNameSelector: React.FC = () => {
@@ -31,33 +32,17 @@ export const ItemNameSelector: React.FC = () => {
   }
 
   return (
-    <Autocomplete
+    <AutocompleteWithPreview
+      label="Найменування предмета"
+      placeholder="Пошук предмета..."
+      emptyPlaceholder="Немає доступних предметів"
+      helperText={helperText}
       options={itemOptions}
-      getOptionLabel={(option) => option?.name || ''}
-      loading={isLoading}
       value={selectedItem}
-      onChange={(_, newValue) => handleAutocompleteChange(newValue)}
+      onChange={handleAutocompleteChange}
+      loading={isLoading}
       disabled={isDisabled}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label="Найменування предмета"
-          placeholder={itemOptions.length > 0 ? "Пошук предмета..." : "Немає доступних предметів"}
-          helperText={helperText}
-        />
-      )}
-      renderOption={(props, option) => (
-        <li {...props} key={option.id}>
-          <div>
-            <div>{option.name}</div>
-            <Typography variant="caption" color="text.secondary">
-              {option.priceBlack ? `Чорний: ${(option.priceBlack / 100).toFixed(2)} ₴` : ''}
-              {option.priceBlack && option.basePrice ? ', ' : ''}
-              {option.basePrice ? `Кольоровий: ${(option.basePrice / 100).toFixed(2)} ₴` : ''}
-            </Typography>
-          </div>
-        </li>
-      )}
+      showPricePreview={true}
     />
   );
 };
