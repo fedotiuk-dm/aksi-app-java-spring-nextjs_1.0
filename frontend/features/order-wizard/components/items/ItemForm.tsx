@@ -17,7 +17,6 @@ export const ItemForm: React.FC = () => {
     isEditing,
     handleToggle,
     handleSubmit,
-    handleCancel,
     isLoading,
     canSubmit,
     error

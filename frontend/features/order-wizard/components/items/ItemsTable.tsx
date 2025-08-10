@@ -22,7 +22,6 @@ export const ItemsTable: React.FC = () => {
     startEditingItem, 
     deleteItem, 
     isLoading,
-    error,
     calculation
   } = useItemOperations();
 

@@ -162,11 +162,13 @@ export const OrderList: React.FC = () => {
           </Table>
         )}
       </TableContainer>
-      <ReceiptPreview
-        open={previewOpen}
-        onCloseAction={() => setPreviewOpen(false)}
-        orderId={previewOrderId ?? undefined}
-      />
+      {previewOrderId && (
+        <ReceiptPreview
+          open={previewOpen}
+          onClose={() => setPreviewOpen(false)}
+          orderId={previewOrderId}
+        />
+      )}
     </Container>
   );
 };

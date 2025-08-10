@@ -23,6 +23,8 @@ interface OrderWizardStore {
   selectedDiscount: UpdateCartModifiersRequestDiscountType | '';
   customDiscountPercentage: number;
   expectedDate: string;
+  customerSignature: string;
+  agreementAccepted: boolean;
 
   // Actions
   setSelectedCustomer: (customer: CustomerInfo | null) => void;
@@ -45,10 +47,13 @@ interface OrderWizardStore {
   setSelectedDiscount: (discount: UpdateCartModifiersRequestDiscountType | '') => void;
   setCustomDiscountPercentage: (percentage: number) => void;
   setExpectedDate: (date: string) => void;
+  setCustomerSignature: (signature: string) => void;
+  setAgreementAccepted: (accepted: boolean) => void;
   resetSummaryParameters: () => void;
 }
 
-export const useOrderWizardStore = create<OrderWizardStore>((set) => ({
+export const useOrderWizardStore = create<OrderWizardStore>
+((set) => ({
   // Initial state
   selectedCustomer: null,
   selectedBranch: null,
@@ -65,6 +70,8 @@ export const useOrderWizardStore = create<OrderWizardStore>((set) => ({
   selectedDiscount: '',
   customDiscountPercentage: 0,
   expectedDate: '',
+  customerSignature: '',
+  agreementAccepted: false,
 
   // Actions
   setSelectedCustomer: (customer) => set({ selectedCustomer: customer }),
@@ -91,11 +98,15 @@ export const useOrderWizardStore = create<OrderWizardStore>((set) => ({
   setSelectedDiscount: (discount) => set({ selectedDiscount: discount }),
   setCustomDiscountPercentage: (percentage) => set({ customDiscountPercentage: percentage }),
   setExpectedDate: (date) => set({ expectedDate: date }),
+  setCustomerSignature: (signature) => set({ customerSignature: signature }),
+  setAgreementAccepted: (accepted) => set({ agreementAccepted: accepted }),
   resetSummaryParameters: () => set({
     selectedUrgency: '',
     selectedDiscount: '',
     customDiscountPercentage: 0,
-    expectedDate: ''
+    expectedDate: '',
+    customerSignature: '',
+    agreementAccepted: false
   }),
   
   // Reset functions
@@ -120,6 +131,8 @@ export const useOrderWizardStore = create<OrderWizardStore>((set) => ({
     selectedUrgency: '',
     selectedDiscount: '',
     customDiscountPercentage: 0,
-    expectedDate: ''
+    expectedDate: '',
+    customerSignature: '',
+    agreementAccepted: false
   }),
 }));

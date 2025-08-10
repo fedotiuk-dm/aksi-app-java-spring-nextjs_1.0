@@ -1,4 +1,5 @@
 import { useItemSelectionOperations } from './useItemSelectionOperations';
+import React from "react";
 
 /**
  * Business logic for service category operations

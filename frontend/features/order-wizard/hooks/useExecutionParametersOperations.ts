@@ -50,7 +50,7 @@ export const useExecutionParametersOperations = () => {
     
     const requestData: UpdateCartModifiersRequest = {
       urgencyType,
-      ...(expectedDate && { expectedCompletionDate: expectedDate })
+      ...(expectedDate && { expectedCompletionDate: new Date(expectedDate + 'T00:00:00Z').toISOString() })
     };
     
     console.log('🚀 Sending urgency request:', requestData);
@@ -69,7 +69,7 @@ export const useExecutionParametersOperations = () => {
     if (selectedUrgency) {
       const requestData: UpdateCartModifiersRequest = {
         urgencyType: selectedUrgency,
-        ...(date && { expectedCompletionDate: date })
+        ...(date && { expectedCompletionDate: new Date(date + 'T00:00:00Z').toISOString() })
       };
       
       await updateModifiersMutation.mutateAsync({

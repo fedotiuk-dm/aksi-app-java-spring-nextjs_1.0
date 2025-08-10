@@ -19,6 +19,8 @@ export { useExecutionParametersOperations } from './useExecutionParametersOperat
 export { useDiscountParametersOperations } from './useDiscountParametersOperations';
 export { useFinancialSummaryOperations } from './useFinancialSummaryOperations';
 export { useOrderCompletionOperations } from './useOrderCompletionOperations';
+export { useSignatureCanvas } from './useSignatureCanvas';
+export { useReceiptPreview } from './useReceiptPreview';
 
 // Export types if needed
 export type { CharacteristicsFormProps } from './useCharacteristicsOperations';
