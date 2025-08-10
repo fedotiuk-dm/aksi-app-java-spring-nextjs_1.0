@@ -29,6 +29,7 @@ import { useRouter } from 'next/navigation';
 import { useOrderStore } from '@/features/order';
 import { useListOrders } from '@/shared/api/generated/order';
 import { ReceiptPreview } from '@/features/order-wizard/components/receipt/ReceiptPreview';
+import { formatPrice } from '@/shared/lib/utils';
 
 export const OrderList: React.FC = () => {
   const router = useRouter();
@@ -135,7 +136,7 @@ export const OrderList: React.FC = () => {
                     {order.customer?.lastName} {order.customer?.firstName}
                   </TableCell>
                   <TableCell>{order.branchId}</TableCell>
-                  <TableCell>{((order.pricing?.total || 0) / 100).toFixed(2)} ₴</TableCell>
+                  <TableCell>{formatPrice(order.pricing?.total || 0)}</TableCell>
                   <TableCell>
                     <Chip label={order.status} size="small" />
                   </TableCell>

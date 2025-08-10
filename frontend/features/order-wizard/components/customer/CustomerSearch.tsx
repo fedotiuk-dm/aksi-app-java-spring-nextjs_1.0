@@ -20,7 +20,7 @@ export const CustomerSearch: React.FC = () => {
         options={searchResults}
         getOptionLabel={getOptionLabel}
         loading={isLoading}
-        value={selectedCustomer}
+        value={selectedCustomer || null}
         onChange={handleCustomerSelect}
         inputValue={searchQuery}
         onInputChange={setSearchQuery}

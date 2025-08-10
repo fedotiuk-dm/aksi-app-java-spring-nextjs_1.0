@@ -1,11 +1,11 @@
 import { create } from 'zustand';
-import type { CustomerInfo, BranchInfo, PriceListItemInfoCategoryCode } from '@api/customer';
+import type { PriceListItemInfoCategoryCode } from '@api/customer';
 import type { UpdateCartModifiersRequestUrgencyType, UpdateCartModifiersRequestDiscountType } from '@api/cart';
 
 interface OrderWizardStore {
   // UI state only - no API data
-  selectedCustomer: CustomerInfo | null;
-  selectedBranch: BranchInfo | null;
+  selectedCustomerId: string | null;
+  selectedBranchId: string | null;
   uniqueLabel: string;
   isCustomerFormOpen: boolean;
   editingItemId: string | null;
@@ -27,8 +27,8 @@ interface OrderWizardStore {
   agreementAccepted: boolean;
 
   // Actions
-  setSelectedCustomer: (customer: CustomerInfo | null) => void;
-  setSelectedBranch: (branch: BranchInfo | null) => void;
+  setSelectedCustomerId: (customerId: string | null) => void;
+  setSelectedBranchId: (branchId: string | null) => void;
   setUniqueLabel: (label: string) => void;
   setCustomerFormOpen: (open: boolean) => void;
   setEditingItemId: (id: string | null) => void;
@@ -55,8 +55,8 @@ interface OrderWizardStore {
 export const useOrderWizardStore = create<OrderWizardStore>
 ((set) => ({
   // Initial state
-  selectedCustomer: null,
-  selectedBranch: null,
+  selectedCustomerId: null,
+  selectedBranchId: null,
   uniqueLabel: '',
   isCustomerFormOpen: false,
   editingItemId: null,
@@ -74,8 +74,8 @@ export const useOrderWizardStore = create<OrderWizardStore>
   agreementAccepted: false,
 
   // Actions
-  setSelectedCustomer: (customer) => set({ selectedCustomer: customer }),
-  setSelectedBranch: (branch) => set({ selectedBranch: branch }),
+  setSelectedCustomerId: (customerId) => set({ selectedCustomerId: customerId }),
+  setSelectedBranchId: (branchId) => set({ selectedBranchId: branchId }),
   setUniqueLabel: (label) => set({ uniqueLabel: label }),
   setCustomerFormOpen: (open) => set({ isCustomerFormOpen: open }),
   setEditingItemId: (id) => set({ editingItemId: id }),
@@ -119,8 +119,8 @@ export const useOrderWizardStore = create<OrderWizardStore>
   }),
   
   resetOrderWizard: () => set({
-    selectedCustomer: null,
-    selectedBranch: null,
+    selectedCustomerId: null,
+    selectedBranchId: null,
     uniqueLabel: '',
     isCustomerFormOpen: false,
     editingItemId: null,

@@ -1,4 +1,5 @@
 import { useItemSelectionOperations } from './useItemSelectionOperations';
+import { formatEnumValue } from '../utils/formatting.utils';
 import React from "react";
 
 /**
@@ -14,11 +15,6 @@ export const useServiceCategoryOperations = () => {
     canSelectItem
   } = useItemSelectionOperations();
 
-  // Format enum value to human-readable string (consistent with other operations)
-  const formatCategoryName = (categoryCode: string): string => {
-    if (!categoryCode) return '';
-    return categoryCode.charAt(0) + categoryCode.slice(1).toLowerCase().replace(/_/g, ' ');
-  };
 
   const handleCategoryChange = (event: React.ChangeEvent<HTMLInputElement> | (Event & { target: { value: unknown; name: string; } })) => {
     const value = (event.target as { value: unknown }).value as string;
@@ -31,7 +27,7 @@ export const useServiceCategoryOperations = () => {
     selectedCategory: selectedCategoryCode,
     
     // Operations
-    formatCategoryName,
+    formatCategoryName: formatEnumValue,
     handleCategoryChange,
     
     // State

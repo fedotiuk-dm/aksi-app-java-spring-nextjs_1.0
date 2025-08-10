@@ -19,7 +19,7 @@ export const OrderCompletion: React.FC = () => {
     orderId,
     error
   } = useOrderCompletionOperations();
-  
+
   const {
     canvasRef,
     isDrawing,
@@ -34,7 +34,7 @@ export const OrderCompletion: React.FC = () => {
     clearSignature,
     saveSignature
   } = useSignatureCanvas();
-  
+
   const {
     handleReceiptPreview,
     canPreview,
@@ -44,12 +44,12 @@ export const OrderCompletion: React.FC = () => {
   if (orderCreated && orderId) {
     return (
       <FormSection title="Замовлення створено">
-        <StatusAlert 
+        <StatusAlert
           severity="success"
           message={`Замовлення #${orderId} успішно створено!`}
           sx={{ mb: 2 }}
         />
-        
+
         <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column' }}>
           <Button
             variant="outlined"
@@ -60,7 +60,7 @@ export const OrderCompletion: React.FC = () => {
           >
             {isLoadingReceipt ? 'Завантаження...' : 'Переглянути квитанцію'}
           </Button>
-          
+
           {receiptData && (
             <Button
               variant="contained"
@@ -79,13 +79,13 @@ export const OrderCompletion: React.FC = () => {
   return (
     <FormSection title="Завершення замовлення">
       {error && (
-        <StatusAlert 
+        <StatusAlert
           severity="error"
           message="Помилка створення замовлення"
           sx={{ mb: 2 }}
         />
       )}
-      
+
       {/* Agreement checkbox */}
       <Box sx={{ mb: 2 }}>
         <FormControlLabel
@@ -104,12 +104,12 @@ export const OrderCompletion: React.FC = () => {
         <Typography variant="subtitle2" gutterBottom>
           Цифровий підпис клієнта
         </Typography>
-        
-        <Paper 
-          elevation={1} 
-          sx={{ 
-            p: 1, 
-            border: '1px solid', 
+
+        <Paper
+          elevation={1}
+          sx={{
+            p: 1,
+            border: '1px solid',
             borderColor: isDrawing ? 'primary.main' : 'divider',
             borderRadius: 1,
             transition: 'border-color 0.2s ease'
@@ -134,7 +134,7 @@ export const OrderCompletion: React.FC = () => {
             onTouchMove={drawTouch}
             onTouchEnd={stopDrawingTouch}
           />
-          
+
           <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
             <Button
               size="small"
@@ -143,7 +143,7 @@ export const OrderCompletion: React.FC = () => {
             >
               Очистити
             </Button>
-            
+
             <Button
               size="small"
               startIcon={<Save />}
@@ -153,7 +153,7 @@ export const OrderCompletion: React.FC = () => {
               Зберегти підпис
             </Button>
           </Box>
-          
+
           {hasSignature && (
             <Typography variant="caption" color="success.main" sx={{ mt: 1, display: 'block' }}>
               ✓ Підпис збережено
@@ -173,8 +173,8 @@ export const OrderCompletion: React.FC = () => {
         >
           {isGeneratingPreview ? 'Генерація...' : 'Попередній перегляд квитанції'}
         </Button>
-        
-        
+
+
         {/* Create order button */}
         <Button
           variant="contained"
@@ -183,7 +183,7 @@ export const OrderCompletion: React.FC = () => {
           startIcon={<CheckCircle />}
           onClick={handleCreateOrder}
           disabled={!canCreateOrder || isCreatingOrder}
-          sx={{ 
+          sx={{
             py: 1.5,
             fontWeight: 'bold'
           }}
@@ -191,14 +191,14 @@ export const OrderCompletion: React.FC = () => {
           {isCreatingOrder ? 'СТВОРЕННЯ...' : 'СТВОРИТИ ЗАМОВЛЕННЯ'}
         </Button>
       </Box>
-      
+
       {!canCreateOrder && (
-        <Typography 
-          variant="caption" 
-          color="text.secondary" 
+        <Typography
+          variant="caption"
+          color="text.secondary"
           sx={{ mt: 1, display: 'block', textAlign: 'center' }}
         >
-          Заповніть всі обов'язкові поля
+          Заповніть всі обов&apos;язкові поля
         </Typography>
       )}
     </FormSection>

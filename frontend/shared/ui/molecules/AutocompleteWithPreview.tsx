@@ -1,5 +1,6 @@
 import React from 'react';
 import { Autocomplete, TextField, Typography } from '@mui/material';
+import { formatPrice } from '@/shared/lib/utils';
 
 type OptionWithPreview<T = unknown> = T & {
   id: string;
@@ -24,8 +25,8 @@ type Props<T> = {
 
 export const AutocompleteWithPreview = <T,>({
   label,
-  placeholder = "Пошук...",
-  emptyPlaceholder = "Немає доступних варіантів",
+  placeholder = 'Пошук...',
+  emptyPlaceholder = 'Немає доступних варіантів',
   helperText,
   options,
   value,
@@ -33,17 +34,17 @@ export const AutocompleteWithPreview = <T,>({
   loading = false,
   disabled = false,
   showPricePreview = false,
-  getPreviewText
+  getPreviewText,
 }: Props<T>) => {
   const defaultPreviewText = (option: OptionWithPreview<T>) => {
     if (!showPricePreview) return '';
-    
+
     const parts = [];
     if (option.priceBlack) {
-      parts.push(`Чорний: ${(option.priceBlack / 100).toFixed(2)} ₴`);
+      parts.push(`Чорний: ${formatPrice(option.priceBlack)}`);
     }
     if (option.basePrice) {
-      parts.push(`Кольоровий: ${(option.basePrice / 100).toFixed(2)} ₴`);
+      parts.push(`Кольоровий: ${formatPrice(option.basePrice)}`);
     }
     return parts.join(', ');
   };

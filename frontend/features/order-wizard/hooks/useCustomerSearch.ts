@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useListCustomers } from '@api/customer';
+import { useListCustomers, type CustomerInfo } from '@api/customer';
 import { useCustomerOperations } from './useCustomerOperations';
-import { useOrderWizardStore } from '@/features/order-wizard';
+import { useCustomerState } from './useCustomerState';
 
 export const useCustomerSearch = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const { selectedCustomer } = useOrderWizardStore();
+  const { selectedCustomer } = useCustomerState();
   const { activateExistingCustomer, isActivating } = useCustomerOperations();
 
   const { data: searchResults, isLoading } = useListCustomers(
@@ -18,7 +18,7 @@ export const useCustomerSearch = () => {
     }
   );
 
-  const handleCustomerSelect = async (customer: any) => {
+  const handleCustomerSelect = async (customer: CustomerInfo | null) => {
     if (!customer) return;
 
     try {
@@ -29,7 +29,7 @@ export const useCustomerSearch = () => {
     }
   };
 
-  const getOptionLabel = (option: any) =>
+  const getOptionLabel = (option: CustomerInfo) =>
     `${option.lastName} ${option.firstName} - ${option.phonePrimary}`;
 
   return {

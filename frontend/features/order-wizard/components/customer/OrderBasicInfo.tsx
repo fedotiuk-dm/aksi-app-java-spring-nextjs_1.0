@@ -16,7 +16,7 @@ export const OrderBasicInfo: React.FC = () => {
   const {
     uniqueLabel,
     handleUniqueLabelChange,
-    selectedBranch,
+    selectedBranchId,
     branches,
     handleBranchChange,
     getCurrentDateTime
@@ -54,7 +54,7 @@ export const OrderBasicInfo: React.FC = () => {
 
       <FormControl fullWidth sx={{ mb: 2 }}>
         <FormLabel>Пункт прийому</FormLabel>
-        <Select value={selectedBranch?.id || ''} onChange={handleBranchChange}>
+        <Select value={selectedBranchId || ''} onChange={handleBranchChange}>
           <MenuItem value="">Виберіть філію</MenuItem>
           {branches.map((branch) => (
             <MenuItem key={branch.id} value={branch.id}>

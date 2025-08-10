@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useOrderWizardStore } from '@/features/order-wizard';
 import { useOrderWizardCart } from './useOrderWizardCart';
+import { canSubmitItemForm } from '../utils/item.utils';
 import type { AddCartItemRequest, ItemCharacteristics } from '@api/cart';
 
 export const useItemFormOperations = () => {
@@ -56,7 +57,7 @@ export const useItemFormOperations = () => {
     }
   };
 
-  const canSubmit = selectedItemId !== null && quantity > 0;
+  const canSubmit = canSubmitItemForm(selectedItemId, quantity);
 
   return {
     // Form state

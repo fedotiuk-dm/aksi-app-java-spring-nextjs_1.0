@@ -1,9 +1,9 @@
-import { useCreateCustomer, type CreateCustomerRequest } from '@api/customer';
+import { useCreateCustomer, type CreateCustomerRequest, type CustomerInfo } from '@api/customer';
 import { useOrderWizardStore } from '@/features/order-wizard';
 import { useCartOperations } from './useCartOperations';
 
 export const useCustomerOperations = () => {
-  const { setSelectedCustomer } = useOrderWizardStore();
+  const { setSelectedCustomerId } = useOrderWizardStore();
   const createCustomerMutation = useCreateCustomer();
   const { activateCustomer, isActivatingCustomer } = useCartOperations(false); // Mutations only, no cart loading
 
@@ -14,13 +14,13 @@ export const useCustomerOperations = () => {
 
     await activateCustomer({ customerId: newCustomer.id });
 
-    setSelectedCustomer(newCustomer);
+    setSelectedCustomerId(newCustomer.id);
     return newCustomer;
   };
 
-  const activateExistingCustomer = async (customer: any) => {
+  const activateExistingCustomer = async (customer: CustomerInfo) => {
     await activateCustomer({ customerId: customer.id });
-    setSelectedCustomer(customer);
+    setSelectedCustomerId(customer.id);
   };
 
   return {

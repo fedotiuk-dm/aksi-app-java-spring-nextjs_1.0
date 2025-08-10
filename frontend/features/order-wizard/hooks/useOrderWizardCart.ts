@@ -11,8 +11,8 @@ import { useCartOperations } from './useCartOperations';
  * use useCartOperations(false) directly.
  */
 export const useOrderWizardCart = () => {
-  const { selectedCustomer } = useOrderWizardStore();
-  const cartEnabled = !!selectedCustomer; // Enable cart only when customer selected
+  const { selectedCustomerId } = useOrderWizardStore();
+  const cartEnabled = !!selectedCustomerId; // Enable cart only when customer selected
   
   return useCartOperations(cartEnabled);
 };

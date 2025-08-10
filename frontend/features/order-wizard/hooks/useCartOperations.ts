@@ -1,18 +1,18 @@
-import { 
-  useGetCart, 
-  useAddCartItem, 
+import {
+  useGetCart,
+  useAddCartItem,
   useUpdateCartItem,
   useRemoveCartItem,
   useUpdateCartModifiers,
   useCalculateCart,
   useActivateCustomerForCart,
-  useClearCart
+  useClearCart,
 } from '@api/cart';
 import type {
   AddCartItemRequest,
   UpdateCartItemRequest,
   UpdateCartModifiersRequest,
-  ActivateCustomerRequest
+  ActivateCustomerRequest,
 } from '@api/cart';
 
 /**
@@ -21,8 +21,12 @@ import type {
  */
 export const useCartOperations = (enabled = false) => {
   // Query hook for getting cart data - only when explicitly enabled
-  const { data: cart, refetch: refetchCart, ...cartQuery } = useGetCart({
-    query: { enabled }
+  const {
+    data: cart,
+    refetch: refetchCart,
+    ...cartQuery
+  } = useGetCart({
+    query: { enabled },
   });
 
   // Mutation hooks for cart operations
@@ -40,52 +44,36 @@ export const useCartOperations = (enabled = false) => {
   const getCartPricing = () => cart?.pricing;
   const getCartCustomer = () => cart?.customerId;
 
+  // Centralized refetch helper
+  const refetchAfter = async <T>(promise: Promise<T>) => {
+    const result = await promise;
+    await refetchCart();
+    return result;
+  };
+
   // Item operations
   const addItem = async (itemData: AddCartItemRequest) => {
-    console.log('🔄 Cart API: Adding item with data:', itemData);
-    const result = await addItemMutation.mutateAsync({ data: itemData });
-    console.log('✅ Cart API: Item added result:', result);
-    await refetchCart();
-    console.log('🔄 Cart API: Cart refetched, new cart:', cart);
-    return result;
+    return refetchAfter(addItemMutation.mutateAsync({ data: itemData }));
   };
 
   const updateItem = async (itemId: string, itemData: UpdateCartItemRequest) => {
-    const result = await updateItemMutation.mutateAsync({ itemId, data: itemData });
-    await refetchCart();
-    return result;
+    return refetchAfter(updateItemMutation.mutateAsync({ itemId, data: itemData }));
   };
 
   const removeItem = async (itemId: string) => {
-    const result = await removeItemMutation.mutateAsync({ itemId });
-    await refetchCart();
-    return result;
+    return refetchAfter(removeItemMutation.mutateAsync({ itemId }));
   };
 
   // Cart-level operations
-  const updateModifiers = async (modifiers: UpdateCartModifiersRequest) => {
-    const result = await updateModifiersMutation.mutateAsync({ data: modifiers });
-    await refetchCart();
-    return result;
-  };
+  const updateModifiers = async (modifiers: UpdateCartModifiersRequest) =>
+    refetchAfter(updateModifiersMutation.mutateAsync({ data: modifiers }));
 
-  const calculateCart = async () => {
-    const result = await calculateCartMutation.mutateAsync();
-    await refetchCart();
-    return result;
-  };
+  const calculateCart = async () => refetchAfter(calculateCartMutation.mutateAsync());
 
-  const activateCustomer = async (customerData: ActivateCustomerRequest) => {
-    const result = await activateCustomerMutation.mutateAsync({ data: customerData });
-    await refetchCart();
-    return result;
-  };
+  const activateCustomer = async (customerData: ActivateCustomerRequest) =>
+    refetchAfter(activateCustomerMutation.mutateAsync({ data: customerData }));
 
-  const clearCart = async () => {
-    const result = await clearCartMutation.mutateAsync();
-    await refetchCart();
-    return result;
-  };
+  const clearCart = async () => refetchAfter(clearCartMutation.mutateAsync());
 
   // Refresh cart data
   const refreshCart = async () => {
@@ -100,10 +88,16 @@ export const useCartOperations = (enabled = false) => {
   const isCalculating = calculateCartMutation.isPending;
   const isActivatingCustomer = activateCustomerMutation.isPending;
   const isClearing = clearCartMutation.isPending;
-  
+
   const isLoading = cartQuery.isLoading;
-  const isMutating = isAddingItem || isUpdatingItem || isRemovingItem || 
-                     isUpdatingModifiers || isCalculating || isActivatingCustomer || isClearing;
+  const isMutating =
+    isAddingItem ||
+    isUpdatingItem ||
+    isRemovingItem ||
+    isUpdatingModifiers ||
+    isCalculating ||
+    isActivatingCustomer ||
+    isClearing;
 
   // Error states
   const errors = {
@@ -114,7 +108,7 @@ export const useCartOperations = (enabled = false) => {
     updateModifiers: updateModifiersMutation.error,
     calculate: calculateCartMutation.error,
     activateCustomer: activateCustomerMutation.error,
-    clear: clearCartMutation.error
+    clear: clearCartMutation.error,
   };
 
   return {
@@ -124,7 +118,7 @@ export const useCartOperations = (enabled = false) => {
     getCartItems,
     getCartPricing,
     getCartCustomer,
-    
+
     // Operations
     addItem,
     updateItem,
@@ -134,7 +128,7 @@ export const useCartOperations = (enabled = false) => {
     activateCustomer,
     clearCart,
     refreshCart,
-    
+
     // State
     isLoading,
     isMutating,
@@ -145,9 +139,9 @@ export const useCartOperations = (enabled = false) => {
     isCalculating,
     isActivatingCustomer,
     isClearing,
-    
+
     // Errors
     errors,
-    hasError: Object.values(errors).some(error => error !== null)
+    hasError: Object.values(errors).some((error) => error !== null),
   };
 };

@@ -2,6 +2,8 @@
 export { useCartOperations } from './useCartOperations';
 export { useOrderWizardCart } from './useOrderWizardCart';
 export { useCustomerOperations } from './useCustomerOperations';
+export { useCustomerState } from './useCustomerState';
+export { useCustomerSearch } from './useCustomerSearch';
 export { useItemOperations } from './useItemOperations';
 export { useItemFormOperations } from './useItemFormOperations';
 export { useItemFormModalOperations } from './useItemFormModalOperations';
