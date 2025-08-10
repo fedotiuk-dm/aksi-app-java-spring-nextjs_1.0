@@ -31,3 +31,21 @@ export const formatDateTime = (date: string | Date): string => {
     minute: '2-digit',
   }).format(dateObj);
 };
+
+/**
+ * Additional pricing utilities
+ */
+export const formatPriceRange = (min: number, max: number): string => {
+  if (min === max) return formatPrice(min);
+  return `${formatPrice(min)} - ${formatPrice(max)}`;
+};
+
+export const formatPercentage = (value: number): string => {
+  return `${value > 0 ? '+' : ''}${value}%`;
+};
+
+export const formatModifierValue = (value: string): string => {
+  if (value.includes('%')) return value;
+  if (value === 'фікс.' || value === 'fixed') return 'фікс.';
+  return value;
+};
