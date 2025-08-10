@@ -1,5 +1,2 @@
-// Components
-export { OrderWizard } from './components/OrderWizard';
-
-// Store
+export { OrderWizard } from './OrderWizard';
 export { useOrderWizardStore } from './store/order-wizard-store';
