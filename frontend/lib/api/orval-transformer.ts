@@ -37,7 +37,7 @@ const DATE_PATTERNS = [
  * Перевіряє чи строка є датою
  */
 function isDateString(value: string, key?: string): boolean {
-  if (typeof value !== 'string') return false;
+
 
   // Перевіряємо за назвою поля
   if (

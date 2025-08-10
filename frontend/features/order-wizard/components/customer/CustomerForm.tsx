@@ -125,7 +125,7 @@ export const CustomerForm: React.FC = () => {
                           }}
                         />
                       }
-                      label={value.charAt(0) + value.slice(1).toLowerCase()}
+                      label={value.charAt(0) + value.slice(1).toLowerCase().replace('_', ' ')}
                     />
                   )}
                 />
@@ -143,7 +143,7 @@ export const CustomerForm: React.FC = () => {
                   <MenuItem value="">Не вказано</MenuItem>
                   {Object.values(CreateCustomerRequestInfoSource).map((value) => (
                     <MenuItem key={value} value={value}>
-                      {value.charAt(0) + value.slice(1).toLowerCase()}
+                      {value.charAt(0) + value.slice(1).toLowerCase().replace('_', ' ')}
                     </MenuItem>
                   ))}
                 </Select>

@@ -51,10 +51,36 @@ export function maybeHandleUsersMe500(url?: string): ApiError | null {
   return null;
 }
 
+function isAuthError(apiError: ApiError): boolean {
+  const message = apiError.message?.toLowerCase() || '';
+  return message.includes('unauthorized') || 
+         message.includes('access denied') || 
+         message.includes('authentication') ||
+         message.includes('no session') ||
+         message.includes('session expired');
+}
+
 export type StatusHandler = (url: string | undefined, apiError: ApiError) => ApiError;
 
 export const statusHandlers: Record<number, StatusHandler> = {
-  500: (url, apiError) => maybeHandleUsersMe500(url) ?? apiError,
+  400: (_, apiError) => {
+    if (isAuthError(apiError)) {
+      useAuthStore.getState().logout();
+      redirectToLogin();
+    }
+    return apiError;
+  },
+  500: (url, apiError) => {
+    const usersMeError = maybeHandleUsersMe500(url);
+    if (usersMeError) return usersMeError;
+    
+    // Log Access Denied for debugging
+    if (apiError.message?.includes('Access Denied')) {
+      console.error(`🔒 Access Denied on: ${url || 'unknown URL'}`);
+    }
+    
+    return apiError;
+  },
   401: (url, apiError) => {
     if (IGNORE_401_PATHS.some((path) => url?.includes(path))) return apiError;
     useAuthStore.getState().logout();
@@ -71,10 +97,6 @@ export const statusHandlers: Record<number, StatusHandler> = {
   404: (url, apiError) =>
     isUsersMe(url) ? getUsersMeUnauthenticatedError('User not authenticated') : apiError,
 };
-
-export function toApiError(error: AxiosError): ApiError {
-  return ApiError.fromAxiosError(error);
-}
 
 export { AXIOS_CONFIG, ENABLE_TRANSFORMS, isSilentPath };
 

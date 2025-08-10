@@ -46,6 +46,41 @@ components/
 
 ## 🔧 Orval-First підхід + Business Logic Hooks
 
+### Централізований Cart Operations Layer
+
+```typescript
+// useCartOperations.ts - Thin wrapper around all Orval cart API
+export const useCartOperations = () => {
+  // Direct Orval API imports
+  const { data: cart, refetch: refetchCart } = useGetCart();
+  const addItemMutation = useAddCartItem();
+  const updateItemMutation = useUpdateCartItem();
+  const removeItemMutation = useRemoveCartItem();
+  
+  // Thin wrapper operations (auto-refresh cart)
+  const addItem = async (itemData) => {
+    const result = await addItemMutation.mutateAsync({ data: itemData });
+    await refetchCart(); // Auto-refresh after mutation
+    return result;
+  };
+  
+  // Data access helpers
+  const getCartItems = () => cart?.items || [];
+  const getCartPricing = () => cart?.pricing;
+  
+  // Loading and error states aggregation
+  const isMutating = isAddingItem || isUpdatingItem || isRemovingItem;
+  const errors = { addItem: addItemMutation.error, ... };
+};
+```
+
+**Переваги:**
+- ✅ Всі cart операції централізовані в одному місці
+- ✅ Автоматичний refetch після кожної mutation
+- ✅ Консистентна обробка помилок та loading станів  
+- ✅ Один хук замість 8+ прямих Orval imports
+- ✅ Легко тестувати та підтримувати
+
 ### Рівні абстракцій
 ```typescript
 // 1️⃣ Orval API Layer (Generated)
@@ -91,9 +126,13 @@ const URGENCY_OPTIONS = [
   { value: 'EXPRESS_48H', label: '+50% (48 год)' }
 ];
 
-// ✅ ПРАВИЛЬНО - через Orval типи
-import type { CartGlobalModifiersUrgencyType } from '@/shared/api/generated';
-// UI отримує labels через backend mapping або enum values
+// ✅ ПРАВИЛЬНО - автоматичне форматування enum значень
+{Object.values(CreateCustomerRequestContactPreferencesItem).map((value) => (
+  <MenuItem key={value} value={value}>
+    {value.charAt(0) + value.slice(1).toLowerCase().replace('_', ' ')}
+  </MenuItem>
+))}
+// Автоматично: PHONE → "Phone", MULTI_DEVICE → "Multi device"
 ```
 
 ## 🧱 Atomic Design Integration
