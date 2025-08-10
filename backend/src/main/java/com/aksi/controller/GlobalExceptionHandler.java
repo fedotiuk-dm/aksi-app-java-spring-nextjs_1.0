@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -73,6 +74,15 @@ public class GlobalExceptionHandler {
   public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException e) {
     log.warn("Authentication error: {}", e.getMessage());
     return createErrorResponse(HttpStatus.UNAUTHORIZED, "Authentication failed", null);
+  }
+
+  @ExceptionHandler(AuthorizationDeniedException.class)
+  public ResponseEntity<Map<String, Object>> handleAuthorizationDenied(
+      AuthorizationDeniedException e) {
+    String path = getPath();
+    String method = getMethod();
+    log.error("Access denied: {} {} - {}", method, path, e.getMessage());
+    return createErrorResponse(HttpStatus.FORBIDDEN, "Access denied", null);
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -273,6 +283,18 @@ public class GlobalExceptionHandler {
       RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
       if (attrs instanceof ServletRequestAttributes sra) {
         return sra.getRequest().getServletPath();
+      }
+    } catch (IllegalStateException ignored) {
+      // No request context available
+    }
+    return "";
+  }
+
+  private String getMethod() {
+    try {
+      RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+      if (attrs instanceof ServletRequestAttributes sra) {
+        return sra.getRequest().getMethod();
       }
     } catch (IllegalStateException ignored) {
       // No request context available

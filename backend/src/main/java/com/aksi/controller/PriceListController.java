@@ -69,7 +69,7 @@ public class PriceListController implements PriceListApi {
   // Category management endpoints
 
   @GetMapping("/api/price-list/categories")
-  @PreAuthorize("hasRole('USER')")
+  @PreAuthorize("hasAnyRole('OPERATOR', 'MANAGER', 'ADMIN')")
   public ResponseEntity<List<CategoryManagementService.CategoryInfo>> getAllCategories() {
     return ResponseEntity.ok(priceListService.getAllCategoriesInfo());
   }
