@@ -15,6 +15,7 @@ import {
 import { Edit, Delete } from '@mui/icons-material';
 import { PriceDisplay, QuantityIndicator } from '@shared/ui/atoms';
 import { useItemOperations } from '@features/order-wizard/hooks';
+import type { CalculatedItemPrice, ItemModifier } from '@api/cart';
 
 export const ItemsTable: React.FC = () => {
   const { 
@@ -51,7 +52,7 @@ export const ItemsTable: React.FC = () => {
         <TableBody>
           {formattedItems.map((item) => {
             // Find calculated price for this item
-            const calculatedItem = calculation?.items?.find((calc: any) => calc.priceListItemId === item.priceListItemId);
+            const calculatedItem = calculation?.items?.find((calc: CalculatedItemPrice) => calc.priceListItemId === item.priceListItemId);
             const displayPrice = calculatedItem?.total || item.display.totalPrice;
             
             return (
@@ -90,7 +91,7 @@ export const ItemsTable: React.FC = () => {
                     {/* Модифікатори */}
                     {item.modifiers && item.modifiers.length > 0 && (
                       <Box sx={{ mt: 0.5 }}>
-                        {item.modifiers.map((modifier: any) => (
+                        {item.modifiers.map((modifier: ItemModifier) => (
                           <Chip 
                             key={modifier.code}
                             label={modifier.name}

@@ -1,12 +1,11 @@
 import React from 'react';
-import { useUpdateCartModifiers, UpdateCartModifiersRequestDiscountType, UpdateCartModifiersRequest } from '@api/cart';
-import { useOrderWizardCart } from './useOrderWizardCart';
+import { UpdateCartModifiersRequestDiscountType } from '@api/cart';
 import { useOrderWizardStore } from '@/features/order-wizard';
 import { generateDiscountOptions, getDiscountPercentage } from '@/features/order-wizard/utils';
+import { useCartOperations } from './useCartOperations';
 
 export const useDiscountParametersOperations = () => {
-  const updateModifiersMutation = useUpdateCartModifiers();
-  const { refreshCart } = useOrderWizardCart();
+  const { updateModifiers, isUpdatingModifiers, errors } = useCartOperations(true);
 
   const {
     selectedDiscount,
@@ -19,39 +18,39 @@ export const useDiscountParametersOperations = () => {
   const showPercentageInput = selectedDiscount === 'OTHER';
 
   // Handle discount type change
-  const handleDiscountChange = async (value: string) => {
-    const discountType = value as UpdateCartModifiersRequestDiscountType;
+  const handleDiscountChange = async (type: string, pct?: number) => {
+    if (isUpdatingModifiers) return; // Mutex protection
+
+    const discountType = type as UpdateCartModifiersRequestDiscountType;
     setSelectedDiscount(discountType);
 
-    const expectedPercentage = getDiscountPercentage(discountType, customDiscountPercentage);
-    const requestData: UpdateCartModifiersRequest = {
-      discountType,
-      ...(expectedPercentage !== undefined && { discountPercentage: expectedPercentage })
-    };
+    // Get correct percentage for the discount type
+    const correctPercentage = getDiscountPercentage(discountType, customDiscountPercentage);
+    
+    // Correct payload formation
+    const payload = discountType === 'OTHER' 
+      ? { discountType, discountPercentage: pct ?? 0 }
+      : correctPercentage !== undefined 
+        ? { discountType, discountPercentage: correctPercentage }
+        : { discountType };
 
-    console.log('💰 Updating discount:', requestData);
-
-    await updateModifiersMutation.mutateAsync({
-      data: requestData
-    });
-    await refreshCart();
+    await updateModifiers(payload);
   };
 
-  // Handle custom percentage change
-  const handlePercentageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle custom percentage change with debounce protection
+  const handlePercentageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const percentage = Number(event.target.value);
     setCustomDiscountPercentage(percentage);
+  };
 
-    if (selectedDiscount === 'OTHER' && percentage >= 0 && percentage <= 100) {
-      console.log('💰 Updating custom discount percentage:', percentage);
-
-      await updateModifiersMutation.mutateAsync({
-        data: {
-          discountType: selectedDiscount,
-          discountPercentage: percentage
-        }
+  const handlePercentageBlur = async (event: React.FocusEvent<HTMLInputElement>) => {
+    const percentage = Number(event.target.value);
+    
+    if (selectedDiscount === 'OTHER' && percentage >= 0 && percentage <= 100 && !isUpdatingModifiers) {
+      await updateModifiers({
+        discountType: selectedDiscount,
+        discountPercentage: percentage
       });
-      await refreshCart();
     }
   };
 
@@ -65,9 +64,10 @@ export const useDiscountParametersOperations = () => {
     // Operations
     handleDiscountChange,
     handlePercentageChange,
+    handlePercentageBlur,
 
     // State
-    isLoading: updateModifiersMutation.isPending,
-    error: updateModifiersMutation.error
+    isLoading: isUpdatingModifiers,
+    error: errors.updateModifiers
   };
 };

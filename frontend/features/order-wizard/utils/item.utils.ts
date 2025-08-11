@@ -1,8 +1,9 @@
 import { formatEnumValue } from './formatting.utils';
+import type { CartItemInfo, CalculatedItemPrice } from '@api/cart';
 
 export const getItemDisplayInfo = (
-  item: any,
-  calculatedItem?: any
+  item: CartItemInfo,
+  calculatedItem?: CalculatedItemPrice
 ) => {
   return {
     name: item.priceListItem?.name || 'Невідомий предмет',

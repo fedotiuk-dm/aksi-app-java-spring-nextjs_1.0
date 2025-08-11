@@ -32,9 +32,27 @@ export const SelectorField: React.FC<Props> = ({
       <FormLabel>{label}</FormLabel>
       <Select 
         value={value}
-        onChange={onChange}
+        onChange={(event, child) => {
+          // Clear focus before calling onChange
+          if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+          }
+          onChange?.(event, child);
+        }}
         disabled={disabled || loading}
         displayEmpty
+        autoFocus={false}
+        MenuProps={{
+          disableAutoFocus: true,
+          disableAutoFocusItem: true,
+          disableRestoreFocus: true,
+          keepMounted: true,
+          onClose: () => {
+            if (document.activeElement instanceof HTMLElement) {
+              document.activeElement.blur();
+            }
+          }
+        }}
       >
         <MenuItem value="">
           {loading ? 'Завантаження...' : placeholder}

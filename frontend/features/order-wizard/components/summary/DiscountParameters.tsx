@@ -10,6 +10,7 @@ export const DiscountParameters: React.FC = () => {
     customPercentage,
     handleDiscountChange,
     handlePercentageChange,
+    handlePercentageBlur,
     showPercentageInput,
     isLoading
   } = useDiscountParametersOperations();
@@ -40,6 +41,7 @@ export const DiscountParameters: React.FC = () => {
               fullWidth
               value={customPercentage}
               onChange={handlePercentageChange}
+              onBlur={handlePercentageBlur}
               slotProps={{ 
                 htmlInput: {
                   min: 0, 
