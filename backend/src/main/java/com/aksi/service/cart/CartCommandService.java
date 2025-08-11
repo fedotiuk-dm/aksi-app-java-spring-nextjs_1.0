@@ -75,7 +75,7 @@ public class CartCommandService {
    * @param cart cart entity
    * @return true if cart is active
    */
-  private boolean isCartActive(CartEntity cart) {
+  private boolean checkCartActive(CartEntity cart) {
     return Instant.now().isBefore(cart.getExpiresAt());
   }
 
@@ -90,11 +90,11 @@ public class CartCommandService {
     CartEntity cartEntity =
         cartRepository
             .findActiveByCustomerId(customerId, Instant.now())
-            .filter(this::isCartActive)
+            .filter(this::checkCartActive)
             .orElseGet(() -> createCart(customerId));
 
     // Extend TTL on access to keep cart alive
-    if (isCartActive(cartEntity)) {
+    if (checkCartActive(cartEntity)) {
       extendCartTtl(cartEntity);
     }
 

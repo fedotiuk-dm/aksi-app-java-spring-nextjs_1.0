@@ -1,6 +1,8 @@
 import { create } from 'zustand';
+import { subscribeWithSelector } from 'zustand/middleware';
 import type { PriceListItemInfoCategoryCode } from '@api/customer';
 import type { UpdateCartModifiersRequestUrgencyType, UpdateCartModifiersRequestDiscountType } from '@api/cart';
+import { useAuthStore } from '@/features/auth';
 
 interface OrderWizardStore {
   // UI state only - no API data
@@ -52,8 +54,8 @@ interface OrderWizardStore {
   resetSummaryParameters: () => void;
 }
 
-export const useOrderWizardStore = create<OrderWizardStore>
-((set) => ({
+export const useOrderWizardStore = create<OrderWizardStore>()(
+  subscribeWithSelector((set) => ({
   // Initial state
   selectedCustomerId: null,
   selectedBranchId: null,
@@ -135,4 +137,15 @@ export const useOrderWizardStore = create<OrderWizardStore>
     customerSignature: '',
     agreementAccepted: false
   }),
-}));
+})))
+
+// Auto-clear OrderWizard when user logs out
+let previousAuth = useAuthStore.getState().isAuthenticated;
+useAuthStore.subscribe((state) => {
+  const currentAuth = state.isAuthenticated;
+  if (previousAuth && !currentAuth) {
+    // User just logged out
+    useOrderWizardStore.getState().resetOrderWizard();
+  }
+  previousAuth = currentAuth;
+});

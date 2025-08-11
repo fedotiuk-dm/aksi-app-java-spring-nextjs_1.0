@@ -7,14 +7,14 @@
 <!--
     Файл придушень для Checkstyle.
     Дозволяє виключати певні перевірки для конкретних файлів або каталогів.
-    
+
     Синтаксис:
     <suppress checks="назва_перевірки" files="патерн_шляху"/>
-    
+
     Приклади:
-    - Виключити всі перевірки для тестів: 
+    - Виключити всі перевірки для тестів:
       <suppress checks=".*" files="[\\/]src[\\/]test[\\/].*"/>
-    - Виключити конкретну перевірку: 
+    - Виключити конкретну перевірку:
       <suppress checks="MagicNumber" files=".*"/>
 -->
 
@@ -22,27 +22,34 @@
     <!-- Придушення перевірок для Lombok анотованих класів -->
     <suppress checks="VisibilityModifier" files=".*[\\/]src[\\/]main[\\/]java[\\/].*[\\/]model[\\/].*[Dd]to[\\/].*\.java"/>
     <suppress checks="Javadoc" files=".*[\\/]src[\\/]main[\\/]java[\\/].*[\\/]model[\\/].*[Dd]to[\\/].*\.java"/>
-    
-    <!-- Придушення для тестів -->
+
+    <!-- Придушення для тестів (вимикаємо всі перевірки у src/test/java) -->
+    <suppress checks=".*" files=".*[\\/]src[\\/]test[\\/]java[\\/].*\.java"/>
+    <!-- Залишаємо приклади специфічних придушень на випадок розширення -->
     <suppress checks="JavadocMethod" files="[\\/]src[\\/]test[\\/].*\.java"/>
     <suppress checks="MagicNumber" files="[\\/]src[\\/]test[\\/].*\.java"/>
-    
+
     <!-- Придушення для Lombok анотацій -->
     <suppress checks=".*" files=".*\$\$Lambda\$.*\.java"/>
-    
+
     <!-- Придушення для згенерованого коду -->
-    <suppress checks=".*" files="[\\/]target[\\/]generated-sources[\\/].*\.java"/>
-    <suppress checks=".*" files="[\\/]target[\\/]generated-test-sources[\\/].*\.java"/>
-    
+    <!-- Maven generated sources (включно з OpenAPI) -->
+    <suppress checks=".*" files=".*[\\/]target[\\/]generated-sources[\\/].*\.java"/>
+    <suppress checks=".*" files=".*[\\/]target[\\/]generated-test-sources[\\/].*\.java"/>
+    <!-- OpenAPI Generator (специфічний каталог) -->
+    <suppress checks=".*" files=".*[\\/]target[\\/]generated-sources[\\/]openapi[\\/].*\.java"/>
+    <!-- На майбутнє: якщо згенерований код опиниться в src/main/java/**/generated/** -->
+    <suppress checks=".*" files=".*[\\/]src[\\/]main[\\/]java[\\/].*[\\/]generated[\\/].*\.java"/>
+
     <!-- Придушення для Spring Boot Actuator -->
     <suppress checks="HideUtilityClassConstructor" files="[\\/]src[\\/]main[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]actuate[\\/].*\.java"/>
-    
+
     <!-- Додаткові придушення для специфічних випадків -->
     <suppress checks="FinalClass" files=".*Config\.java"/>
     <suppress checks="HideUtilityClassConstructor" files=".*Util(s)?\.java"/>
     <suppress checks="DesignForExtension" files=".*Service\.java"/>
     <suppress checks="NewlineAtEndOfFile" files="[\\/]src[\\/]main[\\/]resources[\\/].*\.(properties|xml|yml|yaml)"/>
-    
+
     <!-- Придушення для ValidationConstants.java - файл містить велику кількість констант -->
     <suppress checks="JavadocVariable" files=".*ValidationConstants\.java"/>
 </suppressions>

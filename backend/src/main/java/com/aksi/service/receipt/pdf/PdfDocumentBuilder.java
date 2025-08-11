@@ -6,7 +6,7 @@ import java.io.IOException;
 public interface PdfDocumentBuilder extends AutoCloseable {
 
   @Override
-  void close();
+  void close() throws IOException;
 
   /** Start new text block */
   PdfDocumentBuilder beginText();

@@ -82,8 +82,17 @@
         <module name="AvoidStarImport">
             <property name="excludes" value="java.util.stream,java.util.function,java.util.concurrent,jakarta.validation.constraints,org.junit.jupiter.api.*,org.mockito.*,org.assertj.core.api.*,org.springframework.test.context.*"/>
         </module>
+        <!-- Той самий порядок, що застосовується Spotless (pom.xml) -->
+        <module name="CustomImportOrder">
+            <property name="sortImportsInGroupAlphabetically" value="true"/>
+            <property name="separateLineBetweenGroups" value="true"/>
+            <property name="customImportOrderRules" value="STANDARD_JAVA_PACKAGE###THIRD_PARTY_PACKAGE###SPECIAL_IMPORTS"/>
+            <property name="specialImportsRegExp" value="^com\\.aksi(\\..*)?$"/>
+        </module>
         <module name="IllegalImport">
             <property name="illegalPkgs" value="java.awt, javax.swing, sun."/>
+            <!-- Забороняємо старі/небажані типи часу -->
+            <property name="illegalClasses" value="java.util.Date, java.util.Calendar, java.sql.Date, java.sql.Timestamp, org.joda.time.DateTime"/>
         </module>
         <module name="RedundantImport"/>
         <module name="UnusedImports">
@@ -205,6 +214,23 @@
             <property name="tokens" value="METHOD_DEF, CTOR_DEF, COMPACT_CTOR_DEF"/>
         </module>
 
+        <!-- Складність коду -->
+        <module name="CyclomaticComplexity">
+            <property name="max" value="10"/>
+        </module>
+        <module name="NPathComplexity">
+            <property name="max" value="200"/>
+        </module>
+        <module name="BooleanExpressionComplexity">
+            <property name="max" value="5"/>
+        </module>
+        <module name="ClassDataAbstractionCoupling">
+            <property name="max" value="15"/>
+        </module>
+        <module name="ClassFanOutComplexity">
+            <property name="max" value="20"/>
+        </module>
+
         <module name="ParameterNumber">
             <property name="max" value="12"/>
             <property name="tokens" value="METHOD_DEF, CTOR_DEF"/>
@@ -244,6 +270,15 @@
             <property name="tokens" value="VARIABLE_DEF"/>
         </module>
 
+        <!-- Заборона небезпечних практик -->
+        <module name="IllegalCatch">
+            <property name="illegalClassNames" value="java.lang.Exception, java.lang.Throwable"/>
+        </module>
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="System\.out\.print|System\.err\.print|printStackTrace\(|Thread\.sleep\("/>
+            <message key="regexp.exceeded" value="Avoid System.out/err/printStackTrace/Thread.sleep in production code"/>
+        </module>
+
         <module name="DefaultComesLast">
             <property name="skipIfLastAndSharedWithCase" value="true"/>
         </module>
@@ -251,6 +286,9 @@
         <module name="UnnecessaryParentheses">
             <property name="tokens" value="EXPR, LAMBDA"/>
         </module>
+
+        <!-- Вимагати @Override для перевизначених методів -->
+        <module name="MissingOverride"/>
 
         <module name="OneTopLevelClass"/>
         <module name="NoFinalizer"/>

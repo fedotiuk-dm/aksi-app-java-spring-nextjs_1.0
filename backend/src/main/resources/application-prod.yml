@@ -38,6 +38,7 @@ app:
   file-storage:
     upload-dir: ${FILE_UPLOAD_DIR:/app/uploads}
     base-url: ${FILE_BASE_URL:https://api.aksi-cleaners.com}
+    api-path: ${FILE_API_PATH:/api/files}
     
   security:
     # Rate limiting settings - STRICT for production

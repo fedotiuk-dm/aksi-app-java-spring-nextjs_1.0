@@ -22,12 +22,15 @@ public class FilePathResolver {
 
   private final Path fileStorageLocation;
   private final String baseUrl;
+  private final String apiPath;
 
   public FilePathResolver(
       @Value("${app.file-storage.upload-dir:./uploads}") String uploadDir,
-      @Value("${app.file-storage.base-url:http://localhost:8080}") String baseUrl) {
+      @Value("${app.file-storage.base-url:http://localhost:8080}") String baseUrl,
+      @Value("${app.file-storage.api-path:/api/files}") String apiPath) {
     this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
     this.baseUrl = baseUrl;
+    this.apiPath = apiPath;
 
     initializeStorageDirectory();
   }
@@ -74,20 +77,20 @@ public class FilePathResolver {
 
   /** Generate full URL for file access */
   public String generateFileUrl(String filePath) {
-    return baseUrl + "/api/files/" + filePath;
+    return baseUrl + apiPath + "/" + filePath;
   }
 
   /**
    * Try to extract relative storage path from a public URL
    *
-   * @param url public URL (e.g. <a href="http://host/api/files/dir/file.jpg">...</a>)
+   * @param url public URL (e.g. http://host{apiPath}/dir/file.jpg)
    * @return relative path (e.g. dir/file.jpg) or null if not applicable
    */
   public String extractRelativePathFromUrl(String url) {
     if (url == null) {
       return null;
     }
-    String marker = "/api/files/";
+    String marker = apiPath + "/";
     int idx = url.indexOf(marker);
     return idx >= 0 ? url.substring(idx + marker.length()) : null;
   }

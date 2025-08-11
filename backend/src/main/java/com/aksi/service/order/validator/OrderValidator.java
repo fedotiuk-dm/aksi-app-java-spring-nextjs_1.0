@@ -52,7 +52,7 @@ public class OrderValidator {
    * @param cart cart entity
    * @return true if cart is expired
    */
-  private boolean isCartExpired(CartEntity cart) {
+  private boolean checkCartExpired(CartEntity cart) {
     return Instant.now().isAfter(cart.getExpiresAt());
   }
 
@@ -63,7 +63,7 @@ public class OrderValidator {
    * @throws BadRequestException if validation fails
    */
   public void validateCartForOrder(CartEntity cart) {
-    require(!isCartExpired(cart), "Cart has expired");
+    require(!checkCartExpired(cart), "Cart has expired");
     require(!cart.getItems().isEmpty(), "Cannot create order from empty cart");
     require(cart.getCustomerEntity() != null, "Cart must have a customer");
     log.debug("Cart {} is valid for order creation", cart.getId());

@@ -62,7 +62,7 @@ public class PriceListItemEntity extends BaseEntity {
   private Integer processingTimeDays = 3;
 
   @Column(name = "express_available", nullable = false)
-  private boolean expressAvailable = false;
+  private boolean expressAvailable;
 
   @Column(name = "express_time_hours")
   private Integer expressTimeHours;

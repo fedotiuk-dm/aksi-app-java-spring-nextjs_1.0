@@ -113,23 +113,55 @@ public class ReceiptMessages {
     };
   }
 
-  // Default messages for fallback
+  /** Default messages for fallback when localization is not available. */
   public static class Defaults {
+
+    /** Receipt title prefix. */
     public static final String RECEIPT_TITLE = "КВИТАНЦІЯ № ";
+
+    /** Date prefix for receipt date. */
     public static final String FROM_DATE = "від ";
+
+    /** Label for customer information. */
     public static final String CUSTOMER_LABEL = "Клієнт";
+
+    /** Label for phone number. */
     public static final String PHONE_LABEL = "Телефон";
+
+    /** Column header for item names. */
     public static final String ITEM_NAME = "Найменування";
+
+    /** Column header for quantity. */
     public static final String QUANTITY = "К-ть";
+
+    /** Column header for price. */
     public static final String PRICE = "Ціна";
+
+    /** Column header for total amount. */
     public static final String TOTAL = "Сума";
+
+    /** Label for subtotal amount. */
     public static final String SUBTOTAL = "Підсумок:";
+
+    /** Label for discount amount. */
     public static final String DISCOUNT = "Знижка:";
+
+    /** Label for total amount. */
     public static final String TOTAL_AMOUNT = "Всього:";
+
+    /** Label for prepaid amount. */
     public static final String PREPAID = "Передплата:";
+
+    /** Label for amount due. */
     public static final String DUE = "До сплати:";
+
+    /** Label for completion date. */
     public static final String COMPLETION_DATE = "Дата готовності";
+
+    /** Label for notes section. */
     public static final String NOTES = "Примітки";
+
+    /** Thank you message. */
     public static final String THANK_YOU = "Дякуємо за ваше замовлення!";
   }
 }

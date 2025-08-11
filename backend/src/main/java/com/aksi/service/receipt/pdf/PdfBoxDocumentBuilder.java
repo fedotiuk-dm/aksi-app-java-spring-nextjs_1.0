@@ -20,8 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /** PDFBox implementation of PdfDocumentBuilder */
 @Slf4j
-@SuppressWarnings(
-    "resource") // This is a builder pattern, not a resource that needs closing in each method
 public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
 
   private static final float DEFAULT_LINE_HEIGHT = 15;
@@ -35,8 +33,8 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
   private PDFont regularFont;
   private PDFont boldFont;
   private float currentY;
-  private boolean inTextBlock = false;
-  private boolean closed = false;
+  private boolean inTextBlock;
+  private boolean closed;
 
   public PdfBoxDocumentBuilder(ReceiptConfiguration config) throws IOException {
     this.config = config;
@@ -181,19 +179,34 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
 
   @Override
   public PdfDocumentBuilder drawTextAt(String text, float x, float y) {
-    beginText();
-    setFont("regular", 10);
-    setPosition(x, y);
-    drawText(text);
-    endText();
-    currentY = y;
+    try {
+      if (!inTextBlock) {
+        contentStream.beginText();
+        inTextBlock = true;
+      }
+      contentStream.setFont(currentFont, 10);
+      contentStream.newLineAtOffset(x, y);
+      if (text != null) {
+        contentStream.showText(text);
+      }
+      if (inTextBlock) {
+        contentStream.endText();
+        inTextBlock = false;
+      }
+      currentY = y;
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to draw text at position", e);
+    }
     return this;
   }
 
   @Override
   public PdfDocumentBuilder drawLine(float x1, float y1, float x2, float y2) {
     try {
-      endText(); // Ensure we're not in text mode
+      if (inTextBlock) {
+        contentStream.endText();
+        inTextBlock = false;
+      }
       contentStream.moveTo(x1, y1);
       contentStream.lineTo(x2, y2);
       contentStream.stroke();
@@ -242,7 +255,10 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
     }
 
     try {
-      endText(); // Ensure text block is closed
+      if (inTextBlock) {
+        contentStream.endText();
+        inTextBlock = false;
+      }
       contentStream.close();
 
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -255,28 +271,41 @@ public class PdfBoxDocumentBuilder implements PdfDocumentBuilder {
   }
 
   @Override
-  public void close() {
+  public void close() throws IOException {
     if (closed) {
       return; // Already closed
     }
 
+    IOException firstException = null;
+
     try {
-      endText(); // Ensure text block is properly closed
+      if (inTextBlock && contentStream != null) {
+        contentStream.endText();
+        inTextBlock = false;
+      }
       if (contentStream != null) {
         contentStream.close();
       }
-    } catch (Exception e) {
+    } catch (IOException e) {
+      firstException = e;
       log.warn("Error closing content stream", e);
-    } finally {
-      try {
-        if (document != null) {
-          document.close();
-        }
-      } catch (Exception e) {
-        log.warn("Error closing document", e);
-      } finally {
-        closed = true;
+    }
+
+    try {
+      if (document != null) {
+        document.close();
       }
+    } catch (IOException e) {
+      if (firstException == null) {
+        firstException = e;
+      }
+      log.warn("Error closing document", e);
+    } finally {
+      closed = true;
+    }
+
+    if (firstException != null) {
+      throw firstException;
     }
   }
 }

@@ -143,11 +143,12 @@ public class AuthValidationService {
 
     if (!PASSWORD_PATTERN.matcher(password).matches()) {
       throw new BadRequestException(
-          "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character (@$!%*?&)");
+          "Password must contain at least one uppercase letter, one lowercase letter, "
+              + "one digit, and one special character (@$!%*?&)");
     }
 
     // Check for common weak passwords
-    if (isCommonPassword(password)) {
+    if (checkCommonPassword(password)) {
       throw new BadRequestException("Password is too common, please choose a stronger password");
     }
 
@@ -218,7 +219,7 @@ public class AuthValidationService {
    * @param password password to check
    * @return true if password is common/weak
    */
-  private boolean isCommonPassword(String password) {
+  private boolean checkCommonPassword(String password) {
     String lower = password.toLowerCase();
 
     // List of common weak passwords

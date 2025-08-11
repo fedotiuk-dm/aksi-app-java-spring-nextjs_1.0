@@ -8,7 +8,6 @@ import com.aksi.api.cart.dto.CartItemInfo;
 import com.aksi.api.cart.dto.CartPricingInfo;
 import com.aksi.api.cart.dto.UpdateCartItemRequest;
 import com.aksi.api.cart.dto.UpdateCartModifiersRequest;
-import com.aksi.exception.BadRequestException;
 
 /** Service interface for managing shopping carts */
 public interface CartService {
@@ -90,7 +89,7 @@ public interface CartService {
    * Get currently active customer ID from session
    *
    * @return Current customer ID
-   * @throws BadRequestException if no customer is activated
+   * @throws RuntimeException if no customer is activated
    */
   UUID getCurrentCustomerId();
 }

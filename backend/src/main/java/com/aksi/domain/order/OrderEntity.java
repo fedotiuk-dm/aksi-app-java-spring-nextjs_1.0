@@ -90,7 +90,7 @@ public class OrderEntity extends BaseEntity {
   private Instant actualCompletionDate;
 
   @Column(name = "terms_accepted", nullable = false)
-  private boolean termsAccepted = false;
+  private boolean termsAccepted;
 
   // Pricing snapshot fields
   @Column(name = "items_subtotal", nullable = false)

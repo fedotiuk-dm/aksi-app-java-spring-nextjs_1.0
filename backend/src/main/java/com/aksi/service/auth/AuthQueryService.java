@@ -35,8 +35,10 @@ public class AuthQueryService {
   private final AuthMapper authMapper;
   private final SecurityContextService securityContextService;
 
-  // Session attribute keys
+  /** Session attribute key for user ID. */
   public static final String SESSION_USER_ID = "USER_ID";
+
+  /** Session attribute key for username. */
   public static final String SESSION_USERNAME = "USERNAME";
 
   /**

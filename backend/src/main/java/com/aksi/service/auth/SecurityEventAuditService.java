@@ -28,8 +28,8 @@ import com.aksi.api.auth.dto.SecurityOverview;
 @Service
 public class SecurityEventAuditService {
 
-  private static final Logger securityLogger = LoggerFactory.getLogger("SECURITY_AUDIT");
-  private static final Logger logger = LoggerFactory.getLogger(SecurityEventAuditService.class);
+  private static final Logger SECURITY_LOGGER = LoggerFactory.getLogger("SECURITY_AUDIT");
+  private static final Logger LOGGER = LoggerFactory.getLogger(SecurityEventAuditService.class);
 
   private static final String DAILY_FAILED_ATTEMPTS_KEY = "daily_failed_attempts:";
   private static final String LOGIN_ATTEMPTS_LIST = "login_attempts_log";
@@ -49,7 +49,7 @@ public class SecurityEventAuditService {
         String.format(
             "SUCCESSFUL_LOGIN: user=%s, ip=%s, userAgent=%s",
             username, ipAddress, maskUserAgent(userAgent));
-    securityLogger.info(message);
+    SECURITY_LOGGER.info(message);
 
     // Store login attempt for statistics
     LoginAttempt attempt = createLoginAttempt(username, ipAddress, userAgent, true, null);
@@ -68,7 +68,7 @@ public class SecurityEventAuditService {
         String.format(
             "FAILED_LOGIN: user=%s, ip=%s, reason=%s, userBlocked=%s, ipBlocked=%s, userAgent=%s",
             username, ipAddress, failureReason, userBlocked, ipBlocked, maskUserAgent(userAgent));
-    securityLogger.warn(message);
+    SECURITY_LOGGER.warn(message);
 
     // Increment daily failed attempts counter
     incrementDailyFailedAttempts();
@@ -89,25 +89,25 @@ public class SecurityEventAuditService {
   /** Log user blocked event. */
   public void logUserBlocked(String username, String ipAddress) {
     String message = String.format("USER_BLOCKED: user=%s, ip=%s", username, ipAddress);
-    securityLogger.error(message);
+    SECURITY_LOGGER.error(message);
   }
 
   /** Log IP blocked event. */
   public void logIpBlocked(String ipAddress, String lastUsername) {
     String message = String.format("IP_BLOCKED: ip=%s, lastUser=%s", ipAddress, lastUsername);
-    securityLogger.error(message);
+    SECURITY_LOGGER.error(message);
   }
 
   /** Log user manually unlocked event. */
   public void logUserUnlocked(String username) {
     String message = String.format("USER_UNLOCKED: user=%s", username);
-    securityLogger.info(message);
+    SECURITY_LOGGER.info(message);
   }
 
   /** Log IP manually unlocked event. */
   public void logIpUnlocked(String ipAddress) {
     String message = String.format("IP_UNLOCKED: ip=%s", ipAddress);
-    securityLogger.info(message);
+    SECURITY_LOGGER.info(message);
   }
 
   /** Log session-related security events. */
@@ -117,7 +117,7 @@ public class SecurityEventAuditService {
         String.format(
             "SESSION_EVENT: type=%s, user=%s, sessionId=%s, ip=%s",
             eventType, username, sessionId, ipAddress);
-    securityLogger.info(message);
+    SECURITY_LOGGER.info(message);
   }
 
   /** Log password change event. */
@@ -125,9 +125,9 @@ public class SecurityEventAuditService {
     String message =
         String.format("PASSWORD_CHANGE: user=%s, ip=%s, success=%s", username, ipAddress, success);
     if (success) {
-      securityLogger.info(message);
+      SECURITY_LOGGER.info(message);
     } else {
-      securityLogger.warn(message);
+      SECURITY_LOGGER.warn(message);
     }
   }
 
@@ -194,7 +194,7 @@ public class SecurityEventAuditService {
       }
       return attempts;
     } catch (Exception e) {
-      logger.error("Error retrieving recent login attempts", e);
+      LOGGER.error("Error retrieving recent login attempts", e);
       return new ArrayList<>();
     }
   }
@@ -212,7 +212,7 @@ public class SecurityEventAuditService {
         }
       }
     } catch (Exception e) {
-      logger.error("Error retrieving blocked users", e);
+      LOGGER.error("Error retrieving blocked users", e);
     }
 
     return blockedUsers;
@@ -231,7 +231,7 @@ public class SecurityEventAuditService {
         }
       }
     } catch (Exception e) {
-      logger.error("Error retrieving blocked IPs", e);
+      LOGGER.error("Error retrieving blocked IPs", e);
     }
 
     return blockedIps;
@@ -261,7 +261,7 @@ public class SecurityEventAuditService {
 
       return blockedUser;
     } catch (Exception e) {
-      logger.error("Error creating BlockedUser for username: {}", username, e);
+      LOGGER.error("Error creating BlockedUser for username: {}", username, e);
       return null;
     }
   }
@@ -292,7 +292,7 @@ public class SecurityEventAuditService {
 
       return blockedIp;
     } catch (Exception e) {
-      logger.error("Error creating BlockedIp for address: {}", ipAddress, e);
+      LOGGER.error("Error creating BlockedIp for address: {}", ipAddress, e);
       return null;
     }
   }
@@ -316,7 +316,7 @@ public class SecurityEventAuditService {
       redisTemplate.opsForList().leftPush(LOGIN_ATTEMPTS_LIST, attempt);
       redisTemplate.opsForList().trim(LOGIN_ATTEMPTS_LIST, 0, MAX_STORED_ATTEMPTS - 1);
     } catch (Exception e) {
-      logger.error("Error storing login attempt", e);
+      LOGGER.error("Error storing login attempt", e);
     }
   }
 
@@ -341,7 +341,7 @@ public class SecurityEventAuditService {
       Set<String> keys = redisTemplate.keys(USER_BLOCKED_PREFIX + "*");
       return keys.size();
     } catch (Exception e) {
-      logger.error("Error counting blocked users", e);
+      LOGGER.error("Error counting blocked users", e);
       return 0;
     }
   }
@@ -351,7 +351,7 @@ public class SecurityEventAuditService {
       Set<String> keys = redisTemplate.keys(IP_BLOCKED_PREFIX + "*");
       return keys.size();
     } catch (Exception e) {
-      logger.error("Error counting blocked IPs", e);
+      LOGGER.error("Error counting blocked IPs", e);
       return 0;
     }
   }

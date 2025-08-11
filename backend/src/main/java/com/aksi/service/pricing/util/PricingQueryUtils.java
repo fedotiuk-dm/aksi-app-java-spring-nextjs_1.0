@@ -66,7 +66,7 @@ public class PricingQueryUtils {
 
     // Check for black items (special pricing)
     Integer blackPrice = priceListItem.getPriceBlack();
-    if (isBlackColor(normalizedColor) && blackPrice != null) {
+    if (checkBlackColor(normalizedColor) && blackPrice != null) {
       log.debug("Using black price for item {}: {}", priceListItem.getId(), blackPrice);
       return blackPrice;
     }
@@ -180,7 +180,7 @@ public class PricingQueryUtils {
     return entities.stream().sorted(comparator).toList();
   }
 
-  private boolean isBlackColor(String color) {
+  private boolean checkBlackColor(String color) {
     return "black".equals(color) || "чорний".equals(color);
   }
 

@@ -37,38 +37,38 @@ public class IpAddressUtil {
   public String getClientIpAddress() {
     // Check X-Forwarded-For (most common)
     String ip = getIpFromHeader(X_FORWARDED_FOR);
-    if (isValidIp(ip)) return ip;
+    if (validateIp(ip)) return ip;
 
     // Check X-Real-IP
     ip = request.getHeader(X_REAL_IP);
-    if (isValidIp(ip)) return ip;
+    if (validateIp(ip)) return ip;
 
     // Check Cloudflare headers
     ip = request.getHeader(CF_CONNECTING_IP);
-    if (isValidIp(ip)) return ip;
+    if (validateIp(ip)) return ip;
 
     ip = request.getHeader(TRUE_CLIENT_IP);
-    if (isValidIp(ip)) return ip;
+    if (validateIp(ip)) return ip;
 
     // Check other proxy headers
     ip = getIpFromHeader(X_ORIGINAL_FORWARDED_FOR);
-    if (isValidIp(ip)) return ip;
+    if (validateIp(ip)) return ip;
 
     ip = getIpFromHeader(FORWARDED_FOR);
-    if (isValidIp(ip)) return ip;
+    if (validateIp(ip)) return ip;
 
     ip = getIpFromHeader(X_FORWARDED);
-    if (isValidIp(ip)) return ip;
+    if (validateIp(ip)) return ip;
 
     ip = getIpFromHeader(X_CLUSTER_CLIENT_IP);
-    if (isValidIp(ip)) return ip;
+    if (validateIp(ip)) return ip;
 
     ip = request.getHeader(CLIENT_IP);
-    if (isValidIp(ip)) return ip;
+    if (validateIp(ip)) return ip;
 
     // Parse Forwarded header (RFC 7239)
     ip = parseForwardedHeader();
-    if (isValidIp(ip)) return ip;
+    if (validateIp(ip)) return ip;
 
     // Fall back to remote address
     return request.getRemoteAddr();
@@ -137,7 +137,7 @@ public class IpAddressUtil {
   }
 
   /** Validate if the given string is a valid IP address. */
-  private boolean isValidIp(String ip) {
+  private boolean validateIp(String ip) {
     return ip != null && !ip.isEmpty() && !ip.equalsIgnoreCase("unknown");
   }
 }

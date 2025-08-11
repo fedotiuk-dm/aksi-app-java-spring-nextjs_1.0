@@ -1,377 +1,280 @@
-# 🧼 AKSI Chemical Cleaning Management System
+# 🧼 AKSI Dry Cleaning Order System
 
-**Професійна система управління хімчисткою з Order Wizard**
+Professional dry‑cleaning management system with a production‑grade Order Wizard.
+
+<div align="center">
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Java](https://img.shields.io/badge/Java-21-ED8B00.svg)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.4-brightgreen.svg)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791.svg)
+![Redis](https://img.shields.io/badge/Redis-8--alpine-DC382D.svg)
+![Next.js](https://img.shields.io/badge/Next.js-15.3.4-black.svg)
+![React](https://img.shields.io/badge/React-19.1.0-61DAFB.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg)
+![MUI](https://img.shields.io/badge/MUI-7.1.1-0081CB.svg)
+![React%20Query](https://img.shields.io/badge/React%20Query-5.81.5-FF4154.svg)
+![Zustand](https://img.shields.io/badge/Zustand-5.0.6-4E6E5D.svg)
+![MapStruct](https://img.shields.io/badge/MapStruct-1.6.3-orange.svg)
+![Lombok](https://img.shields.io/badge/Lombok-1.18.38-orange.svg)
+![Liquibase](https://img.shields.io/badge/Liquibase-migrations-2962FF.svg)
+![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-85EA2D.svg)
+![Springdoc](https://img.shields.io/badge/Springdoc-2.8.9-85EA2D.svg)
+![PDFBox](https://img.shields.io/badge/PDFBox-3.0.5-555555.svg)
+![ZXing](https://img.shields.io/badge/ZXing-3.5.3-000000.svg)
+![iText](https://img.shields.io/badge/iText-5.5.13.4-3F7E00.svg)
+![Docker](https://img.shields.io/badge/Docker-compose-2496ED.svg)
+![Maven](https://img.shields.io/badge/Maven-3.9+-C71A36.svg)
+[![Orval](https://img.shields.io/badge/Orval-7.11.1-4B32C3.svg)](https://orval.dev)
+[![CI](https://github.com/fedotiuk-dm/aksi-app-java-spring-nextjs_1.0/actions/workflows/update-readme-versions.yml/badge.svg?branch=main)](https://github.com/fedotiuk-dm/aksi-app-java-spring-nextjs_1.0/actions/workflows/update-readme-versions.yml)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.4-brightgreen.svg)
-![Next.js](https://img.shields.io/badge/Next.js-15.3.0-black.svg)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 
-[![Documentation](https://img.shields.io/badge/docs-available-blue.svg)](#-документація)
-[![Architecture](https://img.shields.io/badge/architecture-DDD%20%2B%20FSD-purple.svg)](#-архітектура)
+<br/>
 
----
-
-## 📋 Зміст
-
-- [🎯 Про проект](#-про-проект)
-- [✨ Ключові можливості](#-ключові-можливості)
-- [🛠️ Технологічний стек](#️-технологічний-стек)
-- [🏗️ Архітектура](#️-архітектура)
-- [🚀 Швидкий старт](#-швидкий-старт)
-- [📖 Документація](#-документація)
-- [🤝 Внесок у розробку](#-внесок-у-розробку)
-- [👥 Команда розробки](#-команда-розробки)
-- [📄 Ліцензія](#-ліцензія)
-
----
-
-## 🎯 Про проект
-
-**AKSI Chemical Cleaning System** — це сучасна система управління хімчисткою, розроблена з використанням принципів Domain-Driven Design (DDD) та Feature-Sliced Design (FSD). Система забезпечує повний цикл обслуговування клієнтів: від прийому замовлень до видачі готових речей.
-
-### 🎪 Order Wizard - Серце системи
-
-Інтерактивний покроковий майстер оформлення замовлень з 4 основними етапами:
-
-1. **👤 Клієнт та базова інформація** - Пошук/створення клієнта, базові дані замовлення
-2. **👕 Менеджер предметів** - Циклічне додавання предметів з детальними характеристиками
-3. **⚙️ Загальні параметри** - Знижки, терміновість, спосіб оплати
-4. **📋 Підтвердження та квитанція** - Фінальний перегляд та формування документів
-
----
-
-## ✨ Ключові можливості
-
-<div align="center">
-
-| 🔍 **Управління клієнтами** | 📦 **Управління замовленнями** |   💰 **Розрахунок вартості**   |
-| :-------------------------: | :----------------------------: | :----------------------------: |
-| Пошук та створення клієнтів |    Покроковий Order Wizard     |  Гнучка система модифікаторів  |
-|      Історія замовлень      |  Циклічне додавання предметів  | Автоматичні знижки та надбавки |
-|    Контактна інформація     |     Детальна категоризація     |    Прозорий розрахунок ціни    |
-
-| 📸 **Фотодокументація** | 🧾 **Формування документів** |   📊 **Звітність**   |
-| :---------------------: | :--------------------------: | :------------------: |
-|  Фото до/після обробки  |     Професійні квитанції     |  Детальна аналітика  |
-|  Автоматичне стиснення  |   QR-коди для відстеження    |   Фінансові звіти    |
-|    Галерея зображень    |        PDF генерація         | Статистика по філіях |
+[![Architecture](https://img.shields.io/badge/architecture-DDD%20%2B%20FSD-purple.svg)](#-architecture)
+[![Docs](https://img.shields.io/badge/docs-available-blue.svg)](#-documentation)
 
 </div>
 
 ---
 
-## 🛠️ Технологічний стек
+### 🔗 Quick links
+
+- Overview • Features • Tech Stack • Architecture • Structure • Quick Start • Docs • Contributing • License
+
+---
+
+## ✨ Overview
+
+AKSI is a modern dry‑cleaning order management system built with Domain‑Driven Design (DDD) on the backend and Feature‑Sliced Design (FSD) on the frontend. The system covers the full customer journey from intake to delivery, with a robust guided Order Wizard at its core.
+
+#### Order Wizard at a glance
+
+1. Client & basic order info
+2. Item manager with multi‑step item flow and live pricing
+3. Global order parameters (discounts, urgency, payment)
+4. Review and printable receipt (PDF with QR)
+
+---
+
+## 🧩 Key Features
 
 <div align="center">
 
-### Backend
+|       👤 Clients       |         🧺 Orders         |            💰 Pricing             |
+| :--------------------: | :-----------------------: | :-------------------------------: |
+| Quick search & history |    Guided Order Wizard    | Transparent modifiers & discounts |
+|    Contacts & tags     | Cyclic item add/edit flow |       Live preview & totals       |
+|   GDPR‑friendly data   |      Status tracking      |        Rounding & policies        |
 
-[![Java](https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.java.net/)
-[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.4-6DB33F?style=for-the-badge&logo=spring-boot)](https://spring.io/projects/spring-boot)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Hibernate](https://img.shields.io/badge/Hibernate-59666C?style=for-the-badge&logo=hibernate&logoColor=white)](https://hibernate.org/)
-
-### Frontend
-
-[![Next.js](https://img.shields.io/badge/Next.js-15.3.0-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Material UI](https://img.shields.io/badge/Material_UI-7.0.2-0081CB?style=for-the-badge&logo=mui&logoColor=white)](https://mui.com/)
-[![React Query](https://img.shields.io/badge/React_Query-5.72.2-FF4154?style=for-the-badge&logo=react-query&logoColor=white)](https://tanstack.com/query)
-
-### State Management & Forms
-
-[![Zustand](https://img.shields.io/badge/Zustand-5.0.3-FF6B6B?style=for-the-badge)](https://github.com/pmndrs/zustand)
-[![React Hook Form](https://img.shields.io/badge/React_Hook_Form-7.55.0-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white)](https://react-hook-form.com/)
-[![Zod](https://img.shields.io/badge/Zod-3.24.2-3E67B1?style=for-the-badge)](https://zod.dev/)
-
-### DevOps & Tools
-
-[![Maven](https://img.shields.io/badge/Apache_Maven-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)](https://maven.apache.org/)
-[![Liquibase](https://img.shields.io/badge/Liquibase-2962FF?style=for-the-badge&logo=liquibase&logoColor=white)](https://www.liquibase.org/)
-[![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://swagger.io/)
+|      📸 Photos       |     🧾 Documents     |            🔐 Security             |
+| :------------------: | :------------------: | :--------------------------------: |
+| Before/After gallery | PDF receipts with QR | Cookie‑based auth + Redis sessions |
+|   Auto‑thumbnails    | Localized templates  |         Role‑based access          |
 
 </div>
 
 ---
 
-## 🏗️ Архітектура
+## 🛠 Tech Stack
 
-### Принцип "DDD inside, FSD outside"
+### Backend (Java 21 + Spring Boot 3.5.4)
 
-<div align="center">
+**Core Framework:**
+
+- Java 21, Spring Boot 3.5.4
+- Spring Web, Data JPA, Validation, Security, Actuator
+- Spring Session with Redis for distributed sessions
+
+**Database & Persistence:**
+
+- PostgreSQL 17 with Liquibase migrations
+- Spring Data JPA with Hibernate
+- JPA Specifications for dynamic queries
+
+**Mapping & Code Generation:**
+
+- MapStruct 1.6.3 for DTO ↔ Entity mapping
+- Lombok 1.18.38 for boilerplate reduction
+- OpenAPI Generator for DTO/Controller generation
+
+**Document Processing:**
+
+- Apache PDFBox 3.0.5 for receipt PDF generation
+- ZXing 3.5.3 for QR code generation
+- Custom receipt templating system
+
+**Security & Auth:**
+
+- Cookie-based authentication (no JWT on client)
+- Spring Security with Redis session store
+- Role-based access control with permissions
+
+### Frontend (Next.js 15 + React 19)
+
+**Core Framework:**
+
+- Next.js 15.3.4 with App Router
+- React 19.1.0, TypeScript 5
+- Feature-Sliced Design (FSD) architecture
+
+**UI & State Management:**
+
+- Material-UI 7.1.1 (MUI) with custom theming
+- TanStack Query 5.81.5 for server state
+- Zustand 5.0.6 for client UI state
+- Zod 4.0.5 for runtime validation
+
+**API Integration:**
+
+- Orval for auto-generated React Query hooks
+- OpenAPI → TypeScript client generation
+- Axios with interceptors for HTTP handling
+
+### DevOps & Quality
+
+**Build & Testing:**
+
+- Maven 3.9+ with multi-profile builds
+- JUnit 5 for backend testing
+- Checkstyle, PMD, SpotBugs for code quality
+- Jest + Testing Library for frontend
+
+**Development:**
+
+- Docker Compose for local environment
+- Hot reload for both frontend and backend
+- Swagger UI for API documentation
+
+---
+
+## 🏗 Architecture
+
+Principle: DDD inside (backend), FSD outside (frontend). Controllers are thin; business logic lives in domain services. OpenAPI contracts are the single source of truth.
 
 ```mermaid
 graph TB
-    subgraph "🎨 FSD - Presentation Layer"
-        UI[UI Components]
-        Features[Features]
-        Pages[Pages]
-    end
+  subgraph "FSD (Frontend)"
+    UI[UI Components]
+    Features[Features]
+    Pages[Pages]
+  end
 
-    subgraph "🧠 DDD - Domain Layer"
-        Entities[Entities]
-        Services[Domain Services]
-        Repositories[Repositories]
-        UseCases[Use Cases]
-        Events[Domain Events]
-    end
+  subgraph "DDD (Backend)"
+    Entities[Entities]
+    Services[Domain Services]
+    Repositories[Repositories]
+    UseCases[Use Cases]
+    Events[Domain Events]
+  end
 
-    subgraph "🔧 Infrastructure"
-        API[REST API]
-        DB[(PostgreSQL)]
-        External[External Services]
-    end
+  subgraph "Infrastructure"
+    API[REST API]
+    DB[(PostgreSQL)]
+    External[External Services]
+  end
 
-    UI --> Features
-    Features --> UseCases
-    UseCases --> Services
-    Services --> Entities
-    Services --> Repositories
-    Repositories --> API
-    API --> DB
+  UI --> Features
+  Features --> API
+  API --> UseCases
+  UseCases --> Services
+  Services --> Entities
+  Services --> Repositories
+  Repositories --> DB
 ```
 
-</div>
+Backend principles
 
-### Ключові принципи:
-
-- **🎯 Single Responsibility** - Кожен компонент має одну відповідальність
-- **🔒 Encapsulation** - Приховування внутрішньої реалізації
-- **🔄 Dependency Inversion** - Залежність від абстракцій
-- **📦 Modular Architecture** - Модульна структура з чіткими межами
-- **🧪 Testability** - Легке тестування всіх компонентів
+- API‑first (OpenAPI) as the source of truth
+- Cookie‑based auth; no JWT on the client
+- Controllers → Services → Repository (no business logic in controllers)
+- DTO ↔ Entity mapping via MapStruct
+- Database migrations via Liquibase
 
 ---
 
-## 🚀 Швидкий старт
+## 📂 Project Structure
 
-### Передумови
-
-- **Java 21+**
-- **Node.js 18+**
-- **PostgreSQL 17+**
-- **Maven 3.9+**
-
-### 1️⃣ Клонування репозиторію
-
-```bash
-git clone https://github.com/your-username/aksi-app.git
-cd aksi-app
+```
+backend/
+  src/main/resources/openapi/       # OpenAPI contracts (single source of truth)
+  architecture/                     # Core architecture docs
+frontend/
+  shared/api/generated/             # Orval‑generated React Query hooks
+  features/                         # Thin FSD UI features
+docker/                             # docker-compose for local dev
 ```
 
-### 2️⃣ Налаштування бази даних
+---
 
-```sql
-CREATE DATABASE aksi_chemical_cleaning;
-CREATE USER aksi_user WITH PASSWORD 'your_password';
-GRANT ALL PRIVILEGES ON DATABASE aksi_chemical_cleaning TO aksi_user;
+## 🚀 Quick Start
+
+Prerequisites
+
+- Java 21+, Maven 3.9+
+- Node.js 18+
+- PostgreSQL 17
+
+Backend
+
 ```
-
-### 3️⃣ Запуск Backend
-
-```bash
 cd backend
-mvn clean install
+mvn clean install -Pdev-fast
 mvn spring-boot:run
 ```
 
-### 4️⃣ Запуск Frontend
+Frontend
 
-```bash
+```
 cd frontend
 npm install
 npm run dev
 ```
 
-### 5️⃣ Доступ до додатку
-
-- **Frontend:** http://localhost:3000
-- **Backend API:** http://localhost:8080
-- **Swagger UI:** http://localhost:8080/swagger-ui.html
-
----
-
-## 📖 Документація
-
-### 📚 Архітектурна документація
-
-- [🏛️ Domain-Driven Design принципи](./docs/architecture/ddd-principles.md)
-- [🎨 Feature-Sliced Design структура](./docs/architecture/fsd-structure.md)
-- [🔄 Order Wizard workflow](./docs/features/order-wizard-workflow.md)
-
-### 🛠️ Технічна документація
-
-- [⚙️ Налаштування середовища розробки](./docs/setup/development-environment.md)
-- [🗄️ Схема бази даних](./docs/database/schema.md)
-- [🔌 API документація](./docs/api/endpoints.md)
-
-### 📋 Бізнес-логіка
-
-- [💰 Система розрахунку цін](./docs/business/pricing-system.md)
-- [👤 Управління клієнтами](./docs/business/client-management.md)
-- [📦 Життєвий цикл замовлення](./docs/business/order-lifecycle.md)
-
----
-
-## 🤝 Внесок у розробку
-
-### Правила розробки
-
-1. **🏗️ Дотримуйтесь архітектури "DDD inside, FSD outside"**
-2. **🔌 Використовуйте готові Orval хуки замість кастомних API викликів**
-3. **🗂️ Zustand тільки для UI стану, React Query для API даних**
-4. **📏 Кожен файл - одна відповідальність**
-5. **🔒 Повна типізація з TypeScript + Zod**
-
-### Workflow розробки
-
-```bash
-# 1. Створіть feature branch
-git checkout -b feature/your-feature-name
-
-# 2. Розробіть функціональність в доменному шарі
-# domains/your-domain/
-
-# 3. Створіть "тонкі" UI компоненти
-# features/your-feature/
-
-# 4. Запустіть тести та лінтинг
-npm run test
-npm run lint
-
-# 5. Створіть Pull Request
-git push origin feature/your-feature-name
-```
-
-### 📋 Code Style
-
-- **ESLint + Prettier** для Frontend
-- **Checkstyle + SpotBugs** для Backend
-- **Conventional Commits** для повідомлень комітів
-- **Husky** для pre-commit hooks
-
----
-
-## 👥 Команда розробки
-
-<div align="center">
-
-<table>
-<tr>
-<td align="center">
-<img src="https://via.placeholder.com/100x100/4A90E2/FFFFFF?text=Lead" width="100px;" alt=""/><br />
-<b>Fedotiuk Dmytro</b><br />
-<sub>Developer</sub><br />
-<a href="https://github.com/fedotiuk-dm">💻</a>
-<a href="mailto:aksi.vn.ua@gmail.com">📧</a>
-</td>
-<td align="center">
-<img src="https://via.placeholder.com/100x100/E24A4A/FFFFFF?text=FE" width="100px;" alt=""/><br />
-</table>
-
----
-
-**📞 Зв'язок з нами:**
-
-[![Website](https://img.shields.io/badge/Website-aksi.vn.ua-blue?style=flat-square)](https://aksi.vn.ua)
-[![Email](https://img.shields.io/badge/Email-aksi.vn.ua@gmail.com-red?style=flat-square)](mailto:aksi.vn.ua@gmail.com)
-[![Telegram](https://img.shields.io/badge/Telegram-@aksi_support-blue?style=flat-square)](https://t.me/aksi_vnua)
-
-</div>
-
----
-
-## 📄 Ліцензія
-
-<div align="center">
-
-### MIT License
+Docker (optional)
 
 ```
-Copyright (c) 2025 AKSI Chemical Cleaning
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+cd docker
+docker compose -f docker-compose.dev.yml up -d
 ```
 
----
+URLs
 
-<table>
-<tr>
-<td>
-
-**🟢 Дозволено:**
-
-- ✅ Комерційне використання
-- ✅ Модифікація
-- ✅ Розподіл
-- ✅ Приватне використання
-
-</td>
-<td>
-
-**🔴 Обмеження:**
-
-- ❌ Відповідальність
-- ❌ Гарантії
-
-</td>
-<td>
-
-**📋 Умови:**
-
-- 📄 Включення ліцензії
-- 📄 Включення копірайту
-
-</td>
-</tr>
-</table>
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-</div>
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8080
+- Swagger UI: http://localhost:8080/swagger-ui.html
 
 ---
 
-## ❤️ Підтримка проекту
+## 📚 Documentation
 
-<div align="center">
+Architecture
 
-Якщо цей проект корисний для вас, підтримайте нас:
+- OpenAPI‑first approach: `backend/architecture/OPENAPI_FIRST_APPROACH.md`
+- Domain architecture: `backend/architecture/DOMAIN_ARCHITECTURE.md`
+- Project structure: `backend/architecture/PROJECT_STRUCTURE.md`
+- Domain interactions: `backend/architecture/DOMAIN_INTERACTIONS.md`
+- Cookie‑based auth: `backend/architecture/COOKIE_BASED_AUTH.md`
 
-[![Star on GitHub](https://img.shields.io/badge/⭐_Star_on_GitHub-yellow?style=for-the-badge)](https://github.com/fedotiuk-dm/aksi-app-java-spring-nextjs_1.0/tree/ddd_inside_fsd_outside_order_wizard)
-[![Fork on GitHub](https://img.shields.io/badge/🍴_Fork_on_GitHub-green?style=for-the-badge)](https://github.com/fedotiuk-dm/aksi-app-java-spring-nextjs_1.0/tree/ddd_inside_fsd_outside_order_wizard)
+Order Wizard (frontend notes)
 
-**Дякуємо всім контрибюторам! 🙏**
-
-</div>
+- FSD implementation: `docs-helpers/frontend/order_wizard_fsd_implementation.md`
+- Single‑page Order Wizard architecture: `docs-helpers/frontend/SinglePage_OrderWizard_Architecture.md`
 
 ---
 
-<div align="center">
+## 🤝 Contributing
 
-**Зроблено з ❤️ командою AKSI**
+- Follow DDD inside, FSD outside
+- Use Orval‑generated hooks directly in UI (no custom API clients)
+- Zustand only for UI state; API data lives in React Query
+- Keep files focused and testable; one responsibility per file
+- Conventional Commits, ESLint/Prettier (FE), Checkstyle/PMD (BE)
 
-![Visitors](https://visitor-badge.laobi.icu/badge?page_id=your-username.aksi-app)
+---
 
-</div>
-# aksi-app-java-spring-nextjs_1.1
-# aksi-app-java-spring-nextjs_1.1
+## 📄 License
+
+MIT License © 2025 AKSI Chemical Cleaning
+
+See LICENSE file or the badges above for details.
