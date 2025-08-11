@@ -136,19 +136,6 @@ public class AuthQueryService {
   }
 
   /**
-   * Get current customer ID from session when HttpSession is available directly. Alternative to
-   * getCurrentUserIdFromContext() for controllers with session access. In current implementation,
-   * customer ID equals user ID. TODO: Implement proper user-customer mapping when customer domain
-   * is implemented.
-   *
-   * @param session HTTP session
-   * @return customer ID or null
-   */
-  public UUID getCurrentCustomerId(HttpSession session) {
-    return getUserIdFromSession(session);
-  }
-
-  /**
    * Get current user ID from Spring Security context. This method is useful when HttpSession is not
    * available but user is authenticated. Note: This assumes the username in SecurityContext is the
    * user ID.

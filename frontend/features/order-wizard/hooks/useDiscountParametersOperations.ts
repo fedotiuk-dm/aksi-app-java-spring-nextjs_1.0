@@ -5,9 +5,10 @@ import { generateDiscountOptions, getDiscountPercentage } from '@/features/order
 import { useCartOperations } from './useCartOperations';
 
 export const useDiscountParametersOperations = () => {
-  const { updateModifiers, isUpdatingModifiers, errors } = useCartOperations(true);
+  const { updateModifiers, isUpdatingModifiers, errors } = useCartOperations(false);
 
   const {
+    selectedCustomerId,
     selectedDiscount,
     customDiscountPercentage,
     setSelectedDiscount,
@@ -23,6 +24,11 @@ export const useDiscountParametersOperations = () => {
 
     const discountType = type as UpdateCartModifiersRequestDiscountType;
     setSelectedDiscount(discountType);
+
+    // Only update cart modifiers if customer is selected
+    if (!selectedCustomerId) {
+      return;
+    }
 
     // Get correct percentage for the discount type
     const correctPercentage = getDiscountPercentage(discountType, customDiscountPercentage);
@@ -45,6 +51,11 @@ export const useDiscountParametersOperations = () => {
 
   const handlePercentageBlur = async (event: React.FocusEvent<HTMLInputElement>) => {
     const percentage = Number(event.target.value);
+    
+    // Only update cart modifiers if customer is selected
+    if (!selectedCustomerId) {
+      return;
+    }
     
     if (selectedDiscount === 'OTHER' && percentage >= 0 && percentage <= 100 && !isUpdatingModifiers) {
       await updateModifiers({

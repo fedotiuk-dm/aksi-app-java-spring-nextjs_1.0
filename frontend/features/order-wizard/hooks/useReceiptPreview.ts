@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useGenerateReceiptPreview } from '@api/receipt';
 import { useOrderWizardStore } from '@/features/order-wizard';
 import { useGetCustomer } from '@api/customer';
@@ -8,7 +7,6 @@ import { useOrderWizardCart } from './useOrderWizardCart';
 export const useReceiptPreview = () => {
   const { selectedCustomerId, selectedBranchId } = useOrderWizardStore();
   const { cart } = useOrderWizardCart();
-  const [showReceiptPreview, setShowReceiptPreview] = useState(false);
 
   const previewMutation = useGenerateReceiptPreview();
   const customerQ = useGetCustomer(selectedCustomerId || '', {
@@ -57,7 +55,6 @@ export const useReceiptPreview = () => {
       const previewBlob = await previewMutation.mutateAsync({ data: receiptData });
       const url = URL.createObjectURL(previewBlob);
       window.open(url, '_blank');
-      setShowReceiptPreview(true);
     } catch (error) {
       console.error('❌ Preview generation failed:', error);
     }
@@ -65,7 +62,6 @@ export const useReceiptPreview = () => {
 
   return {
     handleReceiptPreview,
-    showReceiptPreview,
     canPreview: !!(cart?.id && selectedCustomerId && selectedBranchId),
     isGeneratingPreview: previewMutation.isPending,
     previewError: previewMutation.error,

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useGetCustomer } from '@api/customer';
 import { useGetBranchById } from '@api/branch';
 import { useOrderWizardStore } from '@/features/order-wizard';
-import { useOrderWizardCart } from './useOrderWizardCart';
+import { useCartOperations } from './useCartOperations';
 
 /**
  * Centralized customer and branch state management
@@ -17,7 +17,9 @@ export const useCustomerState = () => {
     setSelectedBranchId 
   } = useOrderWizardStore();
   
-  const { cart } = useOrderWizardCart();
+  // Only enable cart operations when customer is actually selected
+  const cartEnabled = !!selectedCustomerId;
+  const { cart } = useCartOperations(cartEnabled);
 
   // Get customer data from React Query
   const { data: selectedCustomer, isLoading: loadingCustomer } = useGetCustomer(

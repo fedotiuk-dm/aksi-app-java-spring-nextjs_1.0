@@ -9,6 +9,7 @@ export const useExecutionParametersOperations = () => {
   const { refreshCart } = useOrderWizardCart();
 
   const {
+    selectedCustomerId,
     selectedUrgency,
     expectedDate,
     setSelectedUrgency,
@@ -21,6 +22,11 @@ export const useExecutionParametersOperations = () => {
   const handleUrgencyChange = async (value: string) => {
     const urgencyType = value as UpdateCartModifiersRequestUrgencyType;
     setSelectedUrgency(urgencyType);
+
+    // Only update cart modifiers if customer is selected
+    if (!selectedCustomerId) {
+      return;
+    }
 
     const requestData: UpdateCartModifiersRequest = {
       urgencyType,
@@ -40,17 +46,20 @@ export const useExecutionParametersOperations = () => {
     const date = event.target.value;
     setExpectedDate(date);
 
-    if (selectedUrgency) {
-      const requestData: UpdateCartModifiersRequest = {
-        urgencyType: selectedUrgency,
-        ...(date && { expectedCompletionDate: new Date(date + 'T00:00:00Z').toISOString() })
-      };
-
-      await updateModifiersMutation.mutateAsync({
-        data: requestData
-      });
-      await refreshCart();
+    // Only update cart modifiers if customer is selected and urgency type is set
+    if (!selectedCustomerId || !selectedUrgency) {
+      return;
     }
+
+    const requestData: UpdateCartModifiersRequest = {
+      urgencyType: selectedUrgency,
+      ...(date && { expectedCompletionDate: new Date(date + 'T00:00:00Z').toISOString() })
+    };
+
+    await updateModifiersMutation.mutateAsync({
+      data: requestData
+    });
+    await refreshCart();
   };
 
   // Get minimum date (today)
