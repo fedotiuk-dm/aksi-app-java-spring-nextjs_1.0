@@ -6,19 +6,19 @@
 
 ## MUI Grid Fix
 
-**Проблема:** TypeScript помилки з Grid component - старий API vs новий API.
+**Problem:** TypeScript errors with Grid component - old API vs new API.
 
-**Рішення:** В новій версії MUI Grid:
-- Замість `item` prop - всі Grid елементи автоматично items
-- Замість `xs={12}` використовувати `size={12}` або `size={{ xs: 12, sm: 6 }}`
-- Імпорт: `import { Grid } from '@mui/material'` (не Grid2!)
-- Container залишається `<Grid container>`
+**Solution:** In the new version of MUI Grid:
+- Instead of `item` prop - all Grid elements are automatically items
+- Instead of `xs={12}` use `size={12}` or `size={{ xs: 12, sm: 6 }}`
+- Import: `import { Grid } from '@mui/material'` (not Grid2!)
+- Container remains `<Grid container>`
 
-**Приклад:**
+**Example:**
 ```typescript
-// Старий (не працює):
+// Old (not working):
 <Grid item xs={12} sm={6} md={4}>
 
-// Новий (правильний):
+// New (correct):
 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
 ```

@@ -1,43 +1,43 @@
-# OpenAPI-First підхід до розробки
+# OpenAPI-First Development Approach
 
-## Концепція
+## Concept
 
-OpenAPI-First означає, що ми спочатку проектуємо API через OpenAPI специфікацію, а потім генеруємо код на її основі. Це забезпечує:
+OpenAPI-First means that we first design the API through OpenAPI specification, and then generate code based on it. This ensures:
 
-- Єдине джерело правди для API
-- Автоматичну генерацію DTO та контролерів
-- Синхронізацію frontend/backend через спільну специфікацію
-- Автоматичну документацію
+- Single source of truth for API
+- Automatic generation of DTOs and controllers
+- Frontend/backend synchronization through shared specification
+- Automatic documentation
 
-## Структура проекту з OpenAPI
+## Project Structure with OpenAPI
 
 ```
 JavaSpringDryCleaning/
-├── api-specs/                     # OpenAPI специфікації
-│   ├── common/                    # Спільні компоненти
+├── api-specs/                     # OpenAPI specifications
+│   ├── common/                    # Shared components
 │   │   ├── schemas/              
-│   │   │   ├── error.yaml        # Стандартні помилки
-│   │   │   ├── pagination.yaml  # Пагінація
-│   │   │   └── money.yaml       # Money тип
+│   │   │   ├── error.yaml        # Standard errors
+│   │   │   ├── pagination.yaml  # Pagination
+│   │   │   └── money.yaml       # Money type
 │   │   └── parameters/
-│   │       └── common.yaml      # Спільні параметри
+│   │       └── common.yaml      # Common parameters
 │   │
-│   ├── auth-api.yaml            # Auth API специфікація
-│   ├── user-api.yaml            # User API специфікація
-│   ├── customer-api.yaml        # Customer API специфікація
-│   ├── order-api.yaml           # Order API специфікація
-│   ├── pricing-api.yaml         # Pricing API специфікація
-│   └── main-api.yaml            # Головний файл з $ref
+│   ├── auth-api.yaml            # Auth API specification
+│   ├── user-api.yaml            # User API specification
+│   ├── customer-api.yaml        # Customer API specification
+│   ├── order-api.yaml           # Order API specification
+│   ├── pricing-api.yaml         # Pricing API specification
+│   └── main-api.yaml            # Main file with $ref
 │
-├── dry-cleaning-api/            # Згенерований код
+├── dry-cleaning-api/            # Generated code
 │   ├── pom.xml
 │   └── target/generated-sources/
 │       └── openapi/
-│           ├── model/          # DTO класи
-│           └── api/            # Інтерфейси контролерів
+│           ├── model/          # DTO classes
+│           └── api/            # Controller interfaces
 ```
 
-## Приклад OpenAPI специфікації
+## OpenAPI Specification Example
 
 ### customer-api.yaml
 ```yaml
@@ -45,13 +45,13 @@ openapi: 3.0.3
 info:
   title: Customer API
   version: 1.0.0
-  description: API для управління клієнтами хімчистки
+  description: API for dry cleaning customer management
 
 paths:
   /api/v1/customers:
     post:
       operationId: createCustomer
-      summary: Створити нового клієнта
+      summary: Create new customer
       tags:
         - customers
       requestBody:
@@ -62,7 +62,7 @@ paths:
               $ref: '#/components/schemas/CreateCustomerRequest'
       responses:
         '201':
-          description: Клієнт створений
+          description: Customer created
           content:
             application/json:
               schema:
@@ -74,25 +74,25 @@ paths:
     
     get:
       operationId: searchCustomers
-      summary: Пошук клієнтів
+      summary: Search customers
       tags:
         - customers
       parameters:
         - name: query
           in: query
-          description: Пошуковий запит
+          description: Search query
           schema:
             type: string
         - name: phone
           in: query
-          description: Телефон для пошуку
+          description: Phone number for search
           schema:
             type: string
         - $ref: '#/components/parameters/PageNumber'
         - $ref: '#/components/parameters/PageSize'
       responses:
         '200':
-          description: Список клієнтів
+          description: List of customers
           content:
             application/json:
               schema:
@@ -101,7 +101,7 @@ paths:
   /api/v1/customers/{customerId}:
     get:
       operationId: getCustomerById
-      summary: Отримати клієнта за ID
+      summary: Get customer by ID
       tags:
         - customers
       parameters:
@@ -113,7 +113,7 @@ paths:
             format: uuid
       responses:
         '200':
-          description: Деталі клієнта
+          description: Customer details
           content:
             application/json:
               schema:
@@ -134,20 +134,20 @@ components:
           type: string
           minLength: 2
           maxLength: 50
-          description: Ім'я клієнта
+          description: Customer first name
         lastName:
           type: string
           minLength: 2
           maxLength: 50
-          description: Прізвище клієнта
+          description: Customer last name
         phone:
           type: string
           pattern: '^\+380\d{9}$'
-          description: Телефон у форматі +380XXXXXXXXX
+          description: Phone in format +380XXXXXXXXX
         email:
           type: string
           format: email
-          description: Email адреса
+          description: Email address
         address:
           $ref: '#/components/schemas/Address'
         communicationPreferences:
@@ -206,7 +206,7 @@ components:
         - OTHER
 ```
 
-## Maven конфігурація для генерації
+## Maven Configuration for Generation
 
 ### pom.xml
 ```xml
@@ -242,7 +242,7 @@ components:
 </plugin>
 ```
 
-## Імплементація згенерованих інтерфейсів
+## Implementation of Generated Interfaces
 
 ### CustomerController.java
 ```java
@@ -282,7 +282,7 @@ public class CustomerController implements CustomersApi {
 }
 ```
 
-## Cookie-based Authentication специфікація
+## Cookie-based Authentication Specification
 
 ### auth-api.yaml
 ```yaml
@@ -290,7 +290,7 @@ paths:
   /api/v1/auth/login:
     post:
       operationId: login
-      summary: Вхід в систему
+      summary: System login
       requestBody:
         required: true
         content:
@@ -299,7 +299,7 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Успішний вхід
+          description: Successful login
           headers:
             Set-Cookie:
               description: Session cookie
@@ -314,12 +314,12 @@ paths:
   /api/v1/auth/logout:
     post:
       operationId: logout
-      summary: Вихід з системи
+      summary: System logout
       security:
         - cookieAuth: []
       responses:
         '200':
-          description: Успішний вихід
+          description: Successful logout
           headers:
             Set-Cookie:
               description: Clear session cookie
@@ -330,12 +330,12 @@ paths:
   /api/v1/auth/refresh:
     post:
       operationId: refreshToken
-      summary: Оновити сесію
+      summary: Refresh session
       security:
         - cookieAuth: []
       responses:
         '200':
-          description: Сесія оновлена
+          description: Session refreshed
           headers:
             Set-Cookie:
               description: New session cookie
@@ -350,37 +350,37 @@ components:
       name: SESSION
 ```
 
-## Переваги OpenAPI-First
+## OpenAPI-First Advantages
 
-### 1. Контракт як код
-- API специфікація версіонується в Git
-- Code review для змін API
-- Історія змін контракту
+### 1. Contract as Code
+- API specification is versioned in Git
+- Code review for API changes
+- Contract change history
 
-### 2. Автоматична генерація
-- DTO з валідацією
-- Інтерфейси контролерів
-- Клієнтські SDK
-- Документація (Swagger UI)
+### 2. Automatic Generation
+- DTOs with validation
+- Controller interfaces
+- Client SDKs
+- Documentation (Swagger UI)
 
 ### 3. Type Safety
-- Строга типізація
-- Compile-time перевірки
-- Відсутність розбіжностей між документацією та кодом
+- Strong typing
+- Compile-time checks
+- No discrepancies between documentation and code
 
 ### 4. Parallel Development
-- Frontend може почати розробку одразу після створення специфікації
-- Mock server на основі специфікації
+- Frontend can start development immediately after specification creation
+- Mock server based on specification
 - Contract testing
 
-## Додаткові інструменти
+## Additional Tools
 
 ### 1. Redocly CLI
 ```bash
-# Валідація специфікації
+# Specification validation
 redocly lint api-specs/main-api.yaml
 
-# Об'єднання файлів
+# File bundling
 redocly bundle api-specs/main-api.yaml -o dist/api.yaml
 ```
 
@@ -396,36 +396,36 @@ rules:
 
 ### 3. Mock Server (Prism)
 ```bash
-# Запуск mock server
+# Run mock server
 prism mock api-specs/main-api.yaml
 
-# Frontend може працювати з mock API
+# Frontend can work with mock API
 curl http://localhost:4010/api/v1/customers
 ```
 
 ## Best Practices
 
-### 1. Модульність
-- Окремі файли для кожного домену
-- Спільні компоненти в common/
-- Використання $ref для reusability
+### 1. Modularity
+- Separate files for each domain
+- Shared components in common/
+- Using $ref for reusability
 
-### 2. Версіонування
-- Semantic versioning для API
+### 2. Versioning
+- Semantic versioning for API
 - Backward compatibility
 - Deprecation strategy
 
-### 3. Валідація
+### 3. Validation
 - Bean Validation annotations
 - Custom validators
 - Request/Response validation
 
 ### 4. Security
-- Security schemes в специфікації
+- Security schemes in specification
 - CORS configuration
 - Rate limiting headers
 
-## Інтеграція з CI/CD
+## CI/CD Integration
 
 ```yaml
 # .github/workflows/api.yml
@@ -448,4 +448,4 @@ jobs:
           git diff --exit-code
 ```
 
-Такий підхід забезпечує надійну та масштабовану розробку API з мінімальними зусиллями на підтримку документації та клієнтського коду.
+This approach ensures reliable and scalable API development with minimal effort for documentation and client code maintenance.

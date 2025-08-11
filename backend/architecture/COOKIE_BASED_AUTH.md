@@ -1,43 +1,43 @@
 # Cookie-Based Authentication
 
-## Чому Cookie замість JWT в Header?
+## Why Cookie Instead of JWT in Header?
 
-### Переваги Cookie-based auth:
-1. **Безпека**:
-   - HttpOnly cookies не доступні через JavaScript (захист від XSS)
-   - Secure flag - передача тільки через HTTPS
-   - SameSite - захист від CSRF атак
+### Advantages of Cookie-based auth:
+1. **Security**:
+   - HttpOnly cookies are not accessible via JavaScript (XSS protection)
+   - Secure flag - transmission only over HTTPS
+   - SameSite - CSRF attack protection
 
-2. **Простота**:
-   - Браузер автоматично відправляє cookies
-   - Не потрібно зберігати токени в localStorage
-   - Автоматичне видалення при закритті браузера (session cookies)
+2. **Simplicity**:
+   - Browser automatically sends cookies
+   - No need to store tokens in localStorage
+   - Automatic deletion when browser is closed (session cookies)
 
-3. **Управління сесіями**:
-   - Можливість invalidate сесії на сервері
-   - Централізоване управління активними сесіями
-   - Легше реалізувати "вийти з усіх пристроїв"
+3. **Session Management**:
+   - Ability to invalidate sessions on server
+   - Centralized management of active sessions
+   - Easier to implement "logout from all devices"
 
-## Архітектура
+## Architecture
 
 ### Auth Flow
 ```
 1. Login: POST /api/v1/auth/login
-   -> Перевірка credentials
-   -> Створення сесії в Redis/DB
+   -> Credential verification
+   -> Session creation in Redis/DB
    -> Set-Cookie: SESSION=<sessionId>; HttpOnly; Secure; SameSite=Strict
 
 2. Authenticated Request: GET /api/v1/orders
    -> Cookie: SESSION=<sessionId>
-   -> Перевірка сесії в Redis/DB
-   -> Виконання запиту
+   -> Session verification in Redis/DB
+   -> Request execution
 
 3. Logout: POST /api/v1/auth/logout
-   -> Видалення сесії з Redis/DB
+   -> Session deletion from Redis/DB
    -> Set-Cookie: SESSION=; Max-Age=0
 ```
 
-## Імплементація
+## Implementation
 
 ### 1. Security Configuration
 ```java
@@ -481,12 +481,12 @@ class AuthControllerTest {
 }
 ```
 
-## Переваги над JWT
+## Advantages Over JWT
 
-1. **Можливість відкликання**: Сесії можна видалити з Redis
-2. **Розмір**: Session ID коротший за JWT
-3. **Безпека**: HttpOnly cookies захищені від XSS
-4. **Статeful**: Можна зберігати додаткові дані в сесії
-5. **Простота**: Не потрібно управляти токенами на клієнті
+1. **Revocation Capability**: Sessions can be deleted from Redis
+2. **Size**: Session ID is shorter than JWT
+3. **Security**: HttpOnly cookies are protected from XSS
+4. **Stateful**: Can store additional data in session
+5. **Simplicity**: No need to manage tokens on client
 
-Цей підхід забезпечує безпечну та надійну автентифікацію для вашої системи управління хімчисткою.
+This approach provides secure and reliable authentication for your dry cleaning management system.

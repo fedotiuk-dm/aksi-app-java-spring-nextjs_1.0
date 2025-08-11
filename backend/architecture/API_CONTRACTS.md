@@ -1,14 +1,14 @@
-# API Контракти між доменами
+# API Contracts Between Domains
 
-## Загальні принципи
+## General Principles
 
-1. **RESTful API** - використання стандартних HTTP методів
-2. **JSON Format** - всі запити та відповіді в JSON
-3. **Versioning** - версіонування через URL (api/v1/)
-4. **Error Handling** - стандартизовані помилки
-5. **Authentication** - JWT токени в заголовку Authorization
+1. **RESTful API** - using standard HTTP methods
+2. **JSON Format** - all requests and responses in JSON
+3. **Versioning** - versioning through URL (api/v1/)
+4. **Error Handling** - standardized errors
+5. **Authentication** - JWT tokens in Authorization header
 
-## Стандартна структура помилок
+## Standard Error Structure
 
 ```json
 {
@@ -34,15 +34,15 @@ POST /api/v1/customers
 Content-Type: application/json
 
 {
-  "firstName": "Іван",
-  "lastName": "Петренко",
+  "firstName": "Ivan",
+  "lastName": "Petrenko",
   "phone": "+380501234567",
   "email": "ivan@example.com",
   "address": {
-    "street": "вул. Хрещатик",
+    "street": "Khreshchatyk St.",
     "building": "1",
     "apartment": "10",
-    "city": "Київ",
+    "city": "Kyiv",
     "postalCode": "01001"
   },
   "communicationPreferences": ["PHONE", "SMS"],
@@ -52,8 +52,8 @@ Content-Type: application/json
 Response: 201 Created
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
-  "firstName": "Іван",
-  "lastName": "Петренко",
+  "firstName": "Ivan",
+  "lastName": "Petrenko",
   "phone": "+380501234567",
   "email": "ivan@example.com",
   "createdAt": "2024-01-30T10:15:30"
@@ -62,7 +62,7 @@ Response: 201 Created
 
 ### 2. Search Customers
 ```http
-GET /api/v1/customers/search?query=Петренко&phone=0501234567
+GET /api/v1/customers/search?query=Petrenko&phone=0501234567
 Authorization: Bearer {token}
 
 Response: 200 OK
@@ -70,8 +70,8 @@ Response: 200 OK
   "content": [
     {
       "id": "550e8400-e29b-41d4-a716-446655440000",
-      "firstName": "Іван",
-      "lastName": "Петренко",
+      "firstName": "Ivan",
+      "lastName": "Petrenko",
       "phone": "+380501234567",
       "email": "ivan@example.com"
     }
@@ -88,8 +88,8 @@ Authorization: Bearer {token}
 Response: 200 OK
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
-  "firstName": "Іван",
-  "lastName": "Петренко",
+  "firstName": "Ivan",
+  "lastName": "Petrenko",
   "phone": "+380501234567",
   "email": "ivan@example.com",
   "address": { ... },
@@ -150,7 +150,7 @@ Response: 200 OK
     {
       "id": "item_123",
       "serviceItemId": "880e8400-e29b-41d4-a716-446655440003",
-      "itemName": "Пальто жіноче",
+      "itemName": "Women's coat",
       "quantity": 1,
       "unit": "PIECE",
       "characteristics": {
@@ -164,8 +164,8 @@ Response: 200 OK
       "pricing": {
         "basePrice": 350.00,
         "modifierDetails": [
-          {"name": "Ручна чистка", "percentage": 20, "amount": 70.00},
-          {"name": "Чорний колір", "percentage": 20, "amount": 70.00}
+          {"name": "Hand cleaning", "percentage": 20, "amount": 70.00},
+          {"name": "Black color", "percentage": 20, "amount": 70.00}
         ],
         "urgencyAmount": 0.00,
         "subtotal": 490.00,
@@ -191,7 +191,7 @@ Authorization: Bearer {token}
 
 {
   "serviceItemId": "880e8400-e29b-41d4-a716-446655440003",
-  "itemName": "Пальто жіноче",
+  "itemName": "Women's coat",
   "quantity": 1,
   "unit": "PIECE",
   "characteristics": {
@@ -214,13 +214,13 @@ Response: 201 Created
   "id": "item_123",
   "cartId": "cart_8400-e29b-41d4-a716-446655440000",
   "serviceItemId": "880e8400-e29b-41d4-a716-446655440003",
-  "itemName": "Пальто жіноче",
+  "itemName": "Women's coat",
   "quantity": 1,
   "pricing": {
     "basePrice": 350.00,
     "modifierDetails": [
-      {"name": "Ручна чистка", "percentage": 20, "amount": 70.00},
-      {"name": "Чорний колір", "percentage": 20, "amount": 70.00}
+      {"name": "Hand cleaning", "percentage": 20, "amount": 70.00},
+      {"name": "Black color", "percentage": 20, "amount": 70.00}
     ],
     "urgencyAmount": 0.00,
     "subtotal": 490.00,
@@ -250,9 +250,9 @@ Response: 200 OK
   "pricing": {
     "basePrice": 350.00,
     "modifierDetails": [
-      {"name": "Ручна чистка", "percentage": 20, "amount": 70.00},
-      {"name": "Водовідштовхувальне покриття", "percentage": 30, "amount": 105.00},
-      {"name": "Чорний колір", "percentage": 20, "amount": 70.00}
+      {"name": "Hand cleaning", "percentage": 20, "amount": 70.00},
+      {"name": "Water repellent coating", "percentage": 30, "amount": 105.00},
+      {"name": "Black color", "percentage": 20, "amount": 70.00}
     ],
     "urgencyAmount": 0.00,
     "subtotal": 595.00,
@@ -334,14 +334,14 @@ Response: 200 OK
   "calculationDetails": [
     {
       "itemId": "item_123",
-      "itemName": "Пальто жіноче",
+      "itemName": "Women's coat",
       "breakdown": [
-        {"step": "Базова ціна", "amount": 350.00},
-        {"step": "Ручна чистка (+20%)", "amount": 70.00},
-        {"step": "Чорний колір (+20%)", "amount": 70.00},
-        {"step": "Підсумок до знижок", "amount": 490.00},
-        {"step": "Знижка Еверкард (-10%)", "amount": -49.00},
-        {"step": "Ціна за одиницю", "amount": 441.00}
+        {"step": "Base price", "amount": 350.00},
+        {"step": "Hand cleaning (+20%)", "amount": 70.00},
+        {"step": "Black color (+20%)", "amount": 70.00},
+        {"step": "Subtotal before discounts", "amount": 490.00},
+        {"step": "Evercard discount (-10%)", "amount": -49.00},
+        {"step": "Price per unit", "amount": 441.00}
       ]
     }
   ],
@@ -361,7 +361,7 @@ Content-Type: application/json
 Authorization: Bearer {token}
 
 {
-  "notes": "Обережно з пуговицями",
+  "notes": "Handle buttons carefully",
   "paymentAmount": 300.00,
   "paymentMethod": "CARD"
 }
@@ -391,7 +391,7 @@ Authorization: Bearer {token}
   "branchId": "660e8400-e29b-41d4-a716-446655440001",
   "uniqueLabel": "QR123456",
   "urgency": "NORMAL",
-  "notes": "Обережно з пуговицями"
+  "notes": "Handle buttons carefully"
 }
 
 Response: 201 Created
@@ -414,7 +414,7 @@ Authorization: Bearer {token}
 
 {
   "serviceId": "880e8400-e29b-41d4-a716-446655440003",
-  "itemName": "Пальто жіноче",
+  "itemName": "Women's coat",
   "quantity": 1,
   "unit": "PIECE",
   "characteristics": {
@@ -437,13 +437,13 @@ Response: 201 Created
   "id": "990e8400-e29b-41d4-a716-446655440004",
   "orderId": "770e8400-e29b-41d4-a716-446655440002",
   "serviceId": "880e8400-e29b-41d4-a716-446655440003",
-  "itemName": "Пальто жіноче",
+  "itemName": "Women's coat",
   "quantity": 1,
   "calculatedPrice": {
     "basePrice": 350.00,
     "modifiers": [
-      {"name": "Ручна чистка", "amount": 70.00},
-      {"name": "Термінова чистка", "amount": 175.00}
+      {"name": "Hand cleaning", "amount": 70.00},
+      {"name": "Urgent cleaning", "amount": 175.00}
     ],
     "totalPrice": 595.00
   }
@@ -461,18 +461,18 @@ Response: 200 OK
   "orderNumber": "2024-001234",
   "customer": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
-    "fullName": "Іван Петренко",
+    "fullName": "Ivan Petrenko",
     "phone": "+380501234567"
   },
   "branch": {
     "id": "660e8400-e29b-41d4-a716-446655440001",
-    "name": "Філія на Хрещатику"
+    "name": "Khreshchatyk Branch"
   },
   "items": [
     {
       "id": "990e8400-e29b-41d4-a716-446655440004",
-      "itemName": "Пальто жіноче",
-      "serviceCatalog": "Чистка одягу",
+      "itemName": "Women's coat",
+      "serviceCatalog": "Clothing cleaning",
       "quantity": 1,
       "price": 595.00
     }
@@ -517,7 +517,7 @@ Response: 200 OK
   "basePrice": 350.00,
   "calculations": [
     {
-      "step": "Base price for 'Пальто жіноче'",
+      "step": "Base price for 'Women's coat'",
       "amount": 350.00
     },
     {
@@ -525,7 +525,7 @@ Response: 200 OK
       "amount": 70.00
     },
     {
-      "step": "Urgent serviceCatalog (+50%)",
+      "step": "Urgent service (+50%)",
       "amount": 175.00
     },
     {
@@ -550,14 +550,14 @@ Response: 200 OK
   "items": [
     {
       "id": "880e8400-e29b-41d4-a716-446655440003",
-      "name": "Пальто жіноче",
+      "name": "Women's coat",
       "unit": "PIECE",
       "basePrice": 350.00,
       "blackColorPrice": 420.00
     },
     {
       "id": "880e8400-e29b-41d4-a716-446655440004",
-      "name": "Костюм чоловічий",
+      "name": "Men's suit",
       "unit": "PIECE",
       "basePrice": 280.00,
       "blackColorPrice": 336.00
@@ -669,8 +669,8 @@ Authorization: Bearer {token}
   "channels": ["SMS", "VIBER"],
   "templateData": {
     "orderNumber": "2024-001234",
-    "branchName": "Філія на Хрещатику",
-    "pickupTime": "після 14:00"
+    "branchName": "Khreshchatyk Branch",
+    "pickupTime": "after 2:00 PM"
   }
 }
 
@@ -728,14 +728,14 @@ Response: 200 OK
     {
       "id": "cat001",
       "code": "CLOTHING_CLEANING",
-      "name": "Чистка одягу та текстилю",
-      "description": "Професійна чистка всіх видів одягу"
+      "name": "Clothing and textile cleaning",
+      "description": "Professional cleaning of all types of clothing"
     },
     {
       "id": "cat002",
       "code": "LAUNDRY",
-      "name": "Прання білизни",
-      "description": "Прання постільної білизни та текстилю"
+      "name": "Laundry service",
+      "description": "Washing of bed linens and textiles"
     }
   ]
 }
@@ -752,7 +752,7 @@ Response: 200 OK
     {
       "id": "880e8400-e29b-41d4-a716-446655440003",
       "categoryId": "cat001",
-      "name": "Пальто жіноче",
+      "name": "Women's coat",
       "unit": "PIECE",
       "standardTerm": 48,
       "availableMaterials": ["WOOL", "SYNTHETIC", "COTTON"],
@@ -774,11 +774,11 @@ Response: 200 OK
   "branches": [
     {
       "id": "660e8400-e29b-41d4-a716-446655440001",
-      "name": "Філія на Хрещатику",
+      "name": "Khreshchatyk Branch",
       "address": {
-        "street": "вул. Хрещатик",
+        "street": "Khreshchatyk St.",
         "building": "22",
-        "city": "Київ"
+        "city": "Kyiv"
       },
       "phone": "+380441234567",
       "workSchedule": {
@@ -844,7 +844,7 @@ Response: 200 OK
 
 ## Pagination and Filtering
 
-Всі endpoints що повертають списки підтримують:
+All endpoints that return lists support:
 
 ```http
 GET /api/v1/orders?page=0&size=20&sort=createdAt,desc&status=IN_PROGRESS&customerId=123

@@ -1,75 +1,75 @@
-# Архітектура системи управління хімчисткою
+# Dry Cleaning Management System Architecture
 
-## 📋 Огляд документації
+## 📋 Documentation Overview
 
-Ця папка містить повну архітектурну документацію системи управління хімчисткою. Документація організована таким чином:
+This folder contains complete architectural documentation for the dry cleaning management system. The documentation is organized as follows:
 
-### Основні документи:
-1. **[DOMAIN_ARCHITECTURE.md](DOMAIN_ARCHITECTURE.md)** - Опис 12 доменів системи з розділенням Auth та User
-2. **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - Структура проекту та організація модулів
-3. **[DOMAIN_INTERACTIONS.md](DOMAIN_INTERACTIONS.md)** - Взаємодія між доменами
-4. **[API_CONTRACTS.md](API_CONTRACTS.md)** - REST API контракти для всіх доменів
-5. **[OPENAPI_FIRST_APPROACH.md](OPENAPI_FIRST_APPROACH.md)** - OpenAPI-first підхід для генерації коду
-6. **[COOKIE_BASED_AUTH.md](COOKIE_BASED_AUTH.md)** - Cookie-based автентифікація
-7. **[NEXT_STEPS.md](NEXT_STEPS.md)** - План реалізації проекту
+### Core Documents:
+1. **[DOMAIN_ARCHITECTURE.md](DOMAIN_ARCHITECTURE.md)** - Description of 12 system domains with Auth and User separation
+2. **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - Project structure and module organization
+3. **[DOMAIN_INTERACTIONS.md](DOMAIN_INTERACTIONS.md)** - Interactions between domains
+4. **[API_CONTRACTS.md](API_CONTRACTS.md)** - REST API contracts for all domains
+5. **[OPENAPI_FIRST_APPROACH.md](OPENAPI_FIRST_APPROACH.md)** - OpenAPI-first approach for code generation
+6. **[COOKIE_BASED_AUTH.md](COOKIE_BASED_AUTH.md)** - Cookie-based authentication
+7. **[NEXT_STEPS.md](NEXT_STEPS.md)** - Project implementation plan
 
-## 🎯 Ключові архітектурні рішення
+## 🎯 Key Architectural Decisions
 
 ### 1. Domain-Driven Design
-- 12 незалежних доменів з чіткими межами
-- Кожен домен відповідає за свою область бізнес-логіки
-- Мінімальні залежності між доменами
+- 12 independent domains with clear boundaries
+- Each domain is responsible for its business logic area
+- Minimal dependencies between domains
 
 ### 2. OpenAPI-First
-- API проектується через OpenAPI специфікацію
-- Автоматична генерація DTO та контролерів
-- Єдине джерело правди для API контрактів
+- API designed through OpenAPI specification
+- Automatic generation of DTOs and controllers
+- Single source of truth for API contracts
 
 ### 3. Cookie-Based Authentication
-- HttpOnly cookies для безпеки
-- Session management через Redis
-- CSRF захист
+- HttpOnly cookies for security
+- Session management through Redis
+- CSRF protection
 
-### 4. Модульна архітектура
-- Можливість почати з моноліту
-- Еволюція до модульного моноліту
-- Опція переходу на мікросервіси
+### 4. Modular Architecture
+- Ability to start with a monolith
+- Evolution to modular monolith
+- Option to migrate to microservices
 
-## 🏗 Структура доменів
+## 🏗 Domain Structure
 
-### Core домени:
-1. **Auth** - автентифікація та сесії
-2. **User** - управління користувачами системи
-3. **Customer** - клієнти хімчистки
-4. **Order** - замовлення та їх життєвий цикл
-5. **Pricing** - розрахунок вартості
+### Core Domains:
+1. **Auth** - authentication and sessions
+2. **User** - system user management
+3. **Customer** - dry cleaning customers
+4. **Order** - orders and their lifecycle
+5. **Pricing** - cost calculation
 
-### Supporting домени:
-6. **Branch** - філії та пункти прийому
-7. **Service** - каталог послуг та предметів
-8. **Payment** - платежі
-9. **Receipt** - квитанції
-10. **Notification** - сповіщення
-11. **Configuration** - налаштування
-12. **Reporting** - звітність
+### Supporting Domains:
+6. **Branch** - branches and pickup points
+7. **Service** - service and item catalog
+8. **Payment** - payments
+9. **Receipt** - receipts
+10. **Notification** - notifications
+11. **Configuration** - settings
+12. **Reporting** - reporting
 
-## 🚀 Швидкий старт
+## 🚀 Quick Start
 
-### Мінімальний MVP включає:
-1. Auth + User - для входу в систему
-2. Customer - управління клієнтами
-3. Order - створення замовлень
-4. Pricing - розрахунок вартості
-5. Receipt - друк квитанцій
+### Minimal MVP includes:
+1. Auth + User - for system login
+2. Customer - customer management
+3. Order - order creation
+4. Pricing - cost calculation
+5. Receipt - receipt printing
 
-### Рекомендована послідовність:
-1. Створити OpenAPI специфікації для MVP доменів
-2. Згенерувати DTO та API інтерфейси
-3. Реалізувати cookie-based auth
-4. Імплементувати core домени
-5. Додавати інші домени поступово
+### Recommended sequence:
+1. Create OpenAPI specifications for MVP domains
+2. Generate DTOs and API interfaces
+3. Implement cookie-based auth
+4. Implement core domains
+5. Add other domains gradually
 
-## 🛠 Технологічний стек
+## 🛠 Technology Stack
 
 ### Backend:
 - Java 21
@@ -81,15 +81,15 @@
 - OpenAPI Generator
 - Liquibase (migrations)
 
-### Інтеграції:
-- SMS провайдери
+### Integrations:
+- SMS providers
 - Viber API
-- Платіжні системи
-- PDF генерація
+- Payment systems
+- PDF generation
 
-## 📐 Архітектурні підходи
+## 📐 Architectural Approaches
 
-### Для старту (Монолітна архітектура):
+### For Startup (Monolithic Architecture):
 ```
 JavaSpringDryCleaning/
 ├── src/main/java/org/example/dryclean/
@@ -103,7 +103,7 @@ JavaSpringDryCleaning/
     └── *.yaml
 ```
 
-### Для масштабування (Модульний моноліт):
+### For Scaling (Modular Monolith):
 ```
 JavaSpringDryCleaning/
 ├── dry-cleaning-auth/
@@ -117,10 +117,10 @@ JavaSpringDryCleaning/
 ## 📝 Best Practices
 
 1. **API Design**:
-   - RESTful принципи
+   - RESTful principles
    - Consistent naming
    - Proper HTTP status codes
-   - Versioning через URL
+   - Versioning through URL
 
 2. **Security**:
    - HttpOnly cookies
@@ -129,48 +129,48 @@ JavaSpringDryCleaning/
    - Input validation
 
 3. **Code Quality**:
-   - OpenAPI-first для consistency
+   - OpenAPI-first for consistency
    - Bean Validation
-   - Unit та Integration тести
+   - Unit and Integration tests
    - CI/CD pipeline
 
 4. **Performance**:
-   - Caching де можливо
+   - Caching where possible
    - Database indexing
    - Async processing
    - Connection pooling
 
-## 🔄 Еволюція архітектури
+## 🔄 Architecture Evolution
 
-### Phase 1: Монолітний MVP
-- Всі домени в одному проекті
-- Швидкий старт
-- Прості deployment
+### Phase 1: Monolithic MVP
+- All domains in one project
+- Quick start
+- Simple deployment
 
-### Phase 2: Модульний моноліт
-- Окремі Maven модулі
-- Чіткі контракти
-- Підготовка до розділення
+### Phase 2: Modular Monolith
+- Separate Maven modules
+- Clear contracts
+- Preparation for separation
 
-### Phase 3: Мікросервіси (опційно)
-- Окремі deployment units
+### Phase 3: Microservices (optional)
+- Separate deployment units
 - Independent scaling
 - Technology diversity
 
 ## ❓ FAQ
 
-**Q: Чи не надто складна архітектура для старту?**
-A: Ні, можна почати з простого моноліту, використовуючи лише пакетну структуру. Модульність додається поступово.
+**Q: Isn't the architecture too complex for startup?**
+A: No, you can start with a simple monolith using only package structure. Modularity is added gradually.
 
-**Q: Чому Cookie-based auth замість JWT?**
-A: Cookies більш безпечні (HttpOnly), простіші в управлінні сесіями, не потребують зберігання на клієнті.
+**Q: Why Cookie-based auth instead of JWT?**
+A: Cookies are more secure (HttpOnly), simpler in session management, don't require client-side storage.
 
-**Q: Як генерувати код з OpenAPI?**
-A: Використовуйте openapi-generator-maven-plugin, який автоматично створить DTO та API інтерфейси.
+**Q: How to generate code from OpenAPI?**
+A: Use openapi-generator-maven-plugin, which automatically creates DTOs and API interfaces.
 
-**Q: Які домени критичні для MVP?**
-A: Auth, User, Customer, Order, Pricing, Receipt - мінімальний набір для функціонуючої системи.
+**Q: Which domains are critical for MVP?**
+A: Auth, User, Customer, Order, Pricing, Receipt - minimal set for a functioning system.
 
 ---
 
-Для початку роботи перегляньте [NEXT_STEPS.md](NEXT_STEPS.md) з детальним планом реалізації.
+To get started, check [NEXT_STEPS.md](NEXT_STEPS.md) with detailed implementation plan.

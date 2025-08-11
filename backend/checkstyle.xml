@@ -4,16 +4,16 @@
           "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <!--
-    Конфігурація Checkstyle для проєкту "Хімчистка AKSI"
-    Базується на Google Java Style з модифікаціями для Spring Boot проєктів з DDD
+    Checkstyle configuration for "AKSI Dry Cleaning" project
+    Based on Google Java Style with modifications for Spring Boot projects with DDD
 
-    Основні принципи:
-    1. Відповідність Java Code Conventions
-    2. Узгодженість коду в усьому проєкті
-    3. Покращена читабельність та підтримка коду
-    4. Виявлення потенційних помилок на ранніх етапах
-    5. Відповідність Spring Best Practices та DDD
-    6. Відсутність дублювання коду та хардкоду
+    Core principles:
+    1. Java Code Conventions compliance
+    2. Code consistency across the entire project
+    3. Improved code readability and maintainability
+    4. Early detection of potential errors
+    5. Spring Best Practices and DDD compliance
+    6. No code duplication and hardcoding
 -->
 
 <module name="Checker">
@@ -21,13 +21,13 @@
     <property name="severity" value="warning"/>
     <property name="fileExtensions" value="java, properties, xml, yml, yaml"/>
 
-    <!-- Виключення непотрібних файлів з перевірки -->
+    <!-- Exclude unnecessary files from checks -->
     <module name="BeforeExecutionExclusionFileFilter">
         <property name="fileNamePattern"
             value="(.*[\\/]target[\\/].*|.*[\\/]generated-sources[\\/].*|.*[\\/]generated-test-sources[\\/].*|.*[\\/]bin[\\/].*|.*\.(gif|png|jpg|jpeg|svg|ico|json))$"/>
     </module>
 
-    <!-- Перевірка формату файлу -->
+    <!-- File format checks -->
     <module name="NewlineAtEndOfFile">
         <property name="lineSeparator" value="lf"/>
     </module>
@@ -37,19 +37,19 @@
         <property name="fileExtensions" value="java"/>
     </module>
 
-    <!-- Довжина рядків -->
+    <!-- Line length -->
     <module name="LineLength">
         <property name="max" value="120"/>
         <property name="ignorePattern"
             value="^\s*\*\s*@|^\s*\*\s*\[|^\s*\*\s*[a-zA-Z0-9_]+=|^\s*\*\s*https?://|^import\s+.*|^package\s+.*"/>
     </module>
 
-    <!-- Підключення файлу виключень -->
+    <!-- Suppressions file -->
     <module name="SuppressionFilter">
         <property name="file" value="${checkstyle.suppressions.file}" default="checkstyle-suppressions.xml"/>
     </module>
 
-    <!-- Перевірки рівня файлу -->
+    <!-- File-level checks -->
     <module name="RegexpSingleline">
         <property name="format" value="\s+$"/>
         <message key="regexp.exceeded" value="Line has trailing spaces."/>
@@ -60,14 +60,14 @@
         <message key="regexp.exceeded" value="Line has Windows line ending (CRLF)."/>
     </module>
 
-    <!-- Перевірка хардкоду URL та шляхів ТІЛЬКИ в Java файлах -->
+    <!-- Check for hardcoded URLs and paths ONLY in Java files -->
     <module name="RegexpSingleline">
         <property name="format" value="&quot;(http|https|ftp)://"/>
         <property name="fileExtensions" value="java"/>
-        <message key="regexp.exceeded" value="Хардкодовані URL мають бути винесені в конфігурацію"/>
+        <message key="regexp.exceeded" value="Hardcoded URLs should be moved to configuration"/>
     </module>
 
-    <!-- Перевірка is prefix ТІЛЬКИ в Java файлах -->
+    <!-- Check for is prefix ONLY in Java files -->
     <module name="RegexpSingleline">
         <property name="format" value="private\s+boolean\s+is[A-Z]"/>
         <property name="fileExtensions" value="java"/>
@@ -75,10 +75,10 @@
     </module>
 
     <module name="TreeWalker">
-        <!-- Загальні налаштування -->
+        <!-- General settings -->
         <property name="tabWidth" value="4"/>
 
-        <!-- Імпорти -->
+        <!-- Imports -->
         <module name="AvoidStarImport">
             <property name="excludes" value="java.util.stream,java.util.function,java.util.concurrent,jakarta.validation.constraints,org.junit.jupiter.api.*,org.mockito.*,org.assertj.core.api.*,org.springframework.test.context.*"/>
         </module>
@@ -90,7 +90,7 @@
             <property name="processJavadoc" value="false"/>
         </module>
 
-        <!-- Документація -->
+        <!-- Documentation -->
         <module name="JavadocType">
             <property name="tokens" value="CLASS_DEF,INTERFACE_DEF,ENUM_DEF,ANNOTATION_DEF"/>
             <message key="javadoc.missing" value="Missing Javadoc comment."/>
@@ -115,7 +115,7 @@
             <property name="checkEmptyJavadoc" value="true"/>
         </module>
 
-        <!-- Назви -->
+        <!-- Names -->
         <module name="TypeName">
             <property name="format" value="^[A-Z][a-zA-Z0-9_$]*$"/>
             <message key="name.invalidPattern" value="Type ''{0}'' should use PascalCase to match TypeScript/JavaScript conventions."/>
@@ -155,7 +155,7 @@
             <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]?)$"/>
         </module>
 
-        <!-- Форматування коду -->
+        <!-- Code formatting -->
         <module name="LeftCurly">
             <property name="option" value="eol"/>
             <property name="tokens" value="ANNOTATION_DEF,CLASS_DEF,CTOR_DEF,ENUM_CONSTANT_DEF,ENUM_DEF,INTERFACE_DEF,LAMBDA,LITERAL_CASE,LITERAL_CATCH,LITERAL_DEFAULT,LITERAL_DO,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_FOR,LITERAL_IF,LITERAL_SWITCH,LITERAL_SYNCHRONIZED,LITERAL_TRY,LITERAL_WHILE,METHOD_DEF,OBJBLOCK,STATIC_INIT,COMPACT_CTOR_DEF,RECORD_DEF"/>
@@ -218,20 +218,20 @@
             <property name="max" value="2"/>
         </module>
 
-        <!-- Spring специфічні перевірки -->
+        <!-- Spring specific checks -->
         <module name="SuppressWarnings">
             <property name="format" value="^unchecked$|^unused$|^rawtypes$|^deprecation$|^synthetic-access$|^resource$|^try$"/>
         </module>
 
         <module name="SuppressWarningsHolder"/>
 
-        <!-- Lombok специфічні налаштування -->
+        <!-- Lombok specific settings -->
         <module name="SuppressWarnings">
             <property name="format" value="^lombok"/>
             <property name="tokens" value="ANNOTATION_FIELD_DEF,CLASS_DEF,CTOR_DEF,ENUM_CONSTANT_DEF,ENUM_DEF,INTERFACE_DEF,METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>
         </module>
 
-        <!-- Інші перевірки -->
+        <!-- Other checks -->
         <module name="FinalClass">
             <property name="severity" value="ignore"/>
         </module>
@@ -254,7 +254,7 @@
 
         <module name="OneTopLevelClass"/>
         <module name="NoFinalizer"/>
-        <!-- Вимкнено: OverloadMethodsDeclarationOrder - не критично для якості коду
+        <!-- Disabled: OverloadMethodsDeclarationOrder - not critical for code quality
         <module name="OverloadMethodsDeclarationOrder"/>
         -->
 
@@ -265,7 +265,7 @@
 
         <module name="JavadocTagContinuationIndentation"/>
 
-        <!-- Вимкнено: SummaryJavadoc - непотрібне правило що вимагає крапки у всіх Javadoc коментарях
+        <!-- Disabled: SummaryJavadoc - unnecessary rule that requires dots in all Javadoc comments
         <module name="SummaryJavadoc">
             <property name="forbiddenSummaryFragments" value="^@return the *|^This method returns |^A \{[^}]*\} (is )?(a )?[a-zA-Z0-9]+\s*\."/>
         </module>

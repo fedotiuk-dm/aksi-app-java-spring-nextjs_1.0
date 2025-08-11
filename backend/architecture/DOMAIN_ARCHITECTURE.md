@@ -1,316 +1,316 @@
-# Доменна архітектура системи управління хімчисткою
+# Domain Architecture of Dry Cleaning Management System
 
-## Огляд архітектури
+## Architecture Overview
 
-Система побудована на основі Domain-Driven Design (DDD) принципів з чітким розподілом на окремі домени. Кожен домен інкапсулює свою бізнес-логіку та відповідає за конкретну область системи.
+The system is built on Domain-Driven Design (DDD) principles with clear separation into distinct domains. Each domain encapsulates its business logic and is responsible for a specific area of the system.
 
-## Структура доменів
+## Domain Structure
 
-### 1. Auth Domain (Домен автентифікації)
-**Відповідальність**: Автентифікація та управління сесіями
+### 1. Auth Domain
+**Responsibility**: Authentication and session management
 
-**Основні компоненти**:
-- Cookie-based автентифікація (httpOnly, secure)
-- Управління сесіями
-- CSRF захист
-- Refresh token механізм
+**Core Components**:
+- Cookie-based authentication (httpOnly, secure)
+- Session management
+- CSRF protection
+- Refresh token mechanism
 
-**Ключові сутності**:
-- `Session` - активна сесія
-- `RefreshToken` - токен оновлення
-- `AuthenticationAttempt` - спроба входу
+**Key Entities**:
+- `Session` - active session
+- `RefreshToken` - refresh token
+- `AuthenticationAttempt` - login attempt
 
-### 2. User Domain (Домен користувачів)
-**Відповідальність**: Управління користувачами системи (операторами)
+### 2. User Domain
+**Responsibility**: Management of system users (operators)
 
-**Основні компоненти**:
-- Управління профілями операторів
-- Рольова модель (оператор, менеджер, адміністратор)
-- Прив'язка до філій
-- Історія активності
+**Core Components**:
+- Operator profile management
+- Role model (operator, manager, administrator)
+- Branch assignment
+- Activity history
 
-**Ключові сутності**:
-- `User` - користувач системи (оператор)
-- `Role` - роль користувача
-- `Permission` - дозволи
-- `UserBranch` - прив'язка до філій
+**Key Entities**:
+- `User` - system user (operator)
+- `Role` - user role
+- `Permission` - permissions
+- `UserBranch` - branch assignment
 
-### 3. Customer Domain (Домен клієнтів)
-**Відповідальність**: Управління інформацією про клієнтів хімчистки
+### 3. Customer Domain
+**Responsibility**: Management of dry cleaning customer information
 
-**Основні компоненти**:
-- Реєстрація нових клієнтів
-- Пошук та управління існуючими клієнтами
-- Управління контактними даними
-- Історія взаємодії з клієнтом
+**Core Components**:
+- New customer registration
+- Search and management of existing customers
+- Contact data management
+- Customer interaction history
 
-**Ключові сутності**:
-- `Customer` - клієнт
-- `ContactInfo` - контактна інформація
-- `CommunicationPreference` - налаштування комунікації
-- `CustomerSource` - джерело залучення клієнта
+**Key Entities**:
+- `Customer` - customer
+- `ContactInfo` - contact information
+- `CommunicationPreference` - communication settings
+- `CustomerSource` - customer acquisition source
 
-### 4. Branch Domain (Домен філій)
-**Відповідальність**: Управління пунктами прийому замовлень
+### 4. Branch Domain
+**Responsibility**: Management of order pickup points
 
-**Основні компоненти**:
-- Інформація про філії
-- Графік роботи
-- Контактні дані філії
-- Прив'язка операторів до філій
+**Core Components**:
+- Branch information
+- Working hours
+- Branch contact information
+- Operator assignment to branches
 
-**Ключові сутності**:
-- `Branch` - філія/пункт прийому
-- `WorkSchedule` - графік роботи
-- `BranchOperator` - прив'язка операторів
+**Key Entities**:
+- `Branch` - branch/pickup point
+- `WorkSchedule` - working hours
+- `BranchOperator` - operator assignment
 
-### 5. Catalog Domain (Домен каталогу послуг)
-**Відповідальність**: Управління прайс-листом послуг
+### 5. Catalog Domain
+**Responsibility**: Service price list management
 
-**Основні компоненти** (після спрощення 2025-08-04):
-- Єдиний прайс-лист послуг
-- Імпорт та управління CSV прайс-листом
-- Розширені поля для обробки (час виконання, експрес-послуга)
-- Поля для UI (сортування, опис, українська назва)
-- Одиниці виміру (штуки, кілограми, квадратні метри)
+**Core Components** (simplified on 2025-08-04):
+- Unified service price list
+- CSV price list import and management
+- Extended fields for processing (execution time, express service)
+- UI fields (sorting, description, Ukrainian name)
+- Units of measurement (pieces, kilograms, square meters)
 
-**Ключові сутності**:
-- `PriceListItem` - єдиний елемент прайс-листа з усіма необхідними полями:
-  - Базові поля: категорія, назва, ціни (звичайна/делікатна)
-  - Часові поля: processingTimeDays, expressAvailable, expressTimeHours
-  - Додаткові поля: expressPrice, sortOrder, description, nameUa
-  - Одиниця виміру
+**Key Entities**:
+- `PriceListItem` - unified price list element with all necessary fields:
+  - Basic fields: category, name, prices (regular/delicate)
+  - Time fields: processingTimeDays, expressAvailable, expressTimeHours
+  - Additional fields: expressPrice, sortOrder, description, nameUa
+  - Unit of measurement
 
-**Спрощення архітектури**:
-- Видалено: ServiceCatalog, ItemCatalog, ServiceItem
-- Одна таблиця замість чотирьох
-- Прямий CRUD без складної синхронізації
+**Architecture Simplification**:
+- Removed: ServiceCatalog, ItemCatalog, ServiceItem
+- One table instead of four
+- Direct CRUD without complex synchronization
 
-### 6. Pricing Domain (Домен ціноутворення)
-**Відповідальність**: Розрахунок вартості з урахуванням всіх модифікаторів
+### 6. Pricing Domain
+**Responsibility**: Cost calculation with all modifiers
 
-**Основні компоненти**:
-- Модифікатори ціни (терміновість, забрудненість, дитячі речі)
-- Правила розрахунку
-- Знижки та надбавки
-- Калькулятор вартості
+**Core Components**:
+- Price modifiers (urgency, contamination, children's items)
+- Calculation rules
+- Discounts and surcharges
+- Cost calculator
 
-**Ключові сутності**:
-- `PriceModifier` - модифікатор ціни
-- `ModifierRule` - правило застосування модифікатора
-- `Discount` - знижка
-- `Surcharge` - надбавка
-- `PriceCalculation` - розрахунок ціни
+**Key Entities**:
+- `PriceModifier` - price modifier
+- `ModifierRule` - modifier application rule
+- `Discount` - discount
+- `Surcharge` - surcharge
+- `PriceCalculation` - price calculation
 
-### 7. Order Domain (Домен замовлень)
-**Відповідальність**: Управління життєвим циклом замовлень та характеристиками предметів
+### 7. Order Domain
+**Responsibility**: Order lifecycle management and item characteristics
 
-**Основні компоненти**:
-- Корзина для тимчасового зберігання та розрахунку цін
-- Інтерактивний калькулятор цін в реальному часі
-- Створення замовлень з корзини
-- Управління статусами
-- Фіксація характеристик предметів при прийомі
-- Фотографування предметів та дефектів
-- Розрахунок термінів виконання
+**Core Components**:
+- Shopping cart for temporary storage and price calculation
+- Real-time interactive price calculator
+- Order creation from cart
+- Status management
+- Item characteristics recording upon acceptance
+- Item and defect photography
+- Execution time calculation
 
-**Ключові сутності**:
+**Key Entities**:
 
-**Корзина (тимчасове сховище до створення замовлення)**:
-- `OrderCart` - корзина для зберігання предметів та розрахунку
-- `CartItem` - предмет в корзині з характеристиками
-- `CartItemPricing` - детальний розрахунок ціни предмета
-- `CartPricing` - загальний розрахунок корзини з урахуванням знижок
+**Cart (temporary storage before order creation)**:
+- `OrderCart` - cart for item storage and calculation
+- `CartItem` - item in cart with characteristics
+- `CartItemPricing` - detailed item price calculation
+- `CartPricing` - overall cart calculation with discounts
 
-**Замовлення**:
-- `Order` - замовлення
-- `OrderItem` - предмет в замовленні з усіма характеристиками
-- `OrderItemCharacteristics` - матеріал, колір, наповнювач предмета
-- `OrderItemPhoto` - фотографія предмета в замовленні
-- `OrderItemDefect` - дефекти та пошкодження
-- `OrderItemStain` - плями та забруднення
-- `OrderStatus` - статус замовлення
-- `OrderTimeline` - часова лінія замовлення
-- `UniqueLabel` - унікальна мітка (QR-код)
+**Order**:
+- `Order` - order
+- `OrderItem` - item in order with all characteristics
+- `OrderItemCharacteristics` - material, color, filler of item
+- `OrderItemPhoto` - item photo in order
+- `OrderItemDefect` - defects and damages
+- `OrderItemStain` - stains and contamination
+- `OrderStatus` - order status
+- `OrderTimeline` - order timeline
+- `UniqueLabel` - unique label (QR-code)
 
-### 8. Payment Domain (Домен платежів)
-**Відповідальність**: Обробка платежів та фінансові операції
+### 8. Payment Domain
+**Responsibility**: Payment processing and financial operations
 
-**Основні компоненти**:
-- Реєстрація платежів
-- Способи оплати
-- Передоплата та борги
-- Фінансова звітність
+**Core Components**:
+- Payment registration
+- Payment methods
+- Prepayments and debts
+- Financial reporting
 
-**Ключові сутності**:
-- `Payment` - платіж
-- `PaymentMethod` - спосіб оплати
-- `Invoice` - рахунок
-- `PaymentTransaction` - транзакція
+**Key Entities**:
+- `Payment` - payment
+- `PaymentMethod` - payment method
+- `Invoice` - invoice
+- `PaymentTransaction` - transaction
 
-### 9. Receipt Domain (Домен квитанцій)
-**Відповідальність**: Формування та друк квитанцій
+### 9. Receipt Domain
+**Responsibility**: Receipt generation and printing
 
-**Основні компоненти**:
-- Генерація квитанцій
-- Шаблони квитанцій
-- Цифрові підписи
-- QR-коди для відстеження
+**Core Components**:
+- Receipt generation
+- Receipt templates
+- Digital signatures
+- QR-codes for tracking
 
-**Ключові сутності**:
-- `Receipt` - квитанція
-- `ReceiptTemplate` - шаблон квитанції
-- `DigitalSignature` - цифровий підпис
-- `ReceiptQRCode` - QR-код квитанції
+**Key Entities**:
+- `Receipt` - receipt
+- `ReceiptTemplate` - receipt template
+- `DigitalSignature` - digital signature
+- `ReceiptQRCode` - receipt QR-code
 
-### 11. Notification Domain (Домен сповіщень)
-**Відповідальність**: Відправка сповіщень клієнтам
+### 11. Notification Domain
+**Responsibility**: Sending notifications to customers
 
-**Основні компоненти**:
-- SMS сповіщення
-- Viber повідомлення
-- Email розсилка
-- Шаблони повідомлень
+**Core Components**:
+- SMS notifications
+- Viber messages
+- Email distribution
+- Message templates
 
-**Ключові сутності**:
-- `NotificationTemplate` - шаблон повідомлення
-- `NotificationLog` - лог відправлених повідомлень
-- `NotificationChannel` - канал комунікації
+**Key Entities**:
+- `NotificationTemplate` - message template
+- `NotificationLog` - sent message log
+- `NotificationChannel` - communication channel
 
-### 12. Configuration Domain (Домен конфігурації)
-**Відповідальність**: Централізоване управління налаштуваннями системи
+### 12. Configuration Domain
+**Responsibility**: Centralized system settings management
 
-**Основні компоненти**:
-- Глобальні налаштування
-- Конфігурація модифікаторів
-- Налаштування знижок
-- Бізнес-правила
+**Core Components**:
+- Global settings
+- Modifier configuration
+- Discount settings
+- Business rules
 
-**Ключові сутності**:
-- `SystemConfiguration` - системні налаштування
-- `BusinessRule` - бізнес-правило
-- `ConfigurationHistory` - історія змін
+**Key Entities**:
+- `SystemConfiguration` - system settings
+- `BusinessRule` - business rule
+- `ConfigurationHistory` - change history
 
-### 13. Reporting Domain (Домен звітності)
-**Відповідальність**: Формування звітів та аналітика
+### 13. Reporting Domain
+**Responsibility**: Report generation and analytics
 
-**Основні компоненти**:
-- Фінансові звіти
-- Операційні звіти
-- Аналітика по клієнтах
-- Статистика по послугах
+**Core Components**:
+- Financial reports
+- Operational reports
+- Customer analytics
+- Service statistics
 
-**Ключові сутності**:
-- `Report` - звіт
-- `ReportTemplate` - шаблон звіту
-- `Analytics` - аналітичні дані
+**Key Entities**:
+- `Report` - report
+- `ReportTemplate` - report template
+- `Analytics` - analytical data
 
-## Shared/Common модулі
+## Shared/Common Modules
 
 ### Common Domain Models
-- `Money` - робота з грошовими сумами
-- `DateRange` - часові проміжки
-- `Address` - адреса
-- `PhoneNumber` - телефонний номер
-- `Email` - email адреса
+- `Money` - monetary amounts handling
+- `DateRange` - time intervals
+- `Address` - address
+- `PhoneNumber` - phone number
+- `Email` - email address
 
 ### Common Services
-- `ValidationService` - валідація даних
-- `AuditService` - аудит змін
-- `FileStorageService` - збереження файлів
-- `QRCodeService` - генерація QR-кодів
+- `ValidationService` - data validation
+- `AuditService` - change audit
+- `FileStorageService` - file storage
+- `QRCodeService` - QR-code generation
 
-## Взаємозв'язки між доменами
+## Domain Relationships
 
 ### Order -> Customer
-- Замовлення завжди прив'язане до клієнта
-- Історія замовлень клієнта
+- Order is always linked to a customer
+- Customer order history
 
 ### Order -> Catalog
-- Кожен OrderItem прив'язаний до конкретного PriceListItem
-- PriceListItem визначає базову ціну, час виконання та всі параметри послуги
+- Each OrderItem is linked to a specific PriceListItem
+- PriceListItem defines base price, execution time and all service parameters
 
-### Order характеристики
-- Характеристики предметів (матеріал, колір, дефекти) зберігаються в OrderItem
-- Фотографії робляться при створенні замовлення та прив'язуються до OrderItem
+### Order Characteristics
+- Item characteristics (material, color, defects) are stored in OrderItem
+- Photos are taken during order creation and linked to OrderItem
 
 ### Cart -> Catalog + Pricing
-- Cart використовує PriceListItem для отримання базових цін та параметрів послуг
-- Cart викликає Pricing для розрахунку з усіма модифікаторами
-- Інтерактивний перерахунок при зміні параметрів
+- Cart uses PriceListItem to get base prices and service parameters
+- Cart calls Pricing for calculation with all modifiers
+- Interactive recalculation on parameter changes
 
 ### Cart -> Order
-- Order створюється з готової корзини
-- Всі розрахунки та характеристики переносяться з Cart
-- Cart видаляється після створення Order
+- Order is created from ready cart
+- All calculations and characteristics are transferred from Cart
+- Cart is deleted after Order creation
 
 ### Order -> Pricing
-- Розрахунок вартості для кожного предмета
-- Застосування модифікаторів та знижок
+- Cost calculation for each item
+- Applying modifiers and discounts
 
 ### Order -> Payment
-- Реєстрація платежів по замовленню
-- Контроль заборгованості
+- Payment registration for order
+- Debt control
 
 ### Order -> Receipt
-- Генерація квитанції при створенні замовлення
-- Друк квитанції
+- Receipt generation on order creation
+- Receipt printing
 
 ### Order -> Branch
-- Замовлення прив'язане до філії
-- Оператор філії створює замовлення
+- Order is linked to branch
+- Branch operator creates order
 
 ### Customer -> Notification
-- Відправка сповіщень згідно налаштувань клієнта
-- Історія комунікації
+- Sending notifications according to customer settings
+- Communication history
 
-## Технічні рекомендації
+## Technical Recommendations
 
-### 1. Модульність
-- Кожен домен - окремий Spring Boot модуль
-- Чітко визначені API між модулями
-- Мінімальні залежності між доменами
+### 1. Modularity
+- Each domain is a separate Spring Boot module
+- Clearly defined APIs between modules
+- Minimal dependencies between domains
 
-### 2. База даних
-- Можливість використання різних схем БД для доменів
-- Транзакційна цілісність в межах домену
-- Eventual consistency між доменами
+### 2. Database
+- Ability to use different DB schemas for domains
+- Transactional integrity within domain boundaries
+- Eventual consistency between domains
 
 ### 3. API Gateway
-- Єдина точка входу для frontend
-- Агрегація даних з різних доменів
-- Авторизація на рівні gateway
+- Single entry point for frontend
+- Data aggregation from different domains
+- Authorization at gateway level
 
 ### 4. Event-Driven Architecture
-- Домени комунікують через події
-- Event sourcing для критичних операцій
-- Асинхронна обробка де можливо
+- Domains communicate through events
+- Event sourcing for critical operations
+- Asynchronous processing where possible
 
-### 5. Масштабованість
-- Можливість окремого масштабування доменів
-- Використання кешування
-- Оптимізація запитів до БД
+### 5. Scalability
+- Ability to scale domains independently
+- Caching usage
+- Database query optimization
 
-## Як модулі спілкуються між собою
+## How Modules Communicate
 
-### 1. Монолітна архітектура (рекомендовано для старту)
-В рамках одного Spring Boot додатку модулі представляють собою окремі пакети:
+### 1. Monolithic Architecture (recommended for startup)
+Within a single Spring Boot application, modules are represented as separate packages:
 
 ```
-- Модулі = Spring components в різних пакетах
-- Комунікація через Spring dependency injection
-- Спільна база даних з логічним розділенням схем
-- Транзакції через @Transactional
+- Modules = Spring components in different packages
+- Communication through Spring dependency injection
+- Shared database with logical schema separation
+- Transactions through @Transactional
 ```
 
-**Приклад взаємодії:**
+**Interaction example:**
 
 ```java
 
 @Service
 public record OrderService(CustomerService customerService, PricingService pricingService) {
   public Order createOrder(CreateOrderRequest request) {
-    // Прямий виклик через DI
+    // Direct call through DI
     Customer customer = customerService.findById(request.getCustomerId());
     PriceCalculation price = pricingService.calculate(request.getItems());
     // ...
@@ -318,58 +318,58 @@ public record OrderService(CustomerService customerService, PricingService prici
 }
 ```
 
-### 2. Модульний моноліт (наступний крок)
-Окремі Maven модулі в рамках одного деплойменту:
+### 2. Modular Monolith (next step)
+Separate Maven modules within single deployment:
 
 ```
-- Кожен домен = окремий Maven модуль
-- Чіткі інтерфейси між модулями
-- Можливість окремого версіонування
-- Спільний application context
+- Each domain = separate Maven module
+- Clear interfaces between modules
+- Ability for independent versioning
+- Shared application context
 ```
 
-**Структура залежностей:**
+**Dependency structure:**
 ```
-dry-cleaning-order залежить від:
-  - dry-cleaning-customer-api (інтерфейси)
-  - dry-cleaning-pricing-api (інтерфейси)
+dry-cleaning-order depends on:
+  - dry-cleaning-customer-api (interfaces)
+  - dry-cleaning-pricing-api (interfaces)
   - dry-cleaning-common
 ```
 
-### 3. Мікросервіси (при потребі масштабування)
-Повністю незалежні сервіси:
+### 3. Microservices (when scaling is needed)
+Fully independent services:
 
 ```
-- Кожен домен = окремий мікросервіс
-- REST або gRPC для синхронної комунікації
-- Message broker для асинхронних подій
-- Окремі бази даних
+- Each domain = separate microservice
+- REST or gRPC for synchronous communication
+- Message broker for asynchronous events
+- Separate databases
 ```
 
-## Спрощення архітектури
+## Architecture Simplification
 
-### Що можна об'єднати для простоти:
+### What can be combined for simplicity:
 
-1. **Catalog Domain тепер спрощений (2025-08-04):**
-   - PriceListItem - єдина таблиця з усіма даними прайс-листа
-   - Прямий CRUD без складної синхронізації
-   - Видалено: ServiceCatalog, ItemCatalog, ServiceItem
+1. **Catalog Domain is now simplified (2025-08-04):**
+   - PriceListItem - single table with all price list data
+   - Direct CRUD without complex synchronization
+   - Removed: ServiceCatalog, ItemCatalog, ServiceItem
 
-2. **Configuration можна розподілити:**
-   - Конфігурація цін → Pricing домен
-   - Конфігурація повідомлень → Notification домен
-   - Системні налаштування → application.yml
+2. **Configuration can be distributed:**
+   - Price configuration → Pricing domain
+   - Notification configuration → Notification domain
+   - System settings → application.yml
 
-3. **Reporting спочатку може бути частиною Order:**
-   - Прості звіти через JPA queries
-   - Окремий домен - коли з'явиться складна аналітика
+3. **Reporting can initially be part of Order:**
+   - Simple reports through JPA queries
+   - Separate domain - when complex analytics appears
 
-### Мінімальний набір для MVP:
-1. **Auth** - автентифікація
-2. **User** - користувачі системи
-3. **Customer** - клієнти
-4. **Order** - замовлення (включає характеристики предметів)
-5. **Pricing** - розрахунки
-6. **Receipt** - квитанції
+### Minimal set for MVP:
+1. **Auth** - authentication
+2. **User** - system users
+3. **Customer** - customers
+4. **Order** - orders (includes item characteristics)
+5. **Pricing** - calculations
+6. **Receipt** - receipts
 
-Решту доменів можна додавати поступово.
+Other domains can be added gradually.

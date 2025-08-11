@@ -16,7 +16,7 @@
     <artifactId>dry-cleaning-order-system</artifactId>
     <version>1.0.0</version>
     <name>AKSI Dry Cleaning Order System</name>
-    <description>Система управління замовленнями хімчистки з DDD архітектурою та cookie-based аутентифікацією</description>
+    <description>Dry cleaning order management system with DDD architecture and cookie-based authentication</description>
 
     <properties>
         <java.version>21</java.version>
@@ -25,7 +25,7 @@
         <zxing.version>3.5.3</zxing.version>
         <springdoc.version>2.8.9</springdoc.version>
         <lombok.version>1.18.38</lombok.version>
-        <!-- JWT видалено - використовуємо cookie-based auth -->
+        <!-- JWT removed - using cookie-based auth -->
         <maven-pmd-plugin.version>3.27.0</maven-pmd-plugin.version>
     </properties>
 
@@ -187,7 +187,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
             <exclusions>
-                <!-- Вимикаємо JUnit Vintage (JUnit 4) щоб уникнути конфліктів з JUnit 5 -->
+                <!-- Disable JUnit Vintage (JUnit 4) to avoid conflicts with JUnit 5 -->
                 <exclusion>
                     <groupId>org.junit.vintage</groupId>
                     <artifactId>junit-vintage-engine</artifactId>
@@ -296,7 +296,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Build Helper для додавання generated-sources до IDE -->
+            <!-- Build Helper for adding generated-sources to IDE -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -316,13 +316,13 @@
                 </executions>
             </plugin>
 
-            <!-- OpenAPI Generator для генерації DTO та контролерів -->
+            <!-- OpenAPI Generator for DTO and controller generation -->
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <version>7.14.0</version>
                 <configuration>
-                    <!-- Вимикаємо post-processing - використовуємо Spotless замість цього -->
+                    <!-- Disable post-processing - using Spotless instead -->
                     <enablePostProcessFile>false</enablePostProcessFile>
                     <!-- Глобальне кастомне мапування типів для всіх API -->
                     <typeMappings>
@@ -621,14 +621,14 @@
                 </executions>
             </plugin>
 
-            <!-- Spotless - автоматичне форматування коду -->
+            <!-- Spotless - automatic code formatting -->
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>2.44.5</version>
                 <configuration>
                     <java>
-                        <!-- Включаємо всі Java файли проекту + згенеровані OpenAPI -->
+                        <!-- Include all project Java files + generated OpenAPI -->
                         <includes>
                             <include>src/main/java/**/*.java</include>
                             <include>src/test/java/**/*.java</include>
@@ -639,15 +639,15 @@
                             <version>1.27.0</version>
                             <style>GOOGLE</style>
                         </googleJavaFormat>
-                        <!-- Порядок імпортів (має бути ПЕРЕД removeUnusedImports) -->
+                        <!-- Import order (must be BEFORE removeUnusedImports) -->
                         <importOrder>
                             <order>java|javax,org,com,com.aksi</order>
                         </importOrder>
-                        <!-- Видалення невикористаних імпортів -->
+                        <!-- Remove unused imports -->
                         <removeUnusedImports>
                             <engine>google-java-format</engine>
                         </removeUnusedImports>
-                        <!-- Очистка whitespace -->
+                        <!-- Whitespace cleanup -->
                         <trimTrailingWhitespace/>
                         <endWithNewline/>
                     </java>
@@ -657,13 +657,13 @@
                         <goals>
                             <goal>apply</goal>
                         </goals>
-                        <!-- Запускаємо після генерації OpenAPI -->
+                        <!-- Run after OpenAPI generation -->
                         <phase>process-sources</phase>
                     </execution>
                 </executions>
             </plugin>
 
-            <!-- PMD для пошуку дублювання коду (CPD) -->
+            <!-- PMD for code duplication detection (CPD) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
@@ -675,7 +675,7 @@
                     <printFailingErrors>true</printFailingErrors>
                     <linkXRef>false</linkXRef>
                     <failOnViolation>false</failOnViolation>
-                    <!-- Виключення контролерів з CPD -->
+                    <!-- Exclude controllers from CPD -->
                     <excludes>
                         <exclude>**/api/**/*Controller.java</exclude>
                         <exclude>**/util/ApiResponseUtils.java</exclude>
@@ -695,7 +695,7 @@
                 </executions>
             </plugin>
 
-            <!-- Checkstyle для перевірки стилю коду + невикористані імпорти -->
+            <!-- Checkstyle for code style checking + unused imports -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -731,29 +731,29 @@
         </plugins>
     </build>
 
-    <!-- Профілі для оптимізації збірки -->
+    <!-- Profiles for build optimization -->
     <profiles>
-        <!-- Швидкий профіль для розробки (БЕЗ блокування OpenAPI, але з spotless для згенерованих файлів) -->
+        <!-- Fast development profile (WITHOUT blocking OpenAPI, but with spotless for generated files) -->
         <profile>
             <id>dev-fast</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <!-- Пропускаємо тести для швидкої збірки -->
+                <!-- Skip tests for fast build -->
                 <skipTests>true</skipTests>
                 <maven.test.skip>true</maven.test.skip>
-                <!-- Пропускаємо checkstyle -->
+                <!-- Skip checkstyle -->
                 <checkstyle.skip>true</checkstyle.skip>
-                <!-- Пропускаємо PMD і CPD -->
+                <!-- Skip PMD and CPD -->
                 <pmd.skip>true</pmd.skip>
                 <cpd.skip>true</cpd.skip>
-                <!-- Залишаємо spotless для OpenAPI файлів -->
+                <!-- Keep spotless for OpenAPI files -->
                 <spotless.skip>false</spotless.skip>
             </properties>
         </profile>
 
-        <!-- Окремий профіль для dev БЕЗ OpenAPI (якщо потрібно) -->
+        <!-- Separate profile for dev WITHOUT OpenAPI (if needed) -->
         <profile>
             <id>dev-no-api</id>
             <properties>
@@ -766,7 +766,7 @@
             </properties>
             <build>
                 <plugins>
-                    <!-- Вимикаємо OpenAPI генерацію -->
+                    <!-- Disable OpenAPI generation -->
                     <plugin>
                         <groupId>org.openapitools</groupId>
                         <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -813,7 +813,7 @@
             </build>
         </profile>
 
-        <!-- Повна збірка для production -->
+        <!-- Full production build -->
         <profile>
             <id>full-build</id>
             <properties>
@@ -825,7 +825,7 @@
             </properties>
         </profile>
 
-        <!-- Генерація OpenAPI окремо -->
+        <!-- Separate OpenAPI generation -->
         <profile>
             <id>generate-api</id>
             <properties>

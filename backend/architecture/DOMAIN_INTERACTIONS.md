@@ -1,13 +1,13 @@
-# Взаємодія між доменами
+# Domain Interactions
 
-## Принципи взаємодії
+## Interaction Principles
 
-1. **Loose Coupling** - домени мінімально залежать один від одного
-2. **Event-Driven** - комунікація через події де можливо
-3. **API Contracts** - чіткі контракти між доменами
-4. **Data Consistency** - eventual consistency між доменами
+1. **Loose Coupling** - domains are minimally dependent on each other
+2. **Event-Driven** - communication through events where possible
+3. **API Contracts** - clear contracts between domains
+4. **Data Consistency** - eventual consistency between domains
 
-## Діаграма взаємодії
+## Interaction Diagram
 
 ```
 ┌─────────────┐     ┌──────────────┐     ┌─────────────┐
@@ -29,89 +29,89 @@
                          └──────────────┘
 ```
 
-## Детальний опис взаємодій
+## Detailed Interaction Description
 
-### 1. Cart Domain - інтерактивна корзина для розрахунків
+### 1. Cart Domain - Interactive Cart for Calculations
 
-**Призначення:**
-- Тимчасове зберігання предметів до створення замовлення
-- Інтерактивний розрахунок цін в реальному часі
-- Застосування глобальних параметрів (терміновість, знижки)
+**Purpose:**
+- Temporary storage of items before order creation
+- Interactive real-time price calculation
+- Application of global parameters (urgency, discounts)
 
-**Залежності:**
-- Customer (для прив'язки корзини)
-- Service (для отримання базових цін)
-- Pricing (для розрахунку з модифікаторами)
+**Dependencies:**
+- Customer (for cart binding)
+- Service (for obtaining base prices)
+- Pricing (for calculation with modifiers)
 
 **API endpoints:**
 ```
-POST   /api/cart                    - створити корзину
-GET    /api/cart/{cartId}          - отримати корзину
-POST   /api/cart/{cartId}/items    - додати предмет
-PUT    /api/cart/{cartId}/items/{itemId} - оновити предмет
-DELETE /api/cart/{cartId}/items/{itemId} - видалити предмет
-PUT    /api/cart/{cartId}/urgency  - змінити терміновість
-PUT    /api/cart/{cartId}/discount - застосувати знижку
-POST   /api/cart/{cartId}/calculate - перерахувати всі ціни
-POST   /api/cart/{cartId}/checkout - створити замовлення з корзини
+POST   /api/cart                    - create cart
+GET    /api/cart/{cartId}          - get cart
+POST   /api/cart/{cartId}/items    - add item
+PUT    /api/cart/{cartId}/items/{itemId} - update item
+DELETE /api/cart/{cartId}/items/{itemId} - delete item
+PUT    /api/cart/{cartId}/urgency  - change urgency
+PUT    /api/cart/{cartId}/discount - apply discount
+POST   /api/cart/{cartId}/calculate - recalculate all prices
+POST   /api/cart/{cartId}/checkout - create order from cart
 ```
 
-### 2. Order Domain - центральний домен
+### 2. Order Domain - Central Domain
 
-**Залежності:**
-- Cart (створюється з готової корзини)
-- Customer (для прив'язки замовлення)
-- Branch (для визначення місця прийому)
-- Service (для вибору послуг та предметів з каталогу)
-- Pricing (для розрахунку вартості)
+**Dependencies:**
+- Cart (created from ready cart)
+- Customer (for order binding)
+- Branch (for reception point definition)
+- Service (for service and item selection from catalog)
+- Pricing (for cost calculation)
 
-**Особливості:**
-- Характеристики предметів (матеріал, колір, дефекти) фіксуються в OrderItem
-- Фотографії робляться при створенні замовлення
-- Замовлення створюється з готової корзини з усіма розрахунками
+**Features:**
+- Item characteristics (material, color, defects) are fixed in OrderItem
+- Photos are taken during order creation
+- Order is created from ready cart with all calculations
 
-**Події, які генерує:**
+**Events Generated:**
 - `OrderCreatedEvent`
-- `OrderItemAddedEvent` (включає всі характеристики)
+- `OrderItemAddedEvent` (includes all characteristics)
 - `OrderStatusChangedEvent`
 - `OrderCompletedEvent`
 
 **API endpoints:**
 ```
-POST /api/orders - створити замовлення
-GET /api/orders/{id} - отримати замовлення
-PUT /api/orders/{id}/items - додати предмет з характеристиками
-PUT /api/orders/{id}/status - змінити статус
+POST /api/orders - create order
+GET /api/orders/{id} - get order
+PUT /api/orders/{id}/items - add item with characteristics
+PUT /api/orders/{id}/status - change status
 ```
 
 ### 3. Cart → Service + Pricing
 
-**Взаємодія:**
-- Cart використовує Service domain для отримання базових цін
-- Cart викликає Pricing для кожного предмета з усіма характеристиками
-- При зміні глобальних параметрів (терміновість, знижка) - перераховується вся корзина
-- Всі розрахунки зберігаються в корзині до створення замовлення
+**Interaction:**
+- Cart uses Service domain to get base prices
+- Cart calls Pricing for each item with all characteristics
+- When global parameters change (urgency, discount) - entire cart is recalculated
+- All calculations are stored in cart until order creation
 
-**Особливості розрахунку:**
-- Кожен предмет розраховується окремо з усіма модифікаторами
-- Терміновість застосовується до всіх предметів
-- Знижки застосовуються вибірково (не на прання, прасування, фарбування)
-- Детальний breakdown зберігається для прозорості
+**Calculation Features:**
+- Each item is calculated separately with all modifiers
+- Urgency applies to all items
+- Discounts are applied selectively (not to washing, ironing, dyeing)
+- Detailed breakdown is stored for transparency
 
 ### 4. Cart → Order
 
-**Взаємодія:**
-- Order створюється з готової корзини через checkout
-- Всі розрахунки та характеристики переносяться з Cart
-- Cart зберігає TTL (time to live) та автоматично видаляється після checkout
-- Можливість відновити корзину з Order для редагування
+**Interaction:**
+- Order is created from ready cart through checkout
+- All calculations and characteristics are transferred from Cart
+- Cart stores TTL (time to live) and is automatically deleted after checkout
+- Ability to restore cart from Order for editing
 
 ### 5. Customer → Order
 
-**Взаємодія:**
-- Order отримує customer ID при створенні
-- Customer domain надає API для перевірки існування клієнта
-- Order зберігає тільки customer ID, не дублює дані
+**Interaction:**
+- Order receives customer ID during creation
+- Customer domain provides API for customer existence verification
+- Order stores only customer ID, doesn't duplicate data
 
 **API Contract:**
 ```java
@@ -132,10 +132,10 @@ GET /api/customers/search?phone={phone} - List<CustomerDTO>
 
 ### 3. Order → Service
 
-**Взаємодія:**
-- Service domain надає каталог послуг та предметів
-- Order використовує ServiceItem для визначення базової ціни
-- Характеристики предметів зберігаються в OrderItem
+**Interaction:**
+- Service domain provides catalog of services and items
+- Order uses ServiceItem to determine base price
+- Item characteristics are stored in OrderItem
 
 **API Contract:**
 ```java
@@ -158,10 +158,10 @@ GET /api/services/items/search?category={cat} - List<ServiceItemDTO>
 
 ### 4. Order → Pricing
 
-**Взаємодія:**
-- Pricing domain розраховує вартість на основі ServiceItem та характеристик
-- Order викликає Pricing API для кожного OrderItem
-- Pricing враховує всі модифікатори та правила
+**Interaction:**
+- Pricing domain calculates cost based on ServiceItem and characteristics
+- Order calls Pricing API for each OrderItem
+- Pricing considers all modifiers and rules
 
 **API Contract:**
 ```java
@@ -186,7 +186,7 @@ POST /api/pricing/calculate - PriceCalculationDTO
 {
   "basePrice": 100.00,
   "modifiers": [
-    {"name": "Термінова чистка", "value": 50.00}
+    {"name": "Express cleaning", "value": 50.00}
   ],
   "totalPrice": 150.00,
   "calculation": "detailed breakdown"
@@ -195,22 +195,22 @@ POST /api/pricing/calculate - PriceCalculationDTO
 
 ### 5. Order → Payment
 
-**Взаємодія:**
-- Payment domain обробляє платежі для замовлення
-- Order отримує події про зміну статусу платежу
-- Payment зберігає історію всіх транзакцій
+**Interaction:**
+- Payment domain processes payments for order
+- Order receives events about payment status changes
+- Payment stores history of all transactions
 
-**Події:**
+**Events:**
 - `PaymentReceivedEvent`
 - `PaymentRefundedEvent`
 - `OrderFullyPaidEvent`
 
 ### 6. Order → Receipt
 
-**Взаємодія:**
-- Receipt генерується при створенні замовлення
-- Receipt domain має доступ до всіх необхідних даних
-- Використовує шаблони для різних типів квитанцій
+**Interaction:**
+- Receipt is generated when order is created
+- Receipt domain has access to all necessary data
+- Uses templates for different types of receipts
 
 **API Contract:**
 ```java
@@ -227,22 +227,22 @@ GET /api/receipts/{orderId}/pdf - PDF file
 
 ### 7. Customer → Notification
 
-**Взаємодія:**
-- Notification domain підписаний на події замовлень
-- Використовує communication preferences клієнта
-- Відправляє повідомлення через обрані канали
+**Interaction:**
+- Notification domain is subscribed to order events
+- Uses customer communication preferences
+- Sends notifications through selected channels
 
-**Події для підписки:**
-- `OrderCreatedEvent` → SMS підтвердження
-- `OrderReadyEvent` → повідомлення про готовність
-- `PaymentReceivedEvent` → підтвердження оплати
+**Events for Subscription:**
+- `OrderCreatedEvent` → SMS confirmation
+- `OrderReadyEvent` → readiness notification
+- `PaymentReceivedEvent` → payment confirmation
 
 ### 8. Auth → All Domains
 
-**Взаємодія:**
-- Auth надає JWT токени для авторизації
-- Кожен домен валідує токени
-- Містить інформацію про оператора та філію
+**Interaction:**
+- Auth provides JWT tokens for authorization
+- Each domain validates tokens
+- Contains information about operator and branch
 
 **Security Context:**
 ```java
@@ -254,18 +254,18 @@ GET /api/receipts/{orderId}/pdf - PDF file
 }
 ```
 
-## Шаблони комунікації
+## Communication Patterns
 
 ### 1. Synchronous API Calls
 
-Використовується для:
-- Отримання даних в реальному часі
-- Валідація перед операціями
-- Розрахунки, що потребують негайної відповіді
+Used for:
+- Real-time data retrieval
+- Pre-operation validation
+- Calculations requiring immediate response
 
-Приклад:
+Example:
 ```java
-// OrderService викликає Service і Pricing
+// OrderService calls Service and Pricing
 @Service
 public class OrderService {
     @Autowired
@@ -274,13 +274,13 @@ public class OrderService {
     private PricingClient pricingClient;
     
     public OrderItem addItem(OrderItemRequest request) {
-        // Отримати інформацію про ServiceItem
+        // Get ServiceItem information
         ServiceItemDTO serviceItem = serviceClient.getServiceItem(request.getServiceItemId());
         
-        // Синхронний виклик для розрахунку ціни
+        // Synchronous call for price calculation
         PriceCalculation price = pricingClient.calculate(request);
         
-        // Створення OrderItem з всіма характеристиками
+        // Create OrderItem with all characteristics
         OrderItem orderItem = new OrderItem();
         orderItem.setServiceItemId(serviceItem.getId());
         orderItem.setMaterial(request.getMaterial());
@@ -295,14 +295,14 @@ public class OrderService {
 
 ### 2. Asynchronous Events
 
-Використовується для:
-- Некритичних операцій
-- Довготривалих процесів
-- Loose coupling між доменами
+Used for:
+- Non-critical operations
+- Long-running processes
+- Loose coupling between domains
 
-Приклад:
+Example:
 ```java
-// Order публікує подію
+// Order publishes event
 @EventPublisher
 public class OrderEventPublisher {
     public void publishOrderCreated(Order order) {
@@ -315,24 +315,24 @@ public class OrderEventPublisher {
     }
 }
 
-// Notification підписується на подію
+// Notification subscribes to event
 @EventListener
 public class NotificationEventHandler {
     @Async
     public void handleOrderCreated(OrderCreatedEvent event) {
-        // Асинхронна відправка повідомлення
+        // Asynchronous message sending
     }
 }
 ```
 
-### 3. Saga Pattern для транзакцій
+### 3. Saga Pattern for Transactions
 
-Використовується для:
-- Розподілених транзакцій
-- Компенсації при помилках
-- Складних бізнес-процесів
+Used for:
+- Distributed transactions
+- Compensation on errors
+- Complex business processes
 
-Приклад Order Saga:
+Order Saga Example:
 ```java
 1. CreateOrderCommand
 2. ReserveItemsCommand
@@ -341,7 +341,7 @@ public class NotificationEventHandler {
 5. GenerateReceiptCommand
 6. SendNotificationCommand
 
-// При помилці - компенсуючі команди
+// On error - compensating commands
 - CancelPaymentCommand
 - ReleaseItemsCommand
 - CancelOrderCommand
@@ -350,19 +350,19 @@ public class NotificationEventHandler {
 ## Data Consistency Patterns
 
 ### 1. Immediate Consistency
-- В межах одного домену
-- Для критичних операцій
+- Within a single domain
+- For critical operations
 
 ### 2. Eventual Consistency
-- Між доменами через події
-- Для некритичних даних
+- Between domains through events
+- For non-critical data
 
 ### 3. Read Models
-- Матеріалізовані представлення для читання
-- Оновлюються через події
-- Оптимізовані для запитів
+- Materialized views for reading
+- Updated through events
+- Optimized for queries
 
-## Обробка помилок між доменами
+## Error Handling Between Domains
 
 ### 1. Circuit Breaker
 ```java
@@ -371,7 +371,7 @@ public class PricingServiceClient {
     @CircuitBreaker(name = "pricing-serviceCatalog")
     @Retry(name = "pricing-serviceCatalog")
     public PriceCalculation calculate(Request request) {
-        // Виклик external serviceCatalog
+        // External service call
     }
 }
 ```
@@ -382,23 +382,23 @@ public class PricingServiceClient {
 - Degraded functionality
 
 ### 3. Dead Letter Queue
-- Для неопрацьованих подій
-- Можливість повторної обробки
-- Моніторинг та алерти
+- For unprocessed events
+- Ability to reprocess
+- Monitoring and alerts
 
-## Моніторинг взаємодій
+## Interaction Monitoring
 
 ### 1. Distributed Tracing
-- Correlation IDs для відстеження
-- Trace через всі домени
-- Візуалізація в Jaeger/Zipkin
+- Correlation IDs for tracking
+- Trace through all domains
+- Visualization in Jaeger/Zipkin
 
 ### 2. Metrics
-- Latency між сервісами
+- Latency between services
 - Error rates
 - Throughput
 
 ### 3. Health Checks
-- Перевірка доступності залежностей
+- Dependency availability checks
 - Graceful degradation
-- Автоматичне відновлення
+- Automatic recovery

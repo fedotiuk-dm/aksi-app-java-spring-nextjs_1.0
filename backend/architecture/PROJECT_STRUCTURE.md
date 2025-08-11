@@ -1,30 +1,30 @@
-# Структура проекту JavaSpringDryCleaning
+# JavaSpringDryCleaning Project Structure
 
-## Загальна структура
+## Overall Structure
 
 ```
 JavaSpringDryCleaning/
-├── architecture/               # Архітектурна документація
+├── architecture/               # Architecture documentation
 │   ├── DOMAIN_ARCHITECTURE.md
 │   ├── PROJECT_STRUCTURE.md
 │   └── API_CONTRACTS.md
 │
-├── dry-cleaning-parent/       # Parent POM для всіх модулів
+├── dry-cleaning-parent/       # Parent POM for all modules
 │   └── pom.xml
 │
-├── dry-cleaning-common/       # Спільні компоненти
+├── dry-cleaning-common/       # Common components
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/common/
-│       ├── domain/           # Спільні доменні моделі
+│       ├── domain/           # Common domain models
 │       │   ├── Money.java
 │       │   ├── Address.java
 │       │   ├── PhoneNumber.java
 │       │   └── Email.java
-│       ├── exception/        # Спільні exception
-│       ├── util/            # Утиліти
-│       └── validation/      # Валідатори
+│       ├── exception/        # Common exceptions
+│       ├── util/            # Utilities
+│       └── validation/      # Validators
 │
-├── dry-cleaning-auth/        # Auth домен
+├── dry-cleaning-auth/        # Auth domain
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/auth/
 │       ├── controller/
@@ -34,7 +34,7 @@ JavaSpringDryCleaning/
 │       ├── dto/
 │       └── config/
 │
-├── dry-cleaning-customer/    # Customer домен
+├── dry-cleaning-customer/    # Customer domain
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/customer/
 │       ├── controller/
@@ -44,7 +44,7 @@ JavaSpringDryCleaning/
 │       ├── dto/
 │       └── mapper/
 │
-├── dry-cleaning-branch/      # Branch домен
+├── dry-cleaning-branch/      # Branch domain
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/branch/
 │       ├── controller/
@@ -53,7 +53,7 @@ JavaSpringDryCleaning/
 │       ├── domain/
 │       └── dto/
 │
-├── dry-cleaning-serviceCatalog/     # Service домен (включає каталог послуг та предметів)
+├── dry-cleaning-serviceCatalog/     # Service domain (includes service and item catalog)
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/serviceCatalog/
 │       ├── controller/
@@ -69,9 +69,9 @@ JavaSpringDryCleaning/
 │       │   ├── ServiceCategoryType.java
 │       │   └── UnitOfMeasure.java
 │       ├── dto/
-│       └── loader/            # Завантаження CSV
+│       └── loader/            # CSV loading
 │
-├── dry-cleaning-pricing/     # Pricing домен
+├── dry-cleaning-pricing/     # Pricing domain
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/pricing/
 │       ├── controller/
@@ -81,9 +81,9 @@ JavaSpringDryCleaning/
 │       ├── repository/
 │       ├── domain/
 │       ├── dto/
-│       └── rules/          # Бізнес правила
+│       └── rules/          # Business rules
 │
-├── dry-cleaning-order/       # Order домен (включає корзину та характеристики предметів)
+├── dry-cleaning-order/       # Order domain (includes cart and item characteristics)
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/order/
 │       ├── controller/
@@ -115,9 +115,9 @@ JavaSpringDryCleaning/
 │       │   └── order/
 │       ├── saga/           # Order saga
 │       ├── event/          # Domain events
-│       └── storage/        # Для роботи з фото
+│       └── storage/        # Photo handling
 │
-├── dry-cleaning-payment/     # Payment домен
+├── dry-cleaning-payment/     # Payment domain
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/payment/
 │       ├── controller/
@@ -127,7 +127,7 @@ JavaSpringDryCleaning/
 │       ├── dto/
 │       └── gateway/        # Payment gateways
 │
-├── dry-cleaning-receipt/     # Receipt домен
+├── dry-cleaning-receipt/     # Receipt domain
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/receipt/
 │       ├── controller/
@@ -135,10 +135,10 @@ JavaSpringDryCleaning/
 │       ├── repository/
 │       ├── domain/
 │       ├── dto/
-│       ├── template/       # Шаблони квитанцій
-│       └── generator/      # PDF/Print генератори
+│       ├── template/       # Receipt templates
+│       └── generator/      # PDF/Print generators
 │
-├── dry-cleaning-notification/  # Notification домен
+├── dry-cleaning-notification/  # Notification domain
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/notification/
 │       ├── controller/
@@ -148,7 +148,7 @@ JavaSpringDryCleaning/
 │       ├── dto/
 │       └── channel/        # SMS, Viber, Email
 │
-├── dry-cleaning-config/      # Configuration домен
+├── dry-cleaning-config/      # Configuration domain
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/config/
 │       ├── controller/
@@ -157,7 +157,7 @@ JavaSpringDryCleaning/
 │       ├── domain/
 │       └── dto/
 │
-├── dry-cleaning-reporting/   # Reporting домен
+├── dry-cleaning-reporting/   # Reporting domain
 │   ├── pom.xml
 │   └── src/main/java/org/example/dryclean/reporting/
 │       ├── controller/
@@ -165,7 +165,7 @@ JavaSpringDryCleaning/
 │       ├── repository/
 │       ├── domain/
 │       ├── dto/
-│       └── export/         # Excel, PDF експорт
+│       └── export/         # Excel, PDF export
 │
 ├── dry-cleaning-api-gateway/ # API Gateway
 │   ├── pom.xml
@@ -175,30 +175,30 @@ JavaSpringDryCleaning/
 │       ├── security/      # Security config
 │       └── config/
 │
-├── dry-cleaning-web/         # Frontend (якщо потрібно)
+├── dry-cleaning-web/         # Frontend (if needed)
 │   ├── package.json
 │   ├── src/
 │   └── public/
 │
-├── docker/                   # Docker конфігурація
+├── docker/                   # Docker configuration
 │   ├── docker-compose.yml
 │   └── Dockerfile
 │
-├── scripts/                  # Допоміжні скрипти
+├── scripts/                  # Helper scripts
 │   ├── build.sh
 │   └── deploy.sh
 │
-├── docs/                     # Документація
+├── docs/                     # Documentation
 │   ├── api/
 │   ├── user-guide/
 │   └── deployment/
 │
-└── CLAUDE.md                # Інструкції для розробки
+└── CLAUDE.md                # Development instructions
 ```
 
-## Структура кожного модуля
+## Module Structure
 
-### Типова структура домену:
+### Typical Domain Structure:
 
 ```
 dry-cleaning-{domain}/
@@ -206,9 +206,9 @@ dry-cleaning-{domain}/
 └── src/
     ├── main/
     │   ├── java/org/example/dryclean/{domain}/
-    │   │   ├── controller/          # REST контролери
+    │   │   ├── controller/          # REST controllers
     │   │   │   └── {Domain}Controller.java
-    │   │   ├── serviceCatalog/            # Бізнес-логіка
+    │   │   ├── serviceCatalog/            # Business logic
     │   │   │   ├── {Domain}Service.java
     │   │   │   └── impl/
     │   │   │       └── {Domain}ServiceImpl.java
@@ -234,79 +234,79 @@ dry-cleaning-{domain}/
             └── fixtures/        # Test data
 ```
 
-## Рекомендації щодо організації коду
+## Code Organization Recommendations
 
 ### 1. Domain Layer (domain/)
-- Чисті Java класи без фреймворк-специфічних анотацій
-- Бізнес-логіка та правила
-- Value objects та entities
+- Pure Java classes without framework-specific annotations
+- Business logic and rules
+- Value objects and entities
 
 ### 2. Service Layer (serviceCatalog/)
-- Spring Service анотації
-- Транзакційна логіка
-- Оркестрація між репозиторіями
+- Spring Service annotations
+- Transactional logic
+- Orchestration between repositories
 
 ### 3. Controller Layer (controller/)
 - REST endpoints
-- Валідація вхідних даних
-- Маппінг DTO <-> Domain
+- Input data validation
+- DTO <-> Domain mapping
 
 ### 4. Repository Layer (repository/)
-- Spring Data JPA інтерфейси
+- Spring Data JPA interfaces
 - Custom query methods
-- Specifications для складних запитів
+- Specifications for complex queries
 
 ### 5. DTO Layer (dto/)
 - Request/Response objects
 - Validation annotations
 - API documentation annotations
 
-## Міграція з поточної структури
+## Migration from Current Structure
 
-### Крок 1: Створення parent POM
+### Step 1: Create parent POM
 ```bash
 mkdir dry-cleaning-parent
-# Створити parent pom.xml з загальними залежностями
+# Create parent pom.xml with common dependencies
 ```
 
-### Крок 2: Створення common модуля
+### Step 2: Create common module
 ```bash
 mkdir dry-cleaning-common
-# Перенести спільні класи
+# Move shared classes
 ```
 
-### Крок 3: Створення доменних модулів
+### Step 3: Create domain modules
 ```bash
-# Для кожного домену
+# For each domain
 mkdir dry-cleaning-{domain}
-# Створити структуру папок
-# Створити pom.xml
+# Create folder structure
+# Create pom.xml
 ```
 
-### Крок 4: Рефакторинг існуючого коду
-- Розділити Main.java на відповідні домени
-- Створити необхідні класи в кожному домені
+### Step 4: Refactor existing code
+- Split Main.java into corresponding domains
+- Create necessary classes in each domain
 
-## Переваги такої структури
+## Advantages of This Structure
 
-1. **Модульність** - кожен домен незалежний
-2. **Масштабованість** - легко додавати нові домени
-3. **Тестування** - ізольоване тестування доменів
-4. **Деплой** - можливість окремого деплою модулів
-5. **Командна робота** - різні команди можуть працювати над різними доменами
+1. **Modularity** - each domain is independent
+2. **Scalability** - easy to add new domains
+3. **Testing** - isolated domain testing
+4. **Deployment** - ability to deploy modules separately
+5. **Team Collaboration** - different teams can work on different domains
 
-## Альтернативний підхід (Монолітна структура)
+## Alternative Approach (Monolithic Structure)
 
-Якщо ви хочете почати з простішої структури:
+If you want to start with a simpler structure:
 
 ```
 src/main/java/org/example/dryclean/
 ├── auth/
 ├── customer/
 ├── branch/
-├── serviceCatalog/         # Каталог послуг та предметів
+├── serviceCatalog/         # Service and item catalog
 ├── pricing/
-├── order/          # Замовлення з характеристиками
+├── order/          # Orders with characteristics
 ├── payment/
 ├── receipt/
 ├── notification/
@@ -315,4 +315,4 @@ src/main/java/org/example/dryclean/
 └── common/
 ```
 
-Це дозволить почати швидше, а потім при необхідності мігрувати на модульну архітектуру.
+This will allow you to start faster, and then migrate to modular architecture if needed.

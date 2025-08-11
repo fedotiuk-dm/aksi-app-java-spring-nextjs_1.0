@@ -68,7 +68,7 @@ public class PricingFactory {
       UrgencyType urgencyType, int amount, int percentage) {
     AppliedModifier urgencyModifier = new AppliedModifier();
     urgencyModifier.setCode(urgencyType.getValue());
-    urgencyModifier.setName("Термінове виконання " + urgencyType.getValue());
+    urgencyModifier.setName("Express completion " + urgencyType.getValue());
     urgencyModifier.setType(ModifierType.PERCENTAGE);
     urgencyModifier.setValue(percentage);
     urgencyModifier.setAmount(amount);
@@ -80,7 +80,7 @@ public class PricingFactory {
       DiscountType discountType, int amount, int percentage) {
     AppliedModifier discountModifier = new AppliedModifier();
     discountModifier.setCode(discountType.getValue());
-    discountModifier.setName("Знижка " + discountType.getValue());
+    discountModifier.setName("Discount " + discountType.getValue());
     discountModifier.setType(ModifierType.PERCENTAGE);
     discountModifier.setValue(percentage);
     discountModifier.setAmount(-amount); // Discount is negative

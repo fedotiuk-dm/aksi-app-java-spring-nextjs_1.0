@@ -1,102 +1,102 @@
-# Наступні кроки реалізації
+# Next Implementation Steps
 
-## Підготовлено архітектурні документи
+## Prepared Architecture Documents
 
-✅ **DOMAIN_ARCHITECTURE.md** - 13 доменів з розділенням Auth/User
-✅ **PROJECT_STRUCTURE.md** - структура проекту
-✅ **DOMAIN_INTERACTIONS.md** - взаємодія між доменами
-✅ **API_CONTRACTS.md** - API контракти
-✅ **OPENAPI_FIRST_APPROACH.md** - OpenAPI генерація
-✅ **COOKIE_BASED_AUTH.md** - cookie автентифікація
+✅ **DOMAIN_ARCHITECTURE.md** - 13 domains with Auth/User separation
+✅ **PROJECT_STRUCTURE.md** - project structure
+✅ **DOMAIN_INTERACTIONS.md** - domain interactions
+✅ **API_CONTRACTS.md** - API contracts
+✅ **OPENAPI_FIRST_APPROACH.md** - OpenAPI generation
+✅ **COOKIE_BASED_AUTH.md** - cookie authentication
 
-## Рекомендована послідовність
+## Recommended Sequence
 
-### Фаза 1: OpenAPI та Інфраструктура (3-5 днів)
+### Phase 1: OpenAPI and Infrastructure (3-5 days)
 
-1. **Створити OpenAPI специфікації**
-   - Базові схеми (error, pagination)
+1. **Create OpenAPI specifications**
+   - Basic schemas (error, pagination)
    - Auth API (login/logout)
-   - User API (CRUD операції)
+   - User API (CRUD operations)
    - Customer API
 
-2. **Налаштувати проект**
-   - Maven з OpenAPI generator plugin
+2. **Set up project**
+   - Maven with OpenAPI generator plugin
    - Spring Boot 3.x
-   - Docker compose для БД та Redis
+   - Docker compose for DB and Redis
 
-3. **Згенерувати базовий код**
-   - DTO з OpenAPI specs
-   - API інтерфейси
+3. **Generate base code**
+   - DTOs from OpenAPI specs
+   - API interfaces
    - Validation annotations
 
-### Фаза 2: Auth та User (1 тиждень)
+### Phase 2: Auth and User (1 week)
 
 1. **Cookie-based Authentication**
-   - Session management в Redis
+   - Session management in Redis
    - CSRF protection
    - Security filters
 
 2. **User Management**
-   - Ролі (OPERATOR, MANAGER, ADMIN)
-   - Прив'язка до філій
-   - CRUD операції
+   - Roles (OPERATOR, MANAGER, ADMIN)
+   - Branch binding
+   - CRUD operations
 
 3. **Testing**
-   - Integration tests з Testcontainers
+   - Integration tests with Testcontainers
    - Security testing
 
-### Фаза 3: Core MVP (2 тижні)
+### Phase 3: Core MVP (2 weeks)
 
 1. **Customer Domain**
-   - Пошук клієнтів
-   - Історія замовлень
-   - Комунікаційні налаштування
+   - Customer search
+   - Order history
+   - Communication settings
 
-2. **Price List Domain** (спрощений каталог)
-   - Єдиний прайс-лист замість окремих таблиць
-   - CRUD для управління елементами прайсу
-   - Всі необхідні поля в одній таблиці
+2. **Price List Domain** (simplified catalog)
+   - Single price list instead of separate tables
+   - CRUD for price list item management
+   - All necessary fields in one table
 
-3. **Order Domain з Cart функціональністю**
-   - **Cart (корзина)**:
-     - Тимчасове зберігання предметів до створення замовлення
-     - Інтерактивний розрахунок цін в реальному часі
-     - Застосування глобальних параметрів (терміновість, знижки)
-     - TTL механізм (автовидалення через 1 годину)
-   - **Order (замовлення)**:
-     - Створення замовлень з готової корзини
-     - Фіксація характеристик предметів (матеріал, колір, дефекти)
-     - Фотографування предметів
-     - Статуси
+3. **Order Domain with Cart Functionality**
+   - **Cart**:
+     - Temporary item storage before order creation
+     - Interactive real-time price calculation
+     - Global parameters application (urgency, discounts)
+     - TTL mechanism (auto-deletion after 1 hour)
+   - **Order**:
+     - Order creation from ready cart
+     - Item characteristics fixation (material, color, defects)
+     - Item photography
+     - Statuses
 
 4. **Pricing Domain**
-   - Калькулятор на основі ServiceItem та характеристик
-   - Модифікатори та правила
-   - API для розрахунків
-   - Інтеграція з Cart для real-time обчислень
+   - Calculator based on ServiceItem and characteristics
+   - Modifiers and rules
+   - API for calculations
+   - Integration with Cart for real-time calculations
 
 5. **Receipt Domain**
-   - PDF генерація
-   - QR коди
-   - Шаблони
+   - PDF generation
+   - QR codes
+   - Templates
 
-### Фаза 4: Розширені функції (за потребою)
+### Phase 4: Extended Features (as needed)
 
-- **Payment** - інтеграція платежів
+- **Payment** - payment integration
 - **Notification** - SMS/Viber
-- **Branch** - управління філіями
-- **Reporting** - звітність
+- **Branch** - branch management
+- **Reporting** - reporting
 
-## Структура для старту
+## Startup Structure
 
-### Монолітна архітектура
+### Monolithic Architecture
 ```
 src/main/java/org/example/dryclean/
 ├── auth/          # Authentication
 ├── user/          # User management  
 ├── customer/      # Customers
-├── catalog/       # Price list (єдиний каталог)
-├── order/         # Orders (включає корзину та характеристики)
+├── catalog/       # Price list (single catalog)
+├── order/         # Orders (includes cart and characteristics)
 │   ├── cart/      # Cart functionality
 │   ├── order/     # Order management
 │   └── storage/   # Photo storage
@@ -105,41 +105,41 @@ src/main/java/org/example/dryclean/
 └── common/        # Shared components
 ```
 
-### OpenAPI структура
+### OpenAPI Structure
 ```
 api-specs/
 ├── common/        # Shared schemas
 ├── auth-api.yaml
 ├── user-api.yaml
 ├── customer-api.yaml
-├── price-list-api.yaml  # Єдиний прайс-лист
-├── cart-api.yaml       # Корзина
-├── order-api.yaml      # Замовлення
+├── price-list-api.yaml  # Single price list
+├── cart-api.yaml       # Cart
+├── order-api.yaml      # Orders
 ├── pricing-api.yaml
 └── main-api.yaml      # Aggregates all APIs
 ```
 
-## Ключові технології
+## Key Technologies
 
 - **Backend**: Spring Boot 3.x, Java 21
-- **API**: OpenAPI 3.0, генерація коду
+- **API**: OpenAPI 3.0, code generation
 - **Auth**: Cookie-based, Spring Security
 - **Database**: PostgreSQL, Flyway migrations
-- **Sessions & Cache**: Redis (сесії та корзина з TTL)
+- **Sessions & Cache**: Redis (sessions and cart with TTL)
 - **Testing**: JUnit 5, Testcontainers
 - **Deploy**: Docker, Docker Compose
 
-## Workflow розробки
+## Development Workflow
 
 1. **Design API First**
-   - Написати OpenAPI spec
-   - Валідувати через Redocly
-   - Review з командою
+   - Write OpenAPI spec
+   - Validate through Redocly
+   - Review with team
 
 2. **Generate Code**
    - Maven generate-sources
-   - Імплементувати згенеровані інтерфейси
-   - Додати бізнес-логіку
+   - Implement generated interfaces
+   - Add business logic
 
 3. **Test Driven**
    - Integration tests
@@ -154,8 +154,8 @@ api-specs/
 ## MVP Checklist
 
 ### Week 1
-- [ ] OpenAPI specs для Auth, User, Customer
-- [ ] Налаштування проекту та генерація
+- [ ] OpenAPI specs for Auth, User, Customer
+- [ ] Project setup and generation
 - [ ] Cookie authentication
 - [ ] User CRUD
 
@@ -167,7 +167,7 @@ api-specs/
   - [ ] Real-time price calculation
   - [ ] TTL mechanism with Redis
   - [ ] Urgency and discount handling
-- [ ] Order creation flow (з характеристиками):
+- [ ] Order creation flow (with characteristics):
   - [ ] Create order from cart
   - [ ] Item characteristics capture
   - [ ] Photo upload
@@ -179,22 +179,22 @@ api-specs/
 - [ ] Documentation
 - [ ] Docker setup
 
-## Важливі рішення
+## Important Decisions
 
-1. **OpenAPI-First** - всі API проектуються через специфікації
-2. **Cookie Auth** - безпечніше за JWT в headers
-3. **Модульність** - домени максимально незалежні
-4. **PostgreSQL + Redis** - основне сховище + сесії
-5. **Docker** - все працює в контейнерах
-6. **Cart-based Order Flow** - корзина для інтерактивного розрахунку перед створенням замовлення
+1. **OpenAPI-First** - all APIs are designed through specifications
+2. **Cookie Auth** - safer than JWT in headers
+3. **Modularity** - domains are maximally independent
+4. **PostgreSQL + Redis** - main storage + sessions
+5. **Docker** - everything runs in containers
+6. **Cart-based Order Flow** - cart for interactive calculation before order creation
 
 ## Quick Start
 
 ```bash
-# 1. Створити OpenAPI specs
-# 2. Згенерувати код: mvn generate-sources
-# 3. Запустити в Docker: docker-compose up
-# 4. Розробляти з hot-reload
+# 1. Create OpenAPI specs
+# 2. Generate code: mvn generate-sources
+# 3. Run in Docker: docker-compose up
+# 4. Develop with hot-reload
 ```
 
-Детальні приклади коду та специфікацій дивіться у відповідних документах архітектури.
+For detailed code examples and specifications, see the corresponding architecture documents.

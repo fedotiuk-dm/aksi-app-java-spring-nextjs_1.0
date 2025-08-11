@@ -85,7 +85,7 @@ public class PriceListController implements PriceListApi {
             "deactivatedItems", deactivatedCount,
             "message",
                 String.format(
-                    "Деактивовано %d позицій в категорії %s", deactivatedCount, categoryCode)));
+                    "Deactivated %d items in category %s", deactivatedCount, categoryCode)));
   }
 
   @PutMapping("/api/price-list/categories/{categoryCode}/activate")
@@ -99,6 +99,6 @@ public class PriceListController implements PriceListApi {
             "activatedItems", activatedCount,
             "message",
                 String.format(
-                    "Активовано %d позицій в категорії %s", activatedCount, categoryCode)));
+                    "Activated %d items in category %s", activatedCount, categoryCode)));
   }
 }

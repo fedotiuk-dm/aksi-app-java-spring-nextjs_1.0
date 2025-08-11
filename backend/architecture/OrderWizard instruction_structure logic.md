@@ -1,391 +1,391 @@
-# Односторінкова система замовлень хімчистки
+# Single-Page Dry Cleaning Order System
 
-## Огляд та архітектура
+## Overview and Architecture
 
-Односторінкова система замовлень хімчистки — це компактний інтерфейс для швидкого оформлення замовлень з інтегрованою системою розрахунку цін, управлінням клієнтами та формуванням квитанцій. Вся функціональність розміщена на одній сторінці для максимальної ефективності операторів.
+The single-page dry cleaning order system is a compact interface for rapid order processing with integrated price calculation system, customer management, and receipt generation. All functionality is placed on a single page for maximum operator efficiency.
 
-## Структура односторінкової системи (3 основні секції)
+## Single-Page System Structure (3 Main Sections)
 
-### Секція 1: Клієнт та базова інформація замовлення (лівий блок - 30%)
+### Section 1: Customer and Basic Order Information (Left Block - 30%)
 
-#### 1.1. Швидкий пошук та управління клієнтами
+#### 1.1. Quick Customer Search and Management
 
-- **Пошук існуючого клієнта**
-  - Автозаповнення за прізвищем, ім'ям, телефоном, email
-  - Швидкий вибір клієнта зі списку результатів
-  - Можливість редагування обраного клієнта
+- **Existing Customer Search**
+  - Auto-completion by surname, name, phone, email
+  - Quick customer selection from results list
+  - Ability to edit selected customer
 
-#### 1.2. Міні-форма нового клієнта (згортається/розгортається)
+#### 1.2. New Customer Mini-Form (Collapsible/Expandable)
 
-- **Обов'язкові поля**:
-  - Прізвище та ім'я
-  - Телефон
-- **Опційні поля**:
+- **Required Fields**:
+  - Last name and first name
+  - Phone number
+- **Optional Fields**:
   - Email
-  - Адреса
-- **Способи зв'язку** (мультивибір чекбоксів):
-  - Номер телефону
+  - Address
+- **Communication Methods** (multi-select checkboxes):
+  - Phone number
   - SMS
   - Viber
-- **Джерело інформації про хімчистку** (дропдаун):
-  - Інстаграм
+- **Dry Cleaning Information Source** (dropdown):
+  - Instagram
   - Google
-  - Рекомендації
-  - Інше (з полем для уточнення)
+  - Recommendations
+  - Other (with specification field)
 
-#### 1.3. Базова інформація замовлення
+#### 1.3. Basic Order Information
 
-- **Номер квитанції** (генерується автоматично)
-- **Унікальна мітка** (поле вводу + сканер QR-коду)
-- **Пункт прийому замовлення** (дропдаун вибору філії)
-- **Дата створення замовлення** (відображається автоматично)
+- **Receipt Number** (generated automatically)
+- **Unique Label** (input field + QR code scanner)
+- **Order Reception Point** (branch selection dropdown)
+- **Order Creation Date** (displayed automatically)
 
-### Секція 2: Предмети та розрахунки (центральний блок - 50%)
+### Section 2: Items and Calculations (Central Block - 50%)
 
-#### 2.1. Компактна таблиця предметів
+#### 2.1. Compact Items Table
 
-- **Заголовки таблиці**: Найменування | Категорія | К-сть | Матеріал | Колір | Сума | Дії
-- **Функціональність**:
-  - Кнопка "+" для додавання нових рядків
-  - Інлайн-редагування існуючих рядків
-  - Кнопки "Редагувати" та "Видалити" для кожного рядка
+- **Table Headers**: Name | Category | Qty | Material | Color | Amount | Actions
+- **Functionality**:
+  - "+" button for adding new rows
+  - Inline editing of existing rows
+  - "Edit" and "Delete" buttons for each row
 
-#### 2.2. Швидка форма додавання предмета (розгортається під таблицею)
+#### 2.2. Quick Item Addition Form (Expands Below Table)
 
-##### Основна інформація про предмет
+##### Basic Item Information
 
-- **Категорія послуги** (дропдаун, автооновлює список предметів):
+- **Service Category** (dropdown, auto-updates items list):
 
-  - Чистка одягу та текстилю
-  - Прання білизни
-  - Прасування
-  - Чистка та відновлення шкіряних виробів
-  - Дублянки
-  - Вироби із натурального хутра
-  - Фарбування текстильних виробів
+  - Clothing and textile cleaning
+  - Laundry service
+  - Ironing
+  - Leather goods cleaning and restoration
+  - Sheepskin coats
+  - Natural fur products
+  - Textile dyeing
 
-- **Найменування виробу** (динамічний список на основі категорії)
-- **Одиниця виміру і кількість**:
-  - Штуки (для більшості виробів)
-  - Кілограми (для білизни та певних текстильних виробів)
-  - Поле для введення числового значення
+- **Product Name** (dynamic list based on category)
+- **Unit of Measure and Quantity**:
+  - Pieces (for most products)
+  - Kilograms (for linen and certain textile products)
+  - Field for numerical value input
 
-##### Характеристики предмета
+##### Item Characteristics
 
-- **Матеріал** (дропдаун, залежить від категорії):
+- **Material** (dropdown, depends on category):
 
-  - Бавовна, Шерсть, Шовк, Синтетика
-  - Гладка шкіра, Нубук, Спілок, Замша
+  - Cotton, Wool, Silk, Synthetic
+  - Smooth leather, Nubuck, Split leather, Suede
 
-- **Колір**:
+- **Color**:
 
-  - Список базових кольорів для швидкого вибору
-  - Поле для введення власного кольору
+  - List of basic colors for quick selection
+  - Field for custom color input
 
-- **Наповнювач** (для відповідних категорій):
+- **Filler** (for relevant categories):
 
-  - Пух, Синтепон, Інше (вручну)
-  - Чекбокс "Збитий наповнювач"
+  - Down, Synthetic padding, Other (manual)
+  - "Compressed filler" checkbox
 
-- **Ступінь зносу** (дропдаун): 10%, 30%, 50%, 75%
+- **Wear Degree** (dropdown): 10%, 30%, 50%, 75%
 
-##### Забруднення, дефекти та ризики
+##### Contamination, Defects and Risks
 
-- **Плями** (мультиселект чекбоксів):
+- **Stains** (multiselect checkboxes):
 
-  - Жир, Кров, Білок, Вино, Кава, Трава, Чорнило, Косметика
-  - Інше (з полем для уточнення)
+  - Grease, Blood, Protein, Wine, Coffee, Grass, Ink, Cosmetics
+  - Other (with specification field)
 
-- **Дефекти та ризики** (мультиселект чекбоксів):
+- **Defects and Risks** (multiselect checkboxes):
 
-  - Потертості, Порване, Відсутність фурнітури, Пошкодження фурнітури
-  - Ризики зміни кольору, Ризики деформації
-  - Без гарантій (з обов'язковим поясненням причин)
+  - Wear marks, Torn, Missing hardware, Hardware damage
+  - Color change risks, Deformation risks
+  - No warranty (with mandatory reason explanation)
 
-- **Примітки щодо дефектів** (текстове поле)
+- **Defect Notes** (text field)
 
-##### Експрес-модифікатори (чекбокси для швидкого застосування)
+##### Express Modifiers (Checkboxes for Quick Application)
 
-**Загальні коефіцієнти** (доступні для всіх категорій):
+**General Coefficients** (available for all categories):
 
-- Дитячі речі (до 30 розміру) - 30% від вартості
-- Ручна чистка +20% до вартості
-- Дуже забруднені речі +від 20 до 100% до вартості
-- Термінова чистка +від 50 до 100% до вартості
+- Children's items (up to size 30) - 30% of cost
+- Hand cleaning +20% to cost
+- Very soiled items +20% to 100% to cost
+- Express cleaning +50% to 100% to cost
 
-**Модифікатори для текстильних виробів** (відображаються для відповідних категорій):
+**Textile Product Modifiers** (displayed for corresponding categories):
 
-- Чистка виробів з хутряними комірами та манжетами +30%
-- Нанесення водовідштовхуючого покриття +30%
-- Чистка виробів із натурального шовку, атласу, шифону +50%
-- Чистка комбінованих виробів (шкіра+текстиль) +100%
-- Ручна чистка великих м'яких іграшок +100%
-- Пришивання гудзиків (фіксована вартість за одиницю)
-- Чистка виробів чорного та світлих тонів +20%
-- Чистка весільної сукні зі шлейфом +30%
+- Cleaning items with fur collars and cuffs +30%
+- Water-repellent coating application +30%
+- Cleaning natural silk, satin, chiffon items +50%
+- Cleaning combined items (leather+textile) +100%
+- Hand cleaning of large soft toys +100%
+- Button sewing (fixed cost per unit)
+- Cleaning black and light-colored items +20%
+- Wedding dress with train cleaning +30%
 
-**Модифікатори для шкіряних виробів** (відображаються для шкіряних категорій):
+**Leather Product Modifiers** (displayed for leather categories):
 
-- Прасування шкіряних виробів 70% від вартості чистки
-- Нанесення водовідштовхуючого покриття +30%
-- Фарбування (після нашої чистки) +50%
-- Фарбування (після чистки деінде) 100% вартість чистки
-- Чистка шкіряних виробів із вставками +30%
-- Нанесення перламутрового покриття +30%
-- Чистка натуральних дублянок на штучному хутрі -20%
-- Ручна чистка виробів зі шкіри +30%
+- Leather item ironing 70% of cleaning cost
+- Water-repellent coating application +30%
+- Dyeing (after our cleaning) +50%
+- Dyeing (after cleaning elsewhere) 100% cleaning cost
+- Cleaning leather items with inserts +30%
+- Pearl coating application +30%
+- Natural sheepskin on artificial fur cleaning -20%
+- Hand cleaning of leather items +30%
 
-##### Фотодокументація
+##### Photo Documentation
 
-- **Завантаження фото**:
-  - Кнопка "Камера" (використання WebRTC API)
-  - Кнопка "Галерея" (input type="file" з accept="image/\*")
-  - Попередній перегляд мініатюр з можливістю видалення
-  - Обмеження: максимум 5 фото на предмет, до 5MB кожне
-  - Автоматичне стиснення перед відправкою
+- **Photo Upload**:
+  - "Camera" button (using WebRTC API)
+  - "Gallery" button (input type="file" with accept="image/*")
+  - Thumbnail preview with delete option
+  - Limitations: maximum 5 photos per item, up to 5MB each
+  - Automatic compression before upload
 
-#### 2.3. Інтерактивний калькулятор (знизу від форми)
+#### 2.3. Interactive Calculator (Below Form)
 
-- **Відображення розрахунків в реальному часі**:
-  - Базова ціна (автоматично з прайсу)
-  - Вплив кожного модифікатора (у відсотках та грошах)
-  - Проміжні суми на кожному етапі
-  - Фінальна ціна за предмет
-- **Деталізація розрахунку** (згортається/розгортається)
+- **Real-time Calculation Display**:
+  - Base price (automatically from price list)
+  - Each modifier impact (in percentages and money)
+  - Intermediate sums at each stage
+  - Final price per item
+- **Calculation Details** (collapsible/expandable)
 
-### Секція 3: Підсумки та завершення (правий блок - 20%)
+### Section 3: Summary and Completion (Right Block - 20%)
 
-#### 3.1. Загальні параметри замовлення
+#### 3.1. General Order Parameters
 
-- **Дата виконання**:
+- **Completion Date**:
 
-  - Календар з вибором дати
-  - Автоматичний розрахунок на основі категорій доданих предметів
-  - Інформація про стандартні терміни (48 годин для звичайних/14 днів для шкіри)
+  - Calendar with date selection
+  - Automatic calculation based on added item categories
+  - Standard timeline information (48 hours for regular/14 days for leather)
 
-- **Термінове виконання** (дропдаун):
-  - Звичайне (без націнки)
-  - +50% за 48 год
-  - +100% за 24 год
-  - Автоматичний перерахунок дати виконання при зміні
+- **Express Completion** (dropdown):
+  - Regular (no surcharge)
+  - +50% for 48 hours
+  - +100% for 24 hours
+  - Automatic completion date recalculation on change
 
-#### 3.2. Знижки (глобальні для замовлення)
+#### 3.2. Discounts (Global for Order)
 
-- **Тип знижки** (дропдаун):
+- **Discount Type** (dropdown):
 
-  - Без знижки
-  - Еверкард (10%)
-  - Соцмережі (5%)
-  - ЗСУ (10%)
-  - Інше (з полем для вводу відсотка)
+  - No discount
+  - Evercard (10%)
+  - Social media (5%)
+  - Armed Forces of Ukraine (10%)
+  - Other (with percentage input field)
 
-- **Важливе обмеження** (система перевіряє автоматично):
-  - Знижки не діють на прасування, прання і фарбування текстилю
-  - Відображення попередження якщо знижка не застосовується
-  - Автоматичне виключення неприйнятних категорій
+- **Important Limitation** (system checks automatically):
+  - Discounts do not apply to ironing, washing, and textile dyeing
+  - Warning display if discount is not applicable
+  - Automatic exclusion of ineligible categories
 
-#### 3.3. Фінансовий блок
+#### 3.3. Financial Block
 
-- **Розрахунки**:
+- **Calculations**:
 
-  - Сума до знижки (автоматично)
-  - Знижка (сума, якщо застосовується)
-  - **Загальна вартість** (виділена)
-  - Сплачено (поле для введення передоплати)
-  - Борг (розраховується автоматично як різниця)
+  - Amount before discount (automatic)
+  - Discount (amount if applicable)
+  - **Total Cost** (highlighted)
+  - Paid (field for prepayment entry)
+  - Debt (calculated automatically as difference)
 
-- **Спосіб оплати** (дропдаун):
-  - Термінал
-  - Готівка
-  - На рахунок
+- **Payment Method** (dropdown):
+  - Terminal
+  - Cash
+  - Bank transfer
 
-#### 3.4. Завершення замовлення
+#### 3.4. Order Completion
 
-- **Примітки до замовлення** (текстове поле)
-- **Юридичні аспекти**:
-  - Чекбокс "Я погоджуюсь з умовами надання послуг" (обов'язковий)
-  - Посилання на державні документи
-- **Цифровий підпис клієнта**:
-  - Canvas область для підпису на сенсорному екрані
-  - Кнопки "Очистити" та "Зберегти підпис"
-- **Кнопка "ДРУК КВИТАНЦІЇ"** (велика, виділена кнопка)
+- **Order Notes** (text field)
+- **Legal Aspects**:
+  - Checkbox "I agree to the terms of service provision" (required)
+  - Links to government documents
+- **Customer Digital Signature**:
+  - Canvas area for signature on touch screen
+  - "Clear" and "Save Signature" buttons
+- **"PRINT RECEIPT" Button** (large, highlighted button)
 
-## Структура квитанції (повна деталізація)
+## Receipt Structure (Full Details)
 
-### Шапка квитанції
+### Receipt Header
 
-- Логотип хімчистки
-- Назва та юридична інформація компанії
-- Адреса та контактні дані
-- Пункт прийому (філія)
-- Прізвище та ініціали оператора
+- Dry cleaning logo
+- Company name and legal information
+- Address and contact details
+- Reception point (branch)
+- Operator's surname and initials
 
-### Інформація про замовлення
+### Order Information
 
-- Номер квитанції
-- Номер унікальної мітки
-- Дата створення замовлення
-- Орієнтовна дата видачі (чітко вказати "після 14:00")
+- Receipt number
+- Unique label number
+- Order creation date
+- Estimated delivery date (clearly state "after 2:00 PM")
 
-### Інформація про клієнта
+### Customer Information
 
-- ПІБ
-- Контактний телефон
-- Обраний спосіб зв'язку
-- Адреса (якщо вказана)
+- Full name
+- Contact phone
+- Selected communication method
+- Address (if provided)
 
-### Таблиця предметів з повною деталізацією
+### Items Table with Full Details
 
-- **Заголовки**: № | Найменування | Категорія | К-сть/Вага | Матеріал | Колір | Наповнювач | Базова ціна | Модифікатори | Фінальна ціна
+- **Headers**: № | Name | Category | Qty/Weight | Material | Color | Filler | Base Price | Modifiers | Final Price
 
-- **Детальний розрахунок для кожного предмета**:
-  - Базова ціна
-  - Кожен застосований модифікатор з його впливом на ціну
-  - Проміжні розрахунки
-  - Фінальна ціна за предмет
+- **Detailed Calculation for Each Item**:
+  - Base price
+  - Each applied modifier with its price impact
+  - Intermediate calculations
+  - Final price per item
 
-### Розділ забруднень і дефектів
+### Contamination and Defects Section
 
-- Перелік виявлених плям (за типами)
-- Перелік дефектів та ризиків
-- Примітка "Без гарантій" (якщо застосовується) з поясненням
+- List of identified stains (by type)
+- List of defects and risks
+- "No warranty" note (if applicable) with explanation
 
-### Фінансова інформація
+### Financial Information
 
-- Вартість послуг до знижок
-- Знижка (якщо застосовується, з вказаним типом та сумою)
-- Надбавка за терміновість (якщо застосовується)
-- **Загальна вартість**
-- Сплачено (передоплата)
-- Залишок до сплати при отриманні
-- Спосіб оплати
+- Service cost before discounts
+- Discount (if applicable, with specified type and amount)
+- Urgency surcharge (if applicable)
+- **Total Cost**
+- Paid (prepayment)
+- Remaining balance due upon pickup
+- Payment method
 
-### Юридична інформація
+### Legal Information
 
-- Стандартні умови надання послуг
-- Обмеження відповідальності
-- Інформація про можливі ризики
-- Посилання на повні умови договору
+- Standard terms of service provision
+- Liability limitations
+- Information about possible risks
+- Reference to complete contract terms
 
-### Підписи та печатки
+### Signatures and Stamps
 
-- Місце для цифрового підпису клієнта (при здачі)
-- Місце для підпису клієнта при отриманні
-- Підпис оператора
-- Печатка компанії (якщо застосовується)
+- Space for customer digital signature (upon drop-off)
+- Space for customer signature upon pickup
+- Operator signature
+- Company stamp (if applicable)
 
-### Нижній колонтитул
+### Footer
 
-- Контактна інформація для зв'язку
-- Графік роботи
-- QR-код для відстеження статусу замовлення
+- Contact information for communication
+- Working hours
+- QR code for order status tracking
 
-## Логіка розрахунку вартості
+## Cost Calculation Logic
 
-### 1. Правила застосування знижок і надбавок
+### 1. Rules for Applying Discounts and Surcharges
 
-- Знижки на все замовлення не поширюються на послуги прання, прасування та фарбування текстилю
-- Спочатку розраховуються надбавки за додаткові послуги, потім застосовуються знижки
-- При накладанні кількох надбавок, вони додаються до базової ціни послідовно (не перемножуються)
+- Order-wide discounts do not apply to washing, ironing, and textile dyeing services
+- Additional service surcharges are calculated first, then discounts are applied
+- When multiple surcharges apply, they are added to base price sequentially (not multiplied)
 
-### 2. Процес розрахунку вартості для кожного предмета
+### 2. Cost Calculation Process for Each Item
 
-1. **Базова ціна** (з прайсу на основі категорії та найменування)
-2. **Перевірка кольорових виробів** - різна ціна для чорного та інших кольорів
-3. **Застосування особливих модифікаторів** - деякі можуть замінювати базову ціну
-4. **Застосування множників** - коефіцієнти для матеріалу, стану, додаткових послуг
-5. **Додавання фіксованих послуг** - наприклад, пришивання гудзиків
-6. **Терміновість** (якщо вибрана): +50% або +100% до проміжної суми
-7. **Знижки** (якщо застосовуються і дозволені для цієї категорії)
-8. **Округлення** до копійок (2 знаки після коми)
+1. **Base Price** (from price list based on category and name)
+2. **Color Product Check** - different price for black and other colors
+3. **Special Modifier Application** - some may replace base price
+4. **Multiplier Application** - coefficients for material, condition, additional services
+5. **Fixed Service Addition** - for example, button sewing
+6. **Urgency** (if selected): +50% or +100% to intermediate sum
+7. **Discounts** (if applicable and allowed for this category)
+8. **Rounding** to kopecks (2 decimal places)
 
-### 3. Інтелектуальні залежності та автоматизація
+### 3. Smart Dependencies and Automation
 
-- При виборі категорії автоматично оновлюється:
+- When selecting category, automatically updates:
 
-  - Список доступних найменувань
-  - Список можливих матеріалів
-  - Набір доступних додаткових послуг
-  - Одиниця виміру (шт/кг)
-  - Очікуваний термін виконання
+  - List of available names
+  - List of possible materials
+  - Set of available additional services
+  - Unit of measure (pcs/kg)
+  - Expected completion time
 
-- При виборі терміновості:
+- When selecting urgency:
 
-  - Автоматичний перерахунок вартості всіх предметів
-  - Оновлення дати виконання
+  - Automatic recalculation of all item costs
+  - Completion date update
 
-- При виборі певних типів забруднень:
-  - Система автоматично пропонує відповідні додаткові послуги
-  - Може з'явитися попередження про ризики
+- When selecting certain contamination types:
+  - System automatically suggests relevant additional services
+  - Risk warnings may appear
 
-## Прозорість розрахунків в реальному часі
+## Real-time Calculation Transparency
 
-### 1. Інтерактивний калькулятор
+### 1. Interactive Calculator
 
-- Відображення розрахунків під час заповнення форми
-- Базова ціна + вплив кожного модифікатора
-- Проміжні суми на кожному етапі
-- Фінальна ціна за предмет з деталізацією
+- Calculation display during form filling
+- Base price + each modifier impact
+- Intermediate sums at each stage
+- Final price per item with details
 
-### 2. Загальний підсумок замовлення
+### 2. Order Total Summary
 
-- Сума по всіх предметах
-- Загальні знижки та надбавки
-- Фінальна сума до сплати
-- Оновлення в реальному часі при змінах
+- Sum of all items
+- Total discounts and surcharges
+- Final amount to pay
+- Real-time updates on changes
 
-### 3. Повна деталізація в квитанції
+### 3. Full Receipt Details
 
-- Розгорнутий розрахунок для кожного предмета
-- Чітке відображення всіх застосованих модифікаторів
-- Прозорий розрахунок фінальної суми
+- Detailed calculation for each item
+- Clear display of all applied modifiers
+- Transparent final amount calculation
 
-## Інтеграція з базою даних
+## Database Integration
 
-### 1. Структура прайс-листа
+### 1. Price List Structure
 
-- **Категорії послуг** (ServiceCategory): ID, код, назва, опис
-- **Прайс-лист** (PriceListItem): ID, категорія, номер, назва, одиниця виміру, базова ціна
-- **Додаткові поля**: різні ціни для чорного/інших кольорів
+- **Service Categories** (ServiceCategory): ID, code, name, description
+- **Price List** (PriceListItem): ID, category, number, name, unit of measure, base price
+- **Additional Fields**: different prices for black/other colors
 
-### 2. Зберігання модифікаторів та коефіцієнтів
+### 2. Modifier and Coefficient Storage
 
-- Конфігурація модифікаторів на стороні бекенду
-- Гнучка система застосування коефіцієнтів
+- Backend modifier configuration
+- Flexible coefficient application system
 
-### 3. Зберігання замовлень
+### 3. Order Storage
 
-- Повна деталізація розрахунків для кожного предмета
-- Можливість відтворення розрахунку в будь-який момент
-- Історія змін та аудит
+- Full calculation details for each item
+- Ability to reproduce calculations at any time
+- Change history and audit
 
-## Технічні рекомендації
+## Technical Recommendations
 
-### 1. Адаптивний інтерфейс
+### 1. Responsive Interface
 
-- Responsive design для планшетів та десктопів
-- Оптимізація для тач-інтерфейсу
-- Спеціальні компоненти для швидкого вводу
+- Responsive design for tablets and desktops
+- Touch interface optimization
+- Special components for quick input
 
-### 2. Оптимізація продуктивності
+### 2. Performance Optimization
 
-- Кешування прайс-листа
-- Lazy loading для великих списків
-- Оптимізація розрахунків в реальному часі
+- Price list caching
+- Lazy loading for large lists
+- Real-time calculation optimization
 
-### 3. UX/UI оптимізації
+### 3. UX/UI Optimizations
 
-- Автозбереження введених даних
-- Валідація в реальному часі
-- Швидкі клавіатурні скорочення
-- Інтуїтивна навігація між полями
+- Auto-save of entered data
+- Real-time validation
+- Quick keyboard shortcuts
+- Intuitive field navigation
 
-## Висновок
+## Conclusion
 
-Односторінкова система замовлень забезпечує:
+The single-page order system provides:
 
-- **Швидкість роботи** - всі функції на одному екрані
-- **Прозорість розрахунків** - в реальному часі
-- **Повноту інформації** - детальна документація
-- **Зручність використання** - оптимізована для операторів
-- **Гнучкість налаштувань** - широкі можливості кастомізації цін та послуг
+- **Work Speed** - all functions on one screen
+- **Calculation Transparency** - in real time
+- **Information Completeness** - detailed documentation
+- **Ease of Use** - optimized for operators
+- **Configuration Flexibility** - wide customization possibilities for prices and services

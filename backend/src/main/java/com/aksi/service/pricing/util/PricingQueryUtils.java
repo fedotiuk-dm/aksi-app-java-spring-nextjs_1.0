@@ -181,6 +181,7 @@ public class PricingQueryUtils {
   }
 
   private boolean checkBlackColor(String color) {
+    // Check for black in English and Ukrainian (backward compatibility)
     return "black".equals(color) || "чорний".equals(color);
   }
 

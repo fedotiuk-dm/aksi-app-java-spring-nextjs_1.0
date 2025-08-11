@@ -25,8 +25,7 @@ import com.aksi.service.pricing.factory.PricingFactory;
 
 /**
  * Unit tests for DiscountCalculator verifying OrderWizard pricing logic step 7: 7. Discounts (if
- * applicable and allowed for category) - знижки не діють на прасування, прання і фарбування
- * текстилю
+ * applicable and allowed for category) - discounts do not apply to ironing, laundry, and textile dyeing
  */
 @ExtendWith(MockitoExtension.class)
 class DiscountCalculatorTest {
@@ -82,7 +81,7 @@ class DiscountCalculatorTest {
   @Test
   @DisplayName("Should return no discount when item category is not eligible for discount")
   void shouldReturnNoDiscountWhenCategoryNotEligible() {
-    // Given: discount available but category not eligible (прасування, прання, фарбування)
+    // Given: discount available but category not eligible (ironing, laundry, dyeing)
     int subtotal = 3000;
     int urgencyAmount = 600;
     GlobalPriceModifiers globalModifiers = createGlobalModifiers(DiscountType.EVERCARD, 15);
@@ -328,8 +327,8 @@ class DiscountCalculatorTest {
   @DisplayName("Should handle large discount amounts correctly")
   void shouldHandleLargeDiscountAmounts() {
     // Given: large amounts with discount
-    int subtotal = 100000; // 1000.00 грн
-    int urgencyAmount = 50000; // 500.00 грн urgency
+    int subtotal = 100000; // 1000.00 UAH
+    int urgencyAmount = 50000; // 500.00 UAH urgency
     GlobalPriceModifiers globalModifiers = createGlobalModifiers(DiscountType.MILITARY, 20);
     PriceListItemInfo priceListItem = createPriceListItem("CLOTHING");
 
@@ -365,7 +364,7 @@ class DiscountCalculatorTest {
 
     // Mock eligibility as false for restricted category
     when(priceCalculationService.isDiscountApplicableToCategory(eq("IRONING")))
-        .thenReturn(false); // IRONING не отримує знижки
+        .thenReturn(false); // IRONING does not receive discounts
 
     // When
     DiscountCalculationResult result =
@@ -388,7 +387,7 @@ class DiscountCalculatorTest {
 
     // Mock eligibility as false for restricted category
     when(priceCalculationService.isDiscountApplicableToCategory(eq("LAUNDRY")))
-        .thenReturn(false); // WASHING не отримує знижки
+        .thenReturn(false); // LAUNDRY does not receive discounts
 
     // When
     DiscountCalculationResult result =
@@ -411,7 +410,7 @@ class DiscountCalculatorTest {
 
     // Mock eligibility as false for restricted category
     when(priceCalculationService.isDiscountApplicableToCategory(eq("DYEING")))
-        .thenReturn(false); // DYEING не отримує знижки
+        .thenReturn(false); // DYEING does not receive discounts
 
     // When
     DiscountCalculationResult result =
