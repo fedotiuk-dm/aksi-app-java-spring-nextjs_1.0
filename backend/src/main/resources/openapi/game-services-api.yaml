@@ -1,0 +1,1043 @@
+openapi: 3.0.4
+info:
+  title: Game Services API
+  description: Game boosting services management API for dynamic price calculation
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@gameservices.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.gameservices.example.com
+    description: Production
+
+tags:
+  - name: game-management
+    description: Game CRUD operations
+  - name: difficulty-levels
+    description: Difficulty level management
+  - name: service-types
+    description: Service type management
+  - name: price-configurations
+    description: Price configuration management
+  - name: calculator
+    description: Price calculation operations
+  - name: boosters
+    description: Booster management
+  - name: configuration-templates
+    description: Configuration template operations
+
+paths:
+  # Game Management
+  /game-services/games:
+    get:
+      tags: [game-management]
+      operationId: listGames
+      summary: Get all games
+      parameters:
+        - $ref: "#/components/parameters/PageNumber"
+        - $ref: "#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/Search"
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+      responses:
+        "200":
+          description: List of games
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GameListResponse"
+    post:
+      tags: [game-management]
+      operationId: createGame
+      summary: Create new game
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGameRequest"
+      responses:
+        "201":
+          description: Game created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+
+  /game-services/games/{id}:
+    get:
+      tags: [game-management]
+      operationId: getGameById
+      summary: Get game by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Game found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+    put:
+      tags: [game-management]
+      operationId: updateGame
+      summary: Update game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateGameRequest"
+      responses:
+        "200":
+          description: Game updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+    delete:
+      tags: [game-management]
+      operationId: deleteGame
+      summary: Delete game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Game deleted
+
+  # Difficulty Levels Management
+  /game-services/difficulty-levels:
+    get:
+      tags: [difficulty-levels]
+      operationId: listDifficultyLevels
+      summary: Get difficulty levels
+      parameters:
+        - $ref: "#/components/parameters/PageNumber"
+        - $ref: "#/components/parameters/PageSize"
+        - name: gameId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by game ID
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+      responses:
+        "200":
+          description: List of difficulty levels
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DifficultyLevelListResponse"
+    post:
+      tags: [difficulty-levels]
+      operationId: createDifficultyLevel
+      summary: Create difficulty level
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDifficultyLevelRequest"
+      responses:
+        "201":
+          description: Difficulty level created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DifficultyLevel"
+
+  /game-services/difficulty-levels/{id}:
+    get:
+      tags: [difficulty-levels]
+      operationId: getDifficultyLevelById
+      summary: Get difficulty level by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Difficulty level found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DifficultyLevel"
+    put:
+      tags: [difficulty-levels]
+      operationId: updateDifficultyLevel
+      summary: Update difficulty level
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDifficultyLevelRequest"
+      responses:
+        "200":
+          description: Difficulty level updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DifficultyLevel"
+    delete:
+      tags: [difficulty-levels]
+      operationId: deleteDifficultyLevel
+      summary: Delete difficulty level
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Difficulty level deleted
+
+  # Service Types Management
+  /game-services/service-types:
+    get:
+      tags: [service-types]
+      operationId: listServiceTypes
+      summary: Get service types
+      parameters:
+        - $ref: "#/components/parameters/PageNumber"
+        - $ref: "#/components/parameters/PageSize"
+        - name: gameId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by game ID
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+      responses:
+        "200":
+          description: List of service types
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceTypeListResponse"
+    post:
+      tags: [service-types]
+      operationId: createServiceType
+      summary: Create service type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateServiceTypeRequest"
+      responses:
+        "201":
+          description: Service type created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceType"
+
+  # Price Configurations Management
+  /game-services/price-configurations:
+    get:
+      tags: [price-configurations]
+      operationId: listPriceConfigurations
+      summary: Get price configurations
+      parameters:
+        - $ref: "#/components/parameters/PageNumber"
+        - $ref: "#/components/parameters/PageSize"
+        - name: gameId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by game ID
+        - name: difficultyLevelId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by difficulty level ID
+        - name: serviceTypeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by service type ID
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+      responses:
+        "200":
+          description: List of price configurations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceConfigurationListResponse"
+    post:
+      tags: [price-configurations]
+      operationId: createPriceConfiguration
+      summary: Create price configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePriceConfigurationRequest"
+      responses:
+        "201":
+          description: Price configuration created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceConfiguration"
+
+  # Calculator Engine
+  /game-services/calculate:
+    post:
+      tags: [calculator]
+      operationId: calculateBoostingPrice
+      summary: Calculate price for boosting service
+      description: |
+        Dynamic price calculation based on configuration and modifiers.
+        All calculations are performed using stored formulas and configurations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CalculationRequest"
+      responses:
+        "200":
+          description: Calculation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CalculationResult"
+        "400":
+          description: Invalid request or calculation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # Available Boosters
+  /game-services/boosters:
+    get:
+      tags: [boosters]
+      operationId: listBoosters
+      summary: Get available boosters
+      parameters:
+        - $ref: "#/components/parameters/PageNumber"
+        - $ref: "#/components/parameters/PageSize"
+        - name: gameId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by game specialization
+        - name: minRating
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 50
+          description: Minimum rating filter (0-50, represents 0.0-5.0)
+        - name: active
+          in: query
+          schema:
+            type: boolean
+            default: true
+          description: Filter by active status
+      responses:
+        "200":
+          description: List of available boosters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BoosterListResponse"
+
+  # Configuration Templates
+  /game-services/configuration-templates:
+    get:
+      tags: [configuration-templates]
+      operationId: listConfigurationTemplates
+      summary: Get configuration templates for quick setup
+      parameters:
+        - name: gameType
+          in: query
+          schema:
+            type: string
+          description: Game type for template filtering
+      responses:
+        "200":
+          description: List of configuration templates
+          content:
+            application/json:
+              schema:
+                type: object
+                title: ConfigurationTemplateListResponse
+                properties:
+                  templates:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ConfigurationTemplate"
+
+components:
+  # Reference common components to avoid duplication
+  parameters:
+    PageNumber:
+      $ref: "./common.yaml#/components/parameters/PageNumber"
+    PageSize:
+      $ref: "./common.yaml#/components/parameters/PageSize"
+    Search:
+      $ref: "./common.yaml#/components/parameters/Search"
+
+  responses:
+    BadRequest:
+      $ref: "./common.yaml#/components/responses/BadRequest"
+    NotFound:
+      $ref: "./common.yaml#/components/responses/NotFound"
+
+  schemas:
+    # Common schema references
+    ErrorResponse:
+      $ref: "./common.yaml#/components/schemas/ErrorResponse"
+    UniqueName:
+      $ref: "./common.yaml#/components/schemas/UniqueName"
+    Email:
+      $ref: "./common.yaml#/components/schemas/Email"
+
+    # Paginated Response Schemas
+    GameListResponse:
+      allOf:
+        - $ref: "./common.yaml#/components/schemas/PaginatedResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Game"
+
+    DifficultyLevelListResponse:
+      allOf:
+        - $ref: "./common.yaml#/components/schemas/PaginatedResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/DifficultyLevel"
+
+    ServiceTypeListResponse:
+      allOf:
+        - $ref: "./common.yaml#/components/schemas/PaginatedResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/ServiceType"
+
+    PriceConfigurationListResponse:
+      allOf:
+        - $ref: "./common.yaml#/components/schemas/PaginatedResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/PriceConfiguration"
+
+    BoosterListResponse:
+      allOf:
+        - $ref: "./common.yaml#/components/schemas/PaginatedResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Booster"
+
+    # Game Management
+    Game:
+      type: object
+      required: [id, code, name, category, active]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique game identifier
+        code:
+          type: string
+          description: Game code (e.g., WOW, COD, APEX)
+        name:
+          type: string
+          maxLength: 100
+          description: Display name of the game
+        description:
+          type: string
+          maxLength: 500
+          description: Game description
+        category:
+          type: string
+          maxLength: 50
+          description: Game category (MMORPG, FPS, MOBA, etc.)
+        active:
+          type: boolean
+          default: true
+          description: Is game active for boosting
+        sortOrder:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Display order
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+
+    CreateGameRequest:
+      type: object
+      required: [code, name, category]
+      properties:
+        code:
+          type: string
+          maxLength: 20
+          description: Game code
+        name:
+          type: string
+          maxLength: 100
+          description: Display name
+        description:
+          type: string
+          maxLength: 500
+          description: Game description
+        category:
+          type: string
+          maxLength: 50
+          description: Game category
+        active:
+          type: boolean
+          default: true
+          description: Is active
+        sortOrder:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Display order
+
+    UpdateGameRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          description: Display name
+        description:
+          type: string
+          maxLength: 500
+          description: Game description
+        category:
+          type: string
+          maxLength: 50
+          description: Game category
+        active:
+          type: boolean
+          description: Is active
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Display order
+
+    # Difficulty Level Management
+    DifficultyLevel:
+      type: object
+      required: [id, gameId, code, name, levelValue, active]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique difficulty level identifier
+        gameId:
+          type: string
+          format: uuid
+          description: Reference to game
+        code:
+          type: string
+          description: Difficulty level code (e.g., BRONZE_I, 01-05)
+        name:
+          type: string
+          maxLength: 100
+          description: Display name of difficulty level
+        levelValue:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Numeric value for calculations
+        sortOrder:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Display order
+        active:
+          type: boolean
+          default: true
+          description: Is difficulty level active
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+
+    CreateDifficultyLevelRequest:
+      type: object
+      required: [gameId, code, name, levelValue]
+      properties:
+        gameId:
+          type: string
+          format: uuid
+          description: Game ID
+        code:
+          type: string
+          maxLength: 50
+          description: Difficulty level code
+        name:
+          type: string
+          maxLength: 100
+          description: Display name
+        levelValue:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Numeric value for calculations
+        sortOrder:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Display order
+        active:
+          type: boolean
+          default: true
+          description: Is active
+
+    UpdateDifficultyLevelRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          description: Display name
+        levelValue:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Numeric value
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Display order
+        active:
+          type: boolean
+          description: Is active
+
+    # Service Type Management
+    ServiceType:
+      type: object
+      required: [id, gameId, code, name, active]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique service type identifier
+        gameId:
+          type: string
+          format: uuid
+          description: Reference to game
+        code:
+          type: string
+          description: Service type code (e.g., LEVEL_BOOST, RANK_BOOST)
+        name:
+          type: string
+          maxLength: 100
+          description: Display name of service type
+        description:
+          type: string
+          maxLength: 500
+          description: Service type description
+        active:
+          type: boolean
+          default: true
+          description: Is service type active
+        sortOrder:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Display order
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+
+    CreateServiceTypeRequest:
+      type: object
+      required: [gameId, code, name]
+      properties:
+        gameId:
+          type: string
+          format: uuid
+          description: Game ID
+        code:
+          type: string
+          maxLength: 50
+          description: Service type code
+        name:
+          type: string
+          maxLength: 100
+          description: Display name
+        description:
+          type: string
+          maxLength: 500
+          description: Description
+        sortOrder:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Display order
+        active:
+          type: boolean
+          default: true
+          description: Is active
+
+    # Price Configuration Management
+    PriceConfiguration:
+      type: object
+      required:
+        [id, gameId, difficultyLevelId, serviceTypeId, basePrice, active]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique price configuration identifier
+        gameId:
+          type: string
+          format: uuid
+          description: Reference to game
+        difficultyLevelId:
+          type: string
+          format: uuid
+          description: Reference to difficulty level
+        serviceTypeId:
+          type: string
+          format: uuid
+          description: Reference to service type
+        basePrice:
+          type: integer
+          minimum: 0
+          description: Base price for the configuration in kopiykas
+          example: 5000
+        pricePerLevel:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Price per level/rank in kopiykas
+          example: 500
+        calculationFormula:
+          type: string
+          maxLength: 2000
+          description: JSON formula for price calculation
+        active:
+          type: boolean
+          default: true
+          description: Is price configuration active
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+
+    CreatePriceConfigurationRequest:
+      type: object
+      required: [gameId, difficultyLevelId, serviceTypeId, basePrice]
+      properties:
+        gameId:
+          type: string
+          format: uuid
+          description: Game ID
+        difficultyLevelId:
+          type: string
+          format: uuid
+          description: Difficulty level ID
+        serviceTypeId:
+          type: string
+          format: uuid
+          description: Service type ID
+        basePrice:
+          type: integer
+          minimum: 0
+          description: Base price in kopiykas
+          example: 5000
+        pricePerLevel:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Price per level in kopiykas
+          example: 500
+        calculationFormula:
+          type: string
+          maxLength: 2000
+          description: JSON calculation formula
+        active:
+          type: boolean
+          default: true
+          description: Is active
+
+    # Calculator Engine
+    CalculationRequest:
+      type: object
+      required: [gameCode, fromLevel, toLevel, serviceType]
+      properties:
+        gameCode:
+          type: string
+          description: Game code (e.g., WOW, COD)
+        fromLevel:
+          type: string
+          description: From difficulty level code
+        toLevel:
+          type: string
+          description: To difficulty level code
+        serviceType:
+          type: string
+          description: Service type code
+        modifiers:
+          type: array
+          items:
+            type: string
+          description: List of modifier codes to apply
+        boosterId:
+          type: string
+          format: uuid
+          description: Preferred booster ID (optional)
+        customParameters:
+          type: object
+          description: Custom parameters for calculation (flexible object)
+
+    CalculationResult:
+      type: object
+      required: [totalPrice, currency, breakdown]
+      properties:
+        totalPrice:
+          type: integer
+          minimum: 0
+          description: Total calculated price in kopiykas
+          example: 12550
+        currency:
+          type: string
+          default: "USD"
+          description: Currency code
+        basePrice:
+          type: integer
+          minimum: 0
+          description: Base price without modifiers in kopiykas
+          example: 10000
+        modifiers:
+          type: array
+          items:
+            type: object
+            title: CalculationResultModifier
+            properties:
+              modifierCode:
+                type: string
+                description: Modifier code
+              amount:
+                type: integer
+                description: Price modification amount in kopiykas
+                example: 2550
+              description:
+                type: string
+                description: Modifier description
+              type:
+                type: string
+                enum: [PERCENTAGE, FIXED, FORMULA]
+                description: Modifier calculation type
+        breakdown:
+          type: object
+          title: CalculationResultBreakdown
+          description: Detailed price breakdown
+          properties:
+            levelDifference:
+              type: integer
+              description: Number of levels/ranks to boost
+            pricePerLevel:
+              type: integer
+              description: Price per level/rank in kopiykas
+              example: 500
+            baseCalculation:
+              type: integer
+              description: Base calculation result in kopiykas
+              example: 10000
+            modifiersTotal:
+              type: integer
+              description: Total from modifiers in kopiykas
+              example: 2550
+        estimatedTime:
+          type: string
+          description: Estimated completion time
+        availableBoosters:
+          type: integer
+          minimum: 0
+          description: Number of available boosters
+        validationErrors:
+          type: array
+          items:
+            type: string
+          description: List of validation errors
+        calculationLog:
+          type: array
+          items:
+            type: string
+          description: Step-by-step calculation log
+
+    # Boosters Management
+    Booster:
+      type: object
+      required: [id, discordUsername, displayName, active]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique booster identifier
+        discordUsername:
+          type: string
+          maxLength: 100
+          description: Discord username (unique)
+        contactEmail:
+          type: string
+          format: email
+          maxLength: 255
+          description: Contact email
+        displayName:
+          type: string
+          maxLength: 100
+          description: Display name
+        rating:
+          type: integer
+          minimum: 0
+          maximum: 50
+          default: 50
+          description: Booster rating (0-50, represents 0.0-5.0 with 10x multiplier)
+          example: 45
+        completedOrders:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Number of completed orders
+        specialization:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Game IDs this booster specializes in
+        active:
+          type: boolean
+          default: true
+          description: Is booster active
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+
+    # Configuration Templates
+    ConfigurationTemplate:
+      type: object
+      required: [id, name, gameType, configurations]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Template identifier
+        name:
+          type: string
+          maxLength: 100
+          description: Template name
+        description:
+          type: string
+          maxLength: 500
+          description: Template description
+        gameType:
+          type: string
+          description: Game type this template is for
+        configurations:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreatePriceConfigurationRequest"
+          description: Pre-configured price configurations
+        difficultyLevels:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateDifficultyLevelRequest"
+          description: Pre-configured difficulty levels
+        serviceTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateServiceTypeRequest"
+          description: Pre-configured service types

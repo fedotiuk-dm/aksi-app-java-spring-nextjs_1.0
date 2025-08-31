@@ -98,7 +98,6 @@ public class PriceListController implements PriceListApi {
             "categoryCode", categoryCode,
             "activatedItems", activatedCount,
             "message",
-                String.format(
-                    "Activated %d items in category %s", activatedCount, categoryCode)));
+                String.format("Activated %d items in category %s", activatedCount, categoryCode)));
   }
 }

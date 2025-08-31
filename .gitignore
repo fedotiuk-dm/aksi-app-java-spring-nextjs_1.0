@@ -77,3 +77,5 @@ logs/
 *.log
 node_modules
 
+/OGEdge All Services test.xlsx
+/backend/scripts/analyze_prices.py

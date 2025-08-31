@@ -25,7 +25,8 @@ import com.aksi.service.pricing.factory.PricingFactory;
 
 /**
  * Unit tests for DiscountCalculator verifying OrderWizard pricing logic step 7: 7. Discounts (if
- * applicable and allowed for category) - discounts do not apply to ironing, laundry, and textile dyeing
+ * applicable and allowed for category) - discounts do not apply to ironing, laundry, and textile
+ * dyeing
  */
 @ExtendWith(MockitoExtension.class)
 class DiscountCalculatorTest {
