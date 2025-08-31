@@ -360,6 +360,7 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
+
                             </configOptions>
                         </configuration>
                     </execution>
@@ -387,6 +388,7 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
+
                             </configOptions>
                         </configuration>
                     </execution>
@@ -414,6 +416,7 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
+
                             </configOptions>
                         </configuration>
                     </execution>
@@ -444,6 +447,7 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
+
                             </configOptions>
                         </configuration>
                     </execution>
@@ -471,6 +475,7 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
+
                             </configOptions>
                         </configuration>
                     </execution>
@@ -498,6 +503,7 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
+
                             </configOptions>
                         </configuration>
                     </execution>
@@ -525,6 +531,7 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
+
                             </configOptions>
                         </configuration>
                     </execution>
@@ -556,6 +563,7 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
+
                             </configOptions>
                         </configuration>
                     </execution>
@@ -587,6 +595,7 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
+
                             </configOptions>
                         </configuration>
                     </execution>
@@ -614,6 +623,9 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
+                                                       <resolveFully>true</resolveFully>
+         <generateExamples>false</generateExamples>
+                                <generateModelDocumentation>false</generateModelDocumentation>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -641,6 +653,7 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
+
                             </configOptions>
                         </configuration>
                     </execution>

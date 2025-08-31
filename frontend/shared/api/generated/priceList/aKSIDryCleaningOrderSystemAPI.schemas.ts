@@ -136,6 +136,8 @@ export const PriceModifierDtoType = {
   PERCENTAGE: 'PERCENTAGE',
   FIXED: 'FIXED',
   FORMULA: 'FORMULA',
+  MULTIPLIER: 'MULTIPLIER',
+  DISCOUNT: 'DISCOUNT',
 } as const;
 
 export type PriceModifierDtoCategoryRestrictionsItem = typeof PriceModifierDtoCategoryRestrictionsItem[keyof typeof PriceModifierDtoCategoryRestrictionsItem];
@@ -396,6 +398,8 @@ export const ItemModifierType = {
   PERCENTAGE: 'PERCENTAGE',
   FIXED: 'FIXED',
   FORMULA: 'FORMULA',
+  MULTIPLIER: 'MULTIPLIER',
+  DISCOUNT: 'DISCOUNT',
 } as const;
 
 export interface ItemModifier {
@@ -1117,6 +1121,8 @@ export const AppliedModifierType = {
   PERCENTAGE: 'PERCENTAGE',
   FIXED: 'FIXED',
   FORMULA: 'FORMULA',
+  MULTIPLIER: 'MULTIPLIER',
+  DISCOUNT: 'DISCOUNT',
 } as const;
 
 export interface AppliedModifier {

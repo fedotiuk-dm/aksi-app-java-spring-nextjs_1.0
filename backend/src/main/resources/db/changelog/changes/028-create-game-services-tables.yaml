@@ -1,0 +1,435 @@
+databaseChangeLog:
+  - changeSet:
+      id: 028-boosting-calculator-tables
+      author: aksi
+      comment: Create game services tables for dynamic boosting calculator - core structure only
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: games
+      changes:
+        # Create games table
+        - createTable:
+            tableName: games
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_games
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_games_code
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(500)
+              - column:
+                  name: category
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: integer
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        # Create difficulty_levels table
+        - createTable:
+            tableName: difficulty_levels
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_difficulty_levels
+              - column:
+                  name: game_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_difficulty_levels_game
+                    referencedTableName: games
+                    referencedColumnNames: id
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: level_value
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: integer
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        # Create service_types table
+        - createTable:
+            tableName: service_types
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_service_types
+              - column:
+                  name: game_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_service_types_game
+                    referencedTableName: games
+                    referencedColumnNames: id
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(500)
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: integer
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        # Create price_configurations table
+        - createTable:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_price_configurations
+              - column:
+                  name: game_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_price_configurations_game
+                    referencedTableName: games
+                    referencedColumnNames: id
+              - column:
+                  name: difficulty_level_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_price_configurations_difficulty_level
+                    referencedTableName: difficulty_levels
+                    referencedColumnNames: id
+              - column:
+                  name: service_type_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_price_configurations_service_type
+                    referencedTableName: service_types
+                    referencedColumnNames: id
+              - column:
+                  name: base_price
+                  type: integer
+                  constraints:
+                    nullable: false
+                    checkConstraint: base_price >= 0
+              - column:
+                  name: price_per_level
+                  type: integer
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false
+                    checkConstraint: price_per_level >= 0
+              - column:
+                  name: calculation_formula
+                  type: text
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_default
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: integer
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        # Create boosters table
+        - createTable:
+            tableName: boosters
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_boosters
+              - column:
+                  name: discord_username
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_boosters_discord_username
+              - column:
+                  name: contact_email
+                  type: email
+              - column:
+                  name: display_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rating
+                  type: integer
+                  defaultValueNumeric: "50"
+                  constraints:
+                    nullable: false
+                    checkConstraint: rating >= 0 AND rating <= 50
+              - column:
+                  name: completed_orders
+                  type: integer
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false
+                    checkConstraint: completed_orders >= 0
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        # Create booster_game_specializations table (many-to-many)
+        - createTable:
+            tableName: booster_game_specializations
+            columns:
+              - column:
+                  name: booster_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_booster_specializations_booster
+                    referencedTableName: boosters
+                    referencedColumnNames: id
+              - column:
+                  name: game_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_booster_specializations_game
+                    referencedTableName: games
+                    referencedColumnNames: id
+
+        # Create composite primary key for booster_game_specializations
+        - addPrimaryKey:
+            tableName: booster_game_specializations
+            columnNames: booster_id, game_id
+            constraintName: pk_booster_game_specializations
+
+        # Create indexes for performance
+        - createIndex:
+            tableName: difficulty_levels
+            indexName: idx_difficulty_levels_game_id
+            columns:
+              - column:
+                  name: game_id
+
+        - createIndex:
+            tableName: difficulty_levels
+            indexName: idx_difficulty_levels_code
+            columns:
+              - column:
+                  name: code
+
+        - createIndex:
+            tableName: service_types
+            indexName: idx_service_types_game_id
+            columns:
+              - column:
+                  name: game_id
+
+        - createIndex:
+            tableName: service_types
+            indexName: idx_service_types_code
+            columns:
+              - column:
+                  name: code
+
+        - createIndex:
+            tableName: price_configurations
+            indexName: idx_price_configurations_game
+            columns:
+              - column:
+                  name: game_id
+
+        - createIndex:
+            tableName: price_configurations
+            indexName: idx_price_configurations_difficulty
+            columns:
+              - column:
+                  name: difficulty_level_id
+
+        - createIndex:
+            tableName: price_configurations
+            indexName: idx_price_configurations_service
+            columns:
+              - column:
+                  name: service_type_id
+
+        - createIndex:
+            tableName: price_configurations
+            indexName: idx_price_configurations_active
+            columns:
+              - column:
+                  name: active
+
+        - createIndex:
+            tableName: price_configurations
+            indexName: idx_price_configurations_sort_order
+            columns:
+              - column:
+                  name: sort_order
+
+        - createIndex:
+            tableName: price_configurations
+            indexName: idx_price_configurations_is_default
+            columns:
+              - column:
+                  name: is_default
+
+        - createIndex:
+            tableName: boosters
+            indexName: idx_boosters_active
+            columns:
+              - column:
+                  name: active
+
+        - createIndex:
+            tableName: boosters
+            indexName: idx_boosters_rating
+            columns:
+              - column:
+                  name: rating

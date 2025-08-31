@@ -81,7 +81,7 @@ export const updateItemCharacteristicsResponse = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -178,7 +178,7 @@ export const listOrdersResponse = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -310,7 +310,7 @@ export const saveCustomerSignatureResponse = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -448,7 +448,7 @@ export const getOrderByIdResponse = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -558,7 +558,7 @@ export const updateOrderStatusResponse = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -678,7 +678,7 @@ export const getOrderItemsResponseItem = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -771,7 +771,7 @@ export const getOverdueOrdersResponse = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -898,7 +898,7 @@ export const getOrdersDueForCompletionResponse = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -1020,7 +1020,7 @@ export const getCustomerRecentOrdersResponseItem = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -1140,7 +1140,7 @@ export const getCustomerOrderHistoryResponse = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -1255,7 +1255,7 @@ export const getOrdersByStatusResponseItem = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -1361,7 +1361,7 @@ export const getOrderByNumberResponse = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({

@@ -185,7 +185,7 @@ components:
 
     ModifierType:
       type: string
-      enum: [PERCENTAGE, FIXED, FORMULA]
+      enum: [PERCENTAGE, FIXED, FORMULA, MULTIPLIER, DISCOUNT]
       description: Type of price modifier
 
     DiscountType:
@@ -385,6 +385,17 @@ components:
           items:
             $ref: "#/components/schemas/ErrorDetail"
           nullable: true
+
+    SuccessResponse:
+      type: object
+      required: [success, message]
+      properties:
+        success:
+          type: boolean
+          default: true
+        message:
+          type: string
+          description: Success message
 
     ProblemDetails:
       type: object

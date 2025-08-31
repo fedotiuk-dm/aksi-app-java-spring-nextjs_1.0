@@ -50,6 +50,10 @@
  *       ├── fileApi.ts                - хуки (useServeFile тощо)
  *       ├── index.ts                  - типи + BARREL: export * from './fileApi'
  *       └── schemas.zod.ts            - Zod схеми
+ *   └── game/             # Game Services Domain
+ *       ├── gameApi.ts                - хуки (useListGames, useCreateGame, useListBoosters, useCalculatePrice тощо)
+ *       ├── index.ts                  - типи + BARREL: export * from './gameApi'
+ *       └── schemas.zod.ts            - Zod схеми
  *
  * 🚀 ПЕРЕВАГИ КОМПОЗИЦІЇ:
  * ✅ import { useLogin } from '@/shared/api/generated/auth'
@@ -62,6 +66,7 @@
  * ✅ import { useListServices } from '@/shared/api/generated/priceList'
  * ✅ import { useGenerateOrderReceipt } from '@/shared/api/generated/receipt'
  * ✅ import { useServeFile } from '@/shared/api/generated/file'
+ * ✅ import { useListGames, useListBoosters, useCalculatePrice } from '@/shared/api/generated/game'
  *
  * 🎯 ORDER WIZARD: UI компоненти використовують композицію доменних API
  */
@@ -104,6 +109,16 @@ const DOMAIN_TAGS = {
 
   // 📁 File Domain
   file: ['files'],
+
+  // 🎮 Game Services Domain
+  game: [
+    'games',
+    'difficulty-levels',
+    'service-types',
+    'price-configurations',
+    'boosters',
+    'calculator',
+  ],
 };
 
 // 🏭 Фабрика для створення доменних конфігурацій
@@ -200,6 +215,9 @@ const config: Config = {
 
   // 📁 FILE DOMAIN
   ...createDomainConfig('file', DOMAIN_TAGS.file),
+
+  // 🎮 GAME SERVICES DOMAIN
+  ...createDomainConfig('game', DOMAIN_TAGS.game),
 };
 
 export default config;

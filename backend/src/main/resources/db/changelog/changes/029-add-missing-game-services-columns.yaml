@@ -1,0 +1,148 @@
+databaseChangeLog:
+  - changeSet:
+      id: 029-add-missing-game-services-columns
+      author: aksi
+      comment: Add missing columns for game services entities to support universal calculator
+      preConditions:
+        - onFail: CONTINUE
+      changes:
+        # Add missing columns to boosters table
+        - addColumn:
+            tableName: boosters
+            runOnChange: true
+            columns:
+              - column:
+                  name: completed_orders
+                  type: integer
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+                    checkConstraint: completed_orders >= 0
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        # Add missing columns to booster_game_specializations table
+        - addColumn:
+            tableName: booster_game_specializations
+            runOnChange: true
+            columns:
+              - column:
+                  name: specialization_level
+                  type: integer
+                  defaultValueNumeric: 1
+                  constraints:
+                    nullable: false
+                    checkConstraint: specialization_level >= 1 AND specialization_level <= 5
+              - column:
+                  name: experience_years
+                  type: integer
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+                    checkConstraint: experience_years >= 0
+              - column:
+                  name: completed_orders
+                  type: integer
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+                    checkConstraint: completed_orders >= 0
+              - column:
+                  name: rating_in_game
+                  type: integer
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+                    checkConstraint: rating_in_game >= 0 AND rating_in_game <= 50
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        # Add missing columns to difficulty_levels table
+        - addColumn:
+            tableName: difficulty_levels
+            runOnChange: true
+            columns:
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        # Add missing columns to service_types table
+        - addColumn:
+            tableName: service_types
+            runOnChange: true
+            columns:
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        # Add missing columns to price_configurations table
+        - addColumn:
+            tableName: price_configurations
+            runOnChange: true
+            columns:
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        # Add missing columns to games table
+        - addColumn:
+            tableName: games
+            runOnChange: true
+            columns:
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        # Create indexes for new columns
+        - createIndex:
+            tableName: booster_game_specializations
+            indexName: idx_booster_specializations_specialization_level
+            columns:
+              - column:
+                  name: specialization_level
+
+        - createIndex:
+            tableName: booster_game_specializations
+            indexName: idx_booster_specializations_rating
+            columns:
+              - column:
+                  name: rating_in_game
+
+        - createIndex:
+            tableName: booster_game_specializations
+            indexName: idx_booster_specializations_active
+            columns:
+              - column:
+                  name: active

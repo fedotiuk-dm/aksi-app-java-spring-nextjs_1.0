@@ -3,7 +3,7 @@
 ## Files Organization
 
 - `auth-api.yaml` - Authentication endpoints
-- `user-api.yaml` - User management endpoints  
+- `user-api.yaml` - User management endpoints
 - `customer-api.yaml` - Customer management endpoints
 - `serviceCatalog-itemCatalog-api.yaml` - Service and itemCatalog catalog endpoints
 - `common/` - Shared components (schemas, parameters, responses)
@@ -18,7 +18,7 @@ Since OpenAPI 3.x doesn't support direct $ref under paths object, use one of the
 # Generate Auth API
 openapi-generator generate -i auth-api.yaml -g spring -o target/auth
 
-# Generate User API  
+# Generate User API
 openapi-generator generate -i user-api.yaml -g spring -o target/user
 
 # etc...

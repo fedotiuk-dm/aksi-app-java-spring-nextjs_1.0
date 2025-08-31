@@ -54,7 +54,7 @@ export const updateCartModifiersResponse = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -132,7 +132,7 @@ export const updateCartItemResponse = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({
@@ -233,7 +233,7 @@ export const getCartResponse = zod.object({
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
-  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA']),
+  "type": zod.enum(['PERCENTAGE', 'FIXED', 'FORMULA', 'MULTIPLIER', 'DISCOUNT']),
   "value": zod.number().describe('Modifier value (percentage or fixed amount)')
 })).optional().describe('Applied modifiers'),
   "pricing": zod.object({

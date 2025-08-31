@@ -132,17 +132,15 @@ public class BranchQueryService {
   private BranchListResponse buildBranchesResponse(Page<BranchEntity> page) {
     List<BranchInfo> data = page.getContent().stream().map(branchMapper::toBranchInfo).toList();
 
-    BranchListResponse response = new BranchListResponse();
-    response.setData(data);
-    response.setTotalElements(page.getTotalElements());
-    response.setTotalPages(page.getTotalPages());
-    response.setSize(page.getSize());
-    response.setNumber(page.getNumber());
-    response.setNumberOfElements(page.getNumberOfElements());
-    response.setFirst(page.isFirst());
-    response.setLast(page.isLast());
-    response.setEmpty(page.isEmpty());
-
-    return response;
+    return new BranchListResponse(
+        data,
+        page.getTotalElements(),
+        page.getTotalPages(),
+        page.getSize(),
+        page.getNumber(),
+        page.getNumberOfElements(),
+        page.isFirst(),
+        page.isLast(),
+        page.isEmpty());
   }
 }

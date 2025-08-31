@@ -1,5 +1,5 @@
 // 🌍 ГЛОБАЛЬНИЙ BARREL для всіх DOMAIN API модулів
-// Згенеровано: 2025-08-10T20:49:41.618Z
+// Згенеровано: 2025-08-31T21:33:22.680Z
 // Не редагуйте вручну - файл буде перезаписаний при наступній генерації
 //
 // 💡 Цей файл дозволяє імпортувати з будь-якого домену API:
@@ -14,6 +14,7 @@
 // - cart: 🔧 Домен cart
 // - customer: 🔧 Домен customer
 // - file: 🔧 Домен file
+// - game: 🔧 Домен game
 // - order: 📦 Order Domain - замовлення, розрахунки, завершення замовлень
 // - priceList: 🔧 Домен priceList
 // - pricing: 🔧 Домен pricing
@@ -34,6 +35,9 @@ export * from './customer';
 
 // 🔧 Домен file
 export * from './file';
+
+// 🔧 Домен game
+export * from './game';
 
 // 📦 Order Domain - замовлення, розрахунки, завершення замовлень
 export * from './order';
@@ -56,6 +60,7 @@ export type * from './branch';
 export type * from './cart';
 export type * from './customer';
 export type * from './file';
+export type * from './game';
 export type * from './order';
 export type * from './priceList';
 export type * from './pricing';
