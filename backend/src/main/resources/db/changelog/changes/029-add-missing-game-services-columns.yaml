@@ -9,12 +9,11 @@ databaseChangeLog:
         # Add missing columns to boosters table
         - addColumn:
             tableName: boosters
-            runOnChange: true
             columns:
               - column:
                   name: completed_orders
                   type: integer
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: '0'
                   constraints:
                     nullable: false
                     checkConstraint: completed_orders >= 0
@@ -28,33 +27,32 @@ databaseChangeLog:
         # Add missing columns to booster_game_specializations table
         - addColumn:
             tableName: booster_game_specializations
-            runOnChange: true
             columns:
               - column:
                   name: specialization_level
                   type: integer
-                  defaultValueNumeric: 1
+                  defaultValueNumeric: '1'
                   constraints:
                     nullable: false
                     checkConstraint: specialization_level >= 1 AND specialization_level <= 5
               - column:
                   name: experience_years
                   type: integer
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: '0'
                   constraints:
                     nullable: false
                     checkConstraint: experience_years >= 0
               - column:
                   name: completed_orders
                   type: integer
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: '0'
                   constraints:
                     nullable: false
                     checkConstraint: completed_orders >= 0
               - column:
                   name: rating_in_game
                   type: integer
-                  defaultValueNumeric: 0
+                  defaultValueNumeric: '0'
                   constraints:
                     nullable: false
                     checkConstraint: rating_in_game >= 0 AND rating_in_game <= 50
@@ -80,7 +78,6 @@ databaseChangeLog:
         # Add missing columns to difficulty_levels table
         - addColumn:
             tableName: difficulty_levels
-            runOnChange: true
             columns:
               - column:
                   name: updated_at
@@ -92,7 +89,6 @@ databaseChangeLog:
         # Add missing columns to service_types table
         - addColumn:
             tableName: service_types
-            runOnChange: true
             columns:
               - column:
                   name: updated_at
@@ -104,7 +100,6 @@ databaseChangeLog:
         # Add missing columns to price_configurations table
         - addColumn:
             tableName: price_configurations
-            runOnChange: true
             columns:
               - column:
                   name: updated_at
@@ -116,7 +111,6 @@ databaseChangeLog:
         # Add missing columns to games table
         - addColumn:
             tableName: games
-            runOnChange: true
             columns:
               - column:
                   name: updated_at
