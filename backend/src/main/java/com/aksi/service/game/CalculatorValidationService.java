@@ -36,19 +36,26 @@ public class CalculatorValidationService {
     if (startLevel == null) {
       throw new BadRequestException("Start level is required");
     }
+    if (startLevel < 1) {
+      throw new BadRequestException("Start level must be greater than 0");
+    }
 
     Integer targetLevel = request.getTargetLevel();
     if (targetLevel == null) {
       throw new BadRequestException("Target level is required");
     }
+    if (targetLevel < 1) {
+      throw new BadRequestException("Target level must be greater than 0");
+    }
+
+    // Validate level progression
+    if (targetLevel <= startLevel) {
+      throw new BadRequestException("Target level must be greater than start level");
+    }
 
     if (!StringUtils.hasText(request.getServiceTypeCode())) {
       throw new BadRequestException("Service type code is required");
     }
-
-    // Validate level progression
-    // Note: Actual level validation will be done after entity lookup
-    // This is just basic format validation
 
     // Validate difficulty level code
     if (!StringUtils.hasText(request.getDifficultyLevelCode())) {

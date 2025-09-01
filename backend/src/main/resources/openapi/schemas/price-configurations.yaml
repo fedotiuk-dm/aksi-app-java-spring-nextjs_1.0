@@ -256,7 +256,10 @@ components:
           minimum: 0
         active:
           type: boolean
-      required: []
+      required:
+        - gameId
+        - difficultyLevelId
+        - serviceTypeId
 
     PriceConfigurationListResponse:
       type: object

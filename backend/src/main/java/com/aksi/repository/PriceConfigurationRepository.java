@@ -100,4 +100,9 @@ public interface PriceConfigurationRepository
         .stream()
         .findFirst();
   }
+
+  /** Find all price configurations by game ID using specifications. Used in bulk operations. */
+  default List<PriceConfigurationEntity> findByGameId(UUID gameId) {
+    return findAll(PriceConfigurationSpecification.findByGameId(gameId));
+  }
 }

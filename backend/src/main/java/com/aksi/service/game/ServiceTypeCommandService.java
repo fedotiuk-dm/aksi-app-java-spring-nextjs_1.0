@@ -142,4 +142,46 @@ public class ServiceTypeCommandService {
 
     return serviceTypeMapper.toServiceTypeDto(savedEntity);
   }
+
+  /**
+   * Activate a service type.
+   *
+   * @param serviceTypeId Service type ID
+   * @return Updated service type
+   */
+  public ServiceType activateServiceType(UUID serviceTypeId) {
+    log.info("Activating service type: {}", serviceTypeId);
+
+    ServiceTypeEntity entity =
+        serviceTypeRepository
+            .findById(serviceTypeId)
+            .orElseThrow(() -> new NotFoundException("Service type not found: " + serviceTypeId));
+
+    entity.setActive(true);
+    ServiceTypeEntity saved = serviceTypeRepository.save(entity);
+
+    log.info("Activated service type: {}", serviceTypeId);
+    return serviceTypeMapper.toServiceTypeDto(saved);
+  }
+
+  /**
+   * Deactivate a service type.
+   *
+   * @param serviceTypeId Service type ID
+   * @return Updated service type
+   */
+  public ServiceType deactivateServiceType(UUID serviceTypeId) {
+    log.info("Deactivating service type: {}", serviceTypeId);
+
+    ServiceTypeEntity entity =
+        serviceTypeRepository
+            .findById(serviceTypeId)
+            .orElseThrow(() -> new NotFoundException("Service type not found: " + serviceTypeId));
+
+    entity.setActive(false);
+    ServiceTypeEntity saved = serviceTypeRepository.save(entity);
+
+    log.info("Deactivated service type: {}", serviceTypeId);
+    return serviceTypeMapper.toServiceTypeDto(saved);
+  }
 }

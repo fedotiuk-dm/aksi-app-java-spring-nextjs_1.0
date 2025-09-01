@@ -10,7 +10,7 @@ import com.aksi.api.game.dto.CreateServiceTypeRequest;
 import com.aksi.api.game.dto.ServiceType;
 import com.aksi.api.game.dto.ServiceTypeListResponse;
 import com.aksi.api.game.dto.UpdateServiceTypeRequest;
-import com.aksi.exception.ConflictException;
+import com.aksi.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
   public ServiceType getServiceTypeByCode(String code) {
     return queryService
         .getServiceTypeByCode(code)
-        .orElseThrow(() -> new ConflictException("Service type not found with code: " + code));
+        .orElseThrow(() -> new NotFoundException("Service type not found with code: " + code));
   }
 
   @Override
@@ -84,6 +84,14 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
   public ServiceType updateServiceType(UUID serviceTypeId, UpdateServiceTypeRequest request) {
     log.info("Updating service type: {}", serviceTypeId);
     return commandService.updateServiceType(serviceTypeId, request);
+  }
+
+  @Override
+  public ServiceType setActive(UUID serviceTypeId, boolean active) {
+    log.info("Setting service type {} to active: {}", serviceTypeId, active);
+    return active
+        ? commandService.activateServiceType(serviceTypeId)
+        : commandService.deactivateServiceType(serviceTypeId);
   }
 
   // Delete operations

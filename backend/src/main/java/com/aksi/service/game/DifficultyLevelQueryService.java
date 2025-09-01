@@ -126,13 +126,6 @@ public class DifficultyLevelQueryService {
   }
 
   /**
-   * Helper method to get difficulty level entity or throw exception.
-   *
-   * @param difficultyLevelId difficulty level ID
-   * @return difficulty level entity
-   * @throws NotFoundException if difficulty level not found
-   */
-  /**
    * Check if difficulty level exists by game ID and code.
    *
    * @param gameId Game ID

@@ -105,6 +105,46 @@ paths:
         "204":
           description: Game deleted
 
+  /game-services/games/{id}/activate:
+    patch:
+      tags: [games]
+      operationId: activateGame
+      summary: Activate game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Game activated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+
+  /game-services/games/{id}/deactivate:
+    patch:
+      tags: [games]
+      operationId: deactivateGame
+      summary: Deactivate game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Game deactivated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+
 components:
   schemas:
     Game:

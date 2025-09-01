@@ -38,6 +38,8 @@ public interface ServiceTypeService {
   // Update operations
   ServiceType updateServiceType(UUID serviceTypeId, UpdateServiceTypeRequest request);
 
+  ServiceType setActive(UUID serviceTypeId, boolean active);
+
   // Delete operations
   void deleteServiceType(UUID serviceTypeId);
 

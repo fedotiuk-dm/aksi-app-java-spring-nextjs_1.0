@@ -76,4 +76,9 @@ public class PriceConfigurationSpecification {
         hasDifficultyLevelId(difficultyLevelId),
         hasServiceTypeId(serviceTypeId));
   }
+
+  /** Creates a specification for finding all price configurations by game ID. */
+  public static Specification<PriceConfigurationEntity> findByGameId(UUID gameId) {
+    return hasGameId(gameId);
+  }
 }

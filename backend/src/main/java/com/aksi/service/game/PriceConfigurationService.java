@@ -48,6 +48,8 @@ public interface PriceConfigurationService {
   PriceConfiguration updatePriceConfiguration(
       UUID priceConfigurationId, UpdatePriceConfigurationRequest request);
 
+  PriceConfiguration setActive(UUID priceConfigurationId, boolean active);
+
   // Delete operations
   void deletePriceConfiguration(UUID priceConfigurationId);
 

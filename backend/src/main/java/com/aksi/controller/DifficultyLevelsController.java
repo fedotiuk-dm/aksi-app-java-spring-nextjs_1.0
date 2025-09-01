@@ -62,4 +62,16 @@ public class DifficultyLevelsController implements DifficultyLevelsApi {
             difficultyLevelId, updateDifficultyLevelRequest);
     return ResponseEntity.ok(result);
   }
+
+  @Override
+  public ResponseEntity<DifficultyLevel> activateDifficultyLevel(UUID difficultyLevelId) {
+    DifficultyLevel result = difficultyLevelService.setActive(difficultyLevelId, true);
+    return ResponseEntity.ok(result);
+  }
+
+  @Override
+  public ResponseEntity<DifficultyLevel> deactivateDifficultyLevel(UUID difficultyLevelId) {
+    DifficultyLevel result = difficultyLevelService.setActive(difficultyLevelId, false);
+    return ResponseEntity.ok(result);
+  }
 }

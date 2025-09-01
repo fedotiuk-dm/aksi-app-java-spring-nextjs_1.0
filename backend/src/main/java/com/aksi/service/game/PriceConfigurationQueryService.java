@@ -15,6 +15,8 @@ import com.aksi.domain.game.PriceConfigurationEntity;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.PriceConfigurationMapper;
 import com.aksi.repository.PriceConfigurationRepository;
+import com.aksi.service.game.factory.PriceConfigurationFactory;
+import com.aksi.service.game.util.PriceConfigurationQueryUtils;
 import com.aksi.util.PaginationUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,8 @@ public class PriceConfigurationQueryService {
 
   private final PriceConfigurationRepository priceConfigurationRepository;
   private final PriceConfigurationMapper priceConfigurationMapper;
+  private final PriceConfigurationFactory priceConfigurationFactory;
+  private final PriceConfigurationQueryUtils priceConfigurationQueryUtils;
 
   /**
    * Get price configuration by ID.
@@ -51,7 +55,7 @@ public class PriceConfigurationQueryService {
                     new NotFoundException(
                         "Price configuration not found with id: " + priceConfigurationId));
 
-    return priceConfigurationMapper.toPriceConfigurationDto(entity);
+    return priceConfigurationFactory.toDto(entity);
   }
 
   /**
@@ -96,7 +100,7 @@ public class PriceConfigurationQueryService {
 
     List<PriceConfigurationEntity> entities =
         priceConfigurationRepository.findByGameIdAndActiveTrue(gameId);
-    return priceConfigurationMapper.toPriceConfigurationDtoList(entities);
+    return priceConfigurationFactory.toDtoList(entities);
   }
 
   /**
@@ -109,7 +113,7 @@ public class PriceConfigurationQueryService {
 
     List<PriceConfigurationEntity> entities =
         priceConfigurationRepository.findAllActiveOrderBySortOrder();
-    return priceConfigurationMapper.toPriceConfigurationDtoList(entities);
+    return priceConfigurationFactory.toDtoList(entities);
   }
 
   /**
@@ -122,7 +126,7 @@ public class PriceConfigurationQueryService {
 
     List<PriceConfigurationEntity> entities =
         priceConfigurationRepository.findDefaultConfigurations();
-    return priceConfigurationMapper.toPriceConfigurationDtoList(entities);
+    return priceConfigurationFactory.toDtoList(entities);
   }
 
   /**
@@ -136,7 +140,7 @@ public class PriceConfigurationQueryService {
 
     List<PriceConfigurationEntity> entities =
         priceConfigurationRepository.findDefaultByGameId(gameId);
-    return priceConfigurationMapper.toPriceConfigurationDtoList(entities);
+    return priceConfigurationFactory.toDtoList(entities);
   }
 
   /**
@@ -184,15 +188,9 @@ public class PriceConfigurationQueryService {
     // Create pageable
     Pageable pageable = PaginationUtil.createPageable(page, size, sortBy, sortOrder);
 
-    // Use proper database pagination for efficiency
-    Page<PriceConfigurationEntity> priceConfigurationPage;
-
-    if (gameId != null) {
-      priceConfigurationPage =
-          priceConfigurationRepository.findActiveByGameIdOrderBySortOrder(gameId, pageable);
-    } else {
-      priceConfigurationPage = priceConfigurationRepository.findAllActiveOrderBySortOrder(pageable);
-    }
+    // Use optimized query strategy
+    Page<PriceConfigurationEntity> priceConfigurationPage =
+        priceConfigurationQueryUtils.getPriceConfigurations(gameId, pageable);
 
     return buildPriceConfigurationsResponse(priceConfigurationPage);
   }
@@ -204,9 +202,7 @@ public class PriceConfigurationQueryService {
    * @return Count of active price configurations
    */
   public long countActiveByGameId(UUID gameId) {
-    log.debug("Counting active price configurations for game: {}", gameId);
-
-    return priceConfigurationRepository.countActiveByGameId(gameId);
+    return priceConfigurationQueryUtils.countActivePriceConfigurations(gameId);
   }
 
   /**
@@ -217,18 +213,6 @@ public class PriceConfigurationQueryService {
    */
   private PriceConfigurationListResponse buildPriceConfigurationsResponse(
       Page<PriceConfigurationEntity> priceConfigurationPage) {
-    List<PriceConfiguration> priceConfigurations =
-        priceConfigurationMapper.toPriceConfigurationDtoList(priceConfigurationPage.getContent());
-
-    return new PriceConfigurationListResponse(
-        priceConfigurations,
-        priceConfigurationPage.getTotalElements(),
-        priceConfigurationPage.getTotalPages(),
-        priceConfigurationPage.getSize(),
-        priceConfigurationPage.getNumber(),
-        priceConfigurationPage.getNumberOfElements(),
-        priceConfigurationPage.isFirst(),
-        priceConfigurationPage.isLast(),
-        priceConfigurationPage.isEmpty());
+    return priceConfigurationFactory.createListResponse(priceConfigurationPage);
   }
 }

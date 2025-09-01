@@ -43,11 +43,13 @@ components:
           example: "01-60"
         targetLevel:
           type: integer
-          description: Target level
+          minimum: 1
+          description: Target level (must be >= 1)
           example: 60
         startLevel:
           type: integer
-          description: Starting level
+          minimum: 1
+          description: Starting level (must be >= 1)
           default: 1
           example: 1
         modifiers:
@@ -60,6 +62,8 @@ components:
         - gameCode
         - serviceTypeCode
         - difficultyLevelCode
+        - targetLevel
+        - startLevel
 
     CalculationResult:
       type: object

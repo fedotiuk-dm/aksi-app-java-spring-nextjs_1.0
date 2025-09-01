@@ -54,4 +54,16 @@ public class GamesController implements GamesApi {
     Game result = gameService.updateGame(gameId, updateGameRequest);
     return ResponseEntity.ok(result);
   }
+
+  @Override
+  public ResponseEntity<Game> activateGame(UUID gameId) {
+    Game result = gameService.setActive(gameId, true);
+    return ResponseEntity.ok(result);
+  }
+
+  @Override
+  public ResponseEntity<Game> deactivateGame(UUID gameId) {
+    Game result = gameService.setActive(gameId, false);
+    return ResponseEntity.ok(result);
+  }
 }

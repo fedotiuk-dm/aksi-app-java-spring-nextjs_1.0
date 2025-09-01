@@ -116,6 +116,14 @@ public class PriceConfigurationServiceImpl implements PriceConfigurationService 
     return commandService.updatePriceConfiguration(priceConfigurationId, request);
   }
 
+  @Override
+  public PriceConfiguration setActive(UUID priceConfigurationId, boolean active) {
+    log.info("Setting price configuration {} to active: {}", priceConfigurationId, active);
+    return active
+        ? commandService.activatePriceConfiguration(priceConfigurationId)
+        : commandService.deactivatePriceConfiguration(priceConfigurationId);
+  }
+
   // Delete operations
 
   @Override

@@ -80,19 +80,6 @@ public class GameQueryService {
   }
 
   /**
-   * Find game entity by code (for internal use by command services).
-   *
-   * @param code Game code
-   * @return Game entity
-   * @throws NotFoundException if game not found
-   */
-  public GameEntity findGameEntityByCode(String code) {
-    return gameRepository
-        .findByCode(code)
-        .orElseThrow(() -> new NotFoundException("Game not found with code: " + code));
-  }
-
-  /**
    * Check if game exists by ID.
    *
    * @param gameId Game ID
