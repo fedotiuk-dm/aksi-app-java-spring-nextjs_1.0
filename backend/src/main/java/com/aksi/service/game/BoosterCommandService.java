@@ -10,13 +10,16 @@ import com.aksi.api.game.dto.CreateBoosterRequest;
 import com.aksi.api.game.dto.UpdateBoosterRequest;
 import com.aksi.domain.game.BoosterEntity;
 import com.aksi.exception.NotFoundException;
-import com.aksi.mapper.BoosterMapper;
 import com.aksi.repository.BoosterRepository;
+import com.aksi.service.game.factory.BoosterFactory;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/** Command service for booster write operations. */
+/**
+ * Command service for booster write operations. Uses BoosterFactory for consistent entity creation
+ * and updates.
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -24,39 +27,52 @@ import lombok.extern.slf4j.Slf4j;
 public class BoosterCommandService {
 
   private final BoosterRepository boosterRepository;
-  private final BoosterMapper boosterMapper;
   private final BoosterValidationService validationService;
+  private final BoosterFactory boosterFactory;
 
+  /**
+   * Create new booster.
+   *
+   * @param request Create request
+   * @return Created booster DTO
+   */
   public Booster createBooster(CreateBoosterRequest request) {
     log.info("Creating booster with Discord username: {}", request.getDiscordUsername());
 
     validationService.validateForCreate(request);
 
-    BoosterEntity entity = boosterMapper.toBoosterEntity(request);
+    BoosterEntity entity = boosterFactory.createEntity(request);
     BoosterEntity savedEntity = boosterRepository.save(entity);
 
     log.info("Created booster with id: {}", savedEntity.getId());
-    return boosterMapper.toBoosterDto(savedEntity);
+    return boosterFactory.toDto(savedEntity);
   }
 
+  /**
+   * Update existing booster.
+   *
+   * @param boosterId Booster ID
+   * @param request Update request
+   * @return Updated booster DTO
+   */
   public Booster updateBooster(UUID boosterId, UpdateBoosterRequest request) {
     log.info("Updating booster: {}", boosterId);
 
-    BoosterEntity existingEntity =
-        boosterRepository
-            .findById(boosterId)
-            .orElseThrow(() -> new NotFoundException("Booster not found: " + boosterId));
-
+    BoosterEntity existingEntity = findBoosterById(boosterId);
     validationService.validateForUpdate(request, existingEntity);
 
-    // Use the update method instead of creating a new entity
-    boosterMapper.updateBoosterFromDto(request, existingEntity);
-    BoosterEntity savedEntity = boosterRepository.save(existingEntity);
+    BoosterEntity updatedEntity = boosterFactory.updateEntity(existingEntity, request);
+    BoosterEntity savedEntity = boosterRepository.save(updatedEntity);
 
     log.info("Updated booster with id: {}", boosterId);
-    return boosterMapper.toBoosterDto(savedEntity);
+    return boosterFactory.toDto(savedEntity);
   }
 
+  /**
+   * Delete booster by ID.
+   *
+   * @param boosterId Booster ID
+   */
   public void deleteBooster(UUID boosterId) {
     log.info("Deleting booster: {}", boosterId);
 
@@ -68,62 +84,16 @@ public class BoosterCommandService {
     log.info("Deleted booster with id: {}", boosterId);
   }
 
-  public Booster incrementCompletedOrders(UUID boosterId) {
-    log.info("Incrementing completed orders for booster: {}", boosterId);
-
-    BoosterEntity entity =
-        boosterRepository
-            .findById(boosterId)
-            .orElseThrow(() -> new NotFoundException("Booster not found: " + boosterId));
-
-    entity.setTotalOrders(entity.getTotalOrders() + 1);
-    BoosterEntity savedEntity = boosterRepository.save(entity);
-
-    log.info("Incremented completed orders for booster: {}", boosterId);
-    return boosterMapper.toBoosterDto(savedEntity);
-  }
-
-  public Booster updateBoosterRating(UUID boosterId, Integer newRating) {
-    log.info("Updating rating for booster: {} to {}", boosterId, newRating);
-
-    BoosterEntity entity =
-        boosterRepository
-            .findById(boosterId)
-            .orElseThrow(() -> new NotFoundException("Booster not found: " + boosterId));
-
-    entity.setRating(newRating);
-    BoosterEntity savedEntity = boosterRepository.save(entity);
-
-    log.info("Updated rating for booster: {}", boosterId);
-    return boosterMapper.toBoosterDto(savedEntity);
-  }
-
   /**
-   * Update booster from Booster DTO. Uses the mapper method toBoosterEntity(Booster dto) for
-   * conversion.
+   * Find booster by ID with consistent error handling.
    *
-   * @param boosterId Booster ID to update
-   * @param boosterDto Booster DTO with updated data
-   * @return Updated booster DTO
+   * @param boosterId Booster ID
+   * @return Booster entity
+   * @throws NotFoundException if not found
    */
-  public Booster updateBoosterFromDto(UUID boosterId, Booster boosterDto) {
-    log.info("Updating booster from DTO: {}", boosterId);
-
-    BoosterEntity existingEntity =
-        boosterRepository
-            .findById(boosterId)
-            .orElseThrow(() -> new NotFoundException("Booster not found: " + boosterId));
-
-    // Convert DTO to entity and update existing entity
-    BoosterEntity updatedEntity = boosterMapper.toBoosterEntity(boosterDto);
-    updatedEntity.setId(boosterId);
-
-    // Preserve fields that shouldn't be updated from DTO
-    updatedEntity.setGameSpecializations(existingEntity.getGameSpecializations());
-
-    BoosterEntity savedEntity = boosterRepository.save(updatedEntity);
-
-    log.info("Updated booster from DTO with id: {}", boosterId);
-    return boosterMapper.toBoosterDto(savedEntity);
+  private BoosterEntity findBoosterById(UUID boosterId) {
+    return boosterRepository
+        .findById(boosterId)
+        .orElseThrow(() -> new NotFoundException("Booster not found: " + boosterId));
   }
 }

@@ -45,7 +45,15 @@ public class BoostersController implements BoostersApi {
   public ResponseEntity<BoosterListResponse> listBoosters(
       Integer page, Integer size, @Nullable String search, @Nullable Boolean active) {
 
-    BoosterListResponse result = boosterService.listBoosters(page, size, null, null, active);
+    BoosterListResponse result;
+    if (search != null && !search.trim().isEmpty()) {
+      // Use search method when search term is provided
+      result = boosterService.searchBoosters(search.trim(), active, page, size);
+    } else {
+      // Use regular list method for filtering without search
+      result = boosterService.listBoosters(page, size, null, null, active);
+    }
+
     return ResponseEntity.ok(result);
   }
 
