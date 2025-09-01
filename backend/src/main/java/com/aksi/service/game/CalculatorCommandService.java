@@ -116,8 +116,6 @@ public class CalculatorCommandService {
       List<PriceModifierEntity> applicableModifiers, int basePrice, Map<String, Object> context) {
 
     // basePrice is passed to individual modifier calculations but not used directly here
-    @SuppressWarnings("unused")
-    int unusedBasePrice = basePrice;
 
     if (applicableModifiers.isEmpty()) {
       log.debug("No modifiers to apply");

@@ -77,9 +77,7 @@ public class DifficultyLevelCommandService {
         difficultyLevelRepository
             .findById(difficultyLevelId)
             .orElseThrow(
-                () ->
-                    new com.aksi.exception.NotFoundException(
-                        "Difficulty level not found: " + difficultyLevelId));
+                () -> new NotFoundException("Difficulty level not found: " + difficultyLevelId));
 
     // Validate update request
     validationService.validateUpdateDifficultyLevel(difficultyLevelId, request);
@@ -110,9 +108,7 @@ public class DifficultyLevelCommandService {
         difficultyLevelRepository
             .findById(difficultyLevelId)
             .orElseThrow(
-                () ->
-                    new com.aksi.exception.NotFoundException(
-                        "Difficulty level not found: " + difficultyLevelId));
+                () -> new NotFoundException("Difficulty level not found: " + difficultyLevelId));
 
     // Check for dependent entities (price configurations)
     if (!difficultyLevelEntity.getPriceConfigurations().isEmpty()) {
@@ -139,9 +135,7 @@ public class DifficultyLevelCommandService {
         difficultyLevelRepository
             .findById(difficultyLevelId)
             .orElseThrow(
-                () ->
-                    new com.aksi.exception.NotFoundException(
-                        "Difficulty level not found: " + difficultyLevelId));
+                () -> new NotFoundException("Difficulty level not found: " + difficultyLevelId));
 
     // Validate activation
     validationService.validateDifficultyLevelActivation(
@@ -169,9 +163,7 @@ public class DifficultyLevelCommandService {
         difficultyLevelRepository
             .findById(difficultyLevelId)
             .orElseThrow(
-                () ->
-                    new com.aksi.exception.NotFoundException(
-                        "Difficulty level not found: " + difficultyLevelId));
+                () -> new NotFoundException("Difficulty level not found: " + difficultyLevelId));
 
     // Validate deactivation
     validationService.validateDifficultyLevelActivation(

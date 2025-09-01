@@ -21,10 +21,6 @@ public class CalculationResultBuilder {
    *
    * @param totalPrice Total calculated price in kopiykas
    * @param basePrice Base price in kopiykas
-   * @param modifiers List of applied modifiers
-   * @param modifiersTotal Total amount from modifiers in kopiykas
-   * @param levelDifference Number of levels/ranks to boost
-   * @param pricePerLevel Price per level/rank in kopiykas
    * @param game Game entity for context
    * @return Built CalculationResult
    */

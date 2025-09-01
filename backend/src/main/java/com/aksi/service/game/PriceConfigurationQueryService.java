@@ -167,7 +167,9 @@ public class PriceConfigurationQueryService {
       Integer maxBasePrice) {
 
     log.debug(
-        "Getting price configurations with pagination - page: {}, size: {}, sortBy: {}, sortOrder: {}, gameId: {}, difficultyLevelId: {}, serviceTypeId: {}, active: {}, minBasePrice: {}, maxBasePrice: {}",
+        "Getting price configurations with pagination - page: {}, size: {}, sortBy: {}, "
+            + "sortOrder: {}, gameId: {}, difficultyLevelId: {}, serviceTypeId: {}, "
+            + "active: {}, minBasePrice: {}, maxBasePrice: {}",
         page,
         size,
         sortBy,

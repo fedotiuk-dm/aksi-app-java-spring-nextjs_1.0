@@ -79,13 +79,28 @@ public class ResponseBuilderUtil {
 
   /** Simple data holder for pagination information. */
   public static class PaginationData {
+    /** Total number of elements across all pages. */
     public final long totalElements;
+
+    /** Total number of pages available. */
     public final int totalPages;
+
+    /** Size of each page. */
     public final int size;
+
+    /** Current page number (0-based). */
     public final int number;
+
+    /** Number of elements in the current page. */
     public final int numberOfElements;
+
+    /** Whether this is the first page. */
     public final boolean first;
+
+    /** Whether this is the last page. */
     public final boolean last;
+
+    /** Whether the current page is empty. */
     public final boolean empty;
 
     public PaginationData(

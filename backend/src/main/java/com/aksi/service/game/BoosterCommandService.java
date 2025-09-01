@@ -76,7 +76,7 @@ public class BoosterCommandService {
             .findById(boosterId)
             .orElseThrow(() -> new NotFoundException("Booster not found: " + boosterId));
 
-    entity.setCompletedOrders(entity.getCompletedOrders() + 1);
+    entity.setTotalOrders(entity.getTotalOrders() + 1);
     BoosterEntity savedEntity = boosterRepository.save(entity);
 
     log.info("Incremented completed orders for booster: {}", boosterId);

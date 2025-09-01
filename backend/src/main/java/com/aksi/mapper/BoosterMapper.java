@@ -25,7 +25,7 @@ public interface BoosterMapper {
 
   @Mapping(target = "gameSpecializations", ignore = true)
   @Mapping(target = "rating", ignore = true)
-  @Mapping(target = "completedOrders", ignore = true)
+  @Mapping(target = "totalOrders", ignore = true)
   @Mapping(target = "active", ignore = true)
   BoosterEntity toBoosterEntity(CreateBoosterRequest dto);
 

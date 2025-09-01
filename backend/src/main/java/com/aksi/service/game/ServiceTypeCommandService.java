@@ -10,7 +10,6 @@ import com.aksi.api.game.dto.ServiceType;
 import com.aksi.api.game.dto.UpdateServiceTypeRequest;
 import com.aksi.domain.game.GameEntity;
 import com.aksi.domain.game.ServiceTypeEntity;
-import com.aksi.exception.ConflictException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.ServiceTypeMapper;
 import com.aksi.repository.ServiceTypeRepository;

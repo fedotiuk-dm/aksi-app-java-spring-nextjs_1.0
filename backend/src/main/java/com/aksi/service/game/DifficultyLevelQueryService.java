@@ -79,7 +79,8 @@ public class DifficultyLevelQueryService {
       UUID gameId,
       String search) {
     log.debug(
-        "Listing difficulty levels - page: {}, size: {}, sortBy: {}, sortOrder: {}, active: {}, gameId: {}, search: '{}'",
+        "Listing difficulty levels - page: {}, size: {}, sortBy: {}, sortOrder: {}, "
+            + "active: {}, gameId: {}, search: '{}'",
         page,
         size,
         sortBy,

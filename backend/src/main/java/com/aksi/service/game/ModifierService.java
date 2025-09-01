@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import com.aksi.domain.pricing.PriceModifierEntity;
-import com.aksi.exception.BadRequestException;
 
 /** Service for managing and retrieving price modifiers for game service calculations. */
 public interface ModifierService {

@@ -84,7 +84,7 @@ public class PriceListQueryService {
     // Build specification
     Specification<PriceListItemEntity> spec =
         PriceListItemSpecification.hasCategory(categoryCode)
-            .and(PriceListItemSpecification.isActive(active));
+            .and(PriceListItemSpecification.hasActive(active));
 
     // Execute query
     Page<PriceListItemEntity> page = priceListItemRepository.findAll(spec, pageable);
