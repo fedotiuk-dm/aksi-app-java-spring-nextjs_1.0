@@ -21,17 +21,25 @@ public interface PriceListItemRepository
   Optional<PriceListItemEntity> findByCategoryCodeAndCatalogNumber(
       ServiceCategoryType categoryCode, Integer catalogNumber);
 
-  @Query("SELECT DISTINCT p.categoryCode FROM PriceListItemEntity p WHERE p.active = true")
-  List<ServiceCategoryType> findDistinctActiveCategories();
+  /** Find distinct active categories using specifications. */
+  default List<ServiceCategoryType> findDistinctActiveCategories() {
+    return findAll(PriceListItemSpecification.hasActive(true)).stream()
+        .map(PriceListItemEntity::getCategoryCode)
+        .distinct()
+        .toList();
+  }
 
-  @Query(
-      "SELECT p FROM PriceListItemEntity p WHERE p.active = true ORDER BY p.categoryCode, p.catalogNumber")
-  List<PriceListItemEntity> findAllActiveOrderedByCategoryAndNumber();
+  /**
+   * Find all active price list items ordered by category and catalog number using specifications.
+   */
+  default List<PriceListItemEntity> findAllActiveOrderedByCategoryAndNumber() {
+    return findAll(PriceListItemSpecification.findAllActiveOrderedByCategoryAndNumber());
+  }
 
-  Optional<PriceListItemEntity> findByCatalogNumber(Integer catalogNumber);
-
-  // Category management methods
-  List<PriceListItemEntity> findByCategoryCode(ServiceCategoryType categoryCode);
+  /** Find price list items by category code using specifications. */
+  default List<PriceListItemEntity> findByCategoryCode(ServiceCategoryType categoryCode) {
+    return findAll(PriceListItemSpecification.findByCategory(categoryCode));
+  }
 
   @Query("SELECT COUNT(p) FROM PriceListItemEntity p WHERE p.categoryCode = :categoryCode")
   long countByCategoryCode(ServiceCategoryType categoryCode);
@@ -39,7 +47,4 @@ public interface PriceListItemRepository
   @Query(
       "SELECT COUNT(p) FROM PriceListItemEntity p WHERE p.categoryCode = :categoryCode AND p.active = true")
   long countByCategoryCodeAndActiveTrue(ServiceCategoryType categoryCode);
-
-  @Query("SELECT DISTINCT p.categoryCode FROM PriceListItemEntity p")
-  List<ServiceCategoryType> findAllDistinctCategories();
 }

@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 032-add-active-column-to-booster-specializations
+      author: aksi
+      comment: Add active column to booster_game_specializations table if it doesn't exist
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: booster_game_specializations
+        - columnExists:
+            tableName: booster_game_specializations
+            columnName: active
+            onFail: MARK_RAN
+      changes:
+        - addColumn:
+            tableName: booster_game_specializations
+            columns:
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: booster_game_specializations
+            indexName: idx_booster_specializations_active
+            columns:
+              - column:
+                  name: active

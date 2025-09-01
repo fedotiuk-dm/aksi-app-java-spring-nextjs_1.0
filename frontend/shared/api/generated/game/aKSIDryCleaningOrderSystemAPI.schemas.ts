@@ -5,6 +5,339 @@
  * API for dry cleaning order management system with Domain-Driven Design architecture. The system includes 13 domains: Auth, User, Customer, Branch, Employee, Order, OrderItem, Service, Garment, Pricing, Payment, Notification, and Analytics.
  * OpenAPI spec version: 1.0.0
  */
+export interface ServiceType {
+  id: string;
+  gameId: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /**
+   * Base multiplier in basis points (100 = 1.0x, 200 = 2.0x)
+   * @minimum 1
+   * @maximum 1000
+   */
+  baseMultiplier: number;
+  active: boolean;
+  /** @minimum 0 */
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UpdateServiceTypeRequest {
+  gameId?: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name?: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code?: string;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  baseMultiplier?: number;
+  /** @minimum 0 */
+  sortOrder?: number;
+  active?: boolean;
+}
+
+export type PriceConfigurationCalculationType = typeof PriceConfigurationCalculationType[keyof typeof PriceConfigurationCalculationType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PriceConfigurationCalculationType = {
+  LINEAR: 'LINEAR',
+  RANGE: 'RANGE',
+  FORMULA: 'FORMULA',
+  TIME_BASED: 'TIME_BASED',
+} as const;
+
+export interface PriceConfiguration {
+  id: string;
+  gameId: string;
+  difficultyLevelId: string;
+  serviceTypeId: string;
+  /**
+   * Base price in cents (e.g., 100 = $1.00)
+   * @minimum 0
+   */
+  basePrice: number;
+  /**
+   * Price per level in cents
+   * @minimum 0
+   */
+  pricePerLevel?: number;
+  currency?: string;
+  calculationType: PriceConfigurationCalculationType;
+  /** JSON formula configuration */
+  calculationFormula?: string;
+  active: boolean;
+  /** @minimum 0 */
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type UpdatePriceConfigurationRequestCalculationType = typeof UpdatePriceConfigurationRequestCalculationType[keyof typeof UpdatePriceConfigurationRequestCalculationType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdatePriceConfigurationRequestCalculationType = {
+  LINEAR: 'LINEAR',
+  RANGE: 'RANGE',
+  FORMULA: 'FORMULA',
+  TIME_BASED: 'TIME_BASED',
+} as const;
+
+export interface UpdatePriceConfigurationRequest {
+  gameId?: string;
+  difficultyLevelId?: string;
+  serviceTypeId?: string;
+  /**
+   * Base price in cents
+   * @minimum 0
+   */
+  basePrice?: number;
+  /**
+   * Price per level in cents
+   * @minimum 0
+   */
+  pricePerLevel?: number;
+  currency?: string;
+  calculationType?: UpdatePriceConfigurationRequestCalculationType;
+  calculationFormula?: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+  active?: boolean;
+}
+
+export type GameCategory = typeof GameCategory[keyof typeof GameCategory];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GameCategory = {
+  MMORPG: 'MMORPG',
+  FPS: 'FPS',
+  MOBA: 'MOBA',
+  BATTLE_ROYALE: 'BATTLE_ROYALE',
+  STRATEGY: 'STRATEGY',
+  ACTION: 'ACTION',
+  SIMULATION: 'SIMULATION',
+  SPORTS: 'SPORTS',
+  RACING: 'RACING',
+  PUZZLE: 'PUZZLE',
+  OTHER: 'OTHER',
+} as const;
+
+export interface Game {
+  id: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  category: GameCategory;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  description?: string;
+  active: boolean;
+  /** @minimum 0 */
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type UpdateGameRequestCategory = typeof UpdateGameRequestCategory[keyof typeof UpdateGameRequestCategory];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateGameRequestCategory = {
+  MMORPG: 'MMORPG',
+  FPS: 'FPS',
+  MOBA: 'MOBA',
+  BATTLE_ROYALE: 'BATTLE_ROYALE',
+  STRATEGY: 'STRATEGY',
+  ACTION: 'ACTION',
+  SIMULATION: 'SIMULATION',
+  SPORTS: 'SPORTS',
+  RACING: 'RACING',
+  PUZZLE: 'PUZZLE',
+  OTHER: 'OTHER',
+} as const;
+
+export interface UpdateGameRequest {
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name?: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code?: string;
+  category?: UpdateGameRequestCategory;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  description?: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+  active?: boolean;
+}
+
+export interface DifficultyLevel {
+  id: string;
+  gameId: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  levelValue: number;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  active: boolean;
+  /** @minimum 0 */
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UpdateDifficultyLevelRequest {
+  gameId?: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name?: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code?: string;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  levelValue?: number;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+  active?: boolean;
+}
+
+export interface Booster {
+  id: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  discordUsername: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   */
+  displayName: string;
+  contactEmail?: string;
+  /** @pattern ^\+?[1-9]\d{1,14}$ */
+  phoneNumber?: string;
+  /**
+   * Rating in basis points (100 = 1.0 star, 500 = 5.0 stars)
+   * @minimum 0
+   * @maximum 500
+   */
+  rating: number;
+  /** @minimum 0 */
+  totalOrders: number;
+  /**
+   * Success rate in basis points (10000 = 100.00%)
+   * @minimum 0
+   * @maximum 10000
+   */
+  successRate: number;
+  /**
+   * Average completion time in minutes
+   * @minimum 0
+   */
+  averageCompletionTime?: number;
+  active: boolean;
+  verified: boolean;
+  lastActive?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UpdateBoosterRequest {
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  discordUsername?: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   */
+  displayName?: string;
+  contactEmail?: string;
+  /** @pattern ^\+?[1-9]\d{1,14}$ */
+  phoneNumber?: string;
+  active?: boolean;
+  verified?: boolean;
+}
+
 export interface BranchAssignment {
   /** Branch ID */
   branchId: string;
@@ -953,6 +1286,195 @@ export interface UpdateBranchRequest {
   sortOrder?: number;
 }
 
+export interface CreateServiceTypeRequest {
+  gameId: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  baseMultiplier: number;
+  /** @minimum 0 */
+  sortOrder?: number;
+  active?: boolean;
+}
+
+export type CreatePriceConfigurationRequestCalculationType = typeof CreatePriceConfigurationRequestCalculationType[keyof typeof CreatePriceConfigurationRequestCalculationType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreatePriceConfigurationRequestCalculationType = {
+  LINEAR: 'LINEAR',
+  RANGE: 'RANGE',
+  FORMULA: 'FORMULA',
+  TIME_BASED: 'TIME_BASED',
+} as const;
+
+export interface CreatePriceConfigurationRequest {
+  gameId: string;
+  difficultyLevelId: string;
+  serviceTypeId: string;
+  /**
+   * Base price in cents
+   * @minimum 0
+   */
+  basePrice: number;
+  /**
+   * Price per level in cents
+   * @minimum 0
+   */
+  pricePerLevel?: number;
+  currency?: string;
+  calculationType: CreatePriceConfigurationRequestCalculationType;
+  /** JSON formula configuration */
+  calculationFormula?: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+  active?: boolean;
+}
+
+export type CreateGameRequestCategory = typeof CreateGameRequestCategory[keyof typeof CreateGameRequestCategory];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateGameRequestCategory = {
+  MMORPG: 'MMORPG',
+  FPS: 'FPS',
+  MOBA: 'MOBA',
+  BATTLE_ROYALE: 'BATTLE_ROYALE',
+  STRATEGY: 'STRATEGY',
+  ACTION: 'ACTION',
+  SIMULATION: 'SIMULATION',
+  SPORTS: 'SPORTS',
+  RACING: 'RACING',
+  PUZZLE: 'PUZZLE',
+  OTHER: 'OTHER',
+} as const;
+
+export interface CreateGameRequest {
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  category: CreateGameRequestCategory;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  description?: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+}
+
+export interface CreateDifficultyLevelRequest {
+  gameId: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  levelValue: number;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+}
+
+export interface CalculationBreakdown {
+  /** Base price in cents */
+  basePrice: number;
+  /**
+   * Difficulty multiplier in basis points (100 = 1.0x)
+   * @minimum 1
+   * @maximum 1000
+   */
+  difficultyMultiplier: number;
+  /**
+   * Service multiplier in basis points (100 = 1.0x)
+   * @minimum 1
+   * @maximum 1000
+   */
+  serviceMultiplier: number;
+  /** Level-based adjustment in cents */
+  levelAdjustment?: number;
+  /** Total adjustment in cents */
+  totalAdjustment: number;
+}
+
+export interface CalculationResult {
+  /** Final price in cents */
+  finalPrice: number;
+  currency?: string;
+  breakdown: CalculationBreakdown;
+}
+
+export interface CalculationRequest {
+  /** Game code */
+  gameCode: string;
+  /** Service type code */
+  serviceTypeCode: string;
+  /** Difficulty level code */
+  difficultyLevelCode: string;
+  /** Target level */
+  targetLevel?: number;
+  /** Starting level */
+  startLevel?: number;
+  /** List of modifier codes to apply */
+  modifiers?: string[];
+}
+
+export interface CreateBoosterRequest {
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  discordUsername: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   */
+  displayName: string;
+  contactEmail: string;
+  /** @pattern ^\+?[1-9]\d{1,14}$ */
+  phoneNumber?: string;
+  verified?: boolean;
+}
+
 export type CreateUserRequestRolesItem = typeof CreateUserRequestRolesItem[keyof typeof CreateUserRequestRolesItem];
 
 
@@ -1782,6 +2304,111 @@ export interface UpdateOrderStatusRequest {
   notes?: string;
 }
 
+export interface ServiceTypeListResponse {
+  /** Page content */
+  data: ServiceType[];
+  /** Total number of elements */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Page size */
+  size: number;
+  /** Page number (0-based) */
+  number: number;
+  /** Number of elements in current page */
+  numberOfElements: number;
+  /** Is first page */
+  first: boolean;
+  /** Is last page */
+  last: boolean;
+  /** Is empty */
+  empty: boolean;
+}
+
+export interface PriceConfigurationListResponse {
+  /** Page content */
+  data: PriceConfiguration[];
+  /** Total number of elements */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Page size */
+  size: number;
+  /** Page number (0-based) */
+  number: number;
+  /** Number of elements in current page */
+  numberOfElements: number;
+  /** Is first page */
+  first: boolean;
+  /** Is last page */
+  last: boolean;
+  /** Is empty */
+  empty: boolean;
+}
+
+export interface GameListResponse {
+  /** Page content */
+  data: Game[];
+  /** Total number of elements */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Page size */
+  size: number;
+  /** Page number (0-based) */
+  number: number;
+  /** Number of elements in current page */
+  numberOfElements: number;
+  /** Is first page */
+  first: boolean;
+  /** Is last page */
+  last: boolean;
+  /** Is empty */
+  empty: boolean;
+}
+
+export interface DifficultyLevelListResponse {
+  /** Page content */
+  data: DifficultyLevel[];
+  /** Total number of elements */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Page size */
+  size: number;
+  /** Page number (0-based) */
+  number: number;
+  /** Number of elements in current page */
+  numberOfElements: number;
+  /** Is first page */
+  first: boolean;
+  /** Is last page */
+  last: boolean;
+  /** Is empty */
+  empty: boolean;
+}
+
+export interface BoosterListResponse {
+  /** Page content */
+  data: Booster[];
+  /** Total number of elements */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Page size */
+  size: number;
+  /** Page number (0-based) */
+  number: number;
+  /** Number of elements in current page */
+  numberOfElements: number;
+  /** Is first page */
+  first: boolean;
+  /** Is last page */
+  last: boolean;
+  /** Is empty */
+  empty: boolean;
+}
+
 export interface UserListResponse {
   data: UserSummary[];
   /** Total number of elements */
@@ -2191,4 +2818,122 @@ export interface SessionTerminationResponse {
   /** Success message */
   message: string;
 }
+
+export type ListServiceTypesParams = {
+/**
+ * Page number (0-based)
+ * @minimum 0
+ */
+page?: number;
+/**
+ * Page size (number of items per page)
+ * @minimum 1
+ * @maximum 100
+ */
+size?: number;
+/**
+ * Filter by game ID
+ */
+gameId?: string;
+/**
+ * Filter by active status
+ */
+active?: boolean;
+};
+
+export type ListPriceConfigurationsParams = {
+/**
+ * Page number (0-based)
+ * @minimum 0
+ */
+page?: number;
+/**
+ * Page size (number of items per page)
+ * @minimum 1
+ * @maximum 100
+ */
+size?: number;
+/**
+ * Filter by game ID
+ */
+gameId?: string;
+/**
+ * Filter by service type ID
+ */
+serviceTypeId?: string;
+/**
+ * Filter by difficulty level ID
+ */
+difficultyLevelId?: string;
+/**
+ * Filter by active status
+ */
+active?: boolean;
+};
+
+export type ListGamesParams = {
+/**
+ * Page number (0-based)
+ * @minimum 0
+ */
+page?: number;
+/**
+ * Page size (number of items per page)
+ * @minimum 1
+ * @maximum 100
+ */
+size?: number;
+/**
+ * Free text search
+ */
+search?: string;
+/**
+ * Filter by active status
+ */
+active?: boolean;
+};
+
+export type ListDifficultyLevelsParams = {
+/**
+ * Page number (0-based)
+ * @minimum 0
+ */
+page?: number;
+/**
+ * Page size (number of items per page)
+ * @minimum 1
+ * @maximum 100
+ */
+size?: number;
+/**
+ * Filter by game ID
+ */
+gameId?: string;
+/**
+ * Filter by active status
+ */
+active?: boolean;
+};
+
+export type ListBoostersParams = {
+/**
+ * Page number (0-based)
+ * @minimum 0
+ */
+page?: number;
+/**
+ * Page size (number of items per page)
+ * @minimum 1
+ * @maximum 100
+ */
+size?: number;
+/**
+ * Free text search
+ */
+search?: string;
+/**
+ * Filter by active status
+ */
+active?: boolean;
+};
 

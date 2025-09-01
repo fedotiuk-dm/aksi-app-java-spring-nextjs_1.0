@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 033-fix-games-code-column-type-v2
+      author: aksi
+      comment: Ensure games.code column has correct varchar type for PostgreSQL lower() function
+      runOnChange: true
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: games
+      changes:
+        # Modify code column to ensure it's varchar(50)
+        - modifyDataType:
+            tableName: games
+            columnName: code
+            newDataType: varchar(50)
+            constraints:
+              nullable: false

@@ -5,4 +5,1969 @@
  * API for dry cleaning order management system with Domain-Driven Design architecture. The system includes 13 domains: Auth, User, Customer, Branch, Employee, Order, OrderItem, Service, Garment, Pricing, Payment, Notification, and Analytics.
  * OpenAPI spec version: 1.0.0
  */
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
+import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
+  MutationFunction,
+  QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult
+} from '@tanstack/react-query';
 
+import type {
+  Booster,
+  BoosterListResponse,
+  CalculationRequest,
+  CalculationResult,
+  CreateBoosterRequest,
+  CreateDifficultyLevelRequest,
+  CreateGameRequest,
+  CreatePriceConfigurationRequest,
+  CreateServiceTypeRequest,
+  DifficultyLevel,
+  DifficultyLevelListResponse,
+  Game,
+  GameListResponse,
+  ListBoostersParams,
+  ListDifficultyLevelsParams,
+  ListGamesParams,
+  ListPriceConfigurationsParams,
+  ListServiceTypesParams,
+  PriceConfiguration,
+  PriceConfigurationListResponse,
+  ServiceType,
+  ServiceTypeListResponse,
+  UpdateBoosterRequest,
+  UpdateDifficultyLevelRequest,
+  UpdateGameRequest,
+  UpdatePriceConfigurationRequest,
+  UpdateServiceTypeRequest
+} from './aKSIDryCleaningOrderSystemAPI.schemas';
+
+import orvalFetcher from '../../../../lib/api/orval-fetcher';
+
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
+
+/**
+ * @summary Get service type by ID
+ */
+export const getServiceTypeById = (
+    id: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ServiceType>(
+      {url: `/game-services/service-types/${id}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetServiceTypeByIdQueryKey = (id?: string,) => {
+    return [`/game-services/service-types/${id}`] as const;
+    }
+
+    
+export const getGetServiceTypeByIdQueryOptions = <TData = Awaited<ReturnType<typeof getServiceTypeById>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceTypeById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetServiceTypeByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getServiceTypeById>>> = ({ signal }) => getServiceTypeById(id, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getServiceTypeById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetServiceTypeByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getServiceTypeById>>>
+export type GetServiceTypeByIdQueryError = unknown
+
+
+export function useGetServiceTypeById<TData = Awaited<ReturnType<typeof getServiceTypeById>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceTypeById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getServiceTypeById>>,
+          TError,
+          Awaited<ReturnType<typeof getServiceTypeById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetServiceTypeById<TData = Awaited<ReturnType<typeof getServiceTypeById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceTypeById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getServiceTypeById>>,
+          TError,
+          Awaited<ReturnType<typeof getServiceTypeById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetServiceTypeById<TData = Awaited<ReturnType<typeof getServiceTypeById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceTypeById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get service type by ID
+ */
+
+export function useGetServiceTypeById<TData = Awaited<ReturnType<typeof getServiceTypeById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceTypeById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetServiceTypeByIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Update service type
+ */
+export const updateServiceType = (
+    id: string,
+    updateServiceTypeRequest: UpdateServiceTypeRequest,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<ServiceType>(
+      {url: `/game-services/service-types/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateServiceTypeRequest
+    },
+      options);
+    }
+  
+
+
+export const getUpdateServiceTypeMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateServiceType>>, TError,{id: string;data: UpdateServiceTypeRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateServiceType>>, TError,{id: string;data: UpdateServiceTypeRequest}, TContext> => {
+
+const mutationKey = ['updateServiceType'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateServiceType>>, {id: string;data: UpdateServiceTypeRequest}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateServiceType(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateServiceTypeMutationResult = NonNullable<Awaited<ReturnType<typeof updateServiceType>>>
+    export type UpdateServiceTypeMutationBody = UpdateServiceTypeRequest
+    export type UpdateServiceTypeMutationError = unknown
+
+    /**
+ * @summary Update service type
+ */
+export const useUpdateServiceType = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateServiceType>>, TError,{id: string;data: UpdateServiceTypeRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateServiceType>>,
+        TError,
+        {id: string;data: UpdateServiceTypeRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateServiceTypeMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Delete service type
+ */
+export const deleteServiceType = (
+    id: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<null>(
+      {url: `/game-services/service-types/${id}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getDeleteServiceTypeMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteServiceType>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteServiceType>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['deleteServiceType'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteServiceType>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteServiceType(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteServiceTypeMutationResult = NonNullable<Awaited<ReturnType<typeof deleteServiceType>>>
+    
+    export type DeleteServiceTypeMutationError = unknown
+
+    /**
+ * @summary Delete service type
+ */
+export const useDeleteServiceType = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteServiceType>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteServiceType>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteServiceTypeMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Get price configuration by ID
+ */
+export const getPriceConfigurationById = (
+    id: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<PriceConfiguration>(
+      {url: `/game-services/price-configurations/${id}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetPriceConfigurationByIdQueryKey = (id?: string,) => {
+    return [`/game-services/price-configurations/${id}`] as const;
+    }
+
+    
+export const getGetPriceConfigurationByIdQueryOptions = <TData = Awaited<ReturnType<typeof getPriceConfigurationById>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceConfigurationById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPriceConfigurationByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPriceConfigurationById>>> = ({ signal }) => getPriceConfigurationById(id, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPriceConfigurationById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetPriceConfigurationByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getPriceConfigurationById>>>
+export type GetPriceConfigurationByIdQueryError = unknown
+
+
+export function useGetPriceConfigurationById<TData = Awaited<ReturnType<typeof getPriceConfigurationById>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceConfigurationById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPriceConfigurationById>>,
+          TError,
+          Awaited<ReturnType<typeof getPriceConfigurationById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPriceConfigurationById<TData = Awaited<ReturnType<typeof getPriceConfigurationById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceConfigurationById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPriceConfigurationById>>,
+          TError,
+          Awaited<ReturnType<typeof getPriceConfigurationById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPriceConfigurationById<TData = Awaited<ReturnType<typeof getPriceConfigurationById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceConfigurationById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get price configuration by ID
+ */
+
+export function useGetPriceConfigurationById<TData = Awaited<ReturnType<typeof getPriceConfigurationById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPriceConfigurationById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetPriceConfigurationByIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Update price configuration
+ */
+export const updatePriceConfiguration = (
+    id: string,
+    updatePriceConfigurationRequest: UpdatePriceConfigurationRequest,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<PriceConfiguration>(
+      {url: `/game-services/price-configurations/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updatePriceConfigurationRequest
+    },
+      options);
+    }
+  
+
+
+export const getUpdatePriceConfigurationMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePriceConfiguration>>, TError,{id: string;data: UpdatePriceConfigurationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePriceConfiguration>>, TError,{id: string;data: UpdatePriceConfigurationRequest}, TContext> => {
+
+const mutationKey = ['updatePriceConfiguration'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePriceConfiguration>>, {id: string;data: UpdatePriceConfigurationRequest}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updatePriceConfiguration(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePriceConfigurationMutationResult = NonNullable<Awaited<ReturnType<typeof updatePriceConfiguration>>>
+    export type UpdatePriceConfigurationMutationBody = UpdatePriceConfigurationRequest
+    export type UpdatePriceConfigurationMutationError = unknown
+
+    /**
+ * @summary Update price configuration
+ */
+export const useUpdatePriceConfiguration = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePriceConfiguration>>, TError,{id: string;data: UpdatePriceConfigurationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updatePriceConfiguration>>,
+        TError,
+        {id: string;data: UpdatePriceConfigurationRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdatePriceConfigurationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Delete price configuration
+ */
+export const deletePriceConfiguration = (
+    id: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<null>(
+      {url: `/game-services/price-configurations/${id}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getDeletePriceConfigurationMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePriceConfiguration>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof deletePriceConfiguration>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['deletePriceConfiguration'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deletePriceConfiguration>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deletePriceConfiguration(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeletePriceConfigurationMutationResult = NonNullable<Awaited<ReturnType<typeof deletePriceConfiguration>>>
+    
+    export type DeletePriceConfigurationMutationError = unknown
+
+    /**
+ * @summary Delete price configuration
+ */
+export const useDeletePriceConfiguration = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePriceConfiguration>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deletePriceConfiguration>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getDeletePriceConfigurationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Get game by ID
+ */
+export const getGameById = (
+    id: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<Game>(
+      {url: `/game-services/games/${id}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetGameByIdQueryKey = (id?: string,) => {
+    return [`/game-services/games/${id}`] as const;
+    }
+
+    
+export const getGetGameByIdQueryOptions = <TData = Awaited<ReturnType<typeof getGameById>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getGameById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetGameByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getGameById>>> = ({ signal }) => getGameById(id, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getGameById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetGameByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getGameById>>>
+export type GetGameByIdQueryError = unknown
+
+
+export function useGetGameById<TData = Awaited<ReturnType<typeof getGameById>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getGameById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getGameById>>,
+          TError,
+          Awaited<ReturnType<typeof getGameById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetGameById<TData = Awaited<ReturnType<typeof getGameById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getGameById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getGameById>>,
+          TError,
+          Awaited<ReturnType<typeof getGameById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetGameById<TData = Awaited<ReturnType<typeof getGameById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getGameById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get game by ID
+ */
+
+export function useGetGameById<TData = Awaited<ReturnType<typeof getGameById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getGameById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetGameByIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Update game
+ */
+export const updateGame = (
+    id: string,
+    updateGameRequest: UpdateGameRequest,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<Game>(
+      {url: `/game-services/games/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateGameRequest
+    },
+      options);
+    }
+  
+
+
+export const getUpdateGameMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateGame>>, TError,{id: string;data: UpdateGameRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateGame>>, TError,{id: string;data: UpdateGameRequest}, TContext> => {
+
+const mutationKey = ['updateGame'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateGame>>, {id: string;data: UpdateGameRequest}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateGame(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateGameMutationResult = NonNullable<Awaited<ReturnType<typeof updateGame>>>
+    export type UpdateGameMutationBody = UpdateGameRequest
+    export type UpdateGameMutationError = unknown
+
+    /**
+ * @summary Update game
+ */
+export const useUpdateGame = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateGame>>, TError,{id: string;data: UpdateGameRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateGame>>,
+        TError,
+        {id: string;data: UpdateGameRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateGameMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Delete game
+ */
+export const deleteGame = (
+    id: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<null>(
+      {url: `/game-services/games/${id}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getDeleteGameMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteGame>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteGame>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['deleteGame'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteGame>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteGame(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteGameMutationResult = NonNullable<Awaited<ReturnType<typeof deleteGame>>>
+    
+    export type DeleteGameMutationError = unknown
+
+    /**
+ * @summary Delete game
+ */
+export const useDeleteGame = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteGame>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteGame>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteGameMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Get difficulty level by ID
+ */
+export const getDifficultyLevelById = (
+    id: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<DifficultyLevel>(
+      {url: `/game-services/difficulty-levels/${id}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetDifficultyLevelByIdQueryKey = (id?: string,) => {
+    return [`/game-services/difficulty-levels/${id}`] as const;
+    }
+
+    
+export const getGetDifficultyLevelByIdQueryOptions = <TData = Awaited<ReturnType<typeof getDifficultyLevelById>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDifficultyLevelById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDifficultyLevelByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDifficultyLevelById>>> = ({ signal }) => getDifficultyLevelById(id, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDifficultyLevelById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDifficultyLevelByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getDifficultyLevelById>>>
+export type GetDifficultyLevelByIdQueryError = unknown
+
+
+export function useGetDifficultyLevelById<TData = Awaited<ReturnType<typeof getDifficultyLevelById>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDifficultyLevelById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDifficultyLevelById>>,
+          TError,
+          Awaited<ReturnType<typeof getDifficultyLevelById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDifficultyLevelById<TData = Awaited<ReturnType<typeof getDifficultyLevelById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDifficultyLevelById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDifficultyLevelById>>,
+          TError,
+          Awaited<ReturnType<typeof getDifficultyLevelById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDifficultyLevelById<TData = Awaited<ReturnType<typeof getDifficultyLevelById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDifficultyLevelById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get difficulty level by ID
+ */
+
+export function useGetDifficultyLevelById<TData = Awaited<ReturnType<typeof getDifficultyLevelById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDifficultyLevelById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDifficultyLevelByIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Update difficulty level
+ */
+export const updateDifficultyLevel = (
+    id: string,
+    updateDifficultyLevelRequest: UpdateDifficultyLevelRequest,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<DifficultyLevel>(
+      {url: `/game-services/difficulty-levels/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateDifficultyLevelRequest
+    },
+      options);
+    }
+  
+
+
+export const getUpdateDifficultyLevelMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDifficultyLevel>>, TError,{id: string;data: UpdateDifficultyLevelRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateDifficultyLevel>>, TError,{id: string;data: UpdateDifficultyLevelRequest}, TContext> => {
+
+const mutationKey = ['updateDifficultyLevel'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateDifficultyLevel>>, {id: string;data: UpdateDifficultyLevelRequest}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateDifficultyLevel(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateDifficultyLevelMutationResult = NonNullable<Awaited<ReturnType<typeof updateDifficultyLevel>>>
+    export type UpdateDifficultyLevelMutationBody = UpdateDifficultyLevelRequest
+    export type UpdateDifficultyLevelMutationError = unknown
+
+    /**
+ * @summary Update difficulty level
+ */
+export const useUpdateDifficultyLevel = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDifficultyLevel>>, TError,{id: string;data: UpdateDifficultyLevelRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateDifficultyLevel>>,
+        TError,
+        {id: string;data: UpdateDifficultyLevelRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateDifficultyLevelMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Delete difficulty level
+ */
+export const deleteDifficultyLevel = (
+    id: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<null>(
+      {url: `/game-services/difficulty-levels/${id}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getDeleteDifficultyLevelMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDifficultyLevel>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteDifficultyLevel>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['deleteDifficultyLevel'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteDifficultyLevel>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteDifficultyLevel(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteDifficultyLevelMutationResult = NonNullable<Awaited<ReturnType<typeof deleteDifficultyLevel>>>
+    
+    export type DeleteDifficultyLevelMutationError = unknown
+
+    /**
+ * @summary Delete difficulty level
+ */
+export const useDeleteDifficultyLevel = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDifficultyLevel>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteDifficultyLevel>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteDifficultyLevelMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Get booster by ID
+ */
+export const getBoosterById = (
+    id: string,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<Booster>(
+      {url: `/game-services/boosters/${id}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getGetBoosterByIdQueryKey = (id?: string,) => {
+    return [`/game-services/boosters/${id}`] as const;
+    }
+
+    
+export const getGetBoosterByIdQueryOptions = <TData = Awaited<ReturnType<typeof getBoosterById>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBoosterById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBoosterByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBoosterById>>> = ({ signal }) => getBoosterById(id, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBoosterById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetBoosterByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getBoosterById>>>
+export type GetBoosterByIdQueryError = unknown
+
+
+export function useGetBoosterById<TData = Awaited<ReturnType<typeof getBoosterById>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBoosterById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getBoosterById>>,
+          TError,
+          Awaited<ReturnType<typeof getBoosterById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetBoosterById<TData = Awaited<ReturnType<typeof getBoosterById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBoosterById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getBoosterById>>,
+          TError,
+          Awaited<ReturnType<typeof getBoosterById>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetBoosterById<TData = Awaited<ReturnType<typeof getBoosterById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBoosterById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get booster by ID
+ */
+
+export function useGetBoosterById<TData = Awaited<ReturnType<typeof getBoosterById>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBoosterById>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetBoosterByIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Update booster
+ */
+export const updateBooster = (
+    id: string,
+    updateBoosterRequest: UpdateBoosterRequest,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<Booster>(
+      {url: `/game-services/boosters/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateBoosterRequest
+    },
+      options);
+    }
+  
+
+
+export const getUpdateBoosterMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBooster>>, TError,{id: string;data: UpdateBoosterRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateBooster>>, TError,{id: string;data: UpdateBoosterRequest}, TContext> => {
+
+const mutationKey = ['updateBooster'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateBooster>>, {id: string;data: UpdateBoosterRequest}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateBooster(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateBoosterMutationResult = NonNullable<Awaited<ReturnType<typeof updateBooster>>>
+    export type UpdateBoosterMutationBody = UpdateBoosterRequest
+    export type UpdateBoosterMutationError = unknown
+
+    /**
+ * @summary Update booster
+ */
+export const useUpdateBooster = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBooster>>, TError,{id: string;data: UpdateBoosterRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateBooster>>,
+        TError,
+        {id: string;data: UpdateBoosterRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateBoosterMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Delete booster
+ */
+export const deleteBooster = (
+    id: string,
+ options?: SecondParameter<typeof orvalFetcher>,) => {
+      
+      
+      return orvalFetcher<null>(
+      {url: `/game-services/boosters/${id}`, method: 'DELETE'
+    },
+      options);
+    }
+  
+
+
+export const getDeleteBoosterMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteBooster>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteBooster>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['deleteBooster'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteBooster>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteBooster(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteBoosterMutationResult = NonNullable<Awaited<ReturnType<typeof deleteBooster>>>
+    
+    export type DeleteBoosterMutationError = unknown
+
+    /**
+ * @summary Delete booster
+ */
+export const useDeleteBooster = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteBooster>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteBooster>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteBoosterMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Get service types
+ */
+export const listServiceTypes = (
+    params?: ListServiceTypesParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ServiceTypeListResponse>(
+      {url: `/game-services/service-types`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
+
+export const getListServiceTypesQueryKey = (params?: ListServiceTypesParams,) => {
+    return [`/game-services/service-types`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getListServiceTypesQueryOptions = <TData = Awaited<ReturnType<typeof listServiceTypes>>, TError = unknown>(params?: ListServiceTypesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServiceTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListServiceTypesQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listServiceTypes>>> = ({ signal }) => listServiceTypes(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listServiceTypes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListServiceTypesQueryResult = NonNullable<Awaited<ReturnType<typeof listServiceTypes>>>
+export type ListServiceTypesQueryError = unknown
+
+
+export function useListServiceTypes<TData = Awaited<ReturnType<typeof listServiceTypes>>, TError = unknown>(
+ params: undefined |  ListServiceTypesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServiceTypes>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listServiceTypes>>,
+          TError,
+          Awaited<ReturnType<typeof listServiceTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListServiceTypes<TData = Awaited<ReturnType<typeof listServiceTypes>>, TError = unknown>(
+ params?: ListServiceTypesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServiceTypes>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listServiceTypes>>,
+          TError,
+          Awaited<ReturnType<typeof listServiceTypes>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListServiceTypes<TData = Awaited<ReturnType<typeof listServiceTypes>>, TError = unknown>(
+ params?: ListServiceTypesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServiceTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get service types
+ */
+
+export function useListServiceTypes<TData = Awaited<ReturnType<typeof listServiceTypes>>, TError = unknown>(
+ params?: ListServiceTypesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listServiceTypes>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListServiceTypesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Create service type
+ */
+export const createServiceType = (
+    createServiceTypeRequest: CreateServiceTypeRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<ServiceType>(
+      {url: `/game-services/service-types`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createServiceTypeRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getCreateServiceTypeMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createServiceType>>, TError,{data: CreateServiceTypeRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof createServiceType>>, TError,{data: CreateServiceTypeRequest}, TContext> => {
+
+const mutationKey = ['createServiceType'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createServiceType>>, {data: CreateServiceTypeRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createServiceType(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateServiceTypeMutationResult = NonNullable<Awaited<ReturnType<typeof createServiceType>>>
+    export type CreateServiceTypeMutationBody = CreateServiceTypeRequest
+    export type CreateServiceTypeMutationError = unknown
+
+    /**
+ * @summary Create service type
+ */
+export const useCreateServiceType = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createServiceType>>, TError,{data: CreateServiceTypeRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createServiceType>>,
+        TError,
+        {data: CreateServiceTypeRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateServiceTypeMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Get price configurations
+ */
+export const listPriceConfigurations = (
+    params?: ListPriceConfigurationsParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<PriceConfigurationListResponse>(
+      {url: `/game-services/price-configurations`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
+
+export const getListPriceConfigurationsQueryKey = (params?: ListPriceConfigurationsParams,) => {
+    return [`/game-services/price-configurations`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getListPriceConfigurationsQueryOptions = <TData = Awaited<ReturnType<typeof listPriceConfigurations>>, TError = unknown>(params?: ListPriceConfigurationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPriceConfigurations>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPriceConfigurationsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPriceConfigurations>>> = ({ signal }) => listPriceConfigurations(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPriceConfigurations>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListPriceConfigurationsQueryResult = NonNullable<Awaited<ReturnType<typeof listPriceConfigurations>>>
+export type ListPriceConfigurationsQueryError = unknown
+
+
+export function useListPriceConfigurations<TData = Awaited<ReturnType<typeof listPriceConfigurations>>, TError = unknown>(
+ params: undefined |  ListPriceConfigurationsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPriceConfigurations>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listPriceConfigurations>>,
+          TError,
+          Awaited<ReturnType<typeof listPriceConfigurations>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListPriceConfigurations<TData = Awaited<ReturnType<typeof listPriceConfigurations>>, TError = unknown>(
+ params?: ListPriceConfigurationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPriceConfigurations>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listPriceConfigurations>>,
+          TError,
+          Awaited<ReturnType<typeof listPriceConfigurations>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListPriceConfigurations<TData = Awaited<ReturnType<typeof listPriceConfigurations>>, TError = unknown>(
+ params?: ListPriceConfigurationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPriceConfigurations>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get price configurations
+ */
+
+export function useListPriceConfigurations<TData = Awaited<ReturnType<typeof listPriceConfigurations>>, TError = unknown>(
+ params?: ListPriceConfigurationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPriceConfigurations>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListPriceConfigurationsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Create price configuration
+ */
+export const createPriceConfiguration = (
+    createPriceConfigurationRequest: CreatePriceConfigurationRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<PriceConfiguration>(
+      {url: `/game-services/price-configurations`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createPriceConfigurationRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getCreatePriceConfigurationMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPriceConfiguration>>, TError,{data: CreatePriceConfigurationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPriceConfiguration>>, TError,{data: CreatePriceConfigurationRequest}, TContext> => {
+
+const mutationKey = ['createPriceConfiguration'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPriceConfiguration>>, {data: CreatePriceConfigurationRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPriceConfiguration(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePriceConfigurationMutationResult = NonNullable<Awaited<ReturnType<typeof createPriceConfiguration>>>
+    export type CreatePriceConfigurationMutationBody = CreatePriceConfigurationRequest
+    export type CreatePriceConfigurationMutationError = unknown
+
+    /**
+ * @summary Create price configuration
+ */
+export const useCreatePriceConfiguration = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPriceConfiguration>>, TError,{data: CreatePriceConfigurationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createPriceConfiguration>>,
+        TError,
+        {data: CreatePriceConfigurationRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getCreatePriceConfigurationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Get all games
+ */
+export const listGames = (
+    params?: ListGamesParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<GameListResponse>(
+      {url: `/game-services/games`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
+
+export const getListGamesQueryKey = (params?: ListGamesParams,) => {
+    return [`/game-services/games`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getListGamesQueryOptions = <TData = Awaited<ReturnType<typeof listGames>>, TError = unknown>(params?: ListGamesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listGames>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListGamesQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listGames>>> = ({ signal }) => listGames(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listGames>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListGamesQueryResult = NonNullable<Awaited<ReturnType<typeof listGames>>>
+export type ListGamesQueryError = unknown
+
+
+export function useListGames<TData = Awaited<ReturnType<typeof listGames>>, TError = unknown>(
+ params: undefined |  ListGamesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listGames>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listGames>>,
+          TError,
+          Awaited<ReturnType<typeof listGames>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListGames<TData = Awaited<ReturnType<typeof listGames>>, TError = unknown>(
+ params?: ListGamesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listGames>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listGames>>,
+          TError,
+          Awaited<ReturnType<typeof listGames>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListGames<TData = Awaited<ReturnType<typeof listGames>>, TError = unknown>(
+ params?: ListGamesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listGames>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all games
+ */
+
+export function useListGames<TData = Awaited<ReturnType<typeof listGames>>, TError = unknown>(
+ params?: ListGamesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listGames>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListGamesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Create new game
+ */
+export const createGame = (
+    createGameRequest: CreateGameRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<Game>(
+      {url: `/game-services/games`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createGameRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getCreateGameMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createGame>>, TError,{data: CreateGameRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof createGame>>, TError,{data: CreateGameRequest}, TContext> => {
+
+const mutationKey = ['createGame'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createGame>>, {data: CreateGameRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createGame(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateGameMutationResult = NonNullable<Awaited<ReturnType<typeof createGame>>>
+    export type CreateGameMutationBody = CreateGameRequest
+    export type CreateGameMutationError = unknown
+
+    /**
+ * @summary Create new game
+ */
+export const useCreateGame = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createGame>>, TError,{data: CreateGameRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createGame>>,
+        TError,
+        {data: CreateGameRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateGameMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Get difficulty levels
+ */
+export const listDifficultyLevels = (
+    params?: ListDifficultyLevelsParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<DifficultyLevelListResponse>(
+      {url: `/game-services/difficulty-levels`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
+
+export const getListDifficultyLevelsQueryKey = (params?: ListDifficultyLevelsParams,) => {
+    return [`/game-services/difficulty-levels`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getListDifficultyLevelsQueryOptions = <TData = Awaited<ReturnType<typeof listDifficultyLevels>>, TError = unknown>(params?: ListDifficultyLevelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listDifficultyLevels>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListDifficultyLevelsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listDifficultyLevels>>> = ({ signal }) => listDifficultyLevels(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listDifficultyLevels>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListDifficultyLevelsQueryResult = NonNullable<Awaited<ReturnType<typeof listDifficultyLevels>>>
+export type ListDifficultyLevelsQueryError = unknown
+
+
+export function useListDifficultyLevels<TData = Awaited<ReturnType<typeof listDifficultyLevels>>, TError = unknown>(
+ params: undefined |  ListDifficultyLevelsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listDifficultyLevels>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listDifficultyLevels>>,
+          TError,
+          Awaited<ReturnType<typeof listDifficultyLevels>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListDifficultyLevels<TData = Awaited<ReturnType<typeof listDifficultyLevels>>, TError = unknown>(
+ params?: ListDifficultyLevelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listDifficultyLevels>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listDifficultyLevels>>,
+          TError,
+          Awaited<ReturnType<typeof listDifficultyLevels>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListDifficultyLevels<TData = Awaited<ReturnType<typeof listDifficultyLevels>>, TError = unknown>(
+ params?: ListDifficultyLevelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listDifficultyLevels>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get difficulty levels
+ */
+
+export function useListDifficultyLevels<TData = Awaited<ReturnType<typeof listDifficultyLevels>>, TError = unknown>(
+ params?: ListDifficultyLevelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listDifficultyLevels>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListDifficultyLevelsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Create difficulty level
+ */
+export const createDifficultyLevel = (
+    createDifficultyLevelRequest: CreateDifficultyLevelRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<DifficultyLevel>(
+      {url: `/game-services/difficulty-levels`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createDifficultyLevelRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getCreateDifficultyLevelMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDifficultyLevel>>, TError,{data: CreateDifficultyLevelRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof createDifficultyLevel>>, TError,{data: CreateDifficultyLevelRequest}, TContext> => {
+
+const mutationKey = ['createDifficultyLevel'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createDifficultyLevel>>, {data: CreateDifficultyLevelRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createDifficultyLevel(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateDifficultyLevelMutationResult = NonNullable<Awaited<ReturnType<typeof createDifficultyLevel>>>
+    export type CreateDifficultyLevelMutationBody = CreateDifficultyLevelRequest
+    export type CreateDifficultyLevelMutationError = unknown
+
+    /**
+ * @summary Create difficulty level
+ */
+export const useCreateDifficultyLevel = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDifficultyLevel>>, TError,{data: CreateDifficultyLevelRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createDifficultyLevel>>,
+        TError,
+        {data: CreateDifficultyLevelRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateDifficultyLevelMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Calculate service price
+ */
+export const calculatePrice = (
+    calculationRequest: CalculationRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<CalculationResult>(
+      {url: `/game-services/calculate`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: calculationRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getCalculatePriceMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculatePrice>>, TError,{data: CalculationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof calculatePrice>>, TError,{data: CalculationRequest}, TContext> => {
+
+const mutationKey = ['calculatePrice'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof calculatePrice>>, {data: CalculationRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  calculatePrice(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CalculatePriceMutationResult = NonNullable<Awaited<ReturnType<typeof calculatePrice>>>
+    export type CalculatePriceMutationBody = CalculationRequest
+    export type CalculatePriceMutationError = unknown
+
+    /**
+ * @summary Calculate service price
+ */
+export const useCalculatePrice = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculatePrice>>, TError,{data: CalculationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof calculatePrice>>,
+        TError,
+        {data: CalculationRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getCalculatePriceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * @summary Get all boosters
+ */
+export const listBoosters = (
+    params?: ListBoostersParams,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<BoosterListResponse>(
+      {url: `/game-services/boosters`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+  
+
+export const getListBoostersQueryKey = (params?: ListBoostersParams,) => {
+    return [`/game-services/boosters`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getListBoostersQueryOptions = <TData = Awaited<ReturnType<typeof listBoosters>>, TError = unknown>(params?: ListBoostersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listBoosters>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListBoostersQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listBoosters>>> = ({ signal }) => listBoosters(params, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listBoosters>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListBoostersQueryResult = NonNullable<Awaited<ReturnType<typeof listBoosters>>>
+export type ListBoostersQueryError = unknown
+
+
+export function useListBoosters<TData = Awaited<ReturnType<typeof listBoosters>>, TError = unknown>(
+ params: undefined |  ListBoostersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listBoosters>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listBoosters>>,
+          TError,
+          Awaited<ReturnType<typeof listBoosters>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListBoosters<TData = Awaited<ReturnType<typeof listBoosters>>, TError = unknown>(
+ params?: ListBoostersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listBoosters>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listBoosters>>,
+          TError,
+          Awaited<ReturnType<typeof listBoosters>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListBoosters<TData = Awaited<ReturnType<typeof listBoosters>>, TError = unknown>(
+ params?: ListBoostersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listBoosters>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all boosters
+ */
+
+export function useListBoosters<TData = Awaited<ReturnType<typeof listBoosters>>, TError = unknown>(
+ params?: ListBoostersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listBoosters>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListBoostersQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * @summary Create new booster
+ */
+export const createBooster = (
+    createBoosterRequest: CreateBoosterRequest,
+ options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
+) => {
+      
+      
+      return orvalFetcher<Booster>(
+      {url: `/game-services/boosters`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createBoosterRequest, signal
+    },
+      options);
+    }
+  
+
+
+export const getCreateBoosterMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBooster>>, TError,{data: CreateBoosterRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof createBooster>>, TError,{data: CreateBoosterRequest}, TContext> => {
+
+const mutationKey = ['createBooster'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createBooster>>, {data: CreateBoosterRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createBooster(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateBoosterMutationResult = NonNullable<Awaited<ReturnType<typeof createBooster>>>
+    export type CreateBoosterMutationBody = CreateBoosterRequest
+    export type CreateBoosterMutationError = unknown
+
+    /**
+ * @summary Create new booster
+ */
+export const useCreateBooster = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBooster>>, TError,{data: CreateBoosterRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createBooster>>,
+        TError,
+        {data: CreateBoosterRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateBoosterMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    

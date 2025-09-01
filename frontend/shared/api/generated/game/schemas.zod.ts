@@ -5,4 +5,857 @@
  * API for dry cleaning order management system with Domain-Driven Design architecture. The system includes 13 domains: Auth, User, Customer, Branch, Employee, Order, OrderItem, Service, Garment, Pricing, Payment, Notification, and Analytics.
  * OpenAPI spec version: 1.0.0
  */
+import {
+  z as zod
+} from 'zod';
 
+/**
+ * @summary Get service type by ID
+ */
+export const getServiceTypeByIdParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const getServiceTypeByIdResponseNameMax = 100;
+export const getServiceTypeByIdResponseCodeMax = 50;
+
+export const getServiceTypeByIdResponseCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const getServiceTypeByIdResponseDescriptionMin = 0;
+
+export const getServiceTypeByIdResponseDescriptionMax = 500;
+export const getServiceTypeByIdResponseBaseMultiplierMax = 1000;
+export const getServiceTypeByIdResponseSortOrderMin = 0;
+
+
+export const getServiceTypeByIdResponse = zod.object({
+  "id": zod.uuid(),
+  "gameId": zod.uuid(),
+  "name": zod.string().min(1).max(getServiceTypeByIdResponseNameMax),
+  "code": zod.string().min(1).max(getServiceTypeByIdResponseCodeMax).regex(getServiceTypeByIdResponseCodeRegExp),
+  "description": zod.string().min(getServiceTypeByIdResponseDescriptionMin).max(getServiceTypeByIdResponseDescriptionMax).optional(),
+  "baseMultiplier": zod.number().min(1).max(getServiceTypeByIdResponseBaseMultiplierMax).describe('Base multiplier in basis points (100 = 1.0x, 200 = 2.0x)'),
+  "active": zod.boolean(),
+  "sortOrder": zod.number().min(getServiceTypeByIdResponseSortOrderMin),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})
+
+
+/**
+ * @summary Update service type
+ */
+export const updateServiceTypeParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const updateServiceTypeBodyNameMax = 100;
+export const updateServiceTypeBodyCodeMax = 50;
+
+export const updateServiceTypeBodyCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const updateServiceTypeBodyDescriptionMin = 0;
+
+export const updateServiceTypeBodyDescriptionMax = 500;
+export const updateServiceTypeBodyBaseMultiplierMax = 1000;
+export const updateServiceTypeBodySortOrderMin = 0;
+
+
+export const updateServiceTypeBody = zod.object({
+  "gameId": zod.uuid().optional(),
+  "name": zod.string().min(1).max(updateServiceTypeBodyNameMax).optional(),
+  "code": zod.string().min(1).max(updateServiceTypeBodyCodeMax).regex(updateServiceTypeBodyCodeRegExp).optional(),
+  "description": zod.string().min(updateServiceTypeBodyDescriptionMin).max(updateServiceTypeBodyDescriptionMax).optional(),
+  "baseMultiplier": zod.number().min(1).max(updateServiceTypeBodyBaseMultiplierMax).optional(),
+  "sortOrder": zod.number().min(updateServiceTypeBodySortOrderMin).optional(),
+  "active": zod.boolean().optional()
+})
+
+export const updateServiceTypeResponseNameMax = 100;
+export const updateServiceTypeResponseCodeMax = 50;
+
+export const updateServiceTypeResponseCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const updateServiceTypeResponseDescriptionMin = 0;
+
+export const updateServiceTypeResponseDescriptionMax = 500;
+export const updateServiceTypeResponseBaseMultiplierMax = 1000;
+export const updateServiceTypeResponseSortOrderMin = 0;
+
+
+export const updateServiceTypeResponse = zod.object({
+  "id": zod.uuid(),
+  "gameId": zod.uuid(),
+  "name": zod.string().min(1).max(updateServiceTypeResponseNameMax),
+  "code": zod.string().min(1).max(updateServiceTypeResponseCodeMax).regex(updateServiceTypeResponseCodeRegExp),
+  "description": zod.string().min(updateServiceTypeResponseDescriptionMin).max(updateServiceTypeResponseDescriptionMax).optional(),
+  "baseMultiplier": zod.number().min(1).max(updateServiceTypeResponseBaseMultiplierMax).describe('Base multiplier in basis points (100 = 1.0x, 200 = 2.0x)'),
+  "active": zod.boolean(),
+  "sortOrder": zod.number().min(updateServiceTypeResponseSortOrderMin),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})
+
+
+/**
+ * @summary Delete service type
+ */
+export const deleteServiceTypeParams = zod.object({
+  "id": zod.uuid()
+})
+
+
+/**
+ * @summary Get price configuration by ID
+ */
+export const getPriceConfigurationByIdParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const getPriceConfigurationByIdResponseBasePriceMin = 0;
+export const getPriceConfigurationByIdResponsePricePerLevelMin = 0;
+export const getPriceConfigurationByIdResponseSortOrderMin = 0;
+
+
+export const getPriceConfigurationByIdResponse = zod.object({
+  "id": zod.uuid(),
+  "gameId": zod.uuid(),
+  "difficultyLevelId": zod.uuid(),
+  "serviceTypeId": zod.uuid(),
+  "basePrice": zod.number().min(getPriceConfigurationByIdResponseBasePriceMin).describe('Base price in cents (e.g., 100 = $1.00)'),
+  "pricePerLevel": zod.number().min(getPriceConfigurationByIdResponsePricePerLevelMin).optional().describe('Price per level in cents'),
+  "currency": zod.string().optional(),
+  "calculationType": zod.enum(['LINEAR', 'RANGE', 'FORMULA', 'TIME_BASED']),
+  "calculationFormula": zod.string().optional().describe('JSON formula configuration'),
+  "active": zod.boolean(),
+  "sortOrder": zod.number().min(getPriceConfigurationByIdResponseSortOrderMin),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})
+
+
+/**
+ * @summary Update price configuration
+ */
+export const updatePriceConfigurationParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const updatePriceConfigurationBodyBasePriceMin = 0;
+export const updatePriceConfigurationBodyPricePerLevelMin = 0;
+export const updatePriceConfigurationBodySortOrderMin = 0;
+
+
+export const updatePriceConfigurationBody = zod.object({
+  "gameId": zod.uuid().optional(),
+  "difficultyLevelId": zod.uuid().optional(),
+  "serviceTypeId": zod.uuid().optional(),
+  "basePrice": zod.number().min(updatePriceConfigurationBodyBasePriceMin).optional().describe('Base price in cents'),
+  "pricePerLevel": zod.number().min(updatePriceConfigurationBodyPricePerLevelMin).optional().describe('Price per level in cents'),
+  "currency": zod.string().optional(),
+  "calculationType": zod.enum(['LINEAR', 'RANGE', 'FORMULA', 'TIME_BASED']).optional(),
+  "calculationFormula": zod.string().optional(),
+  "sortOrder": zod.number().min(updatePriceConfigurationBodySortOrderMin).optional(),
+  "active": zod.boolean().optional()
+})
+
+export const updatePriceConfigurationResponseBasePriceMin = 0;
+export const updatePriceConfigurationResponsePricePerLevelMin = 0;
+export const updatePriceConfigurationResponseSortOrderMin = 0;
+
+
+export const updatePriceConfigurationResponse = zod.object({
+  "id": zod.uuid(),
+  "gameId": zod.uuid(),
+  "difficultyLevelId": zod.uuid(),
+  "serviceTypeId": zod.uuid(),
+  "basePrice": zod.number().min(updatePriceConfigurationResponseBasePriceMin).describe('Base price in cents (e.g., 100 = $1.00)'),
+  "pricePerLevel": zod.number().min(updatePriceConfigurationResponsePricePerLevelMin).optional().describe('Price per level in cents'),
+  "currency": zod.string().optional(),
+  "calculationType": zod.enum(['LINEAR', 'RANGE', 'FORMULA', 'TIME_BASED']),
+  "calculationFormula": zod.string().optional().describe('JSON formula configuration'),
+  "active": zod.boolean(),
+  "sortOrder": zod.number().min(updatePriceConfigurationResponseSortOrderMin),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})
+
+
+/**
+ * @summary Delete price configuration
+ */
+export const deletePriceConfigurationParams = zod.object({
+  "id": zod.uuid()
+})
+
+
+/**
+ * @summary Get game by ID
+ */
+export const getGameByIdParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const getGameByIdResponseNameMax = 100;
+export const getGameByIdResponseCodeMax = 50;
+
+export const getGameByIdResponseCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const getGameByIdResponseDescriptionMin = 0;
+
+export const getGameByIdResponseDescriptionMax = 1000;
+export const getGameByIdResponseSortOrderMin = 0;
+
+
+export const getGameByIdResponse = zod.object({
+  "id": zod.uuid(),
+  "name": zod.string().min(1).max(getGameByIdResponseNameMax),
+  "code": zod.string().min(1).max(getGameByIdResponseCodeMax).regex(getGameByIdResponseCodeRegExp),
+  "category": zod.enum(['MMORPG', 'FPS', 'MOBA', 'BATTLE_ROYALE', 'STRATEGY', 'ACTION', 'SIMULATION', 'SPORTS', 'RACING', 'PUZZLE', 'OTHER']),
+  "description": zod.string().min(getGameByIdResponseDescriptionMin).max(getGameByIdResponseDescriptionMax).optional(),
+  "active": zod.boolean(),
+  "sortOrder": zod.number().min(getGameByIdResponseSortOrderMin),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})
+
+
+/**
+ * @summary Update game
+ */
+export const updateGameParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const updateGameBodyNameMax = 100;
+export const updateGameBodyCodeMax = 50;
+
+export const updateGameBodyCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const updateGameBodyDescriptionMin = 0;
+
+export const updateGameBodyDescriptionMax = 1000;
+export const updateGameBodySortOrderMin = 0;
+
+
+export const updateGameBody = zod.object({
+  "name": zod.string().min(1).max(updateGameBodyNameMax).optional(),
+  "code": zod.string().min(1).max(updateGameBodyCodeMax).regex(updateGameBodyCodeRegExp).optional(),
+  "category": zod.enum(['MMORPG', 'FPS', 'MOBA', 'BATTLE_ROYALE', 'STRATEGY', 'ACTION', 'SIMULATION', 'SPORTS', 'RACING', 'PUZZLE', 'OTHER']).optional(),
+  "description": zod.string().min(updateGameBodyDescriptionMin).max(updateGameBodyDescriptionMax).optional(),
+  "sortOrder": zod.number().min(updateGameBodySortOrderMin).optional(),
+  "active": zod.boolean().optional()
+})
+
+export const updateGameResponseNameMax = 100;
+export const updateGameResponseCodeMax = 50;
+
+export const updateGameResponseCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const updateGameResponseDescriptionMin = 0;
+
+export const updateGameResponseDescriptionMax = 1000;
+export const updateGameResponseSortOrderMin = 0;
+
+
+export const updateGameResponse = zod.object({
+  "id": zod.uuid(),
+  "name": zod.string().min(1).max(updateGameResponseNameMax),
+  "code": zod.string().min(1).max(updateGameResponseCodeMax).regex(updateGameResponseCodeRegExp),
+  "category": zod.enum(['MMORPG', 'FPS', 'MOBA', 'BATTLE_ROYALE', 'STRATEGY', 'ACTION', 'SIMULATION', 'SPORTS', 'RACING', 'PUZZLE', 'OTHER']),
+  "description": zod.string().min(updateGameResponseDescriptionMin).max(updateGameResponseDescriptionMax).optional(),
+  "active": zod.boolean(),
+  "sortOrder": zod.number().min(updateGameResponseSortOrderMin),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})
+
+
+/**
+ * @summary Delete game
+ */
+export const deleteGameParams = zod.object({
+  "id": zod.uuid()
+})
+
+
+/**
+ * @summary Get difficulty level by ID
+ */
+export const getDifficultyLevelByIdParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const getDifficultyLevelByIdResponseNameMax = 100;
+export const getDifficultyLevelByIdResponseCodeMax = 50;
+
+export const getDifficultyLevelByIdResponseCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const getDifficultyLevelByIdResponseLevelValueMax = 1000;
+export const getDifficultyLevelByIdResponseDescriptionMin = 0;
+
+export const getDifficultyLevelByIdResponseDescriptionMax = 500;
+export const getDifficultyLevelByIdResponseSortOrderMin = 0;
+
+
+export const getDifficultyLevelByIdResponse = zod.object({
+  "id": zod.uuid(),
+  "gameId": zod.uuid(),
+  "name": zod.string().min(1).max(getDifficultyLevelByIdResponseNameMax),
+  "code": zod.string().min(1).max(getDifficultyLevelByIdResponseCodeMax).regex(getDifficultyLevelByIdResponseCodeRegExp),
+  "levelValue": zod.number().min(1).max(getDifficultyLevelByIdResponseLevelValueMax),
+  "description": zod.string().min(getDifficultyLevelByIdResponseDescriptionMin).max(getDifficultyLevelByIdResponseDescriptionMax).optional(),
+  "active": zod.boolean(),
+  "sortOrder": zod.number().min(getDifficultyLevelByIdResponseSortOrderMin),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})
+
+
+/**
+ * @summary Update difficulty level
+ */
+export const updateDifficultyLevelParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const updateDifficultyLevelBodyNameMax = 100;
+export const updateDifficultyLevelBodyCodeMax = 50;
+
+export const updateDifficultyLevelBodyCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const updateDifficultyLevelBodyLevelValueMax = 1000;
+export const updateDifficultyLevelBodyDescriptionMin = 0;
+
+export const updateDifficultyLevelBodyDescriptionMax = 500;
+export const updateDifficultyLevelBodySortOrderMin = 0;
+
+
+export const updateDifficultyLevelBody = zod.object({
+  "gameId": zod.uuid().optional(),
+  "name": zod.string().min(1).max(updateDifficultyLevelBodyNameMax).optional(),
+  "code": zod.string().min(1).max(updateDifficultyLevelBodyCodeMax).regex(updateDifficultyLevelBodyCodeRegExp).optional(),
+  "levelValue": zod.number().min(1).max(updateDifficultyLevelBodyLevelValueMax).optional(),
+  "description": zod.string().min(updateDifficultyLevelBodyDescriptionMin).max(updateDifficultyLevelBodyDescriptionMax).optional(),
+  "sortOrder": zod.number().min(updateDifficultyLevelBodySortOrderMin).optional(),
+  "active": zod.boolean().optional()
+})
+
+export const updateDifficultyLevelResponseNameMax = 100;
+export const updateDifficultyLevelResponseCodeMax = 50;
+
+export const updateDifficultyLevelResponseCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const updateDifficultyLevelResponseLevelValueMax = 1000;
+export const updateDifficultyLevelResponseDescriptionMin = 0;
+
+export const updateDifficultyLevelResponseDescriptionMax = 500;
+export const updateDifficultyLevelResponseSortOrderMin = 0;
+
+
+export const updateDifficultyLevelResponse = zod.object({
+  "id": zod.uuid(),
+  "gameId": zod.uuid(),
+  "name": zod.string().min(1).max(updateDifficultyLevelResponseNameMax),
+  "code": zod.string().min(1).max(updateDifficultyLevelResponseCodeMax).regex(updateDifficultyLevelResponseCodeRegExp),
+  "levelValue": zod.number().min(1).max(updateDifficultyLevelResponseLevelValueMax),
+  "description": zod.string().min(updateDifficultyLevelResponseDescriptionMin).max(updateDifficultyLevelResponseDescriptionMax).optional(),
+  "active": zod.boolean(),
+  "sortOrder": zod.number().min(updateDifficultyLevelResponseSortOrderMin),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})
+
+
+/**
+ * @summary Delete difficulty level
+ */
+export const deleteDifficultyLevelParams = zod.object({
+  "id": zod.uuid()
+})
+
+
+/**
+ * @summary Get booster by ID
+ */
+export const getBoosterByIdParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const getBoosterByIdResponseDiscordUsernameMax = 100;
+export const getBoosterByIdResponseDisplayNameMax = 50;
+export const getBoosterByIdResponsePhoneNumberRegExp = new RegExp('^\\+?[1-9]\\d{1,14}$');
+export const getBoosterByIdResponseRatingMin = 0;
+
+export const getBoosterByIdResponseRatingMax = 500;
+export const getBoosterByIdResponseTotalOrdersMin = 0;
+export const getBoosterByIdResponseSuccessRateMin = 0;
+
+export const getBoosterByIdResponseSuccessRateMax = 10000;
+export const getBoosterByIdResponseAverageCompletionTimeMin = 0;
+
+
+export const getBoosterByIdResponse = zod.object({
+  "id": zod.uuid(),
+  "discordUsername": zod.string().min(1).max(getBoosterByIdResponseDiscordUsernameMax),
+  "displayName": zod.string().min(1).max(getBoosterByIdResponseDisplayNameMax),
+  "contactEmail": zod.string().optional(),
+  "phoneNumber": zod.string().regex(getBoosterByIdResponsePhoneNumberRegExp).optional(),
+  "rating": zod.number().min(getBoosterByIdResponseRatingMin).max(getBoosterByIdResponseRatingMax).describe('Rating in basis points (100 = 1.0 star, 500 = 5.0 stars)'),
+  "totalOrders": zod.number().min(getBoosterByIdResponseTotalOrdersMin),
+  "successRate": zod.number().min(getBoosterByIdResponseSuccessRateMin).max(getBoosterByIdResponseSuccessRateMax).describe('Success rate in basis points (10000 = 100.00%)'),
+  "averageCompletionTime": zod.number().min(getBoosterByIdResponseAverageCompletionTimeMin).optional().describe('Average completion time in minutes'),
+  "active": zod.boolean(),
+  "verified": zod.boolean(),
+  "lastActive": zod.iso.datetime({}).optional(),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})
+
+
+/**
+ * @summary Update booster
+ */
+export const updateBoosterParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const updateBoosterBodyDiscordUsernameMax = 100;
+export const updateBoosterBodyDisplayNameMax = 50;
+export const updateBoosterBodyPhoneNumberRegExp = new RegExp('^\\+?[1-9]\\d{1,14}$');
+
+
+export const updateBoosterBody = zod.object({
+  "discordUsername": zod.string().min(1).max(updateBoosterBodyDiscordUsernameMax).optional(),
+  "displayName": zod.string().min(1).max(updateBoosterBodyDisplayNameMax).optional(),
+  "contactEmail": zod.string().optional(),
+  "phoneNumber": zod.string().regex(updateBoosterBodyPhoneNumberRegExp).optional(),
+  "active": zod.boolean().optional(),
+  "verified": zod.boolean().optional()
+})
+
+export const updateBoosterResponseDiscordUsernameMax = 100;
+export const updateBoosterResponseDisplayNameMax = 50;
+export const updateBoosterResponsePhoneNumberRegExp = new RegExp('^\\+?[1-9]\\d{1,14}$');
+export const updateBoosterResponseRatingMin = 0;
+
+export const updateBoosterResponseRatingMax = 500;
+export const updateBoosterResponseTotalOrdersMin = 0;
+export const updateBoosterResponseSuccessRateMin = 0;
+
+export const updateBoosterResponseSuccessRateMax = 10000;
+export const updateBoosterResponseAverageCompletionTimeMin = 0;
+
+
+export const updateBoosterResponse = zod.object({
+  "id": zod.uuid(),
+  "discordUsername": zod.string().min(1).max(updateBoosterResponseDiscordUsernameMax),
+  "displayName": zod.string().min(1).max(updateBoosterResponseDisplayNameMax),
+  "contactEmail": zod.string().optional(),
+  "phoneNumber": zod.string().regex(updateBoosterResponsePhoneNumberRegExp).optional(),
+  "rating": zod.number().min(updateBoosterResponseRatingMin).max(updateBoosterResponseRatingMax).describe('Rating in basis points (100 = 1.0 star, 500 = 5.0 stars)'),
+  "totalOrders": zod.number().min(updateBoosterResponseTotalOrdersMin),
+  "successRate": zod.number().min(updateBoosterResponseSuccessRateMin).max(updateBoosterResponseSuccessRateMax).describe('Success rate in basis points (10000 = 100.00%)'),
+  "averageCompletionTime": zod.number().min(updateBoosterResponseAverageCompletionTimeMin).optional().describe('Average completion time in minutes'),
+  "active": zod.boolean(),
+  "verified": zod.boolean(),
+  "lastActive": zod.iso.datetime({}).optional(),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})
+
+
+/**
+ * @summary Delete booster
+ */
+export const deleteBoosterParams = zod.object({
+  "id": zod.uuid()
+})
+
+
+/**
+ * @summary Get service types
+ */
+export const listServiceTypesQueryPageDefault = 0;
+export const listServiceTypesQueryPageMin = 0;
+export const listServiceTypesQuerySizeDefault = 20;
+export const listServiceTypesQuerySizeMax = 100;
+
+
+export const listServiceTypesQueryParams = zod.object({
+  "page": zod.number().min(listServiceTypesQueryPageMin).optional().describe('Page number (0-based)'),
+  "size": zod.number().min(1).max(listServiceTypesQuerySizeMax).default(listServiceTypesQuerySizeDefault).describe('Page size (number of items per page)'),
+  "gameId": zod.uuid().optional().describe('Filter by game ID'),
+  "active": zod.boolean().optional().describe('Filter by active status')
+})
+
+export const listServiceTypesResponseDataItemNameMax = 100;
+export const listServiceTypesResponseDataItemCodeMax = 50;
+
+export const listServiceTypesResponseDataItemCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const listServiceTypesResponseDataItemDescriptionMin = 0;
+
+export const listServiceTypesResponseDataItemDescriptionMax = 500;
+export const listServiceTypesResponseDataItemBaseMultiplierMax = 1000;
+export const listServiceTypesResponseDataItemSortOrderMin = 0;
+
+
+export const listServiceTypesResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.uuid(),
+  "gameId": zod.uuid(),
+  "name": zod.string().min(1).max(listServiceTypesResponseDataItemNameMax),
+  "code": zod.string().min(1).max(listServiceTypesResponseDataItemCodeMax).regex(listServiceTypesResponseDataItemCodeRegExp),
+  "description": zod.string().min(listServiceTypesResponseDataItemDescriptionMin).max(listServiceTypesResponseDataItemDescriptionMax).optional(),
+  "baseMultiplier": zod.number().min(1).max(listServiceTypesResponseDataItemBaseMultiplierMax).describe('Base multiplier in basis points (100 = 1.0x, 200 = 2.0x)'),
+  "active": zod.boolean(),
+  "sortOrder": zod.number().min(listServiceTypesResponseDataItemSortOrderMin),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})).describe('Page content'),
+  "totalElements": zod.number().describe('Total number of elements'),
+  "totalPages": zod.number().describe('Total number of pages'),
+  "size": zod.number().describe('Page size'),
+  "number": zod.number().describe('Page number (0-based)'),
+  "numberOfElements": zod.number().describe('Number of elements in current page'),
+  "first": zod.boolean().describe('Is first page'),
+  "last": zod.boolean().describe('Is last page'),
+  "empty": zod.boolean().describe('Is empty')
+})
+
+
+/**
+ * @summary Create service type
+ */
+export const createServiceTypeBodyNameMax = 100;
+export const createServiceTypeBodyCodeMax = 50;
+
+export const createServiceTypeBodyCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const createServiceTypeBodyDescriptionMin = 0;
+
+export const createServiceTypeBodyDescriptionMax = 500;
+export const createServiceTypeBodyBaseMultiplierMax = 1000;
+export const createServiceTypeBodySortOrderMin = 0;
+
+
+export const createServiceTypeBody = zod.object({
+  "gameId": zod.uuid(),
+  "name": zod.string().min(1).max(createServiceTypeBodyNameMax),
+  "code": zod.string().min(1).max(createServiceTypeBodyCodeMax).regex(createServiceTypeBodyCodeRegExp),
+  "description": zod.string().min(createServiceTypeBodyDescriptionMin).max(createServiceTypeBodyDescriptionMax).optional(),
+  "baseMultiplier": zod.number().min(1).max(createServiceTypeBodyBaseMultiplierMax),
+  "sortOrder": zod.number().min(createServiceTypeBodySortOrderMin).optional(),
+  "active": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Get price configurations
+ */
+export const listPriceConfigurationsQueryPageDefault = 0;
+export const listPriceConfigurationsQueryPageMin = 0;
+export const listPriceConfigurationsQuerySizeDefault = 20;
+export const listPriceConfigurationsQuerySizeMax = 100;
+
+
+export const listPriceConfigurationsQueryParams = zod.object({
+  "page": zod.number().min(listPriceConfigurationsQueryPageMin).optional().describe('Page number (0-based)'),
+  "size": zod.number().min(1).max(listPriceConfigurationsQuerySizeMax).default(listPriceConfigurationsQuerySizeDefault).describe('Page size (number of items per page)'),
+  "gameId": zod.uuid().optional().describe('Filter by game ID'),
+  "serviceTypeId": zod.uuid().optional().describe('Filter by service type ID'),
+  "difficultyLevelId": zod.uuid().optional().describe('Filter by difficulty level ID'),
+  "active": zod.boolean().optional().describe('Filter by active status')
+})
+
+export const listPriceConfigurationsResponseDataItemBasePriceMin = 0;
+export const listPriceConfigurationsResponseDataItemPricePerLevelMin = 0;
+export const listPriceConfigurationsResponseDataItemSortOrderMin = 0;
+
+
+export const listPriceConfigurationsResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.uuid(),
+  "gameId": zod.uuid(),
+  "difficultyLevelId": zod.uuid(),
+  "serviceTypeId": zod.uuid(),
+  "basePrice": zod.number().min(listPriceConfigurationsResponseDataItemBasePriceMin).describe('Base price in cents (e.g., 100 = $1.00)'),
+  "pricePerLevel": zod.number().min(listPriceConfigurationsResponseDataItemPricePerLevelMin).optional().describe('Price per level in cents'),
+  "currency": zod.string().optional(),
+  "calculationType": zod.enum(['LINEAR', 'RANGE', 'FORMULA', 'TIME_BASED']),
+  "calculationFormula": zod.string().optional().describe('JSON formula configuration'),
+  "active": zod.boolean(),
+  "sortOrder": zod.number().min(listPriceConfigurationsResponseDataItemSortOrderMin),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})).describe('Page content'),
+  "totalElements": zod.number().describe('Total number of elements'),
+  "totalPages": zod.number().describe('Total number of pages'),
+  "size": zod.number().describe('Page size'),
+  "number": zod.number().describe('Page number (0-based)'),
+  "numberOfElements": zod.number().describe('Number of elements in current page'),
+  "first": zod.boolean().describe('Is first page'),
+  "last": zod.boolean().describe('Is last page'),
+  "empty": zod.boolean().describe('Is empty')
+})
+
+
+/**
+ * @summary Create price configuration
+ */
+export const createPriceConfigurationBodyBasePriceMin = 0;
+export const createPriceConfigurationBodyPricePerLevelMin = 0;
+export const createPriceConfigurationBodySortOrderMin = 0;
+
+
+export const createPriceConfigurationBody = zod.object({
+  "gameId": zod.uuid(),
+  "difficultyLevelId": zod.uuid(),
+  "serviceTypeId": zod.uuid(),
+  "basePrice": zod.number().min(createPriceConfigurationBodyBasePriceMin).describe('Base price in cents'),
+  "pricePerLevel": zod.number().min(createPriceConfigurationBodyPricePerLevelMin).optional().describe('Price per level in cents'),
+  "currency": zod.string().optional(),
+  "calculationType": zod.enum(['LINEAR', 'RANGE', 'FORMULA', 'TIME_BASED']),
+  "calculationFormula": zod.string().optional().describe('JSON formula configuration'),
+  "sortOrder": zod.number().min(createPriceConfigurationBodySortOrderMin).optional(),
+  "active": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Get all games
+ */
+export const listGamesQueryPageDefault = 0;
+export const listGamesQueryPageMin = 0;
+export const listGamesQuerySizeDefault = 20;
+export const listGamesQuerySizeMax = 100;
+
+
+export const listGamesQueryParams = zod.object({
+  "page": zod.number().min(listGamesQueryPageMin).optional().describe('Page number (0-based)'),
+  "size": zod.number().min(1).max(listGamesQuerySizeMax).default(listGamesQuerySizeDefault).describe('Page size (number of items per page)'),
+  "search": zod.string().optional().describe('Free text search'),
+  "active": zod.boolean().optional().describe('Filter by active status')
+})
+
+export const listGamesResponseDataItemNameMax = 100;
+export const listGamesResponseDataItemCodeMax = 50;
+
+export const listGamesResponseDataItemCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const listGamesResponseDataItemDescriptionMin = 0;
+
+export const listGamesResponseDataItemDescriptionMax = 1000;
+export const listGamesResponseDataItemSortOrderMin = 0;
+
+
+export const listGamesResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.uuid(),
+  "name": zod.string().min(1).max(listGamesResponseDataItemNameMax),
+  "code": zod.string().min(1).max(listGamesResponseDataItemCodeMax).regex(listGamesResponseDataItemCodeRegExp),
+  "category": zod.enum(['MMORPG', 'FPS', 'MOBA', 'BATTLE_ROYALE', 'STRATEGY', 'ACTION', 'SIMULATION', 'SPORTS', 'RACING', 'PUZZLE', 'OTHER']),
+  "description": zod.string().min(listGamesResponseDataItemDescriptionMin).max(listGamesResponseDataItemDescriptionMax).optional(),
+  "active": zod.boolean(),
+  "sortOrder": zod.number().min(listGamesResponseDataItemSortOrderMin),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})).describe('Page content'),
+  "totalElements": zod.number().describe('Total number of elements'),
+  "totalPages": zod.number().describe('Total number of pages'),
+  "size": zod.number().describe('Page size'),
+  "number": zod.number().describe('Page number (0-based)'),
+  "numberOfElements": zod.number().describe('Number of elements in current page'),
+  "first": zod.boolean().describe('Is first page'),
+  "last": zod.boolean().describe('Is last page'),
+  "empty": zod.boolean().describe('Is empty')
+})
+
+
+/**
+ * @summary Create new game
+ */
+export const createGameBodyNameMax = 100;
+export const createGameBodyCodeMax = 50;
+
+export const createGameBodyCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const createGameBodyDescriptionMin = 0;
+
+export const createGameBodyDescriptionMax = 1000;
+export const createGameBodySortOrderMin = 0;
+
+
+export const createGameBody = zod.object({
+  "name": zod.string().min(1).max(createGameBodyNameMax),
+  "code": zod.string().min(1).max(createGameBodyCodeMax).regex(createGameBodyCodeRegExp),
+  "category": zod.enum(['MMORPG', 'FPS', 'MOBA', 'BATTLE_ROYALE', 'STRATEGY', 'ACTION', 'SIMULATION', 'SPORTS', 'RACING', 'PUZZLE', 'OTHER']),
+  "description": zod.string().min(createGameBodyDescriptionMin).max(createGameBodyDescriptionMax).optional(),
+  "sortOrder": zod.number().min(createGameBodySortOrderMin).optional()
+})
+
+
+/**
+ * @summary Get difficulty levels
+ */
+export const listDifficultyLevelsQueryPageDefault = 0;
+export const listDifficultyLevelsQueryPageMin = 0;
+export const listDifficultyLevelsQuerySizeDefault = 20;
+export const listDifficultyLevelsQuerySizeMax = 100;
+
+
+export const listDifficultyLevelsQueryParams = zod.object({
+  "page": zod.number().min(listDifficultyLevelsQueryPageMin).optional().describe('Page number (0-based)'),
+  "size": zod.number().min(1).max(listDifficultyLevelsQuerySizeMax).default(listDifficultyLevelsQuerySizeDefault).describe('Page size (number of items per page)'),
+  "gameId": zod.uuid().optional().describe('Filter by game ID'),
+  "active": zod.boolean().optional().describe('Filter by active status')
+})
+
+export const listDifficultyLevelsResponseDataItemNameMax = 100;
+export const listDifficultyLevelsResponseDataItemCodeMax = 50;
+
+export const listDifficultyLevelsResponseDataItemCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const listDifficultyLevelsResponseDataItemLevelValueMax = 1000;
+export const listDifficultyLevelsResponseDataItemDescriptionMin = 0;
+
+export const listDifficultyLevelsResponseDataItemDescriptionMax = 500;
+export const listDifficultyLevelsResponseDataItemSortOrderMin = 0;
+
+
+export const listDifficultyLevelsResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.uuid(),
+  "gameId": zod.uuid(),
+  "name": zod.string().min(1).max(listDifficultyLevelsResponseDataItemNameMax),
+  "code": zod.string().min(1).max(listDifficultyLevelsResponseDataItemCodeMax).regex(listDifficultyLevelsResponseDataItemCodeRegExp),
+  "levelValue": zod.number().min(1).max(listDifficultyLevelsResponseDataItemLevelValueMax),
+  "description": zod.string().min(listDifficultyLevelsResponseDataItemDescriptionMin).max(listDifficultyLevelsResponseDataItemDescriptionMax).optional(),
+  "active": zod.boolean(),
+  "sortOrder": zod.number().min(listDifficultyLevelsResponseDataItemSortOrderMin),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})).describe('Page content'),
+  "totalElements": zod.number().describe('Total number of elements'),
+  "totalPages": zod.number().describe('Total number of pages'),
+  "size": zod.number().describe('Page size'),
+  "number": zod.number().describe('Page number (0-based)'),
+  "numberOfElements": zod.number().describe('Number of elements in current page'),
+  "first": zod.boolean().describe('Is first page'),
+  "last": zod.boolean().describe('Is last page'),
+  "empty": zod.boolean().describe('Is empty')
+})
+
+
+/**
+ * @summary Create difficulty level
+ */
+export const createDifficultyLevelBodyNameMax = 100;
+export const createDifficultyLevelBodyCodeMax = 50;
+
+export const createDifficultyLevelBodyCodeRegExp = new RegExp('^[A-Z0-9_-]+$');
+export const createDifficultyLevelBodyLevelValueMax = 1000;
+export const createDifficultyLevelBodyDescriptionMin = 0;
+
+export const createDifficultyLevelBodyDescriptionMax = 500;
+export const createDifficultyLevelBodySortOrderMin = 0;
+
+
+export const createDifficultyLevelBody = zod.object({
+  "gameId": zod.uuid(),
+  "name": zod.string().min(1).max(createDifficultyLevelBodyNameMax),
+  "code": zod.string().min(1).max(createDifficultyLevelBodyCodeMax).regex(createDifficultyLevelBodyCodeRegExp),
+  "levelValue": zod.number().min(1).max(createDifficultyLevelBodyLevelValueMax),
+  "description": zod.string().min(createDifficultyLevelBodyDescriptionMin).max(createDifficultyLevelBodyDescriptionMax).optional(),
+  "sortOrder": zod.number().min(createDifficultyLevelBodySortOrderMin).optional()
+})
+
+
+/**
+ * @summary Calculate service price
+ */
+export const calculatePriceBody = zod.object({
+  "gameCode": zod.string().describe('Game code'),
+  "serviceTypeCode": zod.string().describe('Service type code'),
+  "difficultyLevelCode": zod.string().describe('Difficulty level code'),
+  "targetLevel": zod.number().optional().describe('Target level'),
+  "startLevel": zod.number().optional().describe('Starting level'),
+  "modifiers": zod.array(zod.string()).optional().describe('List of modifier codes to apply')
+})
+
+export const calculatePriceResponseBreakdownDifficultyMultiplierMax = 1000;
+export const calculatePriceResponseBreakdownServiceMultiplierMax = 1000;
+
+
+export const calculatePriceResponse = zod.object({
+  "finalPrice": zod.number().describe('Final price in cents'),
+  "currency": zod.string().optional(),
+  "breakdown": zod.object({
+  "basePrice": zod.number().describe('Base price in cents'),
+  "difficultyMultiplier": zod.number().min(1).max(calculatePriceResponseBreakdownDifficultyMultiplierMax).describe('Difficulty multiplier in basis points (100 = 1.0x)'),
+  "serviceMultiplier": zod.number().min(1).max(calculatePriceResponseBreakdownServiceMultiplierMax).describe('Service multiplier in basis points (100 = 1.0x)'),
+  "levelAdjustment": zod.number().optional().describe('Level-based adjustment in cents'),
+  "totalAdjustment": zod.number().describe('Total adjustment in cents')
+})
+})
+
+
+/**
+ * @summary Get all boosters
+ */
+export const listBoostersQueryPageDefault = 0;
+export const listBoostersQueryPageMin = 0;
+export const listBoostersQuerySizeDefault = 20;
+export const listBoostersQuerySizeMax = 100;
+
+
+export const listBoostersQueryParams = zod.object({
+  "page": zod.number().min(listBoostersQueryPageMin).optional().describe('Page number (0-based)'),
+  "size": zod.number().min(1).max(listBoostersQuerySizeMax).default(listBoostersQuerySizeDefault).describe('Page size (number of items per page)'),
+  "search": zod.string().optional().describe('Free text search'),
+  "active": zod.boolean().optional().describe('Filter by active status')
+})
+
+export const listBoostersResponseDataItemDiscordUsernameMax = 100;
+export const listBoostersResponseDataItemDisplayNameMax = 50;
+export const listBoostersResponseDataItemPhoneNumberRegExp = new RegExp('^\\+?[1-9]\\d{1,14}$');
+export const listBoostersResponseDataItemRatingMin = 0;
+
+export const listBoostersResponseDataItemRatingMax = 500;
+export const listBoostersResponseDataItemTotalOrdersMin = 0;
+export const listBoostersResponseDataItemSuccessRateMin = 0;
+
+export const listBoostersResponseDataItemSuccessRateMax = 10000;
+export const listBoostersResponseDataItemAverageCompletionTimeMin = 0;
+
+
+export const listBoostersResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.uuid(),
+  "discordUsername": zod.string().min(1).max(listBoostersResponseDataItemDiscordUsernameMax),
+  "displayName": zod.string().min(1).max(listBoostersResponseDataItemDisplayNameMax),
+  "contactEmail": zod.string().optional(),
+  "phoneNumber": zod.string().regex(listBoostersResponseDataItemPhoneNumberRegExp).optional(),
+  "rating": zod.number().min(listBoostersResponseDataItemRatingMin).max(listBoostersResponseDataItemRatingMax).describe('Rating in basis points (100 = 1.0 star, 500 = 5.0 stars)'),
+  "totalOrders": zod.number().min(listBoostersResponseDataItemTotalOrdersMin),
+  "successRate": zod.number().min(listBoostersResponseDataItemSuccessRateMin).max(listBoostersResponseDataItemSuccessRateMax).describe('Success rate in basis points (10000 = 100.00%)'),
+  "averageCompletionTime": zod.number().min(listBoostersResponseDataItemAverageCompletionTimeMin).optional().describe('Average completion time in minutes'),
+  "active": zod.boolean(),
+  "verified": zod.boolean(),
+  "lastActive": zod.iso.datetime({}).optional(),
+  "createdAt": zod.iso.datetime({}).optional(),
+  "updatedAt": zod.iso.datetime({}).optional()
+})).describe('Page content'),
+  "totalElements": zod.number().describe('Total number of elements'),
+  "totalPages": zod.number().describe('Total number of pages'),
+  "size": zod.number().describe('Page size'),
+  "number": zod.number().describe('Page number (0-based)'),
+  "numberOfElements": zod.number().describe('Number of elements in current page'),
+  "first": zod.boolean().describe('Is first page'),
+  "last": zod.boolean().describe('Is last page'),
+  "empty": zod.boolean().describe('Is empty')
+})
+
+
+/**
+ * @summary Create new booster
+ */
+export const createBoosterBodyDiscordUsernameMax = 100;
+export const createBoosterBodyDisplayNameMax = 50;
+export const createBoosterBodyPhoneNumberRegExp = new RegExp('^\\+?[1-9]\\d{1,14}$');
+
+
+export const createBoosterBody = zod.object({
+  "discordUsername": zod.string().min(1).max(createBoosterBodyDiscordUsernameMax),
+  "displayName": zod.string().min(1).max(createBoosterBodyDisplayNameMax),
+  "contactEmail": zod.string(),
+  "phoneNumber": zod.string().regex(createBoosterBodyPhoneNumberRegExp).optional(),
+  "verified": zod.boolean().optional()
+})

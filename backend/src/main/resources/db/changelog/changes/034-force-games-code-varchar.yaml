@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 034-force-games-code-varchar
+      author: aksi
+      comment: Force games.code column to be varchar using raw SQL
+      runOnChange: true
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: games
+      changes:
+        - sql:
+            sql: ALTER TABLE games ALTER COLUMN code TYPE varchar(50) USING code::varchar(50);
+        - sql:
+            sql: COMMENT ON COLUMN games.code IS 'Game code - varchar(50) for search compatibility';

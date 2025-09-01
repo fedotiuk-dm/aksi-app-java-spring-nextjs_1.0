@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aksi.api.game.dto.Game.CategoryEnum;
 import com.aksi.api.game.dto.ServiceType;
 import com.aksi.api.game.dto.ServiceTypeListResponse;
 import com.aksi.domain.game.ServiceTypeEntity;
@@ -111,7 +112,8 @@ public class ServiceTypeQueryService {
       String search) {
 
     log.debug(
-        "Getting service types with pagination - page: {}, size: {}, sortBy: {}, sortOrder: {}, active: {}, gameId: {}, search: {}",
+        "Getting service types with pagination - page: {}, size: {}, sortBy: {}, "
+            + "sortOrder: {}, active: {}, gameId: {}, search: {}",
         page,
         size,
         sortBy,
@@ -151,7 +153,9 @@ public class ServiceTypeQueryService {
   public List<String> getDistinctCategories() {
     log.debug("Getting distinct categories from active service types");
 
-    return serviceTypeRepository.findDistinctCategories();
+    return serviceTypeRepository.findDistinctCategories().stream()
+        .map(CategoryEnum::toString)
+        .toList();
   }
 
   /**

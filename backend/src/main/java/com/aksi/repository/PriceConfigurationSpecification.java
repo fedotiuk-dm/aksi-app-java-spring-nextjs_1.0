@@ -9,92 +9,71 @@ import com.aksi.domain.game.PriceConfigurationEntity;
 public class PriceConfigurationSpecification {
 
   public static Specification<PriceConfigurationEntity> hasActive(Boolean active) {
-    return (root, query, criteriaBuilder) -> {
-      if (active == null) {
-        return criteriaBuilder.conjunction();
-      }
-      return criteriaBuilder.equal(root.get("active"), active);
-    };
+    return SpecificationUtils.hasActive(active);
   }
 
   public static Specification<PriceConfigurationEntity> hasGameId(UUID gameId) {
-    return (root, query, criteriaBuilder) -> {
-      if (gameId == null) {
-        return criteriaBuilder.conjunction();
-      }
-      return criteriaBuilder.equal(root.get("game").get("id"), gameId);
-    };
+    return SpecificationUtils.hasGameId(gameId);
   }
 
-  public static Specification<PriceConfigurationEntity> hasServiceTypeId(UUID serviceTypeId) {
-    return (root, query, criteriaBuilder) -> {
-      if (serviceTypeId == null) {
-        return criteriaBuilder.conjunction();
-      }
-      return criteriaBuilder.equal(root.get("serviceType").get("id"), serviceTypeId);
-    };
+  public static Specification<PriceConfigurationEntity> orderBySortOrder() {
+    return SpecificationUtils.orderBySortOrder();
+  }
+
+  public static Specification<PriceConfigurationEntity> hasIsDefault(Boolean isDefault) {
+    return SpecificationUtils.hasIsDefault(isDefault);
   }
 
   public static Specification<PriceConfigurationEntity> hasDifficultyLevelId(
       UUID difficultyLevelId) {
-    return (root, query, criteriaBuilder) -> {
-      if (difficultyLevelId == null) {
-        return criteriaBuilder.conjunction();
-      }
-      return criteriaBuilder.equal(root.get("difficultyLevel").get("id"), difficultyLevelId);
-    };
+    return SpecificationUtils.hasDifficultyLevelId(difficultyLevelId);
   }
 
-  public static Specification<PriceConfigurationEntity> hasCalculationType(String calculationType) {
-    return (root, query, criteriaBuilder) -> {
-      if (calculationType == null || calculationType.trim().isEmpty()) {
-        return criteriaBuilder.conjunction();
-      }
-      return criteriaBuilder.equal(root.get("calculationType"), calculationType);
-    };
+  public static Specification<PriceConfigurationEntity> hasServiceTypeId(UUID serviceTypeId) {
+    return SpecificationUtils.hasServiceTypeId(serviceTypeId);
   }
 
-  public static Specification<PriceConfigurationEntity> hasCurrency(String currency) {
-    return (root, query, criteriaBuilder) -> {
-      if (currency == null || currency.trim().isEmpty()) {
-        return criteriaBuilder.conjunction();
-      }
-      return criteriaBuilder.equal(root.get("currency"), currency);
-    };
+  /** Creates a specification for finding active price configurations by game ID. */
+  public static Specification<PriceConfigurationEntity> findActiveByGameId(UUID gameId) {
+    return Specification.allOf(hasActive(true), hasGameId(gameId));
   }
 
-  public static Specification<PriceConfigurationEntity> searchByGameName(String search) {
-    return (root, query, criteriaBuilder) -> {
-      if (search == null || search.trim().isEmpty()) {
-        return criteriaBuilder.conjunction();
-      }
-
-      String searchPattern = "%" + search.toLowerCase() + "%";
-      return criteriaBuilder.like(
-          criteriaBuilder.lower(root.get("game").get("name")), searchPattern);
-    };
+  /** Creates a specification for finding all active price configurations ordered by sort order. */
+  public static Specification<PriceConfigurationEntity> findAllActiveOrderedBySortOrder() {
+    return Specification.allOf(hasActive(true), orderBySortOrder());
   }
 
-  public static Specification<PriceConfigurationEntity> orderBySortOrder() {
-    return (root, query, criteriaBuilder) -> {
-      query.orderBy(criteriaBuilder.asc(root.get("sortOrder")));
-      return criteriaBuilder.conjunction();
-    };
+  /** Creates a specification for finding active price configurations by game ID with ordering. */
+  public static Specification<PriceConfigurationEntity> findActiveByGameIdOrderedBySortOrder(
+      UUID gameId) {
+    return Specification.allOf(hasActive(true), hasGameId(gameId), orderBySortOrder());
   }
 
-  public static Specification<PriceConfigurationEntity> hasCombination(
+  /** Creates a specification for finding default price configurations. */
+  public static Specification<PriceConfigurationEntity> findDefaultConfigurations() {
+    return Specification.allOf(hasActive(true), hasIsDefault(true));
+  }
+
+  /** Creates a specification for finding default price configurations by game ID. */
+  public static Specification<PriceConfigurationEntity> findDefaultByGameId(UUID gameId) {
+    return Specification.allOf(hasActive(true), hasGameId(gameId), hasIsDefault(true));
+  }
+
+  /** Creates a specification for counting active price configurations by game ID. */
+  public static Specification<PriceConfigurationEntity> countActiveByGameId(UUID gameId) {
+    return Specification.allOf(hasActive(true), hasGameId(gameId));
+  }
+
+  /**
+   * Creates a specification for finding price configuration by game, difficulty level and service
+   * type combination.
+   */
+  public static Specification<PriceConfigurationEntity> findByGameDifficultyLevelAndServiceType(
       UUID gameId, UUID difficultyLevelId, UUID serviceTypeId) {
-    return (root, query, criteriaBuilder) -> {
-      return criteriaBuilder.and(
-          gameId != null
-              ? criteriaBuilder.equal(root.get("game").get("id"), gameId)
-              : criteriaBuilder.conjunction(),
-          difficultyLevelId != null
-              ? criteriaBuilder.equal(root.get("difficultyLevel").get("id"), difficultyLevelId)
-              : criteriaBuilder.conjunction(),
-          serviceTypeId != null
-              ? criteriaBuilder.equal(root.get("serviceType").get("id"), serviceTypeId)
-              : criteriaBuilder.conjunction());
-    };
+    return Specification.allOf(
+        hasActive(true),
+        hasGameId(gameId),
+        hasDifficultyLevelId(difficultyLevelId),
+        hasServiceTypeId(serviceTypeId));
   }
 }

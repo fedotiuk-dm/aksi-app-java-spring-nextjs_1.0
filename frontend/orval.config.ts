@@ -35,7 +35,7 @@
  *   │   ├── index.ts                  - типи + BARREL: export * from './orderApi'
  *   │   └── schemas.zod.ts            - Zod схеми
  *   ├── pricing/          # Pricing Domain
- *   │   ├── pricingApi.ts             - хуки (useCalculatePrice, useListModifiers тощо)
+ *   │   ├── pricingApi.ts             - хуки (useCalculatePrice1, useListModifiers тощо)
  *   │   ├── index.ts                  - типи + BARREL: export * from './pricingApi'
  *   │   └── schemas.zod.ts            - Zod схеми
  *   ├── priceList/        # Service Item Domain
@@ -62,11 +62,11 @@
  * ✅ import { useListBranches } from '@/shared/api/generated/branch'
  * ✅ import { useGetCart, useAddCartItem } from '@/shared/api/generated/cart'
  * ✅ import { useListOrders, useCreateOrder } from '@/shared/api/generated/order'
- * ✅ import { useCalculatePrice } from '@/shared/api/generated/pricing'
+ * ✅ import { useCalculatePrice1 as useCalculatePrice } from '@/shared/api/generated/pricing' // Order pricing calculator
  * ✅ import { useListServices } from '@/shared/api/generated/priceList'
  * ✅ import { useGenerateOrderReceipt } from '@/shared/api/generated/receipt'
  * ✅ import { useServeFile } from '@/shared/api/generated/file'
- * ✅ import { useListGames, useListBoosters, useCalculatePrice } from '@/shared/api/generated/game'
+ * ✅ import { useListGames, useListBoosters, useCalculatePrice } from '@/shared/api/generated/game' // Game boosting calculator
  *
  * 🎯 ORDER WIZARD: UI компоненти використовують композицію доменних API
  */

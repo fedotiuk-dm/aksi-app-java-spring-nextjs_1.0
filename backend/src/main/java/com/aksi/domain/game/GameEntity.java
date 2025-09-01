@@ -3,11 +3,14 @@ package com.aksi.domain.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.aksi.api.game.dto.Game.CategoryEnum;
 import com.aksi.domain.common.BaseEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -26,7 +29,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GameEntity extends BaseEntity {
 
-  @Column(name = "code", nullable = false, unique = true, length = 50)
+  @Column(
+      name = "code",
+      nullable = false,
+      unique = true,
+      length = 50,
+      columnDefinition = "varchar(50)")
   private String code;
 
   @Column(name = "name", nullable = false, length = 100)
@@ -36,7 +44,8 @@ public class GameEntity extends BaseEntity {
   private String description;
 
   @Column(name = "category", nullable = false, length = 50)
-  private String category;
+  @Enumerated(EnumType.STRING)
+  private CategoryEnum category;
 
   @Column(name = "active", nullable = false)
   @Builder.Default

@@ -49,6 +49,8 @@
       "@api/receipt/*": ["./shared/api/generated/receipt/*"],
       "@api/user": ["./shared/api/generated/user"],
       "@api/user/*": ["./shared/api/generated/user/*"],
+      "@api/game": ["./shared/api/generated/game"],
+      "@api/game/*": ["./shared/api/generated/game/*"],
 
       // 🎯 Доменні alias'и
       "@domains/*": ["./domains/*"],

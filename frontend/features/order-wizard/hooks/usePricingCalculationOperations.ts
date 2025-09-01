@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useCalculatePrice } from '@api/pricing';
+import { useCalculatePrice1 as useCalculatePrice } from '@api/pricing';
 import type { CartInfo } from '@api/cart';
 
 /**
@@ -54,7 +54,6 @@ export const usePricingCalculationOperations = (
       },
     });
   }, [cart, calcKey, includeGlobalModifiers, pricingMutation]);
-
 
   return {
     // State

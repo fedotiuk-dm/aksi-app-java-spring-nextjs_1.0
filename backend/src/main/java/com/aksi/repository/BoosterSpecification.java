@@ -13,30 +13,11 @@ import jakarta.persistence.criteria.JoinType;
 public class BoosterSpecification {
 
   public static Specification<BoosterEntity> hasActive(Boolean active) {
-    return (root, query, criteriaBuilder) -> {
-      if (active == null) {
-        return criteriaBuilder.conjunction();
-      }
-      return criteriaBuilder.equal(root.get("active"), active);
-    };
-  }
-
-  public static Specification<BoosterEntity> hasVerified(Boolean verified) {
-    return (root, query, criteriaBuilder) -> {
-      if (verified == null) {
-        return criteriaBuilder.conjunction();
-      }
-      return criteriaBuilder.equal(root.get("verified"), verified);
-    };
+    return SpecificationUtils.hasActive(active);
   }
 
   public static Specification<BoosterEntity> hasRatingGreaterThan(Float minRating) {
-    return (root, query, criteriaBuilder) -> {
-      if (minRating == null) {
-        return criteriaBuilder.conjunction();
-      }
-      return criteriaBuilder.greaterThanOrEqualTo(root.get("rating"), minRating);
-    };
+    return SpecificationUtils.hasRatingGreaterThan(minRating);
   }
 
   public static Specification<BoosterEntity> searchByNameOrContact(String search) {
@@ -68,10 +49,7 @@ public class BoosterSpecification {
   }
 
   public static Specification<BoosterEntity> orderByRating() {
-    return (root, query, criteriaBuilder) -> {
-      query.orderBy(criteriaBuilder.desc(root.get("rating")));
-      return criteriaBuilder.conjunction();
-    };
+    return SpecificationUtils.orderByRating();
   }
 
   public static Specification<BoosterEntity> hasDiscordUsername(String discordUsername) {

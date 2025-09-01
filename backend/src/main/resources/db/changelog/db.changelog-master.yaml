@@ -93,6 +93,9 @@ databaseChangeLog:
   # Add surrogate primary key to booster_game_specializations table
   - include:
       file: db/changelog/changes/031-add-id-to-booster-game-specializations.yaml
+  # Update game entities schema to match domain changes
+  - include:
+      file: db/changelog/changes/035-update-game-entities-schema.yaml
   # - include:
   #     file: db/changelog/changes/005-create-branch-tables.yaml
   # - include:

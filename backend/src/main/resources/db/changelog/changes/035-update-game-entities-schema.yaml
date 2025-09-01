@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 035-update-game-entities-schema
+      author: aksi
+      comment: Update game entities schema to match domain changes
+      runOnChange: true
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: games
+      changes:
+        # 1. Add calculation_type column to price_configurations table
+        - addColumn:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: calculation_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                  defaultValue: LINEAR
+                  remarks: Calculation type enum - LINEAR, RANGE, FORMULA, TIME_BASED
+
+        # 2. Create index for calculation_type
+        - createIndex:
+            indexName: idx_price_configurations_calculation_type
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: calculation_type
+
+        # 3. Rename completed_orders to total_orders in boosters table
+        - renameColumn:
+            tableName: boosters
+            oldColumnName: completed_orders
+            newColumnName: total_orders
+            columnDataType: integer
+
+        # 4. Add comment to total_orders column
+        - sql:
+            sql: COMMENT ON COLUMN boosters.total_orders IS 'Total number of completed orders by this booster'

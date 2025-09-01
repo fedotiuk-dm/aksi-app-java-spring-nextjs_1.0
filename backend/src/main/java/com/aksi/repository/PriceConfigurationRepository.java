@@ -2,87 +2,102 @@ package com.aksi.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.aksi.domain.game.DifficultyLevelEntity;
-import com.aksi.domain.game.GameEntity;
 import com.aksi.domain.game.PriceConfigurationEntity;
-import com.aksi.domain.game.ServiceTypeEntity;
 
 @Repository
 public interface PriceConfigurationRepository
-    extends JpaRepository<PriceConfigurationEntity, java.util.UUID>,
+    extends JpaRepository<PriceConfigurationEntity, UUID>,
         JpaSpecificationExecutor<PriceConfigurationEntity> {
 
-  List<PriceConfigurationEntity> findByGame(GameEntity game);
+  /**
+   * Find active price configurations by game ID using specifications. Used in
+   * PriceConfigurationCommandService.
+   */
+  default List<PriceConfigurationEntity> findByGameIdAndActiveTrue(UUID gameId) {
+    return findAll(PriceConfigurationSpecification.findActiveByGameId(gameId));
+  }
 
-  List<PriceConfigurationEntity> findByGameId(java.util.UUID gameId);
+  /**
+   * Find all active price configurations ordered by sort order using specifications. Used in
+   * PriceConfigurationQueryService.
+   */
+  default List<PriceConfigurationEntity> findAllActiveOrderBySortOrder() {
+    return findAll(PriceConfigurationSpecification.findAllActiveOrderedBySortOrder());
+  }
 
-  List<PriceConfigurationEntity> findByDifficultyLevel(DifficultyLevelEntity difficultyLevel);
+  /**
+   * Find default price configurations using specifications. Used in PriceConfigurationQueryService.
+   */
+  default List<PriceConfigurationEntity> findDefaultConfigurations() {
+    return findAll(PriceConfigurationSpecification.findDefaultConfigurations());
+  }
 
-  List<PriceConfigurationEntity> findByServiceType(ServiceTypeEntity serviceType);
+  /**
+   * Find default price configurations by game ID using specifications. Used in
+   * PriceConfigurationQueryService.
+   */
+  default List<PriceConfigurationEntity> findDefaultByGameId(UUID gameId) {
+    return findAll(PriceConfigurationSpecification.findDefaultByGameId(gameId));
+  }
 
-  List<PriceConfigurationEntity> findByGameAndActiveTrue(GameEntity game);
+  /**
+   * Find active price configurations by game ID with pagination using specifications. Used in
+   * PriceConfigurationQueryService.
+   */
+  default Page<PriceConfigurationEntity> findActiveByGameIdOrderBySortOrder(
+      UUID gameId, Pageable pageable) {
 
-  List<PriceConfigurationEntity> findByGameIdAndActiveTrue(java.util.UUID gameId);
+    return findAll(
+        PriceConfigurationSpecification.findActiveByGameIdOrderedBySortOrder(gameId), pageable);
+  }
 
-  Optional<PriceConfigurationEntity> findByGameAndDifficultyLevelAndServiceTypeAndActiveTrue(
-      GameEntity game, DifficultyLevelEntity difficultyLevel, ServiceTypeEntity serviceType);
+  /**
+   * Find all active price configurations with pagination using specifications. Used in
+   * PriceConfigurationQueryService.
+   */
+  default Page<PriceConfigurationEntity> findAllActiveOrderBySortOrder(Pageable pageable) {
+    return findAll(PriceConfigurationSpecification.findAllActiveOrderedBySortOrder(), pageable);
+  }
 
-  @Query(
-      "SELECT pc FROM PriceConfigurationEntity pc WHERE pc.game.id = :gameId AND pc.difficultyLevel.id = :difficultyLevelId AND pc.serviceType.id = :serviceTypeId AND pc.active = true")
-  Optional<PriceConfigurationEntity> findByIdsAndActive(
-      @Param("gameId") java.util.UUID gameId,
-      @Param("difficultyLevelId") java.util.UUID difficultyLevelId,
-      @Param("serviceTypeId") java.util.UUID serviceTypeId);
+  /**
+   * Count active price configurations by game ID using specifications. Used in
+   * PriceConfigurationQueryService.
+   */
+  default long countActiveByGameId(UUID gameId) {
+    return count(PriceConfigurationSpecification.countActiveByGameId(gameId));
+  }
 
-  Optional<PriceConfigurationEntity> findByGameIdAndDifficultyLevelIdAndServiceTypeId(
-      java.util.UUID gameId, java.util.UUID difficultyLevelId, java.util.UUID serviceTypeId);
+  /**
+   * Find price configuration by game, difficulty level and service type combination using
+   * specifications. Used in GameEntityQueryService.
+   */
+  default Optional<PriceConfigurationEntity> findByGameIdAndDifficultyLevelIdAndServiceTypeId(
+      UUID gameId, UUID difficultyLevelId, UUID serviceTypeId) {
+    return findAll(
+            PriceConfigurationSpecification.findByGameDifficultyLevelAndServiceType(
+                gameId, difficultyLevelId, serviceTypeId))
+        .stream()
+        .findFirst();
+  }
 
-  @Query(
-      "SELECT pc FROM PriceConfigurationEntity pc WHERE pc.active = true ORDER BY pc.sortOrder ASC")
-  List<PriceConfigurationEntity> findAllActiveOrderBySortOrder();
-
-  @Query(
-      "SELECT pc FROM PriceConfigurationEntity pc WHERE pc.game.id = :gameId AND pc.active = true ORDER BY pc.sortOrder ASC")
-  List<PriceConfigurationEntity> findActiveByGameIdOrderBySortOrder(
-      @Param("gameId") java.util.UUID gameId);
-
-  @Query(
-      "SELECT pc FROM PriceConfigurationEntity pc WHERE pc.isDefault = true AND pc.active = true")
-  List<PriceConfigurationEntity> findDefaultConfigurations();
-
-  @Query(
-      "SELECT pc FROM PriceConfigurationEntity pc WHERE pc.game.id = :gameId AND pc.isDefault = true AND pc.active = true")
-  List<PriceConfigurationEntity> findDefaultByGameId(@Param("gameId") java.util.UUID gameId);
-
-  @Query(
-      "SELECT pc FROM PriceConfigurationEntity pc WHERE pc.active = true ORDER BY pc.basePrice ASC")
-  List<PriceConfigurationEntity> findAllActiveOrderByPriceAsc();
-
-  @Query(
-      "SELECT pc FROM PriceConfigurationEntity pc WHERE pc.active = true ORDER BY pc.basePrice DESC")
-  List<PriceConfigurationEntity> findAllActiveOrderByPriceDesc();
-
-  @Query(
-      "SELECT COUNT(pc) FROM PriceConfigurationEntity pc WHERE pc.game.id = :gameId AND pc.active = true")
-  long countActiveByGameId(@Param("gameId") java.util.UUID gameId);
-
-  // Paginated methods for efficient database queries
-
-  @Query(
-      "SELECT pc FROM PriceConfigurationEntity pc WHERE pc.active = true ORDER BY pc.sortOrder ASC")
-  Page<PriceConfigurationEntity> findAllActiveOrderBySortOrder(Pageable pageable);
-
-  @Query(
-      "SELECT pc FROM PriceConfigurationEntity pc WHERE pc.game.id = :gameId AND pc.active = true ORDER BY pc.sortOrder ASC")
-  Page<PriceConfigurationEntity> findActiveByGameIdOrderBySortOrder(
-      @Param("gameId") java.util.UUID gameId, Pageable pageable);
+  /**
+   * Find active price configuration by game, difficulty level and service type combination using
+   * specifications. Used in PriceConfigurationValidationService and PriceConfigurationQueryService.
+   */
+  default Optional<PriceConfigurationEntity> findByIdsAndActive(
+      UUID gameId, UUID difficultyLevelId, UUID serviceTypeId) {
+    return findAll(
+            PriceConfigurationSpecification.findByGameDifficultyLevelAndServiceType(
+                gameId, difficultyLevelId, serviceTypeId))
+        .stream()
+        .findFirst();
+  }
 }

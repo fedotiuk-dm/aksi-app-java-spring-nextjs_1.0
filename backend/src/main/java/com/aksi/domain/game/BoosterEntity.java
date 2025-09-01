@@ -39,9 +39,9 @@ public class BoosterEntity extends BaseEntity {
   @Builder.Default
   private Integer rating = 0; // Rating out of 50 (0-50 scale)
 
-  @Column(name = "completed_orders", nullable = false)
+  @Column(name = "total_orders", nullable = false)
   @Builder.Default
-  private Integer completedOrders = 0;
+  private Integer totalOrders = 0;
 
   @Column(name = "active", nullable = false)
   @Builder.Default

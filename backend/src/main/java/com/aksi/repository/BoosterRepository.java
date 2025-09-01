@@ -2,18 +2,18 @@ package com.aksi.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.aksi.domain.game.BoosterEntity;
 
 @Repository
 public interface BoosterRepository
-    extends JpaRepository<BoosterEntity, java.util.UUID>, JpaSpecificationExecutor<BoosterEntity> {
+    extends JpaRepository<BoosterEntity, UUID>, JpaSpecificationExecutor<BoosterEntity> {
 
   Optional<BoosterEntity> findByDiscordUsername(String discordUsername);
 
@@ -23,19 +23,9 @@ public interface BoosterRepository
 
   boolean existsByContactEmail(String contactEmail);
 
-  List<BoosterEntity> findByActiveTrue();
-
   @Query(
-      "SELECT b FROM BoosterEntity b WHERE b.active = true ORDER BY b.rating DESC, b.completedOrders DESC")
+      "SELECT b FROM BoosterEntity b WHERE b.active = true ORDER BY b.rating DESC, b.totalOrders DESC")
   List<BoosterEntity> findTopRatedBoosters();
-
-  @Query(
-      "SELECT b FROM BoosterEntity b WHERE b.active = true AND LOWER(b.displayName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) ORDER BY b.rating DESC")
-  List<BoosterEntity> searchByName(@Param("searchTerm") String searchTerm);
-
-  @Query(
-      "SELECT b FROM BoosterEntity b WHERE b.active = true AND b.rating >= :minRating ORDER BY b.rating DESC")
-  List<BoosterEntity> findHighlyRatedBoosters(@Param("minRating") Integer minRating);
 
   @Query("SELECT AVG(b.rating) FROM BoosterEntity b WHERE b.active = true")
   Double getAverageRating();

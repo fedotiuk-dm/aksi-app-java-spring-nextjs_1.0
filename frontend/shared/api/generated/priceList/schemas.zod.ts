@@ -135,10 +135,14 @@ export const deactivateCategoryParams = zod.object({
   "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER'])
 })
 
+export const deactivateCategoryResponse = zod.record(zod.string(), zod.any())
+
 
 export const activateCategoryParams = zod.object({
   "categoryCode": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER'])
 })
+
+export const activateCategoryResponse = zod.record(zod.string(), zod.any())
 
 
 /**
@@ -231,3 +235,13 @@ export const createPriceListItemBody = zod.object({
   "description": zod.string().optional().describe('Service/item description'),
   "nameUa": zod.string().optional().describe('Ukrainian name')
 })
+
+
+export const getAllCategoriesResponseItem = zod.object({
+  "code": zod.enum(['CLOTHING', 'LAUNDRY', 'IRONING', 'LEATHER', 'PADDING', 'FUR', 'DYEING', 'ADDITIONAL_SERVICES', 'SHEEPSKIN', 'OTHER']).optional(),
+  "name": zod.string().optional(),
+  "totalItems": zod.number().optional(),
+  "activeItems": zod.number().optional(),
+  "hasActiveItems": zod.boolean().optional()
+})
+export const getAllCategoriesResponse = zod.array(getAllCategoriesResponseItem)

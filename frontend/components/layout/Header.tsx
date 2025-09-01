@@ -15,6 +15,7 @@ import {
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
   Store as StoreIcon,
+  VideogameAsset as GameIcon,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -56,6 +57,8 @@ const navigationItems = [
   { name: 'Філії', path: '/branches', icon: <StoreIcon /> },
   { name: 'Каталог', path: '/catalog', icon: <CatalogIcon /> },
   { name: 'Створити замовлення', path: '/order-wizard', icon: <LaundryIcon /> },
+  { name: 'Game Boosting Calculator', path: '/game-boosting-calculator', icon: <GameIcon /> },
+  { name: 'Admin Panel', path: '/game-boosting-admin', icon: <SettingsIcon /> },
   { name: 'Прайс-лист', path: '/price-list', icon: <PriceIcon /> },
   { name: 'Налаштування', path: '/settings', icon: <SettingsIcon /> },
 ];
@@ -139,7 +142,8 @@ export default function Header() {
                     @{user.username}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {user.roles?.[0] && ROLE_DISPLAY_NAMES[user.roles[0] as keyof typeof ROLE_DISPLAY_NAMES]}
+                    {user.roles?.[0] &&
+                      ROLE_DISPLAY_NAMES[user.roles[0] as keyof typeof ROLE_DISPLAY_NAMES]}
                   </Typography>
                 </Box>
               )}
@@ -150,21 +154,29 @@ export default function Header() {
                 </ListItemIcon>
                 <ListItemText>Профіль</ListItemText>
               </MenuItem>
-              <MenuItem onClick={() => {
-                handleUserMenuClose();
-                router.push('/settings');
-              }}>
+              <MenuItem
+                onClick={() => {
+                  handleUserMenuClose();
+                  router.push('/settings');
+                }}
+              >
                 <ListItemIcon>
                   <SettingsIcon fontSize="small" />
                 </ListItemIcon>
                 <ListItemText>Налаштування</ListItemText>
               </MenuItem>
-              <MenuItem onClick={() => {
-                handleUserMenuClose();
-                toggleTheme();
-              }}>
+              <MenuItem
+                onClick={() => {
+                  handleUserMenuClose();
+                  toggleTheme();
+                }}
+              >
                 <ListItemIcon>
-                  {mode === 'light' ? <DarkModeIcon fontSize="small" /> : <LightModeIcon fontSize="small" />}
+                  {mode === 'light' ? (
+                    <DarkModeIcon fontSize="small" />
+                  ) : (
+                    <LightModeIcon fontSize="small" />
+                  )}
                 </ListItemIcon>
                 <ListItemText>{mode === 'light' ? 'Темна тема' : 'Світла тема'}</ListItemText>
               </MenuItem>
@@ -186,9 +198,9 @@ export default function Header() {
         </Toolbar>
       </AppBar>
 
-      <Drawer 
-        anchor="left" 
-        open={drawerOpen} 
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
         onClose={() => toggleDrawer(false)}
         disableScrollLock={true}
       >

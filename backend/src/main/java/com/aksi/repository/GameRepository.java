@@ -2,46 +2,31 @@ package com.aksi.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.aksi.domain.game.GameEntity;
 
 @Repository
 public interface GameRepository
-    extends JpaRepository<GameEntity, java.util.UUID>, JpaSpecificationExecutor<GameEntity> {
+    extends JpaRepository<GameEntity, UUID>, JpaSpecificationExecutor<GameEntity> {
 
   Optional<GameEntity> findByCode(String code);
 
-  boolean existsByCode(String code);
+  /** Find active games ordered by sort order using specifications. */
+  default List<GameEntity> findByActiveTrueOrderBySortOrderAsc() {
+    return findAll(GameSpecification.findActiveOrderedBySortOrder());
+  }
 
-  List<GameEntity> findByActiveTrue();
+  /** Find games with search and pagination using specifications. */
+  default Page<GameEntity> findGamesWithSearchAndPagination(
+      Boolean active, String search, Pageable pageable) {
 
-  List<GameEntity> findByCategory(String category);
-
-  List<GameEntity> findByActiveTrueOrderBySortOrderAsc();
-
-  @Query(
-      "SELECT g FROM GameEntity g WHERE g.active = true AND g.category = :category ORDER BY g.sortOrder ASC")
-  List<GameEntity> findActiveByCategoryOrderBySortOrder(@Param("category") String category);
-
-  @Query("SELECT DISTINCT g.category FROM GameEntity g WHERE g.active = true ORDER BY g.category")
-  List<String> findDistinctCategories();
-
-  @Query(
-      "SELECT g FROM GameEntity g WHERE g.active = true AND LOWER(g.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) ORDER BY g.sortOrder ASC")
-  List<GameEntity> searchByName(@Param("searchTerm") String searchTerm);
-
-  @Query(
-      "SELECT g FROM GameEntity g WHERE "
-          + "(:active IS NULL OR g.active = :active) AND "
-          + "(:search IS NULL OR LOWER(g.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(g.code) LIKE LOWER(CONCAT('%', :search, '%')))")
-  org.springframework.data.domain.Page<GameEntity> findGamesWithSearchAndPagination(
-      @Param("active") Boolean active,
-      @Param("search") String search,
-      org.springframework.data.domain.Pageable pageable);
+    return findAll(GameSpecification.filterGames(active, search), pageable);
+  }
 }
