@@ -4,11 +4,9 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 import com.aksi.api.game.dto.CreateServiceTypeRequest;
 import com.aksi.api.game.dto.ServiceType;
-import com.aksi.api.game.dto.UpdateServiceTypeRequest;
 import com.aksi.domain.game.ServiceTypeEntity;
 
 /** MapStruct mapper for ServiceType domain */
@@ -29,11 +27,4 @@ public interface ServiceTypeMapper {
   @Mapping(target = "priceConfigurations", ignore = true)
   @Mapping(target = "active", ignore = true)
   ServiceTypeEntity toServiceTypeEntity(CreateServiceTypeRequest dto);
-
-  List<ServiceTypeEntity> toServiceTypeEntityList(List<CreateServiceTypeRequest> dtos);
-
-  @Mapping(target = "game", ignore = true)
-  @Mapping(target = "priceConfigurations", ignore = true)
-  void updateServiceTypeFromDto(
-      UpdateServiceTypeRequest dto, @MappingTarget ServiceTypeEntity entity);
 }

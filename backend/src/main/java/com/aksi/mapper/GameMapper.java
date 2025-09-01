@@ -33,6 +33,4 @@ public interface GameMapper {
   @Mapping(target = "priceConfigurations", ignore = true)
   @Mapping(target = "boosterSpecializations", ignore = true)
   void updateGameFromDto(UpdateGameRequest dto, @MappingTarget GameEntity entity);
-
-  List<GameEntity> toGameEntityList(List<CreateGameRequest> dtos);
 }

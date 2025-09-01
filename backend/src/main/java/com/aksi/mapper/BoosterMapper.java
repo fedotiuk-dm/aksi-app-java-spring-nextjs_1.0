@@ -30,16 +30,8 @@ public interface BoosterMapper {
   BoosterEntity toBoosterEntity(CreateBoosterRequest dto);
 
   @Mapping(target = "gameSpecializations", ignore = true)
-  BoosterEntity toBoosterEntity(UpdateBoosterRequest dto);
-
-  @Mapping(target = "gameSpecializations", ignore = true)
   BoosterEntity toBoosterEntity(Booster dto);
 
   @Mapping(target = "gameSpecializations", ignore = true)
   void updateBoosterFromDto(UpdateBoosterRequest dto, @MappingTarget BoosterEntity entity);
-
-  @Mapping(target = "gameSpecializations", ignore = true)
-  void updateBoosterFromDto(Booster dto, @MappingTarget BoosterEntity entity);
-
-  List<BoosterEntity> toBoosterEntityList(List<CreateBoosterRequest> dtos);
 }

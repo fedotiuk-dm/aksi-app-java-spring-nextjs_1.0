@@ -82,7 +82,8 @@ public class CalculatorCommandService {
 
     // Create calculation context for formula modifiers using factory
     var context =
-        contextFactory.createGameBoostingContext(game, serviceType, difficultyLevel, difficultyLevel, basePrice);
+        contextFactory.createGameBoostingContext(
+            game, serviceType, difficultyLevel, difficultyLevel, basePrice);
 
     // Apply modifiers using the calculation context
     int modifierAdjustments = calculateModifierAdjustments(applicableModifiers, basePrice, context);

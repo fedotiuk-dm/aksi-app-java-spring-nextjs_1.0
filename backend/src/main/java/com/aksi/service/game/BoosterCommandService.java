@@ -49,9 +49,9 @@ public class BoosterCommandService {
 
     validationService.validateForUpdate(request, existingEntity);
 
-    BoosterEntity updatedEntity = boosterMapper.toBoosterEntity(request);
-    updatedEntity.setId(boosterId);
-    BoosterEntity savedEntity = boosterRepository.save(updatedEntity);
+    // Use the update method instead of creating a new entity
+    boosterMapper.updateBoosterFromDto(request, existingEntity);
+    BoosterEntity savedEntity = boosterRepository.save(existingEntity);
 
     log.info("Updated booster with id: {}", boosterId);
     return boosterMapper.toBoosterDto(savedEntity);
@@ -95,6 +95,35 @@ public class BoosterCommandService {
     BoosterEntity savedEntity = boosterRepository.save(entity);
 
     log.info("Updated rating for booster: {}", boosterId);
+    return boosterMapper.toBoosterDto(savedEntity);
+  }
+
+  /**
+   * Update booster from Booster DTO. Uses the mapper method toBoosterEntity(Booster dto) for
+   * conversion.
+   *
+   * @param boosterId Booster ID to update
+   * @param boosterDto Booster DTO with updated data
+   * @return Updated booster DTO
+   */
+  public Booster updateBoosterFromDto(UUID boosterId, Booster boosterDto) {
+    log.info("Updating booster from DTO: {}", boosterId);
+
+    BoosterEntity existingEntity =
+        boosterRepository
+            .findById(boosterId)
+            .orElseThrow(() -> new NotFoundException("Booster not found: " + boosterId));
+
+    // Convert DTO to entity and update existing entity
+    BoosterEntity updatedEntity = boosterMapper.toBoosterEntity(boosterDto);
+    updatedEntity.setId(boosterId);
+
+    // Preserve fields that shouldn't be updated from DTO
+    updatedEntity.setGameSpecializations(existingEntity.getGameSpecializations());
+
+    BoosterEntity savedEntity = boosterRepository.save(updatedEntity);
+
+    log.info("Updated booster from DTO with id: {}", boosterId);
     return boosterMapper.toBoosterDto(savedEntity);
   }
 }

@@ -34,6 +34,4 @@ public interface DifficultyLevelMapper {
   @Mapping(target = "priceConfigurations", ignore = true)
   void updateDifficultyLevelFromDto(
       UpdateDifficultyLevelRequest dto, @MappingTarget DifficultyLevelEntity entity);
-
-  List<DifficultyLevelEntity> toDifficultyLevelEntityList(List<CreateDifficultyLevelRequest> dtos);
 }
