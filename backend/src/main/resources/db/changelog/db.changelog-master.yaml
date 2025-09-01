@@ -110,3 +110,6 @@ databaseChangeLog:
   #     file: db/changelog/changes/008-create-payment-tables.yaml
   # - include:
   #     file: db/changelog/changes/009-create-notification-tables.yaml
+  # Add test data for game services
+  - include:
+      file: db/changelog/changes/036-add-game-test-data.yaml

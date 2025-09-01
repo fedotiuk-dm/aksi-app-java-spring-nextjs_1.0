@@ -4,7 +4,55 @@
  */
 
 import { useGameBoostingStore } from '../store/game-boosting-store';
-import { useCalculatePrice } from '@api/game';
+import {
+  useCalculatePrice,
+  useListGames,
+  useListServiceTypes,
+  useListDifficultyLevels,
+} from '@api/game';
+
+// Hook for fetching available games
+export const useAvailableGames = () => {
+  const gamesQuery = useListGames(undefined, {
+    query: { enabled: true },
+  });
+
+  return {
+    games: gamesQuery.data?.data || [],
+    isLoading: gamesQuery.isLoading,
+    error: gamesQuery.error,
+    // Get first available game as default
+    defaultGame: gamesQuery.data?.data?.[0],
+  };
+};
+
+// Hook for fetching available service types for a game
+export const useAvailableServiceTypes = (gameId?: string) => {
+  const params = gameId ? { gameId } : undefined;
+  const serviceTypesQuery = useListServiceTypes(params, {
+    query: { enabled: !!gameId },
+  });
+
+  return {
+    serviceTypes: serviceTypesQuery.data?.data || [],
+    isLoading: serviceTypesQuery.isLoading,
+    error: serviceTypesQuery.error,
+  };
+};
+
+// Hook for fetching available difficulty levels for a game
+export const useAvailableDifficultyLevels = (gameId?: string) => {
+  const params = gameId ? { gameId } : undefined;
+  const difficultyLevelsQuery = useListDifficultyLevels(params, {
+    query: { enabled: !!gameId },
+  });
+
+  return {
+    difficultyLevels: difficultyLevelsQuery.data?.data || [],
+    isLoading: difficultyLevelsQuery.isLoading,
+    error: difficultyLevelsQuery.error,
+  };
+};
 
 export const useCalculatorOperations = () => {
   const {
@@ -12,12 +60,19 @@ export const useCalculatorOperations = () => {
     selectedBoosterId,
     basePrice,
     selectedModifiers,
+    startLevel,
+    targetLevel,
+    serviceTypeCode,
+    difficultyLevelCode,
     setCalculatedPrice,
     setCalculating,
   } = useGameBoostingStore();
 
-  // API hook
+  // API hooks
   const calculateMutation = useCalculatePrice();
+  const { defaultGame } = useAvailableGames();
+  const { serviceTypes } = useAvailableServiceTypes(selectedGameId || undefined);
+  const { difficultyLevels } = useAvailableDifficultyLevels(selectedGameId || undefined);
 
   const calculatePrice = async () => {
     if (!selectedGameId || !selectedBoosterId || !basePrice) {
@@ -27,13 +82,19 @@ export const useCalculatorOperations = () => {
     setCalculating(true);
 
     try {
+      // Use dynamic data from API or store defaults
+      const actualGameCode = selectedGameId || defaultGame?.code || 'LOL';
+      const actualServiceTypeCode = serviceTypeCode || serviceTypes[0]?.code || 'BOOSTING';
+      const actualDifficultyLevelCode =
+        difficultyLevelCode || difficultyLevels[0]?.code || 'STANDARD';
+
       const result = await calculateMutation.mutateAsync({
         data: {
-          gameCode: selectedGameId || 'default',
-          serviceTypeCode: 'BOOSTING',
-          difficultyLevelCode: 'STANDARD',
-          targetLevel: 100,
-          startLevel: 1,
+          gameCode: actualGameCode,
+          serviceTypeCode: actualServiceTypeCode,
+          difficultyLevelCode: actualDifficultyLevelCode,
+          targetLevel: targetLevel,
+          startLevel: startLevel,
           modifiers: selectedModifiers,
         },
       });
@@ -56,6 +117,11 @@ export const useCalculatorOperations = () => {
     // Data
     calculatedPrice: calculateMutation.data?.finalPrice,
     calculationDetails: calculateMutation.data,
+
+    // Dynamic data from API
+    availableGames: defaultGame ? [defaultGame] : [],
+    availableServiceTypes: serviceTypes,
+    availableDifficultyLevels: difficultyLevels,
 
     // State
     isCalculating: calculateMutation.isPending,

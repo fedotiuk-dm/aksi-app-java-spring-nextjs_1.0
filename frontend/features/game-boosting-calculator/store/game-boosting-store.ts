@@ -19,6 +19,10 @@ export interface GameBoostingStore {
   // Calculator state
   basePrice: number;
   selectedModifiers: string[];
+  startLevel: number;
+  targetLevel: number;
+  serviceTypeCode: string;
+  difficultyLevelCode: string;
   calculatedPrice: number | null;
   isCalculating: boolean;
 
@@ -32,6 +36,10 @@ export interface GameBoostingStore {
   setSelectedBooster: (boosterId: string | null, booster?: Booster) => void;
   setBasePrice: (price: number) => void;
   setSelectedModifiers: (modifiers: string[]) => void;
+  setStartLevel: (level: number) => void;
+  setTargetLevel: (level: number) => void;
+  setServiceTypeCode: (code: string) => void;
+  setDifficultyLevelCode: (code: string) => void;
   setCalculatedPrice: (price: number | null) => void;
   setCalculating: (calculating: boolean) => void;
   setCurrentStep: (step: GameBoostingStore['currentStep']) => void;
@@ -52,6 +60,10 @@ export const useGameBoostingStore = create<GameBoostingStore>()(
       selectedBooster: null,
       basePrice: 0,
       selectedModifiers: [],
+      startLevel: 1,
+      targetLevel: 100,
+      serviceTypeCode: 'BOOSTING',
+      difficultyLevelCode: 'STANDARD',
       calculatedPrice: null,
       isCalculating: false,
       currentStep: GAME_SELECTION_STEP,
@@ -79,6 +91,14 @@ export const useGameBoostingStore = create<GameBoostingStore>()(
 
       setSelectedModifiers: (modifiers) => set({ selectedModifiers: modifiers }),
 
+      setStartLevel: (level) => set({ startLevel: level }),
+
+      setTargetLevel: (level) => set({ targetLevel: level }),
+
+      setServiceTypeCode: (code) => set({ serviceTypeCode: code }),
+
+      setDifficultyLevelCode: (code) => set({ difficultyLevelCode: code }),
+
       setCalculatedPrice: (price) => set({ calculatedPrice: price }),
 
       setCalculating: (calculating) => set({ isCalculating: calculating }),
@@ -97,6 +117,10 @@ export const useGameBoostingStore = create<GameBoostingStore>()(
           selectedBooster: null,
           basePrice: 0,
           selectedModifiers: [],
+          startLevel: 1,
+          targetLevel: 100,
+          serviceTypeCode: 'BOOSTING',
+          difficultyLevelCode: 'STANDARD',
           calculatedPrice: null,
           isCalculating: false,
           currentStep: GAME_SELECTION_STEP,

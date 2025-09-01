@@ -7,46 +7,28 @@
 
 import { Box, Button, Typography, TextField, Alert } from '@mui/material';
 import { useGameBoostingStore } from '../../store/game-boosting-store';
-import { useCalculatePrice } from '@api/game';
+import { useCalculatorOperations } from '../../hooks/useCalculatorOperations';
 
 export const CalculatorSection = () => {
   const {
     selectedGame,
     selectedBooster,
     basePrice,
-    selectedModifiers,
     calculatedPrice,
     setBasePrice,
-    setCalculatedPrice,
-    setCalculating,
     setCurrentStep,
   } = useGameBoostingStore();
 
-  // Orval API hook for price calculation
-  const calculateMutation = useCalculatePrice();
+  // Our calculator operations hook with dynamic data
+  const { calculatePrice, isCalculating, error, canCalculate } = useCalculatorOperations();
 
   const handleCalculate = async () => {
-    if (!selectedGame || !selectedBooster || !basePrice) return;
-
-    setCalculating(true);
+    if (!canCalculate) return;
 
     try {
-      const result = await calculateMutation.mutateAsync({
-        data: {
-          gameCode: selectedGame.code || selectedGame.id,
-          serviceTypeCode: 'BOOSTING', // Default service type
-          difficultyLevelCode: 'STANDARD', // Default difficulty
-          targetLevel: 100, // Example target level
-          startLevel: 1, // Example start level
-          modifiers: selectedModifiers,
-        },
-      });
-
-      setCalculatedPrice(result.finalPrice);
+      await calculatePrice();
     } catch (error) {
       console.error('Price calculation error:', error);
-    } finally {
-      setCalculating(false);
     }
   };
 
@@ -108,11 +90,11 @@ export const CalculatorSection = () => {
         <Button
           variant="contained"
           onClick={handleCalculate}
-          disabled={calculateMutation.isPending || !basePrice}
+          disabled={isCalculating || !canCalculate}
           fullWidth
           size="large"
         >
-          {calculateMutation.isPending ? 'Calculating...' : 'Calculate Price'}
+          {isCalculating ? 'Calculating...' : 'Calculate Price'}
         </Button>
       </Box>
 
@@ -129,11 +111,9 @@ export const CalculatorSection = () => {
       ) : null}
 
       {/* Error Display */}
-      {calculateMutation.error ? (
+      {error ? (
         <Alert severity="error" sx={{ mb: 3 }}>
-          <Typography variant="body2">
-            Calculation failed: {String(calculateMutation.error)}
-          </Typography>
+          <Typography variant="body2">Calculation failed: {String(error)}</Typography>
         </Alert>
       ) : null}
 

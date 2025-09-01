@@ -56,10 +56,7 @@ public class CalculatorCommandService {
 
     // Find required entities
     GameEntity game = entityQueryService.findGameByCode(request.getGameCode());
-    DifficultyLevelEntity fromLevel =
-        entityQueryService.findDifficultyLevelByGameIdAndCode(
-            game.getId(), request.getDifficultyLevelCode());
-    DifficultyLevelEntity toLevel =
+    DifficultyLevelEntity difficultyLevel =
         entityQueryService.findDifficultyLevelByGameIdAndCode(
             game.getId(), request.getDifficultyLevelCode());
     ServiceTypeEntity serviceType =
@@ -69,11 +66,11 @@ public class CalculatorCommandService {
     // Find price configuration
     PriceConfigurationEntity priceConfig =
         entityQueryService.findPriceConfigurationByCombination(
-            game.getId(), fromLevel.getId(), serviceType.getId());
+            game.getId(), difficultyLevel.getId(), serviceType.getId());
 
-    // Calculate base price
+    // Calculate base price using start and target levels from request
     int basePrice =
-        calculateBasePrice(priceConfig, fromLevel.getLevelValue(), toLevel.getLevelValue());
+        calculateBasePrice(priceConfig, request.getStartLevel(), request.getTargetLevel());
 
     // Get and apply modifiers
     List<PriceModifierEntity> applicableModifiers =
@@ -85,7 +82,7 @@ public class CalculatorCommandService {
 
     // Create calculation context for formula modifiers using factory
     var context =
-        contextFactory.createGameBoostingContext(game, serviceType, fromLevel, toLevel, basePrice);
+        contextFactory.createGameBoostingContext(game, serviceType, difficultyLevel, difficultyLevel, basePrice);
 
     // Apply modifiers using the calculation context
     int modifierAdjustments = calculateModifierAdjustments(applicableModifiers, basePrice, context);
@@ -99,7 +96,7 @@ public class CalculatorCommandService {
         basePrice,
         100, // difficulty multiplier
         100, // service multiplier
-        Math.max(0, toLevel.getLevelValue() - fromLevel.getLevelValue()),
+        Math.max(0, request.getTargetLevel() - request.getStartLevel()),
         modifierAdjustments,
         game);
   }
