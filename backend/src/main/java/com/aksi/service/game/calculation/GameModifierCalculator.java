@@ -199,28 +199,36 @@ public class GameModifierCalculator {
 
     return switch (modifier.getOperation()) {
       case ADD -> {
-        // Fixed amount with custom multiplier
-        long result = (long) modifier.getValue() * customMultiplier / 100;
-        log.debug("Extra services ADD adjustment: {} * {}% = {}", modifier.getValue(), customMultiplier, (int) result);
-        yield (int) result;
+        // Fixed amount added to base price with custom multiplier
+        long adjustment = (long) modifier.getValue() * customMultiplier / 100;
+        log.debug("Extra services ADD adjustment: {} * {}% = {} (added to base price {})",
+            modifier.getValue(), customMultiplier, (int) adjustment, basePrice);
+        yield (int) adjustment;
       }
       case SUBTRACT -> {
-        // Fixed amount discount with custom multiplier
-        long result = (long) modifier.getValue() * customMultiplier / 100;
-        log.debug("Extra services SUBTRACT adjustment: {} * {}% = {}", modifier.getValue(), customMultiplier, (int) result);
-        yield -(int) result;
+        // Fixed amount discount from base price with custom multiplier
+        long discount = (long) modifier.getValue() * customMultiplier / 100;
+        log.debug("Extra services SUBTRACT adjustment: {} * {}% = {} (subtracted from base price {})",
+            modifier.getValue(), customMultiplier, (int) discount, basePrice);
+        yield -(int) discount;
       }
       case MULTIPLY -> {
-        // Multiplier value (e.g., 15000 = 1.5x) with custom multiplier applied
+        // Multiplier applied to base price (e.g., 15000 = 1.5x) with custom multiplier
         long multiplier = (long) modifier.getValue() * customMultiplier / 100;
-        log.debug("Extra services MULTIPLY: multiplier {} * {}% = {}", modifier.getValue(), customMultiplier, multiplier);
-        yield (int) multiplier;
+        long finalPrice = (long) basePrice * multiplier / 10000;
+        long adjustment = finalPrice - basePrice;
+        log.debug("Extra services MULTIPLY: basePrice {} * ({} * {}% / 10000) = {} (adjustment: {})",
+            basePrice, modifier.getValue(), customMultiplier, finalPrice, adjustment);
+        yield (int) adjustment;
       }
       case DIVIDE -> {
-        // Division value (e.g., 20000 = divide by 2) with custom multiplier
+        // Division applied to base price (e.g., 20000 = divide by 2) with custom multiplier
         long divisor = (long) modifier.getValue() * customMultiplier / 100;
-        log.debug("Extra services DIVIDE: divisor {} * {}% = {}", modifier.getValue(), customMultiplier, divisor);
-        yield (int) divisor;
+        long finalPrice = divisor != 0 ? (long) basePrice * 10000 / divisor : basePrice;
+        long adjustment = finalPrice - basePrice;
+        log.debug("Extra services DIVIDE: basePrice {} / ({} * {}% / 100) = {} (adjustment: {})",
+            basePrice, modifier.getValue(), customMultiplier, finalPrice, adjustment);
+        yield (int) adjustment;
       }
     };
   }
