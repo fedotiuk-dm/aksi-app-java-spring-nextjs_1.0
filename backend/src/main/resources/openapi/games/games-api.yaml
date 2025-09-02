@@ -24,6 +24,8 @@ tags:
     description: Boosters management
   - name: price-configurations
     description: Price configurations management
+  - name: modifiers
+    description: Game modifiers management
   - name: calculator
     description: Price calculation operations
 
@@ -61,6 +63,16 @@ paths:
     $ref: "./paths/price-configurations-paths.yaml#/paths/~1api~1games~1price-configurations"
   /api/games/price-configurations/{configId}:
     $ref: "./paths/price-configurations-paths.yaml#/paths/~1api~1games~1price-configurations~1{configId}"
+
+  # Modifiers endpoints
+  /api/games/modifiers:
+    $ref: "./paths/modifiers-paths.yaml#/paths/~1api~1games~1modifiers"
+  /api/games/modifiers/{modifierId}:
+    $ref: "./paths/modifiers-paths.yaml#/paths/~1api~1games~1modifiers~1{modifierId}"
+  /api/games/modifiers/{modifierId}/activate:
+    $ref: "./paths/modifiers-paths.yaml#/paths/~1api~1games~1modifiers~1{modifierId}~1activate"
+  /api/games/modifiers/{modifierId}/deactivate:
+    $ref: "./paths/modifiers-paths.yaml#/paths/~1api~1games~1modifiers~1{modifierId}~1deactivate"
 
   # Calculator endpoints
   /api/games/calculator/calculate:
@@ -166,6 +178,24 @@ components:
       $ref: "./schemas/calculator-schemas.yaml#/components/schemas/CalculationResult"
     CalculationBreakdown:
       $ref: "./schemas/calculator-schemas.yaml#/components/schemas/CalculationBreakdown"
+
+    # Import all schemas from modifiers-schemas.yaml
+    GameModifierType:
+      $ref: "./schemas/modifiers-schemas.yaml#/components/schemas/GameModifierType"
+    GameModifierOperation:
+      $ref: "./schemas/modifiers-schemas.yaml#/components/schemas/GameModifierOperation"
+    GameModifier:
+      $ref: "./schemas/modifiers-schemas.yaml#/components/schemas/GameModifier"
+    GameModifierInfo:
+      $ref: "./schemas/modifiers-schemas.yaml#/components/schemas/GameModifierInfo"
+    CreateGameModifierRequest:
+      $ref: "./schemas/modifiers-schemas.yaml#/components/schemas/CreateGameModifierRequest"
+    UpdateGameModifierRequest:
+      $ref: "./schemas/modifiers-schemas.yaml#/components/schemas/UpdateGameModifierRequest"
+    GameModifiersResponse:
+      $ref: "./schemas/modifiers-schemas.yaml#/components/schemas/GameModifiersResponse"
+    GameModifierFilter:
+      $ref: "./schemas/modifiers-schemas.yaml#/components/schemas/GameModifierFilter"
 
     # Common schemas (if needed locally)
     PaginatedResponse:

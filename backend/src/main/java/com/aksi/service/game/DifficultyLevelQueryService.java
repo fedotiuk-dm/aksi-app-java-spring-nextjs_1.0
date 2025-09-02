@@ -115,14 +115,14 @@ public class DifficultyLevelQueryService {
 
     return new DifficultyLevelListResponse(
         difficultyLevels,
-        pagination.totalElements,
-        pagination.totalPages,
-        pagination.size,
-        pagination.number,
-        pagination.numberOfElements,
-        pagination.first,
-        pagination.last,
-        pagination.empty);
+        pagination.totalElements(),
+        pagination.totalPages(),
+        pagination.size(),
+        pagination.number(),
+        pagination.numberOfElements(),
+        pagination.first(),
+        pagination.last(),
+        pagination.empty());
   }
 
   /**

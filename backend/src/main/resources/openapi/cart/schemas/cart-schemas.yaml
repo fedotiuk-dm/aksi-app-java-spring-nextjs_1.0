@@ -124,7 +124,7 @@ components:
           type: string
           description: Modifier name
         type:
-          $ref: "../../common.yaml#/components/schemas/ModifierType"
+          $ref: "../../common.yaml#/components/schemas/PricingModifierType"
         value:
           type: number
           description: Modifier value (percentage or fixed amount)

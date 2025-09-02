@@ -23,14 +23,19 @@ import {
   Rating,
   TextField,
   Alert,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   Search as SearchIcon,
+  Refresh as RefreshIcon,
 } from '@mui/icons-material';
-import { useBoosterManagement } from './useBoosterManagement.hook';
+import { useBoosterManagement } from '@game-boosting-calculator/hooks';
 
 import { BoosterCreateModal } from '../modals/BoosterCreateModal';
 import { BoosterEditModal } from '../modals/BoosterEditModal';
@@ -44,43 +49,88 @@ export const BoosterManagement = () => {
     boosters,
     isLoading,
     error,
+    statusFilter,
+    setStatusFilter,
     handleCreateBooster,
     handleUpdateBooster,
     handleDeleteBooster,
+    refreshBoosters,
   } = useBoosterManagement();
 
-  // Filter boosters based on search
-  const filteredBoosters = boosters.filter(
-    (booster) =>
+  // Filter boosters based on search and status
+  const filteredBoosters = boosters.filter((booster) => {
+    // Search filter
+    const matchesSearch =
       booster.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booster.discordUsername.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      booster.discordUsername.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Status filter
+    let matchesStatus = true;
+    if (statusFilter === 'active') {
+      matchesStatus = booster.active === true;
+    } else if (statusFilter === 'inactive') {
+      matchesStatus = booster.active === false;
+    }
+
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <Box>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h5" component="h1">
-          Booster Management
-        </Typography>
-        <BoosterCreateModal onCreate={handleCreateBooster}>
-          <Button variant="contained" startIcon={<AddIcon />}>
-            Add Booster
+        <Box>
+          <Typography variant="h5" component="h1">
+            Booster Management
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Total: {boosters.length} boosters • {boosters.filter((b) => b.active).length} active
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            variant="outlined"
+            startIcon={<RefreshIcon />}
+            onClick={refreshBoosters}
+            disabled={isLoading}
+            size="small"
+          >
+            Refresh
           </Button>
-        </BoosterCreateModal>
+          <BoosterCreateModal onCreate={handleCreateBooster}>
+            <Button variant="contained" startIcon={<AddIcon />}>
+              Add Booster
+            </Button>
+          </BoosterCreateModal>
+        </Box>
       </Box>
 
-      {/* Search */}
+      {/* Search and Filters */}
       <Paper sx={{ p: 2, mb: 3 }}>
-        <TextField
-          placeholder="Search boosters..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-          }}
-          size="small"
-          fullWidth
-        />
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+          <TextField
+            placeholder="Search boosters..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+            }}
+            size="small"
+            sx={{ minWidth: 250 }}
+          />
+
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={statusFilter}
+              label="Status"
+              onChange={(e) => setStatusFilter(e.target.value as '' | 'active' | 'inactive')}
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="active">Active</MenuItem>
+              <MenuItem value="inactive">Inactive</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </Paper>
 
       {/* Boosters Table */}

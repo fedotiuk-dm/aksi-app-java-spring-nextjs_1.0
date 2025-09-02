@@ -9,157 +9,96 @@ import com.aksi.api.game.dto.CreateGameRequest;
 import com.aksi.api.game.dto.Game;
 import com.aksi.api.game.dto.UpdateGameRequest;
 import com.aksi.domain.game.GameEntity;
-import com.aksi.exception.ConflictException;
-import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.GameMapper;
 import com.aksi.repository.GameRepository;
+import com.aksi.service.game.util.EntityQueryUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Command service for game-related write operations. Handles all game modifications and state
- * changes.
+ * Command service for game operations (create, update, delete).
  */
 @Service
-@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class GameCommandService {
 
-  private final GameRepository gameRepository;
-  private final GameMapper gameMapper;
-  private final GameValidationService validationService;
+    private final GameRepository gameRepository;
+    private final GameMapper gameMapper;
+    private final EntityQueryUtils entityQueryUtils;
+    private final GameValidationService gameValidationService;
 
-  /**
-   * Create new game.
-   *
-   * @param request Create game request
-   * @return Created game information
-   */
-  public Game createGame(CreateGameRequest request) {
-    log.info("Creating new game: {}", request.getName());
+    // Game operations
 
-    // Validate request
-    validationService.validateCreateGame(request);
+    /**
+     * Create a new game.
+     */
+    @Transactional
+    public Game createGame(CreateGameRequest request) {
+        log.info("Creating game: {}", request.getName());
 
-    // Create and save entity
-    GameEntity gameEntity = gameMapper.toGameEntity(request);
-    GameEntity saved = gameRepository.save(gameEntity);
+        // Validate request
+        gameValidationService.validateCreateGame(request);
 
-    log.info("Created game with ID: {}", saved.getId());
-    return gameMapper.toGameDto(saved);
-  }
+        GameEntity entity = gameMapper.toGameEntity(request);
+        entity.setId(UUID.randomUUID());
+        entity.setActive(true);
 
-  /**
-   * Update existing game.
-   *
-   * @param gameId Game ID
-   * @param request Update game request
-   * @return Updated game information
-   * @throws NotFoundException if game not found
-   */
-  public Game updateGame(UUID gameId, UpdateGameRequest request) {
-    log.info("Updating game: {}", gameId);
+        GameEntity saved = gameRepository.save(entity);
+        log.info("Created game with ID: {}", saved.getId());
 
-    // Validate update request
-    validationService.validateUpdateGame(gameId, request);
-
-    // Find existing game
-    GameEntity gameEntity =
-        gameRepository
-            .findById(gameId)
-            .orElseThrow(
-                () -> new com.aksi.exception.NotFoundException("Game not found: " + gameId));
-
-    // Update entity using MapStruct
-    gameMapper.updateGameFromDto(request, gameEntity);
-
-    GameEntity updated = gameRepository.save(gameEntity);
-    log.info("Updated game: {}", gameId);
-
-    return gameMapper.toGameDto(updated);
-  }
-
-  /**
-   * Delete game.
-   *
-   * @param gameId Game ID
-   * @throws NotFoundException if game not found
-   * @throws ConflictException if game has dependent entities
-   */
-  public void deleteGame(UUID gameId) {
-    log.info("Deleting game: {}", gameId);
-
-    // Validate game exists for deletion
-    validationService.validateGameExistsForDeletion(gameId);
-
-    GameEntity gameEntity =
-        gameRepository
-            .findById(gameId)
-            .orElseThrow(() -> new NotFoundException("Game not found: " + gameId));
-
-    // Check for dependent entities (difficulty levels, service types, etc.)
-    if (!gameEntity.getDifficultyLevels().isEmpty()) {
-      throw new ConflictException("Cannot delete game with existing difficulty levels");
-    }
-    if (!gameEntity.getPriceConfigurations().isEmpty()) {
-      throw new ConflictException("Cannot delete game with existing price configurations");
+        return gameMapper.toGameDto(saved);
     }
 
-    gameRepository.deleteById(gameId);
-    log.info("Deleted game: {}", gameId);
-  }
+    /**
+     * Update an existing game.
+     */
+    @Transactional
+    public Game updateGame(UUID gameId, UpdateGameRequest request) {
+        log.info("Updating game: {}", gameId);
 
-  /**
-   * Activate a game.
-   *
-   * @param gameId Game ID
-   * @return Updated game information
-   * @throws NotFoundException if game not found
-   * @throws ConflictException if game is already active
-   */
-  public Game activateGame(UUID gameId) {
-    log.info("Activating game: {}", gameId);
+        // Validate request
+        gameValidationService.validateUpdateGame(gameId, request);
 
-    GameEntity gameEntity =
-        gameRepository
-            .findById(gameId)
-            .orElseThrow(() -> new NotFoundException("Game not found: " + gameId));
+        GameEntity entity = entityQueryUtils.findGameEntity(gameId);
+        gameMapper.updateGameFromDto(request, entity);
 
-    // Validate activation
-    validationService.validateGameActivation(gameId, gameEntity.getActive(), true);
+        GameEntity saved = gameRepository.save(entity);
+        log.info("Updated game: {}", gameId);
 
-    gameEntity.setActive(true);
-    GameEntity updated = gameRepository.save(gameEntity);
+        return gameMapper.toGameDto(saved);
+    }
 
-    log.info("Activated game: {}", gameId);
-    return gameMapper.toGameDto(updated);
-  }
+    /**
+     * Delete a game.
+     */
+    @Transactional
+    public void deleteGame(UUID gameId) {
+        log.info("Deleting game: {}", gameId);
 
-  /**
-   * Deactivate a game.
-   *
-   * @param gameId Game ID
-   * @return Updated game information
-   * @throws NotFoundException if game not found
-   * @throws ConflictException if game is already inactive
-   */
-  public Game deactivateGame(UUID gameId) {
-    log.info("Deactivating game: {}", gameId);
+        gameValidationService.validateGameExistsForDeletion(gameId);
+        gameRepository.deleteById(gameId);
 
-    GameEntity gameEntity =
-        gameRepository
-            .findById(gameId)
-            .orElseThrow(() -> new NotFoundException("Game not found: " + gameId));
+        log.info("Deleted game: {}", gameId);
+    }
 
-    // Validate deactivation
-    validationService.validateGameActivation(gameId, gameEntity.getActive(), false);
+    /**
+     * Set game active status.
+     */
+    @Transactional
+    public Game setActive(UUID gameId, boolean active) {
+        log.info("Setting game {} active status to: {}", gameId, active);
 
-    gameEntity.setActive(false);
-    GameEntity updated = gameRepository.save(gameEntity);
+        GameEntity entity = entityQueryUtils.findGameEntity(gameId);
 
-    log.info("Deactivated game: {}", gameId);
-    return gameMapper.toGameDto(updated);
-  }
+        // Validate activation/deactivation
+        gameValidationService.validateGameActivation(gameId, entity.getActive(), active);
+
+        entity.setActive(active);
+        GameEntity saved = gameRepository.save(entity);
+
+        log.info("Set game {} active status to: {}", gameId, active);
+        return gameMapper.toGameDto(saved);
+    }
 }

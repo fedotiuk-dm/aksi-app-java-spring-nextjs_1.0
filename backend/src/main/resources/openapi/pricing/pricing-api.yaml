@@ -100,8 +100,8 @@ components:
       $ref: "../common.yaml#/components/schemas/ServiceCategoryType"
     UnitOfMeasure:
       $ref: "../common.yaml#/components/schemas/UnitOfMeasure"
-    ModifierType:
-      $ref: "../common.yaml#/components/schemas/ModifierType"
+    PricingModifierType:
+      $ref: "../common.yaml#/components/schemas/PricingModifierType"
     DiscountType:
       $ref: "../common.yaml#/components/schemas/DiscountType"
     UrgencyType:

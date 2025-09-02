@@ -1,9 +1,9 @@
-import type { PriceModifierDto } from '@api/pricing';
+import type { PriceModifier } from '@api/pricing';
 import type { PriceListItemInfoCategoryCode } from '@api/priceList';
 import { formatModifierValue } from './formatting.utils';
 
 export const filterModifiersByCategory = (
-  modifiers: PriceModifierDto[],
+  modifiers: PriceModifier[],
   selectedCategoryCode: PriceListItemInfoCategoryCode | ''
 ) => {
   return modifiers.filter(
@@ -14,10 +14,7 @@ export const filterModifiersByCategory = (
   );
 };
 
-export const getFormattedModifiers = (
-  modifiers: PriceModifierDto[],
-  selectedModifiers: string[]
-) => {
+export const getFormattedModifiers = (modifiers: PriceModifier[], selectedModifiers: string[]) => {
   return modifiers.map((modifier) => ({
     ...modifier,
     displayValue: formatModifierValue(modifier.value, modifier.type),

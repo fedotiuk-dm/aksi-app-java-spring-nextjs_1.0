@@ -153,8 +153,8 @@ components:
       $ref: "../common.yaml#/components/schemas/DefectType"
     RiskType:
       $ref: "../common.yaml#/components/schemas/RiskType"
-    ModifierType:
-      $ref: "../common.yaml#/components/schemas/ModifierType"
+    PricingModifierType:
+      $ref: "../common.yaml#/components/schemas/PricingModifierType"
     PaginatedResponse:
       $ref: "../common.yaml#/components/schemas/PaginatedResponse"
 

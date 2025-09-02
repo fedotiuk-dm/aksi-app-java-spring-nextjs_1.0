@@ -49,7 +49,7 @@ package-lock.json
 *.tsbuildinfo
 next-env.d.ts
 
-# Інші файли
+# Other
 .eslintcache
 .jest-cache
 .swc
@@ -93,9 +93,13 @@ next-env.d.ts
 .github/
 .husky/
 
-# Системні файли
+# System files
 Thumbs.db
 
-# Секретні файли
+# Secret files
 *.key
 *.env
+
+# Згенеровані API файли (Orval) - не комітити в Git
+/shared/api/
+/shared/api/**/*

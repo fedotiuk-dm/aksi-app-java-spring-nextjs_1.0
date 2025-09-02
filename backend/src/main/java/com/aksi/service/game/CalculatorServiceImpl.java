@@ -22,7 +22,7 @@ public class CalculatorServiceImpl implements CalculatorService {
   private final CalculatorCommandService commandService;
   // Query service is reserved for future read operations (e.g., calculation history, settings)
   // Currently not used as calculator primarily performs calculations, not data retrieval
-  private final CalculatorQueryService queryService;
+  // private final CalculatorQueryService queryService; // Temporarily disabled
 
   // Command operations (write)
 

@@ -21,8 +21,7 @@ import {
   Switch,
   FormControlLabel,
 } from '@mui/material';
-import type { Game } from '@api/game';
-import { CreateGameRequestCategory, UpdateGameRequestCategory } from '@api/game';
+import type { Game, UpdateGameRequestCategory } from '@api/game';
 
 interface GameEditModalProps {
   children: React.ReactNode;

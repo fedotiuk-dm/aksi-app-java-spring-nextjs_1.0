@@ -8,8 +8,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import com.aksi.api.pricing.dto.DiscountDto;
-import com.aksi.api.pricing.dto.PriceModifierDto;
+import com.aksi.api.pricing.dto.Discount;
+import com.aksi.api.pricing.dto.PriceModifier;
 import com.aksi.domain.pricing.DiscountEntity;
 import com.aksi.domain.pricing.PriceModifierEntity;
 
@@ -19,7 +19,7 @@ public interface PricingMapper {
 
   // PriceModifier mappings
 
-  PriceModifierDto toPriceModifierDto(PriceModifierEntity entity);
+  PriceModifier toPriceModifier(PriceModifierEntity entity);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
@@ -27,7 +27,7 @@ public interface PricingMapper {
   @Mapping(target = "version", ignore = true)
   @Mapping(target = "jexlFormula", ignore = true)
   @Mapping(target = "sortOrder", constant = "0")
-  PriceModifierEntity toPriceModifierEntity(PriceModifierDto dto);
+  PriceModifierEntity toPriceModifierEntity(PriceModifier dto);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mapping(target = "id", ignore = true)
@@ -36,20 +36,20 @@ public interface PricingMapper {
   @Mapping(target = "version", ignore = true)
   @Mapping(target = "jexlFormula", ignore = true)
   @Mapping(target = "sortOrder", ignore = true)
-  void updatePriceModifierFromDto(PriceModifierDto dto, @MappingTarget PriceModifierEntity entity);
+  void updatePriceModifierFromDto(PriceModifier dto, @MappingTarget PriceModifierEntity entity);
 
-  List<PriceModifierDto> toPriceModifierDtoList(List<PriceModifierEntity> entities);
+  List<PriceModifier> toPriceModifierList(List<PriceModifierEntity> entities);
 
   // Discount mappings
 
-  DiscountDto toDiscountDto(DiscountEntity entity);
+  Discount toDiscount(DiscountEntity entity);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "version", ignore = true)
   @Mapping(target = "sortOrder", constant = "0")
-  DiscountEntity toDiscountEntity(DiscountDto dto);
+  DiscountEntity toDiscountEntity(Discount dto);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mapping(target = "id", ignore = true)
@@ -57,7 +57,7 @@ public interface PricingMapper {
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "version", ignore = true)
   @Mapping(target = "sortOrder", ignore = true)
-  void updateDiscountFromDto(DiscountDto dto, @MappingTarget DiscountEntity entity);
+  void updateDiscountFromDto(Discount dto, @MappingTarget DiscountEntity entity);
 
-  List<DiscountDto> toDiscountDtoList(List<DiscountEntity> entities);
+  List<Discount> toDiscountList(List<DiscountEntity> entities);
 }

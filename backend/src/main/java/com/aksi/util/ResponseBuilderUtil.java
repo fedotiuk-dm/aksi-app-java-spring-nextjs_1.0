@@ -1,5 +1,6 @@
 package com.aksi.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -34,92 +35,85 @@ public class ResponseBuilderUtil {
   }
 
   /**
-   * Create a new ListResponse with pagination data. This eliminates the repetitive pattern of
-   * manually setting all pagination fields in response constructors.
+   * Simple data holder for pagination information.
    *
-   * @param data List of items
-   * @param page Page object for pagination data
-   * @return Object array with constructor parameters: [data, totalElements, totalPages, size,
-   *     number, numberOfElements, first, last, empty]
+   * @param totalElements    Total number of elements across all pages.
+   * @param totalPages       Total number of pages available.
+   * @param size             Size of each page.
+   * @param number           Current page number (0-based).
+   * @param numberOfElements Number of elements in the current page.
+   * @param first            Whether this is the first page.
+   * @param last             Whether this is the last page.
+   * @param empty            Whether the current page is empty.
    */
-  public static Object[] createPaginationParams(List<?> data, Page<?> page) {
-    return new Object[] {
-      data,
-      page.getTotalElements(),
-      page.getTotalPages(),
-      page.getSize(),
-      page.getNumber(),
-      page.getNumberOfElements(),
-      page.isFirst(),
-      page.isLast(),
-      page.isEmpty()
-    };
+    public record PaginationData(long totalElements, int totalPages, int size, int number, int numberOfElements,
+                                 boolean first, boolean last, boolean empty) {
   }
 
   /**
-   * Create pagination params for single-page responses (no pagination).
+   * Base interface for all paginated response objects.
+   * Eliminates reflection and provides type-safe pagination setup.
    *
-   * @param data List of items
-   * @return Object array with single-page constructor parameters
+   * @param <T> Type of data items in the response
    */
-  public static Object[] createSinglePageParams(List<?> data) {
-    long totalElements = data.size();
-    return new Object[] {
-      data,
-      totalElements, // totalElements
-      1, // totalPages
-      (int) totalElements, // size
-      0, // number
-      (int) totalElements, // numberOfElements
-      true, // first
-      true, // last
-      data.isEmpty() // empty
-    };
+  public interface PaginatedResponse<T> {
+    void setData(List<T> data);
+    void setTotalElements(long totalElements);
+    void setTotalPages(int totalPages);
+    void setSize(int size);
+    void setNumber(int number);
+    void setNumberOfElements(int numberOfElements);
+    void setFirst(boolean first);
+    void setLast(boolean last);
+    void setEmpty(boolean empty);
   }
 
-  /** Simple data holder for pagination information. */
-  public static class PaginationData {
-    /** Total number of elements across all pages. */
-    public final long totalElements;
+  /**
+   * Build paginated response for generated OpenAPI classes using reflection.
+   * This is Variant 4 adapted for generated classes that can't implement interfaces.
+   *
+   * @param <T> Generated response type
+   * @param <D> Data item type
+   * @param responseFactory Factory function to create response instance
+   * @param data List of data items
+   * @param page Page with pagination info
+   * @return New response instance with data populated
+   */
+  public static <T, D> T buildGeneratedPaginatedResponse(
+      java.util.function.Supplier<T> responseFactory,
+      List<D> data,
+      Page<?> page) {
 
-    /** Total number of pages available. */
-    public final int totalPages;
+    T response = responseFactory.get();
 
-    /** Size of each page. */
-    public final int size;
+    // Use reflection for generated classes
+    invokeSetterSafely(response, "setData", List.class, data);
+    invokeSetterSafely(response, "setTotalElements", long.class, page.getTotalElements());
+    invokeSetterSafely(response, "setTotalPages", int.class, page.getTotalPages());
+    invokeSetterSafely(response, "setSize", int.class, page.getSize());
+    invokeSetterSafely(response, "setNumber", int.class, page.getNumber());
+    invokeSetterSafely(response, "setNumberOfElements", int.class, page.getNumberOfElements());
+    invokeSetterSafely(response, "setFirst", boolean.class, page.isFirst());
+    invokeSetterSafely(response, "setLast", boolean.class, page.isLast());
+    invokeSetterSafely(response, "setEmpty", boolean.class, page.isEmpty());
 
-    /** Current page number (0-based). */
-    public final int number;
+    return response;
+  }
 
-    /** Number of elements in the current page. */
-    public final int numberOfElements;
-
-    /** Whether this is the first page. */
-    public final boolean first;
-
-    /** Whether this is the last page. */
-    public final boolean last;
-
-    /** Whether the current page is empty. */
-    public final boolean empty;
-
-    public PaginationData(
-        long totalElements,
-        int totalPages,
-        int size,
-        int number,
-        int numberOfElements,
-        boolean first,
-        boolean last,
-        boolean empty) {
-      this.totalElements = totalElements;
-      this.totalPages = totalPages;
-      this.size = size;
-      this.number = number;
-      this.numberOfElements = numberOfElements;
-      this.first = first;
-      this.last = last;
-      this.empty = empty;
+  /**
+   * Safely invoke setter method with proper error handling.
+   */
+  private static void invokeSetterSafely(Object target, String methodName, Class<?> paramType, Object value) {
+    try {
+      var method = target.getClass().getDeclaredMethod(methodName, paramType);
+      method.invoke(target, value);
+    } catch (NoSuchMethodException e) {
+      throw new IllegalArgumentException(
+        "Generated response class " + target.getClass().getSimpleName() +
+        " does not have required method: " + methodName, e);
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      throw new RuntimeException(
+        "Failed to invoke " + methodName + " on " + target.getClass().getSimpleName(), e);
     }
   }
 }

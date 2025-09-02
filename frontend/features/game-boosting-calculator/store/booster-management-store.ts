@@ -13,6 +13,9 @@ export interface BoosterManagementStore {
   isLoading: boolean;
   error: string | null;
 
+  // UI state
+  statusFilter: '' | 'active' | 'inactive';
+
   // Actions - UI state management only
   setBoosters: (boosters: Booster[]) => void;
   setLoading: (loading: boolean) => void;
@@ -21,6 +24,7 @@ export interface BoosterManagementStore {
   updateBoosterInList: (boosterId: string, boosterData: Partial<Booster>) => void;
   removeBooster: (boosterId: string) => void;
   clearError: () => void;
+  setStatusFilter: (statusFilter: '' | 'active' | 'inactive') => void;
 }
 
 export const useBoosterManagementStore = create<BoosterManagementStore>()(
@@ -30,6 +34,7 @@ export const useBoosterManagementStore = create<BoosterManagementStore>()(
       boosters: [],
       isLoading: false,
       error: null,
+      statusFilter: '',
 
       // Actions - UI state management only
       setBoosters: (boosters: Booster[]) => {
@@ -66,6 +71,10 @@ export const useBoosterManagementStore = create<BoosterManagementStore>()(
 
       clearError: () => {
         set({ error: null });
+      },
+
+      setStatusFilter: (statusFilter: '' | 'active' | 'inactive') => {
+        set({ statusFilter });
       },
     }),
     {

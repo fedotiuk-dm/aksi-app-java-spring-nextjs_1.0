@@ -1,0 +1,239 @@
+paths:
+  /api/games/modifiers:
+    get:
+      tags:
+        - modifiers
+      summary: Get all game modifiers
+      description: Retrieve a list of all game modifiers with optional filtering
+      operationId: listGameModifiers
+      parameters:
+        - $ref: "../../common.yaml#/components/parameters/PageNumber"
+        - $ref: "../../common.yaml#/components/parameters/PageSize"
+        - $ref: "../../common.yaml#/components/parameters/SortBy"
+        - $ref: "../../common.yaml#/components/parameters/SortOrder"
+        - $ref: "../../common.yaml#/components/parameters/Search"
+        - name: gameCode
+          in: query
+          description: Filter by game code
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Filter by modifier type
+          schema:
+            $ref: "../schemas/modifiers-schemas.yaml#/components/schemas/GameModifierType"
+        - name: operation
+          in: query
+          description: Filter by operation type
+          schema:
+            $ref: "../schemas/modifiers-schemas.yaml#/components/schemas/GameModifierOperation"
+        - name: active
+          in: query
+          description: Filter by active status
+          schema:
+            type: boolean
+        - name: serviceTypeCode
+          in: query
+          description: Filter by service type
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/modifiers-schemas.yaml#/components/schemas/GameModifiersResponse"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+    post:
+      tags:
+        - modifiers
+      summary: Create a new game modifier
+      description: Create a new game modifier for a specific game
+      operationId: createGameModifier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/modifiers-schemas.yaml#/components/schemas/CreateGameModifierRequest"
+      responses:
+        "201":
+          description: Modifier created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/modifiers-schemas.yaml#/components/schemas/GameModifierInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "409":
+          description: Modifier code already exists
+          content:
+            application/json:
+              schema:
+                $ref: "../../common.yaml#/components/schemas/ErrorResponse"
+
+  /api/games/modifiers/{modifierId}:
+    get:
+      tags:
+        - modifiers
+      summary: Get game modifier by ID
+      description: Retrieve a specific game modifier by its ID
+      operationId: getGameModifier
+      parameters:
+        - name: modifierId
+          in: path
+          required: true
+          description: Game modifier ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/modifiers-schemas.yaml#/components/schemas/GameModifierInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    put:
+      tags:
+        - modifiers
+      summary: Update game modifier
+      description: Update an existing game modifier
+      operationId: updateGameModifier
+      parameters:
+        - name: modifierId
+          in: path
+          required: true
+          description: Game modifier ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/modifiers-schemas.yaml#/components/schemas/UpdateGameModifierRequest"
+      responses:
+        "200":
+          description: Modifier updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/modifiers-schemas.yaml#/components/schemas/GameModifierInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    delete:
+      tags:
+        - modifiers
+      summary: Delete game modifier
+      description: Delete a game modifier by ID
+      operationId: deleteGameModifier
+      parameters:
+        - name: modifierId
+          in: path
+          required: true
+          description: Game modifier ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Modifier deleted successfully
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/games/modifiers/{modifierId}/activate:
+    post:
+      tags:
+        - modifiers
+      summary: Activate game modifier
+      description: Activate a game modifier by ID
+      operationId: activateGameModifier
+      parameters:
+        - name: modifierId
+          in: path
+          required: true
+          description: Game modifier ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Modifier activated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/modifiers-schemas.yaml#/components/schemas/GameModifierInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/games/modifiers/{modifierId}/deactivate:
+    post:
+      tags:
+        - modifiers
+      summary: Deactivate game modifier
+      description: Deactivate a game modifier by ID
+      operationId: deactivateGameModifier
+      parameters:
+        - name: modifierId
+          in: path
+          required: true
+          description: Game modifier ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Modifier deactivated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/modifiers-schemas.yaml#/components/schemas/GameModifierInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"

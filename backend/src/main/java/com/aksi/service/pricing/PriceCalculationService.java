@@ -9,6 +9,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.aksi.api.pricing.dto.DiscountType;
+import com.aksi.api.pricing.dto.PricingOperationType;
 import com.aksi.api.pricing.dto.UrgencyType;
 import com.aksi.domain.pricing.PriceModifierEntity;
 
@@ -48,16 +49,36 @@ public class PriceCalculationService {
       Set.of("LAUNDRY", "IRONING", "DYEING");
 
   /**
-   * Calculate modifier amount based on type. Following OrderWizard steps 3-5: special modifiers,
-   * multipliers, fixed services
+   * Calculate modifier amount based on type and operation. Following OrderWizard steps 3-5: special modifiers,
+   * multipliers, fixed services. Now supports PricingOperationType for flexible modifier application.
    */
   public int calculateModifierAmount(PriceModifierEntity modifier, int baseAmount, int quantity) {
-    return switch (modifier.getType()) {
+    int rawAmount = switch (modifier.getType()) {
       case PERCENTAGE -> calculatePercentageFromBasisPoints(baseAmount, modifier.getValue());
       case FIXED -> modifier.getValue() * quantity;
       case FORMULA -> 0; // handled as base override in ModifierCalculator
       case MULTIPLIER -> calculateMultiplierAmount(baseAmount, modifier.getValue());
       case DISCOUNT -> calculateDiscountAmount(baseAmount, modifier.getValue());
+    };
+
+    // Apply operation type to determine final adjustment
+    return applyOperation(modifier.getOperation(), baseAmount, rawAmount);
+  }
+
+  /**
+   * Apply operation type to calculate final adjustment amount.
+   *
+   * @param operation The operation to apply
+   * @param baseAmount Base amount for relative operations
+   * @param adjustment Raw adjustment value
+   * @return Final adjustment amount in kopiykas
+   */
+  private int applyOperation(PricingOperationType operation, int baseAmount, int adjustment) {
+    return switch (operation) {
+      case ADD -> adjustment;
+      case SUBTRACT -> -Math.abs(adjustment);
+      case MULTIPLY -> (int) ((long) baseAmount * adjustment / 10000); // adjustment as multiplier (100 = 1.0x)
+      case DIVIDE -> adjustment != 0 ? (int) -((long) baseAmount * 10000 / adjustment) : 0;
     };
   }
 

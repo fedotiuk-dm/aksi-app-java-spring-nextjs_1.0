@@ -7,11 +7,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aksi.api.pricing.PricingApi;
-import com.aksi.api.pricing.dto.DiscountDto;
+import com.aksi.api.pricing.dto.Discount;
 import com.aksi.api.pricing.dto.DiscountsResponse;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
-import com.aksi.api.pricing.dto.PriceModifierDto;
+import com.aksi.api.pricing.dto.PriceModifier;
 import com.aksi.api.pricing.dto.PriceModifiersResponse;
 import com.aksi.api.pricing.dto.ServiceCategoryType;
 import com.aksi.api.pricing.dto.SortOrder;
@@ -52,16 +52,16 @@ public class PricingController implements PricingApi {
 
   @Override
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<PriceModifierDto> createPriceModifier(PriceModifierDto priceModifierDto) {
-    PriceModifierDto created = pricingService.createPriceModifier(priceModifierDto);
+  public ResponseEntity<PriceModifier> createPriceModifier(PriceModifier priceModifierDto) {
+    PriceModifier created = pricingService.createPriceModifier(priceModifierDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(created);
   }
 
   @Override
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<PriceModifierDto> updatePriceModifier(
-      String code, PriceModifierDto priceModifierDto) {
-    PriceModifierDto updated = pricingService.updatePriceModifier(code, priceModifierDto);
+  public ResponseEntity<PriceModifier> updatePriceModifier(
+      String code, PriceModifier priceModifierDto) {
+    PriceModifier updated = pricingService.updatePriceModifier(code, priceModifierDto);
     return ResponseEntity.ok(updated);
   }
 
@@ -76,15 +76,15 @@ public class PricingController implements PricingApi {
 
   @Override
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<DiscountDto> createDiscount(DiscountDto discountDto) {
-    DiscountDto created = pricingService.createDiscount(discountDto);
+  public ResponseEntity<Discount> createDiscount(Discount discountDto) {
+    Discount created = pricingService.createDiscount(discountDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(created);
   }
 
   @Override
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<DiscountDto> updateDiscount(String code, DiscountDto discountDto) {
-    DiscountDto updated = pricingService.updateDiscount(code, discountDto);
+  public ResponseEntity<Discount> updateDiscount(String code, Discount discountDto) {
+    Discount updated = pricingService.updateDiscount(code, discountDto);
     return ResponseEntity.ok(updated);
   }
 

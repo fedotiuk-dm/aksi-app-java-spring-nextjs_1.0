@@ -196,7 +196,7 @@ components:
           type: string
           description: Modifier name
         type:
-          $ref: "../../common.yaml#/components/schemas/ModifierType"
+          $ref: "../../common.yaml#/components/schemas/PricingModifierType"
         value:
           type: integer
           description: Modifier value (percentage in basis points *100 or fixed amount in kopiykas)
@@ -262,7 +262,12 @@ components:
           type: string
           description: Modifier description
         type:
-          $ref: "../../common.yaml#/components/schemas/ModifierType"
+          $ref: "../../common.yaml#/components/schemas/PricingModifierType"
+        operation:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/PricingOperationType"
+          description: Operation type for applying the modifier
+          default: ADD
         value:
           type: integer
           description: |

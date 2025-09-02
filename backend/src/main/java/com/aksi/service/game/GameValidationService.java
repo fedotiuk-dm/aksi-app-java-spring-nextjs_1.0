@@ -9,6 +9,7 @@ import com.aksi.api.game.dto.CreateGameRequest;
 import com.aksi.api.game.dto.UpdateGameRequest;
 import com.aksi.exception.BadRequestException;
 import com.aksi.exception.ConflictException;
+import com.aksi.service.game.util.EntityQueryUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GameValidationService {
 
-  private final GameQueryService gameQueryService;
+  private final EntityQueryUtils entityQueryUtils;
 
   /**
    * Validate create game request.
@@ -58,7 +59,7 @@ public class GameValidationService {
     }
 
     // Check if code already exists
-    if (gameQueryService.existsByCode(request.getCode())) {
+    if (entityQueryUtils.existsByCode(request.getCode())) {
       throw new ConflictException("Game with code '" + request.getCode() + "' already exists");
     }
 
@@ -90,7 +91,7 @@ public class GameValidationService {
     log.debug("Validating update game request for game: {}", gameId);
 
     // Validate game exists
-    if (!gameQueryService.existsById(gameId)) {
+    if (!entityQueryUtils.existsById(gameId)) {
       throw new BadRequestException("Game not found: " + gameId);
     }
 
@@ -138,7 +139,7 @@ public class GameValidationService {
   public void validateGameExistsForDeletion(UUID gameId) {
     log.debug("Validating game exists for deletion: {}", gameId);
 
-    if (!gameQueryService.existsById(gameId)) {
+    if (!entityQueryUtils.existsById(gameId)) {
       throw new BadRequestException("Game not found: " + gameId);
     }
   }
@@ -159,7 +160,7 @@ public class GameValidationService {
         currentActive,
         targetActive);
 
-    if (!gameQueryService.existsById(gameId)) {
+    if (!entityQueryUtils.existsById(gameId)) {
       throw new BadRequestException("Game not found: " + gameId);
     }
 

@@ -14,6 +14,7 @@ import com.aksi.exception.ConflictException;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.DifficultyLevelMapper;
 import com.aksi.repository.DifficultyLevelRepository;
+import com.aksi.service.game.util.EntityQueryUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class DifficultyLevelCommandService {
 
   private final DifficultyLevelRepository difficultyLevelRepository;
   private final DifficultyLevelMapper difficultyLevelMapper;
-  private final GameQueryService gameQueryService;
+  private final EntityQueryUtils entityQueryUtils;
   private final DifficultyLevelValidationService validationService;
 
   /**
@@ -47,7 +48,7 @@ public class DifficultyLevelCommandService {
     validationService.validateCreateDifficultyLevel(request);
 
     // Find game entity
-    GameEntity gameEntity = gameQueryService.findGameEntityById(request.getGameId());
+    GameEntity gameEntity = entityQueryUtils.findGameEntity(request.getGameId());
 
     // Create and save entity
     DifficultyLevelEntity difficultyLevelEntity =

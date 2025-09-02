@@ -122,7 +122,7 @@ public class PricingQueryService {
     var sortedModifiers = utils.sortPriceModifiers(modifiers, sortBy, sortOrder);
 
     // Step 3: Map entities to DTOs
-    var allModifiers = pricingMapper.toPriceModifierDtoList(sortedModifiers);
+    var allModifiers = pricingMapper.toPriceModifierList(sortedModifiers);
 
     // Step 4: Extract general modifiers and create response using factory
     var generalModifiers =
@@ -130,7 +130,7 @@ public class PricingQueryService {
             .filter(
                 m -> m.getCategoryRestrictions() == null || m.getCategoryRestrictions().isEmpty())
             .toList();
-    var generalModifierDtos = pricingMapper.toPriceModifierDtoList(generalModifiers);
+    var generalModifierDtos = pricingMapper.toPriceModifierList(generalModifiers);
 
     var response = factory.createPriceModifiersResponse(allModifiers, generalModifierDtos);
 
@@ -154,7 +154,7 @@ public class PricingQueryService {
     var sortedDiscounts = utils.sortDiscounts(discountEntities, sortBy, sortOrder);
 
     // Step 3: Build response using factory
-    var discountDtos = pricingMapper.toDiscountDtoList(sortedDiscounts);
+    var discountDtos = pricingMapper.toDiscountList(sortedDiscounts);
     var response = factory.createDiscountsResponse(discountDtos);
 
     log.debug("Retrieved {} sorted discounts", response.getDiscounts().size());

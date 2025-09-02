@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Custom hook for Booster Management
  * Handles all booster-related API operations and state management
@@ -10,21 +12,22 @@ import {
   useGamesUpdateBooster,
   useGamesDeleteBooster,
 } from '@api/game';
-import { useBoosterManagementStore } from '../../../store/booster-management-store';
+import { useBoosterManagementStore } from '@game-boosting-calculator/store';
 
 export const useBoosterManagement = () => {
-  // Orval API hooks
+  // UI state from store - single import
+  const { statusFilter, setStatusFilter, setBoosters, setLoading, setError, clearError } =
+    useBoosterManagementStore();
+
+  // Orval API hooks - get all boosters for management
   const listBoostersQuery = useGamesListBoosters({
     page: 0,
     size: 100,
-    active: true,
+    active: undefined, // Get all boosters (active and inactive)
   });
   const createBoosterMutation = useGamesCreateBooster();
   const updateBoosterMutation = useGamesUpdateBooster();
   const deleteBoosterMutation = useGamesDeleteBooster();
-
-  // UI state from store
-  const { setBoosters, setLoading, setError, clearError } = useBoosterManagementStore();
 
   // Sync API data with store
   useEffect(() => {
@@ -87,7 +90,10 @@ export const useBoosterManagement = () => {
         boosterId,
         data: boosterData,
       });
-      // List will automatically refresh due to React Query
+      // Manually refresh the list after update (especially for status changes)
+      setTimeout(() => {
+        listBoostersQuery.refetch();
+      }, 100);
     } catch (error) {
       console.error('Failed to update booster:', error);
       throw error;
@@ -104,12 +110,19 @@ export const useBoosterManagement = () => {
     }
   };
 
+  const refreshBoosters = () => {
+    listBoostersQuery.refetch();
+  };
+
   return {
     boosters,
     isLoading,
     error,
+    statusFilter,
+    setStatusFilter,
     handleCreateBooster,
     handleUpdateBooster,
     handleDeleteBooster,
+    refreshBoosters,
   };
 };

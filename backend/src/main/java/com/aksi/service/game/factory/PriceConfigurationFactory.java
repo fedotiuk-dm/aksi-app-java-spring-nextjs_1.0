@@ -66,28 +66,18 @@ public class PriceConfigurationFactory {
 
     log.debug("Updating PriceConfiguration entity: {}", entity.getId());
 
-    // Validate entities exist if IDs provided
-    if (request.getGameId() != null
-        || request.getDifficultyLevelId() != null
-        || request.getServiceTypeId() != null) {
-      entityValidationUtils.validateEntitiesExist(
-          request.getGameId(), request.getDifficultyLevelId(), request.getServiceTypeId());
-    }
+    // Validate entities exist (all IDs are required in UpdatePriceConfigurationRequest)
+    entityValidationUtils.validateEntitiesExist(
+        request.getGameId(), request.getDifficultyLevelId(), request.getServiceTypeId());
 
     // Update fields using MapStruct
     priceConfigurationMapper.updatePriceConfigurationFromDto(request, entity);
 
-    // Update relationships if IDs provided
-    if (request.getGameId() != null) {
-      entity.setGame(entityQueryUtils.findGameEntity(request.getGameId()));
-    }
-    if (request.getDifficultyLevelId() != null) {
-      entity.setDifficultyLevel(
-          entityQueryUtils.findDifficultyLevelEntity(request.getDifficultyLevelId()));
-    }
-    if (request.getServiceTypeId() != null) {
-      entity.setServiceType(entityQueryUtils.findServiceTypeEntity(request.getServiceTypeId()));
-    }
+    // Update relationships (all IDs are required)
+    entity.setGame(entityQueryUtils.findGameEntity(request.getGameId()));
+    entity.setDifficultyLevel(
+        entityQueryUtils.findDifficultyLevelEntity(request.getDifficultyLevelId()));
+    entity.setServiceType(entityQueryUtils.findServiceTypeEntity(request.getServiceTypeId()));
 
     return entity;
   }
