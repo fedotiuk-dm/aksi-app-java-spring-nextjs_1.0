@@ -6,10 +6,10 @@ Professional dry‑cleaning management system with a production‑grade Order Wi
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![Java](https://img.shields.io/badge/Java-21-ED8B00.svg)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.4-brightgreen.svg)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.5-brightgreen.svg)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791.svg)
 ![Redis](https://img.shields.io/badge/Redis-8--alpine-DC382D.svg)
-![Next.js](https://img.shields.io/badge/Next.js-15.3.4-black.svg)
+![Next.js](https://img.shields.io/badge/Next.js-15.4.5-black.svg)
 ![React](https://img.shields.io/badge/React-19.1.0-61DAFB.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg)
 ![MUI](https://img.shields.io/badge/MUI-7.1.1-0081CB.svg)
@@ -19,7 +19,7 @@ Professional dry‑cleaning management system with a production‑grade Order Wi
 ![Lombok](https://img.shields.io/badge/Lombok-1.18.38-orange.svg)
 ![Liquibase](https://img.shields.io/badge/Liquibase-migrations-2962FF.svg)
 ![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-85EA2D.svg)
-![Springdoc](https://img.shields.io/badge/Springdoc-2.8.9-85EA2D.svg)
+![Springdoc](https://img.shields.io/badge/Springdoc-2.8.12-85EA2D.svg)
 ![PDFBox](https://img.shields.io/badge/PDFBox-3.0.5-555555.svg)
 ![ZXing](https://img.shields.io/badge/ZXing-3.5.3-000000.svg)
 ![iText](https://img.shields.io/badge/iText-5.5.13.4-3F7E00.svg)
@@ -78,11 +78,11 @@ AKSI is a modern dry‑cleaning order management system built with Domain‑Driv
 
 ## 🛠 Tech Stack
 
-### Backend (Java 21 + Spring Boot 3.5.4)
+### Backend (Java 21 + Spring Boot 3.5.5)
 
 **Core Framework:**
 
-- Java 21, Spring Boot 3.5.4
+- Java 21, Spring Boot 3.5.5
 - Spring Web, Data JPA, Validation, Security, Actuator
 - Spring Session with Redis for distributed sessions
 
@@ -114,7 +114,7 @@ AKSI is a modern dry‑cleaning order management system built with Domain‑Driv
 
 **Core Framework:**
 
-- Next.js 15.3.4 with App Router
+- Next.js 15.4.5 with App Router
 - React 19.1.0, TypeScript 5
 - Feature-Sliced Design (FSD) architecture
 
