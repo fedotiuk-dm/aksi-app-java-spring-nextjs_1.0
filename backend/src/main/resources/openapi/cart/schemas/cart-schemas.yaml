@@ -1,0 +1,289 @@
+components:
+  schemas:
+    ActivateCustomerRequest:
+      type: object
+      required:
+        - customerId
+      properties:
+        customerId:
+          type: string
+          format: uuid
+          description: Customer ID to activate
+    CartInfo:
+      type: object
+      required:
+        - id
+        - customerId
+        - items
+        - pricing
+        - createdAt
+        - expiresAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Cart ID
+        customerId:
+          type: string
+          format: uuid
+          description: Customer ID
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartItemInfo"
+          description: Cart items
+        globalModifiers:
+          $ref: "#/components/schemas/CartGlobalModifiers"
+        pricing:
+          $ref: "#/components/schemas/CartPricingInfo"
+        createdAt:
+          type: string
+          format: date-time
+          description: Cart creation time
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update time
+        expiresAt:
+          type: string
+          format: date-time
+          description: Cart expiration time (TTL)
+
+    CartItemInfo:
+      type: object
+      required:
+        - id
+        - priceListItemId
+        - priceListItem
+        - quantity
+        - characteristics
+        - pricing
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Cart item ID
+        priceListItemId:
+          type: string
+          format: uuid
+          description: Price list item ID
+        priceListItem:
+          $ref: "#/components/schemas/PriceListItemSummary"
+        quantity:
+          type: integer
+          minimum: 1
+          description: Quantity (in units)
+        characteristics:
+          $ref: "#/components/schemas/ItemCharacteristics"
+        modifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartItemModifier"
+          description: Applied modifiers
+        pricing:
+          $ref: "#/components/schemas/CartItemPricingInfo"
+
+    PriceListItemSummary:
+      type: object
+      required:
+        - id
+        - name
+        - categoryCode
+        - unitOfMeasure
+        - basePrice
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        categoryCode:
+          $ref: "../../common.yaml#/components/schemas/ServiceCategoryType"
+        unitOfMeasure:
+          $ref: "../../common.yaml#/components/schemas/UnitOfMeasure"
+        basePrice:
+          type: integer
+          description: Base price in kopiykas
+
+    # Use shared ItemCharacteristics from common.yaml
+    ItemCharacteristics:
+      $ref: "../../common.yaml#/components/schemas/ItemCharacteristics"
+
+    CartItemModifier:
+      type: object
+      required:
+        - code
+        - name
+        - type
+        - value
+      properties:
+        code:
+          type: string
+          description: Modifier code
+        name:
+          type: string
+          description: Modifier name
+        type:
+          $ref: "../../common.yaml#/components/schemas/ModifierType"
+        value:
+          type: number
+          description: Modifier value (percentage or fixed amount)
+
+    CartGlobalModifiers:
+      type: object
+      properties:
+        urgencyType:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/UrgencyType"
+            - default: NORMAL
+              description: Urgency type
+        discountType:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/DiscountType"
+            - default: NONE
+              description: Discount type
+        discountPercentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Discount percentage (for OTHER type)
+        expectedCompletionDate:
+          type: string
+          format: date-time
+          description: Expected completion date
+        expectedCompletionNote:
+          type: string
+          description: Optional note for expected completion (e.g., "після 14:00")
+
+    CartItemPricingInfo:
+      type: object
+      required:
+        - basePrice
+        - modifiersTotalAmount
+        - subtotal
+        - urgencyAmount
+        - discountAmount
+        - total
+      properties:
+        basePrice:
+          type: integer
+          description: Base price in kopiykas
+        modifierDetails:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartModifierDetail"
+          description: Applied modifier details
+        modifiersTotalAmount:
+          type: integer
+          description: Total modifiers amount in kopiykas
+        subtotal:
+          type: integer
+          description: Subtotal (base + modifiers) in kopiykas
+        urgencyAmount:
+          type: integer
+          description: Urgency surcharge amount in kopiykas
+        discountAmount:
+          type: integer
+          description: Discount amount in kopiykas
+        total:
+          type: integer
+          description: Total price in kopiykas
+
+    CartModifierDetail:
+      type: object
+      required:
+        - code
+        - name
+        - amount
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        amount:
+          type: integer
+          description: Modifier amount in kopiykas
+
+    CartPricingInfo:
+      type: object
+      required:
+        - itemsSubtotal
+        - urgencyAmount
+        - discountAmount
+        - total
+      properties:
+        itemsSubtotal:
+          type: integer
+          description: Sum of all items subtotals in kopiykas
+        urgencyAmount:
+          type: integer
+          description: Total urgency amount in kopiykas
+        discountAmount:
+          type: integer
+          description: Total discount amount in kopiykas
+        discountApplicableAmount:
+          type: integer
+          description: Amount eligible for discount in kopiykas
+        total:
+          type: integer
+          description: Final total in kopiykas
+
+    AddCartItemRequest:
+      type: object
+      required:
+        - priceListItemId
+        - quantity
+      properties:
+        priceListItemId:
+          type: string
+          format: uuid
+          description: Price list item ID
+        quantity:
+          type: integer
+          minimum: 1
+          description: Quantity in smallest unit (piece=1; kilogram=grams)
+        characteristics:
+          $ref: "#/components/schemas/ItemCharacteristics"
+        modifierCodes:
+          type: array
+          items:
+            type: string
+          description: Modifier codes to apply
+
+    UpdateCartItemRequest:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          minimum: 1
+          description: New quantity in smallest unit (piece=1; kilogram=grams)
+        characteristics:
+          $ref: "#/components/schemas/ItemCharacteristics"
+        modifierCodes:
+          type: array
+          items:
+            type: string
+          description: Updated modifier codes
+
+    UpdateCartModifiersRequest:
+      type: object
+      properties:
+        urgencyType:
+          $ref: "../../common.yaml#/components/schemas/UrgencyType"
+        discountType:
+          $ref: "../../common.yaml#/components/schemas/DiscountType"
+        discountPercentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Discount percentage (required for OTHER type)
+        expectedCompletionDate:
+          type: string
+          format: date-time
+          description: Expected completion date
+
+    # ErrorResponse centralized in common.yaml
+
+  securitySchemes:
+    cookieAuth:
+      $ref: "../../common.yaml#/components/securitySchemes/cookieAuth"

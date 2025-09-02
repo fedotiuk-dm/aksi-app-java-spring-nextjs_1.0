@@ -34,7 +34,7 @@ export const updateUserRolesResponse = zod.object({
   "username": zod.string().describe('Username'),
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
-  "email": zod.string().describe('Email address'),
+  "email": zod.email().describe('Email address'),
   "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(updateUserRolesResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
@@ -120,12 +120,12 @@ export const listUsersQueryPageDefault = 0;
 export const listUsersQueryPageMin = 0;
 export const listUsersQuerySizeDefault = 20;
 export const listUsersQuerySizeMax = 100;
-export const listUsersQuerySortByDefault = "createdAt";export const listUsersQuerySortOrderDefault = "ASC";
+export const listUsersQuerySortOrderDefault = "ASC";
 
 export const listUsersQueryParams = zod.object({
   "page": zod.number().min(listUsersQueryPageMin).optional().describe('Page number (0-based)'),
   "size": zod.number().min(1).max(listUsersQuerySizeMax).default(listUsersQuerySizeDefault).describe('Page size (number of items per page)'),
-  "sortBy": zod.string().default(listUsersQuerySortByDefault).describe('Field to sort by'),
+  "sortBy": zod.string().optional().describe('Field to sort by (domain-specific). If not provided, server default is used'),
   "sortOrder": zod.enum(['ASC', 'DESC']).default(listUsersQuerySortOrderDefault).describe('Sort direction'),
   "search": zod.string().optional().describe('Search by username, first name, or last name'),
   "role": zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER']).optional().describe('Filter by role'),
@@ -142,7 +142,7 @@ export const listUsersResponse = zod.object({
   "username": zod.string().describe('Username'),
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
-  "email": zod.string().describe('Email address'),
+  "email": zod.email().describe('Email address'),
   "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(listUsersResponseDataItemRolesMax),
   "active": zod.boolean().describe('Is user active'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
@@ -192,7 +192,7 @@ export const createUserBody = zod.object({
   "password": zod.string().min(createUserBodyPasswordMin).max(createUserBodyPasswordMax).describe('Password (min 6 chars for dev, 12 for prod)'),
   "firstName": zod.string().min(1).max(createUserBodyFirstNameMax).regex(createUserBodyFirstNameRegExp).describe('First name (letters only)'),
   "lastName": zod.string().min(1).max(createUserBodyLastNameMax).regex(createUserBodyLastNameRegExp).describe('Last name (letters only)'),
-  "email": zod.string().min(createUserBodyEmailMin).max(createUserBodyEmailMax).describe('Email address (must be unique)'),
+  "email": zod.email().min(createUserBodyEmailMin).max(createUserBodyEmailMax).describe('Email address (must be unique)'),
   "phone": zod.string().regex(createUserBodyPhoneRegExp).optional().describe('Phone number (optional, international format)'),
   "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(createUserBodyRolesMax).optional().describe('User roles (defaults to OPERATOR if not specified)'),
   "branchIds": zod.array(zod.uuid()).min(createUserBodyBranchIdsMin).max(createUserBodyBranchIdsMax).optional().describe('Branch IDs to assign (optional)'),
@@ -220,7 +220,7 @@ export const deactivateUserResponse = zod.object({
   "username": zod.string().describe('Username'),
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
-  "email": zod.string().describe('Email address'),
+  "email": zod.email().describe('Email address'),
   "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(deactivateUserResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
@@ -258,7 +258,7 @@ export const activateUserResponse = zod.object({
   "username": zod.string().describe('Username'),
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
-  "email": zod.string().describe('Email address'),
+  "email": zod.email().describe('Email address'),
   "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(activateUserResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
@@ -296,7 +296,7 @@ export const getUserByIdResponse = zod.object({
   "username": zod.string().describe('Username'),
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
-  "email": zod.string().describe('Email address'),
+  "email": zod.email().describe('Email address'),
   "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(getUserByIdResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),
@@ -332,7 +332,7 @@ export const updateUserBodyPhoneRegExp = new RegExp('^\\+?[0-9]{10,15}$');
 export const updateUserBody = zod.object({
   "firstName": zod.string().min(1).max(updateUserBodyFirstNameMax).optional().describe('First name'),
   "lastName": zod.string().min(1).max(updateUserBodyLastNameMax).optional().describe('Last name'),
-  "email": zod.string().optional().describe('Email address'),
+  "email": zod.email().optional().describe('Email address'),
   "phone": zod.string().regex(updateUserBodyPhoneRegExp).optional().describe('Phone number')
 })
 
@@ -346,7 +346,7 @@ export const updateUserResponse = zod.object({
   "username": zod.string().describe('Username'),
   "firstName": zod.string().describe('First name'),
   "lastName": zod.string().describe('Last name'),
-  "email": zod.string().describe('Email address'),
+  "email": zod.email().describe('Email address'),
   "roles": zod.array(zod.enum(['OPERATOR', 'MANAGER', 'ADMIN', 'CLEANER', 'DRIVER'])).min(1).max(updateUserResponseRolesMax),
   "active": zod.boolean().describe('Is user active'),
   "createdAt": zod.iso.datetime({}).describe('Creation timestamp'),

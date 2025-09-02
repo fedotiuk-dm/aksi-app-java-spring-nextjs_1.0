@@ -2,7 +2,7 @@ spring:
   # Application name
   application:
     name: AKSI-Dry-Cleaning-Backend
-  
+
   # Database configuration
   datasource:
     url: jdbc:postgresql://localhost:5432/aksi_cleaners_db_v5
@@ -35,7 +35,7 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     default-schema: public
     enabled: true
-    
+
   # DevTools settings for hot reload
   devtools:
     restart:
@@ -46,7 +46,7 @@ spring:
     livereload:
       enabled: true
       port: 35729
-  
+
   # Redis configuration for development
   data:
     redis:
@@ -93,7 +93,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info  # Only expose health and info endpoints for security
+        include: health,info # Only expose health and info endpoints for security
       base-path: /management
   endpoint:
     health:
@@ -102,7 +102,7 @@ management:
   info:
     env:
       enabled: true
-    
+
 # Application info
 info:
   app:
@@ -125,14 +125,18 @@ springdoc:
     url: /v3/api-docs
     operations-sorter: method
     tags-sorter: alpha
-  packages-to-scan: com.aksi.api,com.aksi.controller
-  paths-to-match: /api/**
+  packages-to-scan: com.aksi.controller
+  paths-to-match: /api/**,/game-services/**
+  # Additional configuration for better scanning
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  writer-with-default-pretty-printer: true
 
 # CORS configuration for development
 app:
   cors:
     allowed-origins: http://localhost:3000,http://127.0.0.1:3000
-    
+
   # File storage configuration for development
   file-storage:
     upload-dir: ${FILE_UPLOAD_DIR:./uploads}

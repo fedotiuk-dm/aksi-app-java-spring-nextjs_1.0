@@ -1,0 +1,87 @@
+openapi: 3.0.4
+info:
+  title: Receipt API
+  description: Receipt management API for dry cleaning service
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: receipts
+    description: Receipt management operations
+
+paths:
+  # Receipt endpoints
+  /api/receipts/order/{orderId}:
+    $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1order~1{orderId}"
+  /api/receipts/preview:
+    $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1preview"
+  /api/receipts/order/{orderId}/email:
+    $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1order~1{orderId}~1email"
+  /api/receipts/templates:
+    $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1templates"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session cookie authentication
+
+  responses:
+    BadRequest:
+      $ref: "../common.yaml#/components/responses/BadRequest"
+    Unauthorized:
+      $ref: "../common.yaml#/components/responses/Unauthorized"
+    Forbidden:
+      $ref: "../common.yaml#/components/responses/Forbidden"
+    NotFound:
+      $ref: "../common.yaml#/components/responses/NotFound"
+    Conflict:
+      $ref: "../common.yaml#/components/responses/Conflict"
+    TooManyRequests:
+      $ref: "../common.yaml#/components/responses/TooManyRequests"
+    PayloadTooLarge:
+      $ref: "../common.yaml#/components/responses/PayloadTooLarge"
+
+  parameters:
+    PageNumber:
+      $ref: "../common.yaml#/components/parameters/PageNumber"
+    PageSize:
+      $ref: "../common.yaml#/components/parameters/PageSize"
+    SortBy:
+      $ref: "../common.yaml#/components/parameters/SortBy"
+    SortOrder:
+      $ref: "../common.yaml#/components/parameters/SortOrder"
+
+  schemas:
+    # Import all schemas from receipt-schemas.yaml
+    ReceiptPreviewRequest:
+      $ref: "./schemas/receipt-schemas.yaml#/components/schemas/ReceiptPreviewRequest"
+    ReceiptOrderData:
+      $ref: "./schemas/receipt-schemas.yaml#/components/schemas/ReceiptOrderData"
+    ReceiptItem:
+      $ref: "./schemas/receipt-schemas.yaml#/components/schemas/ReceiptItem"
+    EmailReceiptRequest:
+      $ref: "./schemas/receipt-schemas.yaml#/components/schemas/EmailReceiptRequest"
+    EmailReceiptResponse:
+      $ref: "./schemas/receipt-schemas.yaml#/components/schemas/EmailReceiptResponse"
+    ReceiptTemplate:
+      $ref: "./schemas/receipt-schemas.yaml#/components/schemas/ReceiptTemplate"
+
+    # Common schemas (if needed locally)
+    OrderStatus:
+      $ref: "../common.yaml#/components/schemas/OrderStatus"
+    PaymentMethod:
+      $ref: "../common.yaml#/components/schemas/PaymentMethod"
+
+security:
+  - cookieAuth: []

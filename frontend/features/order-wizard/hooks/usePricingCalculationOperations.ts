@@ -55,7 +55,6 @@ export const usePricingCalculationOperations = (
     });
   }, [cart, calcKey, includeGlobalModifiers, pricingMutation]);
 
-
   return {
     // State
     isCalculating: pricingMutation.isPending,

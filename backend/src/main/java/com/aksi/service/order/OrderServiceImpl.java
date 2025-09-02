@@ -136,9 +136,10 @@ public class OrderServiceImpl implements OrderService {
       OrderStatus status,
       UUID branchId,
       Instant dateFrom,
-      Instant dateTo) {
+      Instant dateTo,
+      String orderNumber) {
     return queryService.listOrders(
-        page, size, sortBy, sortOrder, customerId, status, branchId, dateFrom, dateTo);
+        page, size, sortBy, sortOrder, customerId, status, branchId, dateFrom, dateTo, orderNumber);
   }
 
   @Override

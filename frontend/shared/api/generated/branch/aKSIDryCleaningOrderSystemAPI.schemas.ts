@@ -136,6 +136,8 @@ export const PriceModifierDtoType = {
   PERCENTAGE: 'PERCENTAGE',
   FIXED: 'FIXED',
   FORMULA: 'FORMULA',
+  MULTIPLIER: 'MULTIPLIER',
+  DISCOUNT: 'DISCOUNT',
 } as const;
 
 export type PriceModifierDtoCategoryRestrictionsItem = typeof PriceModifierDtoCategoryRestrictionsItem[keyof typeof PriceModifierDtoCategoryRestrictionsItem];
@@ -339,6 +341,9 @@ export interface UpdatePriceListItemRequest {
   nameUa?: string;
 }
 
+/**
+ * Filler condition assessment
+ */
 export type ItemCharacteristicsFillerCondition = typeof ItemCharacteristicsFillerCondition[keyof typeof ItemCharacteristicsFillerCondition];
 
 
@@ -348,25 +353,33 @@ export const ItemCharacteristicsFillerCondition = {
   COMPRESSED: 'COMPRESSED',
 } as const;
 
+/**
+ * Item wear level assessment
+ */
 export type ItemCharacteristicsWearLevel = typeof ItemCharacteristicsWearLevel[keyof typeof ItemCharacteristicsWearLevel];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ItemCharacteristicsWearLevel = {
-  NUMBER_10: '10',
-  NUMBER_30: '30',
-  NUMBER_50: '50',
-  NUMBER_75: '75',
+  NUMBER_10: 10,
+  NUMBER_30: 30,
+  NUMBER_50: 50,
+  NUMBER_75: 75,
 } as const;
 
+/**
+ * Item characteristics shared across cart, order, and pricing domains
+ */
 export interface ItemCharacteristics {
-  /** Material type */
+  /** Material type (cotton, silk, wool, etc.) */
   material?: string;
-  /** Item color */
+  /** Item color (affects processing and pricing) */
   color?: string;
-  /** Filler type (for padded items) */
+  /** Filler type for items with filling */
   filler?: string;
+  /** Filler condition assessment */
   fillerCondition?: ItemCharacteristicsFillerCondition;
+  /** Item wear level assessment */
   wearLevel?: ItemCharacteristicsWearLevel;
 }
 
@@ -386,26 +399,6 @@ export interface ItemDefect {
   type: ItemDefectType;
   /** Additional description */
   description?: string;
-}
-
-export type ItemModifierType = typeof ItemModifierType[keyof typeof ItemModifierType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ItemModifierType = {
-  PERCENTAGE: 'PERCENTAGE',
-  FIXED: 'FIXED',
-  FORMULA: 'FORMULA',
-} as const;
-
-export interface ItemModifier {
-  /** Modifier code */
-  code: string;
-  /** Modifier name */
-  name: string;
-  type: ItemModifierType;
-  /** Modifier value (percentage or fixed amount) */
-  value: number;
 }
 
 export type ItemPhotoInfoType = typeof ItemPhotoInfoType[keyof typeof ItemPhotoInfoType];
@@ -471,13 +464,6 @@ export interface ItemStain {
   description?: string;
 }
 
-export interface ModifierDetail {
-  code: string;
-  name: string;
-  /** Modifier amount in kopiykas */
-  amount: number;
-}
-
 export interface OrderItemInfo {
   /** Order item ID */
   id: string;
@@ -498,16 +484,38 @@ export interface OrderItemInfo {
   /** Item photos */
   photos?: ItemPhotoInfo[];
   /** Applied modifiers */
-  modifiers?: ItemModifier[];
+  modifiers?: OrderItemModifier[];
   /** Item pricing details */
   pricing: OrderItemPricingInfo;
+}
+
+export type OrderItemModifierType = typeof OrderItemModifierType[keyof typeof OrderItemModifierType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrderItemModifierType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED: 'FIXED',
+  FORMULA: 'FORMULA',
+  MULTIPLIER: 'MULTIPLIER',
+  DISCOUNT: 'DISCOUNT',
+} as const;
+
+export interface OrderItemModifier {
+  /** Modifier code */
+  code: string;
+  /** Modifier name */
+  name: string;
+  type: OrderItemModifierType;
+  /** Modifier value */
+  value: number;
 }
 
 export interface OrderItemPricingInfo {
   /** Base price in kopiykas */
   basePrice: number;
   /** Applied modifier details */
-  modifierDetails?: ModifierDetail[];
+  modifierDetails?: OrderModifierDetail[];
   /** Total modifiers amount */
   modifiersTotalAmount: number;
   /** Subtotal (base + modifiers) */
@@ -518,6 +526,12 @@ export interface OrderItemPricingInfo {
   discountAmount: number;
   /** Total price */
   total: number;
+}
+
+export interface OrderModifierDetail {
+  code: string;
+  name: string;
+  amount: number;
 }
 
 export type PriceListItemSummaryCategoryCode = typeof PriceListItemSummaryCategoryCode[keyof typeof PriceListItemSummaryCategoryCode];
@@ -562,6 +576,339 @@ export interface UpdateItemCharacteristicsRequest {
   stains?: ItemStain[];
   defects?: ItemDefect[];
   risks?: ItemRisk[];
+}
+
+export interface ServiceType {
+  id: string;
+  gameId: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /**
+   * Base multiplier in basis points (100 = 1.0x, 200 = 2.0x)
+   * @minimum 1
+   * @maximum 1000
+   */
+  baseMultiplier: number;
+  active: boolean;
+  /** @minimum 0 */
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UpdateServiceTypeRequest {
+  gameId?: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name?: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code?: string;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  baseMultiplier?: number;
+  /** @minimum 0 */
+  sortOrder?: number;
+  active?: boolean;
+}
+
+export type PriceConfigurationCalculationType = typeof PriceConfigurationCalculationType[keyof typeof PriceConfigurationCalculationType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PriceConfigurationCalculationType = {
+  LINEAR: 'LINEAR',
+  RANGE: 'RANGE',
+  FORMULA: 'FORMULA',
+  TIME_BASED: 'TIME_BASED',
+} as const;
+
+export interface PriceConfiguration {
+  id: string;
+  gameId: string;
+  difficultyLevelId: string;
+  serviceTypeId: string;
+  /**
+   * Base price in cents (e.g., 100 = $1.00)
+   * @minimum 0
+   */
+  basePrice: number;
+  /**
+   * Price per level in cents
+   * @minimum 0
+   */
+  pricePerLevel?: number;
+  currency?: string;
+  calculationType: PriceConfigurationCalculationType;
+  /** JSON formula configuration */
+  calculationFormula?: string;
+  active: boolean;
+  /** @minimum 0 */
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type UpdatePriceConfigurationRequestCalculationType = typeof UpdatePriceConfigurationRequestCalculationType[keyof typeof UpdatePriceConfigurationRequestCalculationType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdatePriceConfigurationRequestCalculationType = {
+  LINEAR: 'LINEAR',
+  RANGE: 'RANGE',
+  FORMULA: 'FORMULA',
+  TIME_BASED: 'TIME_BASED',
+} as const;
+
+export interface UpdatePriceConfigurationRequest {
+  gameId: string;
+  difficultyLevelId: string;
+  serviceTypeId: string;
+  /**
+   * Base price in cents
+   * @minimum 0
+   */
+  basePrice?: number;
+  /**
+   * Price per level in cents
+   * @minimum 0
+   */
+  pricePerLevel?: number;
+  currency?: string;
+  calculationType?: UpdatePriceConfigurationRequestCalculationType;
+  calculationFormula?: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+  active?: boolean;
+}
+
+export interface DifficultyLevel {
+  id: string;
+  gameId: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  levelValue: number;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  active: boolean;
+  /** @minimum 0 */
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UpdateDifficultyLevelRequest {
+  gameId?: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name?: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code?: string;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  levelValue?: number;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+  active?: boolean;
+}
+
+export type GameCategory = typeof GameCategory[keyof typeof GameCategory];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GameCategory = {
+  MMORPG: 'MMORPG',
+  FPS: 'FPS',
+  MOBA: 'MOBA',
+  BATTLE_ROYALE: 'BATTLE_ROYALE',
+  STRATEGY: 'STRATEGY',
+  ACTION: 'ACTION',
+  SIMULATION: 'SIMULATION',
+  SPORTS: 'SPORTS',
+  RACING: 'RACING',
+  PUZZLE: 'PUZZLE',
+  OTHER: 'OTHER',
+} as const;
+
+export interface Game {
+  id: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  category: GameCategory;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  description?: string;
+  active: boolean;
+  /** @minimum 0 */
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type UpdateGameRequestCategory = typeof UpdateGameRequestCategory[keyof typeof UpdateGameRequestCategory];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateGameRequestCategory = {
+  MMORPG: 'MMORPG',
+  FPS: 'FPS',
+  MOBA: 'MOBA',
+  BATTLE_ROYALE: 'BATTLE_ROYALE',
+  STRATEGY: 'STRATEGY',
+  ACTION: 'ACTION',
+  SIMULATION: 'SIMULATION',
+  SPORTS: 'SPORTS',
+  RACING: 'RACING',
+  PUZZLE: 'PUZZLE',
+  OTHER: 'OTHER',
+} as const;
+
+export interface UpdateGameRequest {
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name?: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code?: string;
+  category?: UpdateGameRequestCategory;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  description?: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+  active?: boolean;
+}
+
+export interface Booster {
+  id: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  discordUsername: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   */
+  displayName: string;
+  contactEmail?: string;
+  /** @pattern ^\+?[1-9]\d{1,14}$ */
+  phoneNumber?: string;
+  /**
+   * Rating in basis points (100 = 1.0 star, 500 = 5.0 stars)
+   * @minimum 0
+   * @maximum 500
+   */
+  rating: number;
+  /** @minimum 0 */
+  totalOrders: number;
+  /**
+   * Success rate in basis points (10000 = 100.00%)
+   * @minimum 0
+   * @maximum 10000
+   */
+  successRate: number;
+  /**
+   * Average completion time in minutes
+   * @minimum 0
+   */
+  averageCompletionTime?: number;
+  active: boolean;
+  verified: boolean;
+  lastActive?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UpdateBoosterRequest {
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  discordUsername?: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   */
+  displayName?: string;
+  contactEmail?: string;
+  /** @pattern ^\+?[1-9]\d{1,14}$ */
+  phoneNumber?: string;
+  active?: boolean;
+  verified?: boolean;
 }
 
 export type CustomerInfoContactPreferencesItem = typeof CustomerInfoContactPreferencesItem[keyof typeof CustomerInfoContactPreferencesItem];
@@ -787,15 +1134,37 @@ export interface CartItemInfo {
   quantity: number;
   characteristics: ItemCharacteristics;
   /** Applied modifiers */
-  modifiers?: ItemModifier[];
+  modifiers?: CartItemModifier[];
   pricing: CartItemPricingInfo;
+}
+
+export type CartItemModifierType = typeof CartItemModifierType[keyof typeof CartItemModifierType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CartItemModifierType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED: 'FIXED',
+  FORMULA: 'FORMULA',
+  MULTIPLIER: 'MULTIPLIER',
+  DISCOUNT: 'DISCOUNT',
+} as const;
+
+export interface CartItemModifier {
+  /** Modifier code */
+  code: string;
+  /** Modifier name */
+  name: string;
+  type: CartItemModifierType;
+  /** Modifier value (percentage or fixed amount) */
+  value: number;
 }
 
 export interface CartItemPricingInfo {
   /** Base price in kopiykas */
   basePrice: number;
   /** Applied modifier details */
-  modifierDetails?: ModifierDetail[];
+  modifierDetails?: CartModifierDetail[];
   /** Total modifiers amount in kopiykas */
   modifiersTotalAmount: number;
   /** Subtotal (base + modifiers) in kopiykas */
@@ -806,6 +1175,13 @@ export interface CartItemPricingInfo {
   discountAmount: number;
   /** Total price in kopiykas */
   total: number;
+}
+
+export interface CartModifierDetail {
+  code: string;
+  name: string;
+  /** Modifier amount in kopiykas */
+  amount: number;
 }
 
 export interface CartPricingInfo {
@@ -1117,6 +1493,8 @@ export const AppliedModifierType = {
   PERCENTAGE: 'PERCENTAGE',
   FIXED: 'FIXED',
   FORMULA: 'FORMULA',
+  MULTIPLIER: 'MULTIPLIER',
+  DISCOUNT: 'DISCOUNT',
 } as const;
 
 export interface AppliedModifier {
@@ -1479,6 +1857,201 @@ export interface AddPaymentRequest {
    */
   amount: number;
   method: AddPaymentRequestMethod;
+}
+
+export type CreateGameRequestCategory = typeof CreateGameRequestCategory[keyof typeof CreateGameRequestCategory];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateGameRequestCategory = {
+  MMORPG: 'MMORPG',
+  FPS: 'FPS',
+  MOBA: 'MOBA',
+  BATTLE_ROYALE: 'BATTLE_ROYALE',
+  STRATEGY: 'STRATEGY',
+  ACTION: 'ACTION',
+  SIMULATION: 'SIMULATION',
+  SPORTS: 'SPORTS',
+  RACING: 'RACING',
+  PUZZLE: 'PUZZLE',
+  OTHER: 'OTHER',
+} as const;
+
+export interface CreateGameRequest {
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  category: CreateGameRequestCategory;
+  /**
+   * @minLength 0
+   * @maxLength 1000
+   */
+  description?: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+}
+
+export interface CreateServiceTypeRequest {
+  gameId: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  baseMultiplier: number;
+  /** @minimum 0 */
+  sortOrder?: number;
+  active?: boolean;
+}
+
+export type CreatePriceConfigurationRequestCalculationType = typeof CreatePriceConfigurationRequestCalculationType[keyof typeof CreatePriceConfigurationRequestCalculationType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreatePriceConfigurationRequestCalculationType = {
+  LINEAR: 'LINEAR',
+  RANGE: 'RANGE',
+  FORMULA: 'FORMULA',
+  TIME_BASED: 'TIME_BASED',
+} as const;
+
+export interface CreatePriceConfigurationRequest {
+  gameId: string;
+  difficultyLevelId: string;
+  serviceTypeId: string;
+  /**
+   * Base price in cents
+   * @minimum 0
+   */
+  basePrice: number;
+  /**
+   * Price per level in cents
+   * @minimum 0
+   */
+  pricePerLevel?: number;
+  currency?: string;
+  calculationType: CreatePriceConfigurationRequestCalculationType;
+  /** JSON formula configuration */
+  calculationFormula?: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+  active?: boolean;
+}
+
+export interface CreateDifficultyLevelRequest {
+  gameId: string;
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  levelValue: number;
+  /**
+   * @minLength 0
+   * @maxLength 500
+   */
+  description?: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+}
+
+export interface CalculationBreakdown {
+  /** Base price in cents */
+  basePrice: number;
+  /**
+   * Difficulty multiplier in basis points (100 = 1.0x)
+   * @minimum 1
+   * @maximum 1000
+   */
+  difficultyMultiplier: number;
+  /**
+   * Service multiplier in basis points (100 = 1.0x)
+   * @minimum 1
+   * @maximum 1000
+   */
+  serviceMultiplier: number;
+  /** Level-based adjustment in cents */
+  levelAdjustment?: number;
+  /** Total adjustment in cents */
+  totalAdjustment: number;
+}
+
+export interface CalculationResult {
+  /** Final price in cents */
+  finalPrice: number;
+  currency?: string;
+  breakdown: CalculationBreakdown;
+}
+
+export interface CalculationRequest {
+  /** Game code */
+  gameCode: string;
+  /** Service type code */
+  serviceTypeCode: string;
+  /** Difficulty level code */
+  difficultyLevelCode: string;
+  /**
+   * Target level (must be >= 1)
+   * @minimum 1
+   */
+  targetLevel: number;
+  /**
+   * Starting level (must be >= 1)
+   * @minimum 1
+   */
+  startLevel: number;
+  /** List of modifier codes to apply */
+  modifiers?: string[];
+}
+
+export interface CreateBoosterRequest {
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  discordUsername: string;
+  /**
+   * @minLength 1
+   * @maxLength 50
+   */
+  displayName: string;
+  contactEmail: string;
+  /** @pattern ^\+?[1-9]\d{1,14}$ */
+  phoneNumber?: string;
+  verified?: boolean;
 }
 
 export interface FileUploadResponse {
@@ -1897,6 +2470,111 @@ export interface CategoryInfo {
 
 export interface OrderListResponse {
   data: OrderInfo[];
+  /** Total number of elements */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Page size */
+  size: number;
+  /** Page number (0-based) */
+  number: number;
+  /** Number of elements in current page */
+  numberOfElements: number;
+  /** Is first page */
+  first: boolean;
+  /** Is last page */
+  last: boolean;
+  /** Is empty */
+  empty: boolean;
+}
+
+export interface GameListResponse {
+  /** Page content */
+  data: Game[];
+  /** Total number of elements */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Page size */
+  size: number;
+  /** Page number (0-based) */
+  number: number;
+  /** Number of elements in current page */
+  numberOfElements: number;
+  /** Is first page */
+  first: boolean;
+  /** Is last page */
+  last: boolean;
+  /** Is empty */
+  empty: boolean;
+}
+
+export interface ServiceTypeListResponse {
+  /** Page content */
+  data: ServiceType[];
+  /** Total number of elements */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Page size */
+  size: number;
+  /** Page number (0-based) */
+  number: number;
+  /** Number of elements in current page */
+  numberOfElements: number;
+  /** Is first page */
+  first: boolean;
+  /** Is last page */
+  last: boolean;
+  /** Is empty */
+  empty: boolean;
+}
+
+export interface PriceConfigurationListResponse {
+  /** Page content */
+  data: PriceConfiguration[];
+  /** Total number of elements */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Page size */
+  size: number;
+  /** Page number (0-based) */
+  number: number;
+  /** Number of elements in current page */
+  numberOfElements: number;
+  /** Is first page */
+  first: boolean;
+  /** Is last page */
+  last: boolean;
+  /** Is empty */
+  empty: boolean;
+}
+
+export interface DifficultyLevelListResponse {
+  /** Page content */
+  data: DifficultyLevel[];
+  /** Total number of elements */
+  totalElements: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Page size */
+  size: number;
+  /** Page number (0-based) */
+  number: number;
+  /** Number of elements in current page */
+  numberOfElements: number;
+  /** Is first page */
+  first: boolean;
+  /** Is last page */
+  last: boolean;
+  /** Is empty */
+  empty: boolean;
+}
+
+export interface BoosterListResponse {
+  /** Page content */
+  data: Booster[];
   /** Total number of elements */
   totalElements: number;
   /** Total number of pages */

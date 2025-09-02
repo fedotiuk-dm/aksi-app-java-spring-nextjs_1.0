@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.aksi.api.pricing.dto.CalculatedItemPrice;
 import com.aksi.api.pricing.dto.SortOrder;
-import com.aksi.api.service.dto.PriceListItemInfo;
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
 import com.aksi.domain.pricing.DiscountEntity;
 import com.aksi.domain.pricing.PriceModifierEntity;
 

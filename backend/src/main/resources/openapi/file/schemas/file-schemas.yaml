@@ -1,0 +1,137 @@
+components:
+  securitySchemes:
+    cookieAuth:
+      $ref: "../../common.yaml#/components/securitySchemes/cookieAuth"
+  schemas:
+    # ErrorResponse centralized in common.yaml
+
+    Base64FileUploadRequest:
+      type: object
+      required:
+        - base64Data
+        - directory
+        - filename
+      properties:
+        base64Data:
+          type: string
+          description: Base64 encoded file data (with or without data URL prefix)
+          example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+        directory:
+          type: string
+          description: Directory to store file in
+          pattern: '^[a-zA-Z0-9/_\-]+$'
+          example: "orders/signatures"
+        filename:
+          type: string
+          description: Filename without extension
+          pattern: '^[a-zA-Z0-9_\-]+$'
+          example: "signature"
+
+    FileUploadResponse:
+      type: object
+      required:
+        - success
+        - filePath
+        - fileUrl
+        - uploadedAt
+      properties:
+        success:
+          type: boolean
+          description: Upload success status
+          example: true
+        filePath:
+          type: string
+          description: Relative file path where file was stored
+          example: "orders/photos/12345678-1234-5678-9012-123456789012.jpg"
+        fileUrl:
+          type: string
+          description: Full URL to access the file
+          example: "http://localhost:8080/api/files/orders/photos/12345678-1234-5678-9012-123456789012.jpg"
+        originalFilename:
+          type: string
+          description: Original filename from upload
+          example: "photo.jpg"
+        fileSize:
+          type: integer
+          format: int64
+          description: File size in bytes
+          example: 2048
+        contentType:
+          type: string
+          description: Detected content type
+          example: "image/jpeg"
+        uploadedAt:
+          type: string
+          format: date-time
+          description: Upload timestamp
+        uploadedBy:
+          type: string
+          description: User ID who uploaded the file
+          example: "user123"
+
+    FileInfo:
+      type: object
+      required:
+        - filePath
+        - fileUrl
+        - exists
+        - fileSize
+        - lastModified
+      properties:
+        filePath:
+          type: string
+          description: Relative file path
+          example: "orders/photos/12345678-1234-5678-9012-123456789012.jpg"
+        fileUrl:
+          type: string
+          description: Full URL to access the file
+          example: "http://localhost:8080/api/files/orders/photos/12345678-1234-5678-9012-123456789012.jpg"
+        exists:
+          type: boolean
+          description: Whether file exists
+          example: true
+        fileSize:
+          type: integer
+          format: int64
+          description: File size in bytes
+          example: 2048
+        contentType:
+          type: string
+          description: Detected content type
+          example: "image/jpeg"
+        readable:
+          type: boolean
+          description: Whether file is readable
+          example: true
+        lastModified:
+          type: string
+          format: date-time
+          description: Last modification timestamp
+
+    Base64FileResponse:
+      type: object
+      required:
+        - filePath
+        - base64Data
+        - contentType
+        - fileSize
+      properties:
+        filePath:
+          type: string
+          description: File path that was read
+          example: "orders/photos/12345678-1234-5678-9012-123456789012.jpg"
+        base64Data:
+          type: string
+          description: Base64 encoded file content
+          example: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+        contentType:
+          type: string
+          description: MIME type of the file
+          example: "image/jpeg"
+        fileSize:
+          type: integer
+          format: int64
+          description: Original file size in bytes
+          example: 2048
+
+  # cookieAuth centralized in common.yaml

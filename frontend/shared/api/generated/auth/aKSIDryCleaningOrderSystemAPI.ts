@@ -631,7 +631,7 @@ export const getGetServerTimeQueryKey = () => {
     }
 
     
-export const getGetServerTimeQueryOptions = <TData = Awaited<ReturnType<typeof getServerTime>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServerTime>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
+export const getGetServerTimeQueryOptions = <TData = Awaited<ReturnType<typeof getServerTime>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServerTime>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -650,10 +650,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetServerTimeQueryResult = NonNullable<Awaited<ReturnType<typeof getServerTime>>>
-export type GetServerTimeQueryError = unknown
+export type GetServerTimeQueryError = ErrorResponse
 
 
-export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime>>, TError = unknown>(
+export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime>>, TError = ErrorResponse>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServerTime>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getServerTime>>,
@@ -663,7 +663,7 @@ export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime>>, TError = unknown>(
+export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime>>, TError = ErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServerTime>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getServerTime>>,
@@ -673,7 +673,7 @@ export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime
       >, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime>>, TError = unknown>(
+export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime>>, TError = ErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServerTime>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -681,7 +681,7 @@ export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime
  * @summary Get current server time
  */
 
-export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime>>, TError = unknown>(
+export function useGetServerTime<TData = Awaited<ReturnType<typeof getServerTime>>, TError = ErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServerTime>>, TError, TData>>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {

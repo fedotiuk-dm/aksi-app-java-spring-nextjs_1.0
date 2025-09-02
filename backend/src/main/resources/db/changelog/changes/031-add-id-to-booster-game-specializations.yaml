@@ -1,0 +1,78 @@
+databaseChangeLog:
+  - changeSet:
+      id: 031-add-id-column-to-booster-game-specializations
+      author: aksi
+      comment: Add surrogate primary key column to booster_game_specializations table
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: booster_game_specializations
+      changes:
+        # Add id column
+        - addColumn:
+            tableName: booster_game_specializations
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    nullable: false
+
+        # Drop existing composite primary key
+        - dropPrimaryKey:
+            tableName: booster_game_specializations
+            constraintName: pk_booster_game_specializations
+
+        # Add new primary key constraint on id column
+        - addPrimaryKey:
+            tableName: booster_game_specializations
+            columnNames: id
+            constraintName: pk_booster_game_specializations
+
+        # Add audit columns
+        - addColumn:
+            tableName: booster_game_specializations
+            columns:
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: integer
+                  defaultValueNumeric: '0'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+
+        # Create unique index for (booster_id, game_id) to maintain business constraint
+        - createIndex:
+            tableName: booster_game_specializations
+            indexName: idx_booster_specializations_booster_game_unique
+            columns:
+              - column:
+                  name: booster_id
+              - column:
+                  name: game_id
+            unique: true
+
+        - createIndex:
+            tableName: booster_game_specializations
+            indexName: idx_booster_specializations_active
+            columns:
+              - column:
+                  name: active

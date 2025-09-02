@@ -8,6 +8,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.aksi.api.cart.dto.ItemCharacteristics;
 import com.aksi.api.cart.dto.UpdateCartItemRequest;
+import com.aksi.api.pricing.dto.PricingItemCharacteristics;
 import com.aksi.domain.cart.CartItem;
 import com.aksi.domain.cart.CartItemCharacteristicsEntity;
 
@@ -15,14 +16,14 @@ import com.aksi.domain.cart.CartItemCharacteristicsEntity;
 @Mapper(componentModel = "spring")
 public interface CartItemMapper {
 
-  // ItemCharacteristics DTO to Entity
+  // PricingItemCharacteristics DTO to Entity
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "version", ignore = true)
   @Mapping(target = "cartItem", ignore = true)
-  @Mapping(source = "fillerCondition", target = "fillerCondition")
-  CartItemCharacteristicsEntity toEntity(ItemCharacteristics dto);
+  @Mapping(source = "material", target = "material")
+  CartItemCharacteristicsEntity toEntity(PricingItemCharacteristics dto);
 
   // Update CartItem from request
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -44,5 +45,13 @@ public interface CartItemMapper {
   @Mapping(target = "version", ignore = true)
   @Mapping(target = "cartItem", ignore = true)
   void updateCharacteristicsFromRequest(
-      ItemCharacteristics dto, @MappingTarget CartItemCharacteristicsEntity entity);
+      PricingItemCharacteristics dto, @MappingTarget CartItemCharacteristicsEntity entity);
+
+  // Convert cart ItemCharacteristics to pricing PricingItemCharacteristics
+  @Mapping(target = "material", source = "material")
+  @Mapping(target = "color", source = "color")
+  @Mapping(target = "filler", source = "filler")
+  @Mapping(target = "fillerCondition", source = "fillerCondition")
+  @Mapping(target = "wearLevel", source = "wearLevel")
+  PricingItemCharacteristics toPricingCharacteristics(ItemCharacteristics cartCharacteristics);
 }

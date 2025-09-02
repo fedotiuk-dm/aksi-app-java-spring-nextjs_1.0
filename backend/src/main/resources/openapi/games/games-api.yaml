@@ -1,0 +1,175 @@
+openapi: 3.0.4
+info:
+  title: Games API
+  description: Games management API for game services
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: games
+    description: Games management operations
+  - name: service-types
+    description: Service types management
+  - name: difficulty-levels
+    description: Difficulty levels management
+  - name: boosters
+    description: Boosters management
+  - name: price-configurations
+    description: Price configurations management
+  - name: calculator
+    description: Price calculation operations
+
+paths:
+  # Games endpoints
+  /api/games:
+    $ref: "./paths/games-paths.yaml#/paths/~1api~1games"
+  /api/games/active:
+    $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1active"
+
+  # Service Types endpoints
+  /api/games/service-types:
+    $ref: "./paths/service-types-paths.yaml#/paths/~1api~1games~1service-types"
+  /api/games/service-types/{serviceTypeId}:
+    $ref: "./paths/service-types-paths.yaml#/paths/~1api~1games~1service-types~1{serviceTypeId}"
+
+  # Difficulty Levels endpoints
+  /api/games/difficulty-levels:
+    $ref: "./paths/difficulty-levels-paths.yaml#/paths/~1api~1games~1difficulty-levels"
+  /api/games/difficulty-levels/{difficultyLevelId}:
+    $ref: "./paths/difficulty-levels-paths.yaml#/paths/~1api~1games~1difficulty-levels~1{difficultyLevelId}"
+  /api/games/difficulty-levels/{difficultyLevelId}/activate:
+    $ref: "./paths/difficulty-levels-paths.yaml#/paths/~1api~1games~1difficulty-levels~1{difficultyLevelId}~1activate"
+  /api/games/difficulty-levels/{difficultyLevelId}/deactivate:
+    $ref: "./paths/difficulty-levels-paths.yaml#/paths/~1api~1games~1difficulty-levels~1{difficultyLevelId}~1deactivate"
+
+  # Boosters endpoints
+  /api/games/boosters:
+    $ref: "./paths/boosters-paths.yaml#/paths/~1api~1games~1boosters"
+  /api/games/boosters/{boosterId}:
+    $ref: "./paths/boosters-paths.yaml#/paths/~1api~1games~1boosters~1{boosterId}"
+
+  # Price Configurations endpoints
+  /api/games/price-configurations:
+    $ref: "./paths/price-configurations-paths.yaml#/paths/~1api~1games~1price-configurations"
+  /api/games/price-configurations/{configId}:
+    $ref: "./paths/price-configurations-paths.yaml#/paths/~1api~1games~1price-configurations~1{configId}"
+
+  # Calculator endpoints
+  /api/games/calculator/calculate:
+    $ref: "./paths/calculator-paths.yaml#/paths/~1api~1games~1calculator~1calculate"
+
+  # Games with parameters (must be last to avoid conflicts)
+  /api/games/by-code/{code}:
+    $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1by-code~1{code}"
+  /api/games/by-id/{gameId}:
+    $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1by-id~1{gameId}"
+  /api/games/by-id/{gameId}/enable:
+    $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1by-id~1{gameId}~1enable"
+  /api/games/by-id/{gameId}/disable:
+    $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1by-id~1{gameId}~1disable"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session cookie authentication
+
+  responses:
+    BadRequest:
+      $ref: "../common.yaml#/components/responses/BadRequest"
+    Unauthorized:
+      $ref: "../common.yaml#/components/responses/Unauthorized"
+    Forbidden:
+      $ref: "../common.yaml#/components/responses/Forbidden"
+    NotFound:
+      $ref: "../common.yaml#/components/responses/NotFound"
+    Conflict:
+      $ref: "../common.yaml#/components/responses/Conflict"
+
+  parameters:
+    PageNumber:
+      $ref: "../common.yaml#/components/parameters/PageNumber"
+    PageSize:
+      $ref: "../common.yaml#/components/parameters/PageSize"
+    SortBy:
+      $ref: "../common.yaml#/components/parameters/SortBy"
+    SortOrder:
+      $ref: "../common.yaml#/components/parameters/SortOrder"
+    Search:
+      $ref: "../common.yaml#/components/parameters/Search"
+
+  schemas:
+    # Import all schemas from games-schemas.yaml
+    Game:
+      $ref: "./schemas/games-schemas.yaml#/components/schemas/Game"
+    GameListResponse:
+      $ref: "./schemas/games-schemas.yaml#/components/schemas/GameListResponse"
+    CreateGameRequest:
+      $ref: "./schemas/games-schemas.yaml#/components/schemas/CreateGameRequest"
+    UpdateGameRequest:
+      $ref: "./schemas/games-schemas.yaml#/components/schemas/UpdateGameRequest"
+
+    # Import all schemas from service-types-schemas.yaml
+    ServiceType:
+      $ref: "./schemas/service-types-schemas.yaml#/components/schemas/ServiceType"
+    ServiceTypeListResponse:
+      $ref: "./schemas/service-types-schemas.yaml#/components/schemas/ServiceTypeListResponse"
+    CreateServiceTypeRequest:
+      $ref: "./schemas/service-types-schemas.yaml#/components/schemas/CreateServiceTypeRequest"
+    UpdateServiceTypeRequest:
+      $ref: "./schemas/service-types-schemas.yaml#/components/schemas/UpdateServiceTypeRequest"
+
+    # Import all schemas from difficulty-levels-schemas.yaml
+    DifficultyLevel:
+      $ref: "./schemas/difficulty-levels-schemas.yaml#/components/schemas/DifficultyLevel"
+    DifficultyLevelListResponse:
+      $ref: "./schemas/difficulty-levels-schemas.yaml#/components/schemas/DifficultyLevelListResponse"
+    CreateDifficultyLevelRequest:
+      $ref: "./schemas/difficulty-levels-schemas.yaml#/components/schemas/CreateDifficultyLevelRequest"
+    UpdateDifficultyLevelRequest:
+      $ref: "./schemas/difficulty-levels-schemas.yaml#/components/schemas/UpdateDifficultyLevelRequest"
+
+    # Import all schemas from boosters-schemas.yaml
+    Booster:
+      $ref: "./schemas/boosters-schemas.yaml#/components/schemas/Booster"
+    BoosterListResponse:
+      $ref: "./schemas/boosters-schemas.yaml#/components/schemas/BoosterListResponse"
+    CreateBoosterRequest:
+      $ref: "./schemas/boosters-schemas.yaml#/components/schemas/CreateBoosterRequest"
+    UpdateBoosterRequest:
+      $ref: "./schemas/boosters-schemas.yaml#/components/schemas/UpdateBoosterRequest"
+
+    # Import all schemas from price-configurations-schemas.yaml
+    PriceConfiguration:
+      $ref: "./schemas/price-configurations-schemas.yaml#/components/schemas/PriceConfiguration"
+    PriceConfigurationListResponse:
+      $ref: "./schemas/price-configurations-schemas.yaml#/components/schemas/PriceConfigurationListResponse"
+    CreatePriceConfigurationRequest:
+      $ref: "./schemas/price-configurations-schemas.yaml#/components/schemas/CreatePriceConfigurationRequest"
+    UpdatePriceConfigurationRequest:
+      $ref: "./schemas/price-configurations-schemas.yaml#/components/schemas/UpdatePriceConfigurationRequest"
+
+    # Import all schemas from calculator-schemas.yaml
+    CalculationRequest:
+      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/CalculationRequest"
+    CalculationResult:
+      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/CalculationResult"
+    CalculationBreakdown:
+      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/CalculationBreakdown"
+
+    # Common schemas (if needed locally)
+    PaginatedResponse:
+      $ref: "../common.yaml#/components/schemas/PaginatedResponse"
+
+security:
+  - cookieAuth: []

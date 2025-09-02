@@ -65,12 +65,10 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 
     // Step 6: Map to DTO and enrich with calculated fields
     OrderInfo orderInfo = orderMapper.toOrderInfo(order);
-    if (orderInfo.getPricing() != null) {
-      Integer paidAmount = queryUtils.calculatePaidAmount(order);
-      Integer balanceDue = queryUtils.calculateBalanceDue(order);
-      orderInfo.getPricing().setPaidAmount(paidAmount);
-      orderInfo.getPricing().setBalanceDue(balanceDue);
-    }
+    Integer paidAmount = queryUtils.calculatePaidAmount(order);
+    Integer balanceDue = queryUtils.calculateBalanceDue(order);
+    orderInfo.getPricing().setPaidAmount(paidAmount);
+    orderInfo.getPricing().setBalanceDue(balanceDue);
     return orderInfo;
   }
 }

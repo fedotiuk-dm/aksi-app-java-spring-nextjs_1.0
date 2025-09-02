@@ -46,6 +46,7 @@ public interface BranchMapper {
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "version", ignore = true)
+  @Mapping(target = "active", defaultValue = "true")
   void updateEntityFromRequest(
       UpdateBranchRequest request, @MappingTarget BranchEntity branchEntity);
 }

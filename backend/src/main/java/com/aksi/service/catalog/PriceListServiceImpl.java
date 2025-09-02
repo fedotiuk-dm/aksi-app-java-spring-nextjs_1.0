@@ -6,11 +6,11 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.api.service.dto.CreatePriceListItemRequest;
-import com.aksi.api.service.dto.PriceListItemInfo;
-import com.aksi.api.service.dto.PriceListItemsResponse;
-import com.aksi.api.service.dto.ServiceCategoryType;
-import com.aksi.api.service.dto.UpdatePriceListItemRequest;
+import com.aksi.api.pricelist.dto.CreatePriceListItemRequest;
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
+import com.aksi.api.pricelist.dto.PriceListItemsResponse;
+import com.aksi.api.pricelist.dto.ServiceCategoryType;
+import com.aksi.api.pricelist.dto.UpdatePriceListItemRequest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

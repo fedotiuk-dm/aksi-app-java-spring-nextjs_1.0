@@ -56,7 +56,28 @@ public class PriceCalculationService {
       case PERCENTAGE -> calculatePercentageFromBasisPoints(baseAmount, modifier.getValue());
       case FIXED -> modifier.getValue() * quantity;
       case FORMULA -> 0; // handled as base override in ModifierCalculator
+      case MULTIPLIER -> calculateMultiplierAmount(baseAmount, modifier.getValue());
+      case DISCOUNT -> calculateDiscountAmount(baseAmount, modifier.getValue());
     };
+  }
+
+  /** Calculate multiplier amount (additional percentage above base). */
+  private int calculateMultiplierAmount(int baseAmount, int multiplierValue) {
+    // Multiplier is stored as basis points (e.g., 150 = 1.5x = +50%)
+    // Calculate additional amount: (baseAmount * (multiplier - 100)) / 100
+    if (multiplierValue <= 100) {
+      return 0; // No additional amount for multipliers <= 1.0
+    }
+    long additionalAmount = (long) baseAmount * (multiplierValue - 100) / 100;
+    return (int) additionalAmount;
+  }
+
+  /** Calculate discount amount (reduction from base). */
+  private int calculateDiscountAmount(int baseAmount, int discountValue) {
+    // Discount is stored as basis points (e.g., 500 = 5% discount)
+    // Calculate discount amount: (baseAmount * discountValue) / 10000
+    long discountAmount = (long) baseAmount * discountValue / 10000;
+    return -(int) discountAmount; // Negative because it's a discount
   }
 
   /** Calculate urgency amount. Following OrderWizard step 6: +50% or +100% to intermediate sum */

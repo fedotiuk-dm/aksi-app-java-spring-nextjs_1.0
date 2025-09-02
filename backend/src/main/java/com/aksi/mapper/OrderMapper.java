@@ -9,20 +9,21 @@ import com.aksi.api.order.dto.CreateOrderRequest;
 import com.aksi.api.order.dto.CustomerSummary;
 import com.aksi.api.order.dto.ItemCharacteristics;
 import com.aksi.api.order.dto.ItemDefect;
-import com.aksi.api.order.dto.ItemModifier;
 import com.aksi.api.order.dto.ItemPhotoInfo;
 import com.aksi.api.order.dto.ItemRisk;
 import com.aksi.api.order.dto.ItemStain;
-import com.aksi.api.order.dto.ModifierDetail;
 import com.aksi.api.order.dto.OrderInfo;
 import com.aksi.api.order.dto.OrderItemInfo;
+import com.aksi.api.order.dto.OrderItemModifier;
 import com.aksi.api.order.dto.OrderItemPricingInfo;
+import com.aksi.api.order.dto.OrderModifierDetail;
 import com.aksi.api.order.dto.OrderPricingInfo;
 import com.aksi.api.order.dto.PaymentInfo;
 import com.aksi.api.order.dto.PriceListItemSummary;
 import com.aksi.api.order.dto.UpdateOrderStatusRequest;
 import com.aksi.api.pricing.dto.CalculatedItemPrice;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
+import com.aksi.api.pricing.dto.PricingItemCharacteristics;
 import com.aksi.domain.cart.CartItem;
 import com.aksi.domain.catalog.PriceListItemEntity;
 import com.aksi.domain.customer.CustomerEntity;
@@ -84,9 +85,9 @@ public abstract class OrderMapper {
   public abstract PriceListItemSummary toPriceListItemSummary(
       PriceListItemEntity priceListItemEntity);
 
-  /** Map ItemCharacteristics entity to DTO */
-  @Mapping(target = "fillerCondition", source = "fillerCondition")
-  public abstract ItemCharacteristics toItemCharacteristics(
+  /** Map PricingItemCharacteristics entity to DTO */
+  @Mapping(target = "material", source = "material")
+  public abstract PricingItemCharacteristics toItemCharacteristics(
       ItemCharacteristicsEntity characteristics);
 
   /** Map ItemStain entity to DTO */
@@ -108,13 +109,13 @@ public abstract class OrderMapper {
 
   // Back-references проставляються у доменних add*() методах, after-mapping не потрібен
 
-  /** Map ItemModifier entity to ItemModifier DTO */
+  /** Map OrderItemModifier entity to OrderItemModifier DTO */
   @Mapping(target = "type", source = "type")
-  public abstract ItemModifier toItemModifier(ItemModifierEntity modifier);
+  public abstract OrderItemModifier toItemModifier(ItemModifierEntity modifier);
 
-  /** Map ItemModifier entity to ModifierDetail DTO */
+  /** Map OrderItemModifier entity to OrderModifierDetail DTO */
   @Mapping(target = "amount", source = "appliedAmount")
-  public abstract ModifierDetail toModifierDetail(ItemModifierEntity modifier);
+  public abstract OrderModifierDetail toModifierDetail(ItemModifierEntity modifier);
 
   /** Map OrderPayment entity to PaymentInfo DTO */
   @Mapping(target = "method", source = "method", defaultValue = "CASH")
@@ -182,12 +183,10 @@ public abstract class OrderMapper {
   @Mapping(target = "description", source = "description")
   public abstract ItemRiskEntity toItemRiskEntity(ItemRisk dto);
 
-  /** Apply API ItemCharacteristics DTO to existing entity */
+  /** Apply API OrderItemCharacteristics DTO to existing entity */
   @BeanMapping(ignoreByDefault = true)
   @Mapping(target = "material", source = "material")
   @Mapping(target = "color", source = "color")
-  @Mapping(target = "filler", source = "filler")
-  @Mapping(target = "fillerCondition", source = "fillerCondition")
   @Mapping(target = "wearLevel", source = "wearLevel")
   public abstract void applyItemCharacteristics(
       ItemCharacteristics dto, @MappingTarget ItemCharacteristicsEntity entity);

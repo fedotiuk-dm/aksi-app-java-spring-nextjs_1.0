@@ -1,0 +1,268 @@
+paths:
+  /api/games/service-types:
+    get:
+      tags: [service-types]
+      operationId: gamesListServiceTypes
+      summary: Get service types
+      description: Get paginated list of service types with optional filtering
+      parameters:
+        - $ref: "../../common.yaml#/components/parameters/PageNumber"
+        - $ref: "../../common.yaml#/components/parameters/PageSize"
+        - name: gameId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by game ID
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+      responses:
+        "200":
+          description: List of service types
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/service-types-schemas.yaml#/components/schemas/ServiceTypeListResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+    post:
+      tags: [service-types]
+      operationId: gamesCreateServiceType
+      summary: Create service type
+      description: Create a new service type in the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/service-types-schemas.yaml#/components/schemas/CreateServiceTypeRequest"
+      responses:
+        "201":
+          description: Service type created
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/service-types-schemas.yaml#/components/schemas/ServiceType"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+  /api/games/service-types/{serviceTypeId}:
+    get:
+      tags: [service-types]
+      operationId: gamesGetServiceTypeById
+      summary: Get service type by ID
+      description: Retrieve detailed information about a specific service type
+      parameters:
+        - name: serviceTypeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Service type found
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/service-types-schemas.yaml#/components/schemas/ServiceType"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    put:
+      tags: [service-types]
+      operationId: gamesUpdateServiceType
+      summary: Update service type
+      description: Update an existing service type's information
+      parameters:
+        - name: serviceTypeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/service-types-schemas.yaml#/components/schemas/UpdateServiceTypeRequest"
+      responses:
+        "200":
+          description: Service type updated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/service-types-schemas.yaml#/components/schemas/ServiceType"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    delete:
+      tags: [service-types]
+      operationId: gamesDeleteServiceType
+      summary: Delete service type
+      description: Permanently delete a service type from the system
+      parameters:
+        - name: serviceTypeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Service type deleted
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    patch:
+      tags: [service-types]
+      operationId: gamesSetServiceTypeActive
+      summary: Set service type active status
+      description: Update the active status of a service type
+      parameters:
+        - name: serviceTypeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: active
+          in: query
+          required: true
+          schema:
+            type: boolean
+          description: Active status
+      responses:
+        "200":
+          description: Service type updated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/service-types-schemas.yaml#/components/schemas/ServiceType"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/service-types/search:
+    get:
+      tags: [service-types]
+      operationId: gamesSearchServiceTypesByName
+      summary: Search service types by name
+      parameters:
+        - name: searchTerm
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+          description: Search term
+      responses:
+        "200":
+          description: List of matching service types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "../schemas/service-types-schemas.yaml#/components/schemas/ServiceType"
+
+  /api/service-types/active:
+    get:
+      tags: [service-types]
+      operationId: gamesGetAllActiveServiceTypes
+      summary: Get all active service types
+      responses:
+        "200":
+          description: List of active service types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "../schemas/service-types-schemas.yaml#/components/schemas/ServiceType"
+
+  /api/service-types/categories:
+    get:
+      tags: [service-types]
+      operationId: gamesGetDistinctCategories
+      summary: Get distinct categories
+      responses:
+        "200":
+          description: List of distinct categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /api/service-types/code/{code}:
+    get:
+      tags: [service-types]
+      operationId: gamesGetServiceTypeByCode
+      summary: Get service type by code
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 50
+            pattern: "^[A-Z0-9_-]+$"
+      responses:
+        "200":
+          description: Service type found
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/service-types-schemas.yaml#/components/schemas/ServiceType"
+        "404":
+          description: Service type not found
+
+  /api/service-types/game/{gameId}:
+    get:
+      tags: [service-types]
+      operationId: gamesGetServiceTypesByGameId
+      summary: Get service types by game ID
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: List of service types for the game
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "../schemas/service-types-schemas.yaml#/components/schemas/ServiceType"

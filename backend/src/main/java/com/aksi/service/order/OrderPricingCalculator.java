@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import com.aksi.api.pricing.dto.CalculatedItemPrice;
 import com.aksi.api.pricing.dto.DiscountType;
 import com.aksi.api.pricing.dto.GlobalPriceModifiers;
-import com.aksi.api.pricing.dto.ItemCharacteristics;
+import com.aksi.api.pricing.dto.PricingItemCharacteristics;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
@@ -121,8 +121,8 @@ public class OrderPricingCalculator {
    * @param cartItem cart item with characteristics
    * @return pricing characteristics DTO
    */
-  private ItemCharacteristics convertCharacteristics(CartItem cartItem) {
-    ItemCharacteristics characteristics = new ItemCharacteristics();
+  private PricingItemCharacteristics convertCharacteristics(CartItem cartItem) {
+    PricingItemCharacteristics characteristics = new PricingItemCharacteristics();
 
     // Step 1: Copy basic characteristics
     characteristics.setMaterial(cartItem.getCharacteristics().getMaterial());

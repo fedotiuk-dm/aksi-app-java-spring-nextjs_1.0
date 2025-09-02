@@ -50,7 +50,6 @@ components:
       name: customerId
       in: query
       description: Filter by customer ID
-      required: false
       schema:
         type: string
         format: uuid
@@ -58,7 +57,6 @@ components:
       name: branchId
       in: query
       description: Filter by branch ID
-      required: false
       schema:
         type: string
         format: uuid
@@ -66,7 +64,6 @@ components:
       name: dateFrom
       in: query
       description: Filter by creation date from (UTC)
-      required: false
       schema:
         type: string
         format: date-time
@@ -74,7 +71,6 @@ components:
       name: dateTo
       in: query
       description: Filter by creation date to (UTC)
-      required: false
       schema:
         type: string
         format: date-time
@@ -82,9 +78,16 @@ components:
       name: search
       in: query
       description: Free text search
-      required: false
       schema:
         type: string
+    IdParam:
+      name: id
+      in: path
+      description: Resource identifier
+      required: true
+      schema:
+        type: string
+        format: uuid
 
   responses:
     BadRequest:
@@ -156,6 +159,32 @@ components:
       description: Email address
       example: "user@example.com"
 
+    # Shared schemas across domains
+    ItemCharacteristics:
+      type: object
+      description: Item characteristics shared across cart, order, and pricing domains
+      properties:
+        material:
+          type: string
+          description: Material type (cotton, silk, wool, etc.)
+          example: "cotton"
+        color:
+          type: string
+          description: Item color (affects processing and pricing)
+          example: "blue"
+        filler:
+          type: string
+          description: Filler type for items with filling
+          example: "down"
+        fillerCondition:
+          allOf:
+            - $ref: "#/components/schemas/FillerCondition"
+          description: Filler condition assessment
+        wearLevel:
+          allOf:
+            - $ref: "#/components/schemas/WearLevel"
+          description: Item wear level assessment
+
     # Centralized domain enums shared across APIs
     ServiceCategoryType:
       type: string
@@ -185,7 +214,7 @@ components:
 
     ModifierType:
       type: string
-      enum: [PERCENTAGE, FIXED, FORMULA]
+      enum: [PERCENTAGE, FIXED, FORMULA, MULTIPLIER, DISCOUNT]
       description: Type of price modifier
 
     DiscountType:
@@ -385,6 +414,17 @@ components:
           items:
             $ref: "#/components/schemas/ErrorDetail"
           nullable: true
+
+    SuccessResponse:
+      type: object
+      required: [success, message]
+      properties:
+        success:
+          type: boolean
+          default: true
+        message:
+          type: string
+          description: Success message
 
     ProblemDetails:
       type: object

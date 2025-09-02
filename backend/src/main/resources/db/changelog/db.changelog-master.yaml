@@ -81,6 +81,21 @@ databaseChangeLog:
       file: db/changelog/changes/026-fix-child-items-modifier.yaml
   - include:
       file: db/changelog/changes/027-reset-price-modifiers.yaml
+  # Game services tables
+  - include:
+      file: db/changelog/changes/028-create-game-services-tables.yaml
+  # Add missing columns for game services - columns already exist in database
+  # - include:
+  #     file: db/changelog/changes/029-add-missing-game-services-columns.yaml
+  # Add price modifiers table for universal calculator
+  - include:
+      file: db/changelog/changes/030-add-price-modifiers-table.yaml
+  # Add surrogate primary key to booster_game_specializations table
+  - include:
+      file: db/changelog/changes/031-add-id-to-booster-game-specializations.yaml
+  # Update game entities schema to match domain changes
+  - include:
+      file: db/changelog/changes/035-update-game-entities-schema.yaml
   # - include:
   #     file: db/changelog/changes/005-create-branch-tables.yaml
   # - include:
@@ -95,3 +110,6 @@ databaseChangeLog:
   #     file: db/changelog/changes/008-create-payment-tables.yaml
   # - include:
   #     file: db/changelog/changes/009-create-notification-tables.yaml
+  # Add test data for game services
+  - include:
+      file: db/changelog/changes/036-add-game-test-data.yaml

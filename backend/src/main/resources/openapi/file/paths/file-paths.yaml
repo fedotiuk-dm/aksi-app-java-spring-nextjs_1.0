@@ -1,0 +1,188 @@
+paths:
+  /api/files/{filePath}:
+    parameters:
+      - name: filePath
+        in: path
+        required: true
+        description: File path relative to upload directory (supports nested paths)
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9\/_\-\.]+$'
+          example: "orders/items/photos/item-1234567890-photo_2025-01-01_12-00-00.jpg"
+
+    get:
+      operationId: serveFile
+      summary: Serve uploaded file
+      description: Serve uploaded files with proper content type and security checks
+      tags:
+        - files
+      responses:
+        "200":
+          description: File served successfully
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+            application/json:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Type:
+              description: Actual content type of the file
+              schema:
+                type: string
+            Content-Disposition:
+              description: Content disposition header
+              schema:
+                type: string
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+  /api/files/upload:
+    post:
+      operationId: uploadFile
+      summary: Upload file
+      description: Upload file to specified directory with optional filename
+      tags:
+        - files
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              title: FileUploadRequest
+              type: object
+              required:
+                - file
+                - directory
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File to upload
+                directory:
+                  type: string
+                  description: Directory to upload file to
+                  pattern: '^[a-zA-Z0-9/_\-]+$'
+                  example: "orders/photos"
+                filename:
+                  type: string
+                  description: Optional custom filename (without extension)
+                  pattern: '^[a-zA-Z0-9_\-]+$'
+                  example: "custom-name"
+      responses:
+        "200":
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/file-schemas.yaml#/components/schemas/FileUploadResponse"
+          headers:
+            Location:
+              description: Public URL of the uploaded file
+              schema:
+                type: string
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+
+  /api/files/upload/base64:
+    post:
+      operationId: uploadBase64File
+      summary: Upload base64 file
+      description: Upload base64 encoded file data
+      tags:
+        - files
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/file-schemas.yaml#/components/schemas/Base64FileUploadRequest"
+      responses:
+        "200":
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/file-schemas.yaml#/components/schemas/FileUploadResponse"
+          headers:
+            Location:
+              description: Public URL of the uploaded file
+              schema:
+                type: string
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+
+  /api/files/{filePath}/info:
+    parameters:
+      - name: filePath
+        in: path
+        required: true
+        description: File path relative to upload directory
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9\/_\-\.]+$'
+
+    get:
+      operationId: getFileInfo
+      summary: Get file information
+      description: Get detailed information about uploaded file
+      tags:
+        - files
+      responses:
+        "200":
+          description: File information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/file-schemas.yaml#/components/schemas/FileInfo"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/files/{filePath}/base64:
+    parameters:
+      - name: filePath
+        in: path
+        required: true
+        description: File path relative to upload directory
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9\/_\-\.]+$'
+
+    get:
+      operationId: getFileAsBase64
+      summary: Get file content as base64
+      description: Read file content and return as base64 encoded string
+      tags:
+        - files
+      responses:
+        "200":
+          description: File content retrieved as base64
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/file-schemas.yaml#/components/schemas/Base64FileResponse"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"

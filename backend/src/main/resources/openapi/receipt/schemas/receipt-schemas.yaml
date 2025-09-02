@@ -1,0 +1,204 @@
+components:
+  schemas:
+    ReceiptPreviewRequest:
+      type: object
+      required:
+        - orderData
+      properties:
+        orderData:
+          $ref: "#/components/schemas/ReceiptOrderData"
+        templateId:
+          type: string
+          description: Template ID to use
+          default: "default"
+          example: "default"
+        locale:
+          type: string
+          description: Locale for receipt generation
+          default: "uk"
+          example: "uk"
+
+    ReceiptOrderData:
+      type: object
+      required:
+        - orderNumber
+        - branchName
+        - customerName
+        - items
+        - totalAmount
+        - createdAt
+      properties:
+        orderNumber:
+          type: string
+          description: Order number
+          example: "ORD-2024-0001"
+        branchName:
+          type: string
+          description: Branch name
+          example: "AKSI Main Branch"
+        branchAddress:
+          type: string
+          description: Branch address
+          example: "вул. Хрещатик, 1, Київ"
+        branchPhone:
+          type: string
+          description: Branch phone
+          example: "+380 44 123 45 67"
+        customerName:
+          type: string
+          description: Customer name
+          example: "Іван Петренко"
+        customerPhone:
+          type: string
+          description: Customer phone
+          example: "+380 67 123 45 67"
+        items:
+          type: array
+          description: Order items
+          items:
+            $ref: "#/components/schemas/ReceiptItem"
+        subtotal:
+          type: integer
+          description: Subtotal in kopiykas
+          example: 150000
+        discount:
+          type: integer
+          description: Discount amount in kopiykas
+          example: 15000
+        totalAmount:
+          type: integer
+          description: Total amount in kopiykas
+          example: 135000
+        prepaidAmount:
+          type: integer
+          description: Prepaid amount in kopiykas
+          example: 50000
+        dueAmount:
+          type: integer
+          description: Due amount in kopiykas
+          example: 85000
+        paymentMethod:
+          $ref: "../../common.yaml#/components/schemas/PaymentMethod"
+        createdAt:
+          type: string
+          format: date-time
+          description: Order creation timestamp
+        completionDate:
+          type: string
+          format: date-time
+          description: Expected completion date
+          example: "2024-12-25T10:00:00Z"
+        notes:
+          type: string
+          description: Additional notes
+          example: "Обережно з пуговицями"
+
+    ReceiptItem:
+      type: object
+      required:
+        - name
+        - quantity
+        - unitPrice
+        - totalPrice
+      properties:
+        position:
+          type: integer
+          description: Item position in order
+          example: 1
+        name:
+          type: string
+          description: Item name
+          example: "Піджак чоловічий"
+        catalogNumber:
+          type: string
+          description: Catalog number
+          example: "CAT-001"
+        quantity:
+          type: integer
+          description: Quantity
+          example: 1
+        unitPrice:
+          type: integer
+          description: Unit price in kopiykas
+          example: 50000
+        totalPrice:
+          type: integer
+          description: Total price in kopiykas
+          example: 50000
+        modifiers:
+          type: array
+          description: Applied modifiers
+          items:
+            type: string
+            example: "Терміново"
+
+    EmailReceiptRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address (if not specified, use customer's email)
+          example: "customer@example.com"
+        subject:
+          type: string
+          description: Email subject
+          example: "Ваша квитанція від AKSI"
+        message:
+          type: string
+          description: Additional message
+          example: "Дякуємо за ваше замовлення!"
+
+    EmailReceiptResponse:
+      type: object
+      required:
+        - success
+        - sentAt
+      properties:
+        success:
+          type: boolean
+          description: Email sent successfully
+          example: true
+        sentAt:
+          type: string
+          format: date-time
+          description: Email sent timestamp
+        email:
+          type: string
+          description: Email address where receipt was sent
+          example: "customer@example.com"
+        messageId:
+          type: string
+          description: Email message ID
+          example: "msg-123456"
+
+    ReceiptTemplate:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - isDefault
+      properties:
+        id:
+          type: string
+          description: Template ID
+          example: "default"
+        name:
+          type: string
+          description: Template name
+          example: "Стандартний шаблон"
+        description:
+          type: string
+          description: Template description
+          example: "Базовий шаблон квитанції"
+        isDefault:
+          type: boolean
+          description: Is default template
+          example: true
+        supportedLocales:
+          type: array
+          items:
+            type: string
+          description: Supported locales
+          example: ["uk", "en"]

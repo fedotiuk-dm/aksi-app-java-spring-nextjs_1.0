@@ -1,0 +1,187 @@
+paths:
+  /api/cart:
+    get:
+      operationId: getCart
+      summary: Get current cart
+      description: Get or create (getOrCreate) the active customer's shopping cart for this session
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Current cart details
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/cart-schemas.yaml#/components/schemas/CartInfo"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+    delete:
+      operationId: clearCart
+      summary: Clear cart
+      description: Remove all items from the active customer's cart
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      responses:
+        "204":
+          description: Cart cleared successfully
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/cart/items:
+    post:
+      operationId: addCartItem
+      summary: Add item to cart
+      description: Add a new item to the shopping cart
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/cart-schemas.yaml#/components/schemas/AddCartItemRequest"
+      responses:
+        "201":
+          description: Item added successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/cart-schemas.yaml#/components/schemas/CartItemInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/cart/items/{itemId}:
+    parameters:
+      - name: itemId
+        in: path
+        required: true
+        description: Cart item ID
+        schema:
+          type: string
+          format: uuid
+
+    put:
+      operationId: updateCartItem
+      summary: Update cart item
+      description: Update quantity or characteristics of a cart item
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/cart-schemas.yaml#/components/schemas/UpdateCartItemRequest"
+      responses:
+        "200":
+          description: Item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/cart-schemas.yaml#/components/schemas/CartItemInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    delete:
+      operationId: removeCartItem
+      summary: Remove item from cart
+      description: Remove an item from the shopping cart
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      responses:
+        "204":
+          description: Item removed successfully
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/cart/modifiers:
+    put:
+      operationId: updateCartModifiers
+      summary: Update cart global modifiers
+      description: Update global modifiers like urgency and discount
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/cart-schemas.yaml#/components/schemas/UpdateCartModifiersRequest"
+      responses:
+        "200":
+          description: Modifiers updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/cart-schemas.yaml#/components/schemas/CartInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/cart/calculate:
+    post:
+      operationId: calculateCart
+      summary: Calculate cart totals
+      description: Recalculate all prices in the active customer's cart. Does not create a cart; returns 404 if no active cart exists for the session.
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Cart recalculated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/cart-schemas.yaml#/components/schemas/CartPricingInfo"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/cart/activate-customer:
+    post:
+      operationId: activateCustomerForCart
+      summary: Activate customer for cart in current session
+      description: Binds subsequent cart operations to the selected customer in this session
+      tags:
+        - cart
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/cart-schemas.yaml#/components/schemas/ActivateCustomerRequest"
+      responses:
+        "204":
+          description: Customer activated for cart
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"

@@ -1,0 +1,99 @@
+openapi: 3.0.4
+info:
+  title: Cart API
+  description: Cart management API for dry cleaning service
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: cart
+    description: Cart management operations
+
+paths:
+  # Cart endpoints
+  /api/cart:
+    $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart"
+  /api/cart/items:
+    $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1items"
+  /api/cart/items/{itemId}:
+    $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1items~1{itemId}"
+  /api/cart/modifiers:
+    $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1modifiers"
+  /api/cart/calculate:
+    $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1calculate"
+  /api/cart/activate-customer:
+    $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1activate-customer"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session cookie authentication
+
+  responses:
+    BadRequest:
+      $ref: "../common.yaml#/components/responses/BadRequest"
+    Unauthorized:
+      $ref: "../common.yaml#/components/responses/Unauthorized"
+    Forbidden:
+      $ref: "../common.yaml#/components/responses/Forbidden"
+    NotFound:
+      $ref: "../common.yaml#/components/responses/NotFound"
+
+  schemas:
+    # Import all schemas from cart-schemas.yaml
+    ActivateCustomerRequest:
+      $ref: "./schemas/cart-schemas.yaml#/components/schemas/ActivateCustomerRequest"
+    CartInfo:
+      $ref: "./schemas/cart-schemas.yaml#/components/schemas/CartInfo"
+    CartItemInfo:
+      $ref: "./schemas/cart-schemas.yaml#/components/schemas/CartItemInfo"
+    PriceListItemSummary:
+      $ref: "./schemas/cart-schemas.yaml#/components/schemas/PriceListItemSummary"
+    ItemCharacteristics:
+      $ref: "./schemas/cart-schemas.yaml#/components/schemas/ItemCharacteristics"
+    CartItemModifier:
+      $ref: "./schemas/cart-schemas.yaml#/components/schemas/CartItemModifier"
+    CartGlobalModifiers:
+      $ref: "./schemas/cart-schemas.yaml#/components/schemas/CartGlobalModifiers"
+    CartItemPricingInfo:
+      $ref: "./schemas/cart-schemas.yaml#/components/schemas/CartItemPricingInfo"
+    CartModifierDetail:
+      $ref: "./schemas/cart-schemas.yaml#/components/schemas/CartModifierDetail"
+    CartPricingInfo:
+      $ref: "./schemas/cart-schemas.yaml#/components/schemas/CartPricingInfo"
+    AddCartItemRequest:
+      $ref: "./schemas/cart-schemas.yaml#/components/schemas/AddCartItemRequest"
+    UpdateCartItemRequest:
+      $ref: "./schemas/cart-schemas.yaml#/components/schemas/UpdateCartItemRequest"
+    UpdateCartModifiersRequest:
+      $ref: "./schemas/cart-schemas.yaml#/components/schemas/UpdateCartModifiersRequest"
+
+    # Common schemas (if needed locally)
+    ServiceCategoryType:
+      $ref: "../common.yaml#/components/schemas/ServiceCategoryType"
+    UnitOfMeasure:
+      $ref: "../common.yaml#/components/schemas/UnitOfMeasure"
+    FillerCondition:
+      $ref: "../common.yaml#/components/schemas/FillerCondition"
+    WearLevel:
+      $ref: "../common.yaml#/components/schemas/WearLevel"
+    ModifierType:
+      $ref: "../common.yaml#/components/schemas/ModifierType"
+    UrgencyType:
+      $ref: "../common.yaml#/components/schemas/UrgencyType"
+    DiscountType:
+      $ref: "../common.yaml#/components/schemas/DiscountType"
+
+security:
+  - cookieAuth: []

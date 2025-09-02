@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aksi.api.service.PriceListApi;
-import com.aksi.api.service.dto.CreatePriceListItemRequest;
-import com.aksi.api.service.dto.PriceListItemInfo;
-import com.aksi.api.service.dto.PriceListItemsResponse;
-import com.aksi.api.service.dto.ServiceCategoryType;
-import com.aksi.api.service.dto.UpdatePriceListItemRequest;
+import com.aksi.api.pricelist.PriceListApi;
+import com.aksi.api.pricelist.dto.CreatePriceListItemRequest;
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
+import com.aksi.api.pricelist.dto.PriceListItemsResponse;
+import com.aksi.api.pricelist.dto.ServiceCategoryType;
+import com.aksi.api.pricelist.dto.UpdatePriceListItemRequest;
 import com.aksi.service.catalog.CategoryManagementService;
 import com.aksi.service.catalog.PriceListService;
 
@@ -98,7 +98,6 @@ public class PriceListController implements PriceListApi {
             "categoryCode", categoryCode,
             "activatedItems", activatedCount,
             "message",
-                String.format(
-                    "Activated %d items in category %s", activatedCount, categoryCode)));
+                String.format("Activated %d items in category %s", activatedCount, categoryCode)));
   }
 }

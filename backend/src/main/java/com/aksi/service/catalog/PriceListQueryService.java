@@ -11,9 +11,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.api.service.dto.PriceListItemInfo;
-import com.aksi.api.service.dto.PriceListItemsResponse;
-import com.aksi.api.service.dto.ServiceCategoryType;
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
+import com.aksi.api.pricelist.dto.PriceListItemsResponse;
+import com.aksi.api.pricelist.dto.ServiceCategoryType;
 import com.aksi.domain.catalog.PriceListItemEntity;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.PriceListItemMapper;
@@ -84,7 +84,7 @@ public class PriceListQueryService {
     // Build specification
     Specification<PriceListItemEntity> spec =
         PriceListItemSpecification.hasCategory(categoryCode)
-            .and(PriceListItemSpecification.isActive(active));
+            .and(PriceListItemSpecification.hasActive(active));
 
     // Execute query
     Page<PriceListItemEntity> page = priceListItemRepository.findAll(spec, pageable);

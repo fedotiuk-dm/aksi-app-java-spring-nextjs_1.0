@@ -1,0 +1,182 @@
+components:
+  schemas:
+    PriceConfiguration:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        gameId:
+          type: string
+          format: uuid
+        difficultyLevelId:
+          type: string
+          format: uuid
+        serviceTypeId:
+          type: string
+          format: uuid
+        basePrice:
+          type: integer
+          minimum: 0
+          description: Base price in cents (e.g., 100 = $1.00)
+        pricePerLevel:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Price per level in cents
+        currency:
+          type: string
+          default: "USD"
+        calculationType:
+          type: string
+          enum: [LINEAR, RANGE, FORMULA, TIME_BASED]
+        calculationFormula:
+          type: string
+          description: JSON formula configuration
+        active:
+          type: boolean
+          default: true
+        sortOrder:
+          type: integer
+          minimum: 0
+          default: 0
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - gameId
+        - difficultyLevelId
+        - serviceTypeId
+        - basePrice
+        - calculationType
+        - active
+        - sortOrder
+
+    CreatePriceConfigurationRequest:
+      type: object
+      properties:
+        gameId:
+          type: string
+          format: uuid
+        difficultyLevelId:
+          type: string
+          format: uuid
+        serviceTypeId:
+          type: string
+          format: uuid
+        basePrice:
+          type: integer
+          minimum: 0
+          description: Base price in cents
+        pricePerLevel:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Price per level in cents
+        currency:
+          type: string
+          default: "USD"
+        calculationType:
+          type: string
+          enum: [LINEAR, RANGE, FORMULA, TIME_BASED]
+        calculationFormula:
+          type: string
+          description: JSON formula configuration
+        sortOrder:
+          type: integer
+          minimum: 0
+          default: 0
+        active:
+          type: boolean
+          default: true
+      required:
+        - gameId
+        - difficultyLevelId
+        - serviceTypeId
+        - basePrice
+        - calculationType
+
+    UpdatePriceConfigurationRequest:
+      type: object
+      properties:
+        gameId:
+          type: string
+          format: uuid
+        difficultyLevelId:
+          type: string
+          format: uuid
+        serviceTypeId:
+          type: string
+          format: uuid
+        basePrice:
+          type: integer
+          minimum: 0
+          description: Base price in cents
+        pricePerLevel:
+          type: integer
+          minimum: 0
+          description: Price per level in cents
+        currency:
+          type: string
+        calculationType:
+          type: string
+          enum: [LINEAR, RANGE, FORMULA, TIME_BASED]
+        calculationFormula:
+          type: string
+        sortOrder:
+          type: integer
+          minimum: 0
+        active:
+          type: boolean
+      required:
+        - gameId
+        - difficultyLevelId
+        - serviceTypeId
+
+    PriceConfigurationListResponse:
+      type: object
+      required:
+        - data
+        - totalElements
+        - totalPages
+        - size
+        - number
+        - numberOfElements
+        - first
+        - last
+        - empty
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceConfiguration"
+          description: Page content
+        totalElements:
+          type: integer
+          format: int64
+          description: Total number of elements
+        totalPages:
+          type: integer
+          description: Total number of pages
+        size:
+          type: integer
+          description: Page size
+        number:
+          type: integer
+          description: Page number (0-based)
+        numberOfElements:
+          type: integer
+          description: Number of elements in current page
+        first:
+          type: boolean
+          description: Is first page
+        last:
+          type: boolean
+          description: Is last page
+        empty:
+          type: boolean
+          description: Is empty

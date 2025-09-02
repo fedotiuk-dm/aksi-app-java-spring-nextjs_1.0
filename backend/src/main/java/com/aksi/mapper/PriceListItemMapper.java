@@ -8,9 +8,9 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import com.aksi.api.service.dto.CreatePriceListItemRequest;
-import com.aksi.api.service.dto.PriceListItemInfo;
-import com.aksi.api.service.dto.UpdatePriceListItemRequest;
+import com.aksi.api.pricelist.dto.CreatePriceListItemRequest;
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
+import com.aksi.api.pricelist.dto.UpdatePriceListItemRequest;
 import com.aksi.domain.catalog.PriceListItemEntity;
 
 /** MapStruct mapper for Price List Item DTOs. */

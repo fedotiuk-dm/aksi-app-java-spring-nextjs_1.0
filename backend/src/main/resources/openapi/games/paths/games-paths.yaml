@@ -1,0 +1,227 @@
+paths:
+  /api/games:
+    get:
+      tags: [games]
+      operationId: gamesListGames
+      summary: Get all games
+      description: Get paginated list of games with optional filtering by active status
+      parameters:
+        - $ref: "../../common.yaml#/components/parameters/PageNumber"
+        - $ref: "../../common.yaml#/components/parameters/PageSize"
+        - $ref: "../../common.yaml#/components/parameters/Search"
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+      responses:
+        "200":
+          description: List of games
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/games-schemas.yaml#/components/schemas/GameListResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+    post:
+      tags: [games]
+      operationId: gamesCreateGame
+      summary: Create new game
+      description: Create a new game entry in the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/games-schemas.yaml#/components/schemas/CreateGameRequest"
+      responses:
+        "201":
+          description: Game created
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/games-schemas.yaml#/components/schemas/Game"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+  /api/games/by-id/{gameId}:
+    get:
+      tags: [games]
+      operationId: gamesGetGameById
+      summary: Get game by ID
+      description: Retrieve detailed information about a specific game
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Game found
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/games-schemas.yaml#/components/schemas/Game"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    put:
+      tags: [games]
+      operationId: gamesUpdateGame
+      summary: Update game
+      description: Update an existing game's information
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/games-schemas.yaml#/components/schemas/UpdateGameRequest"
+      responses:
+        "200":
+          description: Game updated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/games-schemas.yaml#/components/schemas/Game"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    delete:
+      tags: [games]
+      operationId: gamesDeleteGame
+      summary: Delete game
+      description: Permanently delete a game from the system
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Game deleted
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/games/by-code/{code}:
+    get:
+      tags: [games]
+      operationId: gamesGetGameByCode
+      summary: Get game by code
+      description: Retrieve game information using game code
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Game found
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/games-schemas.yaml#/components/schemas/Game"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          description: Game not found
+
+  /api/games/active:
+    get:
+      tags: [games]
+      operationId: gamesGetAllActiveGames
+      summary: Get all active games
+      description: Retrieve list of all currently active games
+      responses:
+        "200":
+          description: List of active games
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "../schemas/games-schemas.yaml#/components/schemas/Game"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/games/by-id/{gameId}/enable:
+    patch:
+      tags: [games]
+      operationId: gamesActivateGame
+      summary: Activate game
+      description: Mark a game as active and available for boosting
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Game activated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/games-schemas.yaml#/components/schemas/Game"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/games/by-id/{gameId}/disable:
+    patch:
+      tags: [games]
+      operationId: gamesDeactivateGame
+      summary: Deactivate game
+      description: Mark a game as inactive and unavailable for boosting
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Game deactivated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/games-schemas.yaml#/components/schemas/Game"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"

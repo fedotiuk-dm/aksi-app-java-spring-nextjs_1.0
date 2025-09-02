@@ -1,0 +1,78 @@
+databaseChangeLog:
+  - changeSet:
+      id: 036-add-game-test-data
+      author: aksi
+      comment: Add test data for games, difficulty levels, and service types
+
+      changes:
+        # Insert test game
+        - sql:
+            comment: Insert test game (League of Legends)
+            sql: |
+              INSERT INTO games (id, code, name, description, category, active, sort_order, created_at, updated_at)
+              VALUES (gen_random_uuid(), 'LOL', 'League of Legends', 'Popular MOBA game', 'MOBA', true, 1, now(), now())
+              ON CONFLICT (code) DO NOTHING;
+
+        # Insert test difficulty level
+        - sql:
+            comment: Insert test difficulty level for LOL game
+            sql: |
+              INSERT INTO difficulty_levels (id, game_id, code, name, level_value, active, sort_order, created_at, updated_at)
+              SELECT
+                gen_random_uuid(),
+                g.id,
+                'STANDARD',
+                'Standard Difficulty',
+                1,
+                true,
+                1,
+                now(),
+                now()
+              FROM games g
+              WHERE g.code = 'LOL'
+              ON CONFLICT DO NOTHING;
+
+        # Insert test service type
+        - sql:
+            comment: Insert test service type for LOL game
+            sql: |
+              INSERT INTO service_types (id, game_id, code, name, description, active, sort_order, created_at, updated_at)
+              SELECT
+                gen_random_uuid(),
+                g.id,
+                'BOOSTING',
+                'Rank Boosting',
+                'Professional rank boosting service',
+                true,
+                1,
+                now(),
+                now()
+              FROM games g
+              WHERE g.code = 'LOL'
+              ON CONFLICT DO NOTHING;
+
+        # Insert test price configuration
+        - sql:
+            comment: Insert test price configuration
+            sql: |
+              INSERT INTO price_configurations (id, game_id, difficulty_level_id, service_type_id, base_price, price_per_level, calculation_formula, active, is_default, sort_order, created_at, updated_at)
+              SELECT
+                gen_random_uuid(),
+                g.id,
+                dl.id,
+                st.id,
+                10000, -- 100 UAH in kopiykas
+                500,   -- 5 UAH per level in kopiykas
+                'basePrice + (levelDifference * pricePerLevel)',
+                true,
+                true,
+                1,
+                now(),
+                now()
+              FROM games g
+              CROSS JOIN difficulty_levels dl
+              CROSS JOIN service_types st
+              WHERE g.code = 'LOL'
+                AND dl.code = 'STANDARD'
+                AND st.code = 'BOOSTING'
+              ON CONFLICT DO NOTHING;

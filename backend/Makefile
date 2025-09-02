@@ -9,6 +9,9 @@ MVN := ./mvnw
 # Default target
 .DEFAULT_GOAL := help
 
+# Dependency update targets
+.PHONY: update-versions check-updates update-properties update-dependencies update-plugins
+
 # Phony targets
 .PHONY: help up down stop start restart logs status shell clean reset db build test lint format dev install
 
@@ -196,6 +199,14 @@ _show_urls:
 	@echo '   make status          # Check status'
 	@echo '   make shell           # Open shell'
 	@echo '   make down            # Stop all services'
+	@echo ''
+	@echo '🔄 Dependency Updates:'
+	@echo '   make check-updates   # Show all available updates'
+	@echo '   make update-all-safe # Update all (SAFE: minor only)'
+	@echo '   make update-dependencies # Update only dependencies'
+	@echo '   make update-plugins  # Update only plugins'
+	@echo '   make update-properties # Update properties versions'
+	@echo '   make revert-updates  # Revert to backup POM'
 
 # Monitoring
 monitor: ## Open monitoring dashboards
@@ -219,3 +230,65 @@ outdated: ## Show outdated dependencies
 	@echo '📦 Checking for outdated dependencies...'
 	@echo 'Maven:'
 	@$(MVN) versions:display-dependency-updates
+
+# ========================================
+# 🔄 DEPENDENCY UPDATE AUTOMATION
+# ========================================
+
+check-updates: ## 🔍 Show all available updates (dependencies, plugins, properties)
+	@echo '🔍 Checking all available updates...'
+	@echo '📦 Dependencies:'
+	@$(MVN) versions:display-dependency-updates
+	@echo ''
+	@echo '🔌 Plugins:'
+	@$(MVN) versions:display-plugin-updates
+	@echo ''
+	@echo '⚙️ Properties:'
+	@$(MVN) versions:display-property-updates
+
+update-dependencies: ## 📦 Update only dependencies (minor + incremental)
+	@echo '📦 Updating dependencies to latest minor versions...'
+	@$(MVN) versions:use-latest-versions -DallowMajorUpdates=false -DallowMinorUpdates=true
+	@echo '✅ Dependencies updated!'
+
+update-plugins: ## 🔌 Update Maven plugins
+	@echo '🔌 Updating Maven plugins...'
+	@$(MVN) versions:use-latest-versions -DallowMajorUpdates=false -DallowMinorUpdates=true -DincludesList=*:*-maven-plugin
+	@echo '✅ Plugins updated!'
+
+update-properties: ## ⚙️ Update properties-based versions
+	@echo '⚙️ Updating properties-based versions...'
+	@$(MVN) versions:update-properties -DallowMajorUpdates=false -DallowMinorUpdates=true
+	@echo '✅ Properties updated!'
+
+update-all-safe: ## 🚀 Update everything (SAFE: minor + incremental only)
+	@echo '🚀 Running SAFE update (minor + incremental versions only)...'
+	@$(MAKE) update-dependencies
+	@$(MAKE) update-plugins
+	@$(MAKE) update-properties
+	@echo '✅ All updates completed safely!'
+	@echo '💡 Run "mvn clean compile" to test the updates'
+
+update-all-major: ## ⚠️ Update everything including MAJOR versions (DANGEROUS!)
+	@echo '⚠️  WARNING: This will update to MAJOR versions!'
+	@echo '⚠️  This may introduce breaking changes!'
+	@read -p "Are you sure? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
+	@echo '🚀 Running MAJOR update...'
+	@$(MVN) versions:use-latest-versions -DallowMajorUpdates=true
+	@$(MVN) versions:update-properties -DallowMajorUpdates=true
+	@echo '✅ Major updates completed!'
+	@echo '⚠️  Please test thoroughly!'
+
+revert-updates: ## ↩️ Revert to backup POM (if update failed)
+	@echo '↩️ Reverting to backup pom.xml...'
+	@if [ -f pom.xml.versionsBackup ]; then \
+		mv pom.xml.versionsBackup pom.xml; \
+		echo '✅ Reverted to backup!'; \
+	else \
+		echo '❌ No backup found!'; \
+	fi
+
+clean-backups: ## 🧹 Clean version backup files
+	@echo '🧹 Cleaning version backup files...'
+	@rm -f pom.xml.versionsBackup
+	@echo '✅ Backup files cleaned!'

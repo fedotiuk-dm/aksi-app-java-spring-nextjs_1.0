@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import com.aksi.api.pricing.dto.CalculatedItemPrice;
 import com.aksi.api.pricing.dto.GlobalPriceModifiers;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
-import com.aksi.api.service.dto.PriceListItemInfo;
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
 import com.aksi.service.pricing.calculation.BaseAmountCalculator;
 import com.aksi.service.pricing.calculation.DiscountCalculator;
 import com.aksi.service.pricing.calculation.ModifierCalculator;

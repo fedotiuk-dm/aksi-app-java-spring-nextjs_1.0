@@ -37,12 +37,13 @@ public class SummarySection implements ReceiptSection {
     }
 
     // Discount
-    if (orderData.getDiscount() != null && orderData.getDiscount() > 0) {
+    Integer discount = orderData.getDiscount();
+    if (discount != null && discount > 0) {
       y =
           drawSummaryLine(
               builder,
               messages.getDiscountLabel(locale),
-              formatter.formatMoneyWithSign(orderData.getDiscount(), true),
+              formatter.formatMoneyWithSign(discount, true),
               PdfConstants.FONT_SIZE_NORMAL,
               false,
               y);
@@ -59,24 +60,26 @@ public class SummarySection implements ReceiptSection {
     y = builder.nextLine(PdfConstants.LINE_HEIGHT_SMALL).getCurrentY();
 
     // Prepaid
-    if (orderData.getPrepaidAmount() != null && orderData.getPrepaidAmount() > 0) {
+    Integer prepaidAmount = orderData.getPrepaidAmount();
+    if (prepaidAmount != null && prepaidAmount > 0) {
       y =
           drawSummaryLine(
               builder,
               messages.getPrepaidLabel(locale),
-              formatter.formatMoney(orderData.getPrepaidAmount()),
+              formatter.formatMoney(prepaidAmount),
               PdfConstants.FONT_SIZE_NORMAL,
               false,
               y);
     }
 
     // Due amount
-    if (orderData.getDueAmount() != null && orderData.getDueAmount() > 0) {
+    Integer dueAmount = orderData.getDueAmount();
+    if (dueAmount != null && dueAmount > 0) {
       y =
           drawSummaryLine(
               builder,
               messages.getDueLabel(locale),
-              formatter.formatMoney(orderData.getDueAmount()),
+              formatter.formatMoney(dueAmount),
               PdfConstants.FONT_SIZE_NORMAL,
               true,
               y);

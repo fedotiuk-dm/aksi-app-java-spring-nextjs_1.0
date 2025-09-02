@@ -1,0 +1,398 @@
+components:
+  schemas:
+    PriceCalculationRequest:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/PriceCalculationItem"
+          description: Items to calculate price for
+        globalModifiers:
+          $ref: "#/components/schemas/GlobalPriceModifiers"
+
+    PriceCalculationItem:
+      type: object
+      required:
+        - priceListItemId
+        - quantity
+      properties:
+        priceListItemId:
+          type: string
+          format: uuid
+          description: Price list item ID
+        quantity:
+          type: integer
+          minimum: 1
+          description: Quantity (in units)
+        characteristics:
+          $ref: "#/components/schemas/PricingItemCharacteristics"
+        modifierCodes:
+          type: array
+          items:
+            type: string
+          description: Modifier codes to apply
+
+    # Use shared ItemCharacteristics from common.yaml (renamed from PricingItemCharacteristics)
+    PricingItemCharacteristics:
+      $ref: "../../common.yaml#/components/schemas/ItemCharacteristics"
+
+    GlobalPriceModifiers:
+      type: object
+      x-discount-excluded-categories: [LAUNDRY, IRONING, DYEING]
+      x-discount-excluded-categories-description: |
+        Categories excluded from all discounts:
+        * `LAUNDRY` - Прання (Laundry)
+        * `IRONING` - Прасування (Ironing)
+        * `DYEING` - Фарбування (Dyeing)
+      properties:
+        urgencyType:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/UrgencyType"
+            - x-enum-varnames: [NORMAL, EXPRESS_48H, EXPRESS_24H]
+              x-enum-descriptions:
+                - Standard processing
+                - Express 48 hours
+                - Express 24 hours
+              x-enum-percentages:
+                - 0
+                - 50
+                - 100
+              default: NORMAL
+              description: |
+                Urgency type:
+                * `NORMAL` - Standard processing (0%)
+                * `EXPRESS_48H` - Express 48 hours (+50%)
+                * `EXPRESS_24H` - Express 24 hours (+100%)
+        discountType:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/DiscountType"
+            - x-enum-varnames: [NONE, EVERCARD, SOCIAL_MEDIA, MILITARY, OTHER]
+              x-enum-descriptions:
+                - No discount
+                - Evercard discount
+                - Social media discount
+                - Military discount
+                - Other discount
+              x-enum-percentages:
+                - 0
+                - 10
+                - 5
+                - 10
+                - null
+              default: NONE
+              description: |
+                Discount type:
+                * `NONE` - No discount (0%)
+                * `EVERCARD` - Evercard discount (10%)
+                * `SOCIAL_MEDIA` - Social media discount (5%)
+                * `MILITARY` - Military discount (10%)
+                * `OTHER` - Other discount (requires discountPercentage)
+        discountPercentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Discount percentage (required for OTHER type)
+
+    PriceCalculationResponse:
+      type: object
+      required:
+        - items
+        - totals
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CalculatedItemPrice"
+          description: Calculated prices for each item
+        totals:
+          $ref: "#/components/schemas/CalculationTotals"
+        warnings:
+          type: array
+          items:
+            type: string
+          description: Calculation warnings (e.g., discount not applicable)
+
+    CalculatedItemPrice:
+      type: object
+      required:
+        - priceListItemId
+        - itemName
+        - quantity
+        - basePrice
+        - calculations
+        - total
+      properties:
+        priceListItemId:
+          type: string
+          format: uuid
+        itemName:
+          type: string
+          description: Item name from price list
+        categoryCode:
+          $ref: "../../common.yaml#/components/schemas/ServiceCategoryType"
+        quantity:
+          type: integer
+        basePrice:
+          type: integer
+          description: Base price per unit in kopiykas
+        calculations:
+          $ref: "#/components/schemas/ItemPriceCalculation"
+        total:
+          type: integer
+          description: Total price for this item in kopiykas
+
+    ItemPriceCalculation:
+      type: object
+      required:
+        - baseAmount
+        - modifiers
+        - subtotal
+        - urgencyModifier
+        - discountModifier
+        - finalAmount
+      properties:
+        baseAmount:
+          type: integer
+          description: Base amount (base price × quantity) in kopiykas
+        modifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/AppliedModifier"
+          description: Applied modifiers with amounts
+        modifiersTotal:
+          type: integer
+          description: Total modifiers amount in kopiykas
+        subtotal:
+          type: integer
+          description: Subtotal (base + modifiers) in kopiykas
+        urgencyModifier:
+          $ref: "#/components/schemas/AppliedModifier"
+        discountModifier:
+          $ref: "#/components/schemas/AppliedModifier"
+        discountEligible:
+          type: boolean
+          description: Whether item is eligible for discount
+        finalAmount:
+          type: integer
+          description: Final amount after all calculations in kopiykas
+
+    AppliedModifier:
+      type: object
+      required:
+        - code
+        - name
+        - type
+        - value
+        - amount
+      properties:
+        code:
+          type: string
+          description: Modifier code
+        name:
+          type: string
+          description: Modifier name
+        type:
+          $ref: "../../common.yaml#/components/schemas/ModifierType"
+        value:
+          type: integer
+          description: Modifier value (percentage in basis points *100 or fixed amount in kopiykas)
+        amount:
+          type: integer
+          description: Calculated amount in kopiykas
+
+    CalculationTotals:
+      type: object
+      required:
+        - itemsSubtotal
+        - urgencyAmount
+        - discountAmount
+        - discountApplicableAmount
+        - total
+      properties:
+        itemsSubtotal:
+          type: integer
+          description: Sum of all items subtotals in kopiykas
+        urgencyAmount:
+          type: integer
+          description: Total urgency surcharge in kopiykas
+        urgencyPercentage:
+          type: integer
+          description: Applied urgency percentage
+        discountAmount:
+          type: integer
+          description: Total discount amount in kopiykas
+        discountPercentage:
+          type: integer
+          description: Applied discount percentage
+        discountApplicableAmount:
+          type: integer
+          description: Amount eligible for discount in kopiykas
+        total:
+          type: integer
+          description: Final total amount in kopiykas
+        expectedCompletionDate:
+          type: string
+          format: date-time
+          description: Expected completion date based on items and urgency
+        expectedCompletionNote:
+          type: string
+          description: Optional note (e.g., "після 14:00")
+
+    PriceModifier:
+      type: object
+      required:
+        - code
+        - name
+        - type
+        - value
+        - active
+      properties:
+        code:
+          type: string
+          description: Unique modifier code
+          x-unique: true
+        name:
+          type: string
+          description: Modifier name
+        description:
+          type: string
+          description: Modifier description
+        type:
+          $ref: "../../common.yaml#/components/schemas/ModifierType"
+        value:
+          type: integer
+          description: |
+            Modifier value:
+            - For PERCENTAGE: basis points (e.g., 1550 = 15.5%)
+            - For FIXED: amount in kopiykas per item
+        categoryRestrictions:
+          type: array
+          items:
+            $ref: "../../common.yaml#/components/schemas/ServiceCategoryType"
+          description: Category codes where modifier is applicable
+        active:
+          type: boolean
+          description: Is modifier active
+        sortOrder:
+          type: integer
+          description: Sort order for display
+          default: 0
+
+    PriceModifierInfo:
+      allOf:
+        - $ref: "#/components/schemas/PriceModifier"
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Modifier ID
+            createdAt:
+              type: string
+              format: date-time
+              description: Creation timestamp
+            updatedAt:
+              type: string
+              format: date-time
+              description: Last update timestamp
+
+    Discount:
+      type: object
+      required:
+        - code
+        - name
+        - percentage
+        - active
+      properties:
+        code:
+          type: string
+          description: Unique discount code
+          x-unique: true
+        name:
+          type: string
+          description: Discount name
+        description:
+          type: string
+          description: Discount description
+        percentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Discount percentage
+        excludedCategories:
+          type: array
+          items:
+            $ref: "../../common.yaml#/components/schemas/ServiceCategoryType"
+          description: Category codes excluded from discount
+        active:
+          type: boolean
+          description: Is discount active
+        sortOrder:
+          type: integer
+          description: Sort order for display
+          default: 0
+
+    DiscountInfo:
+      allOf:
+        - $ref: "#/components/schemas/Discount"
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Discount ID
+            createdAt:
+              type: string
+              format: date-time
+              description: Creation timestamp
+            updatedAt:
+              type: string
+              format: date-time
+              description: Last update timestamp
+
+    PriceModifiersResponse:
+      type: object
+      required:
+        - modifiers
+      properties:
+        modifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceModifier"
+          description: List of price modifiers
+        generalModifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceModifier"
+          description: General modifiers (applicable to all categories)
+        textileModifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceModifier"
+          description: Textile-specific modifiers
+        leatherModifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceModifier"
+          description: Leather-specific modifiers
+
+    DiscountsResponse:
+      type: object
+      required:
+        - discounts
+      properties:
+        discounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Discount"
+          description: List of available discounts
+
+    # ErrorResponse removed; use common.yaml
+
+  securitySchemes:
+    cookieAuth:
+      $ref: "../../common.yaml#/components/securitySchemes/cookieAuth"

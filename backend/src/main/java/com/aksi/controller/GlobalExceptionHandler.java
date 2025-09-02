@@ -8,11 +8,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.catalina.connector.ClientAbortException;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -40,6 +44,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GlobalExceptionHandler {
 
+  @Value("${spring.profiles.active:dev}")
+  private String activeProfile;
+
+  private boolean productionProfile() {
+    return "prod".equals(activeProfile) || "production".equals(activeProfile);
+  }
+
   @ExceptionHandler(UnauthorizedException.class)
   public ResponseEntity<Map<String, Object>> handleUnauthorized(UnauthorizedException e) {
     log.warn("Unauthorized access: {}", e.getMessage());
@@ -56,6 +67,41 @@ public class GlobalExceptionHandler {
   public ResponseEntity<Map<String, Object>> handleConflict(ConflictException e) {
     log.warn("Resource conflict: {}", e.getMessage());
     return createErrorResponse(HttpStatus.CONFLICT, e.getMessage(), null);
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(
+      DataIntegrityViolationException e) {
+    String message = "Data integrity constraint violation";
+    if (productionProfile()) {
+      log.error("Data integrity violation: {}", getShortErrorMessage(e));
+    } else {
+      log.error("Data integrity violation: {}", e.getMessage());
+    }
+    return createErrorResponse(HttpStatus.CONFLICT, message, null);
+  }
+
+  @ExceptionHandler(JpaSystemException.class)
+  public ResponseEntity<Map<String, Object>> handleJpaSystemException(JpaSystemException e) {
+    String message = "Database system error occurred";
+    if (productionProfile()) {
+      log.error("JPA system error: {}", getShortErrorMessage(e));
+    } else {
+      log.error("JPA system error: {}", e.getMessage());
+    }
+    return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, message, null);
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<Map<String, Object>> handleConstraintViolation(
+      ConstraintViolationException e) {
+    String message = "Database constraint violation";
+    if (productionProfile()) {
+      log.error("Constraint violation: {}", getShortErrorMessage(e));
+    } else {
+      log.error("Constraint violation: {}", e.getMessage());
+    }
+    return createErrorResponse(HttpStatus.BAD_REQUEST, message, null);
   }
 
   @ExceptionHandler(BadCredentialsException.class)
@@ -247,7 +293,11 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(NullPointerException.class)
   public ResponseEntity<Map<String, Object>> handleNullPointer(NullPointerException e) {
-    log.error("Null pointer error: {}", e.getMessage());
+    if (productionProfile()) {
+      log.error("Null pointer error: {}", getShortErrorMessage(e));
+    } else {
+      log.error("Null pointer error: {}", e.getMessage());
+    }
     return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", null);
   }
 
@@ -260,10 +310,25 @@ public class GlobalExceptionHandler {
       return null;
     }
 
-    log.error("Unexpected error: {}", e.getMessage());
+    // Log full stack trace only in development
+    if (productionProfile()) {
+      log.error("Unexpected error: {}", getShortErrorMessage(e));
+    } else {
+      log.error("Unexpected error: {}", e.getMessage());
+    }
+
     return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", null);
   }
 
+  /**
+   * Creates a standardized error response for API clients. In production environment, reduces log
+   * verbosity to prevent information leakage.
+   *
+   * @param status HTTP status code
+   * @param message Error message for client
+   * @param errors Optional validation errors list
+   * @return ResponseEntity with error details
+   */
   private ResponseEntity<Map<String, Object>> createErrorResponse(
       HttpStatus status, String message, List<Map<String, String>> errors) {
     Map<String, Object> body = new HashMap<>();
@@ -300,5 +365,47 @@ public class GlobalExceptionHandler {
       // No request context available
     }
     return "";
+  }
+
+  /**
+   * Extracts a short, meaningful error message from exceptions to reduce log verbosity. Removes
+   * stack traces and keeps only the essential error information.
+   *
+   * @param e The exception to extract message from
+   * @return Short error message
+   */
+  private String getShortErrorMessage(Exception e) {
+    if (e == null) {
+      return "Unknown error";
+    }
+
+    String message = e.getMessage();
+    if (message == null) {
+      return e.getClass().getSimpleName();
+    }
+
+    // Extract meaningful parts from common error messages
+    if (message.contains("detached entity passed to persist")) {
+      return "Entity relationship error: detached entity passed to persist";
+    }
+
+    if (message.contains("ConstraintViolationException")) {
+      return "Database constraint violation";
+    }
+
+    if (message.contains("DataIntegrityViolationException")) {
+      return "Data integrity constraint violation";
+    }
+
+    if (message.contains("JpaSystemException")) {
+      return "Database system error";
+    }
+
+    // For other errors, take first 200 characters to avoid overly long logs
+    if (message.length() > 200) {
+      return message.substring(0, 200) + "...";
+    }
+
+    return message;
   }
 }

@@ -1,0 +1,245 @@
+databaseChangeLog:
+  - changeSet:
+      id: 030-1-create-price-modifiers-table
+      author: aksi
+      comment: Create price modifiers table for universal calculator with EXPRESS_SERVICE, PREMIUM_ACCOUNT, PLACEMENT_MATCHES, etc.
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: price_modifiers
+      changes:
+        # Create price_modifiers table
+        - createTable:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_price_modifiers
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_price_modifiers_code
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(500)
+              - column:
+                  name: modifier_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    checkConstraint: modifier_type IN ('PERCENTAGE', 'FIXED_AMOUNT', 'MULTIPLIER')
+              - column:
+                  name: modifier_value
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: integer
+                  defaultValueNumeric: '0'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+        # Create indexes for performance
+        - createIndex:
+            tableName: price_modifiers
+            indexName: idx_price_modifiers_code
+            columns:
+              - column:
+                  name: code
+
+        - createIndex:
+            tableName: price_modifiers
+            indexName: idx_price_modifiers_type
+            columns:
+              - column:
+                  name: modifier_type
+
+        - createIndex:
+            tableName: price_modifiers
+            indexName: idx_price_modifiers_active
+            columns:
+              - column:
+                  name: is_active
+
+        # Insert default price modifiers from documentation
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: EXPRESS_SERVICE
+              - column:
+                  name: name
+                  value: Express Service
+              - column:
+                  name: description
+                  value: Quick execution (+50% to price)
+              - column:
+                  name: modifier_type
+                  value: PERCENTAGE
+              - column:
+                  name: modifier_value
+                  valueNumeric: '50'
+              - column:
+                  name: is_active
+                  valueBoolean: 'true'
+              - column:
+                  name: sort_order
+                  valueNumeric: '1'
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: PREMIUM_ACCOUNT
+              - column:
+                  name: name
+                  value: Premium Account
+              - column:
+                  name: description
+                  value: Premium account (+$5)
+              - column:
+                  name: modifier_type
+                  value: FIXED_AMOUNT
+              - column:
+                  name: modifier_value
+                  valueNumeric: '500'
+              - column:
+                  name: is_active
+                  valueBoolean: 'true'
+              - column:
+                  name: sort_order
+                  valueNumeric: '2'
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: PLACEMENT_MATCHES
+              - column:
+                  name: name
+                  value: Placement Matches
+              - column:
+                  name: description
+                  value: Placement matches (+$15)
+              - column:
+                  name: modifier_type
+                  value: FIXED_AMOUNT
+              - column:
+                  name: modifier_value
+                  valueNumeric: '1500'
+              - column:
+                  name: is_active
+                  valueBoolean: 'true'
+              - column:
+                  name: sort_order
+                  valueNumeric: '3'
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: BOOST_MODIFIER
+              - column:
+                  name: name
+                  value: Boost Modifier
+              - column:
+                  name: description
+                  value: General boost modifier
+              - column:
+                  name: modifier_type
+                  value: PERCENTAGE
+              - column:
+                  name: modifier_value
+                  valueNumeric: '100'
+              - column:
+                  name: is_active
+                  valueBoolean: 'true'
+              - column:
+                  name: sort_order
+                  valueNumeric: '4'
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: DIVISION_BOOST
+              - column:
+                  name: name
+                  value: Division Boost
+              - column:
+                  name: description
+                  value: Division boost
+              - column:
+                  name: modifier_type
+                  value: MULTIPLIER
+              - column:
+                  name: modifier_value
+                  valueNumeric: '200'
+              - column:
+                  name: is_active
+                  valueBoolean: 'true'
+              - column:
+                  name: sort_order
+                  valueNumeric: '5'
+
+        - insert:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: code
+                  value: WIN_BOOST
+              - column:
+                  name: name
+                  value: Win Boost
+              - column:
+                  name: description
+                  value: Win boost
+              - column:
+                  name: modifier_type
+                  value: PERCENTAGE
+              - column:
+                  name: modifier_value
+                  valueNumeric: '150'
+              - column:
+                  name: is_active
+                  valueBoolean: 'true'
+              - column:
+                  name: sort_order
+                  valueNumeric: '6'

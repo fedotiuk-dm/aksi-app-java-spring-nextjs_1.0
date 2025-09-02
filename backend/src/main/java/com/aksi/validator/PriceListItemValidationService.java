@@ -4,9 +4,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.aksi.api.service.dto.CreatePriceListItemRequest;
-import com.aksi.api.service.dto.ServiceCategoryType;
-import com.aksi.api.service.dto.UpdatePriceListItemRequest;
+import com.aksi.api.pricelist.dto.CreatePriceListItemRequest;
+import com.aksi.api.pricelist.dto.ServiceCategoryType;
+import com.aksi.api.pricelist.dto.UpdatePriceListItemRequest;
 import com.aksi.domain.catalog.PriceListItemEntity;
 import com.aksi.exception.BadRequestException;
 import com.aksi.repository.PriceListItemRepository;

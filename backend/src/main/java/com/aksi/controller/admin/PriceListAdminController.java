@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aksi.api.service.dto.PriceListItemInfo;
-import com.aksi.api.service.dto.ServiceCategoryType;
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
+import com.aksi.api.pricelist.dto.ServiceCategoryType;
 import com.aksi.service.catalog.PriceListService;
 
 import lombok.RequiredArgsConstructor;

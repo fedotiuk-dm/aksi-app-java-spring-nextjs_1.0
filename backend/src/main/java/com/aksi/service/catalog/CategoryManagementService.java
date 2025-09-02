@@ -2,7 +2,7 @@ package com.aksi.service.catalog;
 
 import java.util.List;
 
-import com.aksi.api.service.dto.ServiceCategoryType;
+import com.aksi.api.pricelist.dto.ServiceCategoryType;
 
 /** Service for managing categories in the price list */
 public interface CategoryManagementService {

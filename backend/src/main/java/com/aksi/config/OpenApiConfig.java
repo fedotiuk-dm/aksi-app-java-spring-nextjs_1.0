@@ -2,6 +2,7 @@ package com.aksi.config;
 
 import java.util.List;
 
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,5 +48,23 @@ public class OpenApiConfig {
             List.of(
                 new Server().url(devServerUrl).description("Development server"),
                 new Server().url(prodServerUrl).description("Production server")));
+  }
+
+  @Bean
+  public GroupedOpenApi gameServicesApi() {
+    return GroupedOpenApi.builder()
+        .group("game-services")
+        .packagesToScan("com.aksi.controller")
+        .pathsToMatch("/game-services/**")
+        .build();
+  }
+
+  @Bean
+  public GroupedOpenApi allApis() {
+    return GroupedOpenApi.builder()
+        .group("all")
+        .packagesToScan("com.aksi.controller")
+        .pathsToMatch("/api/**", "/game-services/**")
+        .build();
   }
 }

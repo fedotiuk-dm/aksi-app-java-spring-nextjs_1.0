@@ -1,0 +1,218 @@
+components:
+  schemas:
+    PriceListItemInfo:
+      type: object
+      required:
+        - id
+        - categoryCode
+        - catalogNumber
+        - name
+        - unitOfMeasure
+        - basePrice
+        - active
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Price list item ID
+        categoryCode:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/ServiceCategoryType"
+          description: Service category code
+        catalogNumber:
+          type: integer
+          description: Catalog number
+        name:
+          type: string
+          description: Item name
+        unitOfMeasure:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/UnitOfMeasure"
+          description: Unit of measure
+        basePrice:
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Base price in kopiykas (1 kopiykas = 0.01 UAH)
+        priceBlack:
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Price for black dyeing in kopiykas (1 kopiykas = 0.01 UAH)
+        priceColor:
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Price for color dyeing in kopiykas (1 kopiykas = 0.01 UAH)
+        active:
+          type: boolean
+          description: Is item active
+        processingTimeDays:
+          type: integer
+          description: Processing time in days
+          default: 3
+        expressAvailable:
+          type: boolean
+          description: Is express service available
+          default: false
+        expressTimeHours:
+          type: integer
+          description: Express processing time in hours
+        expressPrice:
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Express service price in kopiykas
+        sortOrder:
+          type: integer
+          description: Sort order for display
+          default: "0"
+        description:
+          type: string
+          description: Service/item description
+        nameUa:
+          type: string
+          description: Ukrainian name
+
+    CreatePriceListItemRequest:
+      type: object
+      required:
+        - categoryCode
+        - catalogNumber
+        - name
+        - unitOfMeasure
+        - basePrice
+      properties:
+        categoryCode:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/ServiceCategoryType"
+          description: Service category code
+        catalogNumber:
+          type: integer
+          description: Catalog number
+        name:
+          type: string
+          description: Item name
+        unitOfMeasure:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/UnitOfMeasure"
+          description: Unit of measure
+        basePrice:
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Base price in kopiykas
+        priceBlack:
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Price for black dyeing
+        priceColor:
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Price for color dyeing
+        active:
+          type: boolean
+          description: Is item active
+          default: true
+        processingTimeDays:
+          type: integer
+          description: Processing time in days
+          default: 3
+        expressAvailable:
+          type: boolean
+          description: Is express service available
+          default: false
+        expressTimeHours:
+          type: integer
+          description: Express processing time in hours
+        expressPrice:
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Express service price
+        sortOrder:
+          type: integer
+          description: Sort order for display
+          default: "0"
+        description:
+          type: string
+          description: Service/item description
+        nameUa:
+          type: string
+          description: Ukrainian name
+
+    UpdatePriceListItemRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Item name
+        basePrice:
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Base price in kopiykas
+        priceBlack:
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Price for black dyeing
+        priceColor:
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Price for color dyeing
+        active:
+          type: boolean
+          description: Is item active
+        processingTimeDays:
+          type: integer
+          description: Processing time in days
+        expressAvailable:
+          type: boolean
+          description: Is express service available
+        expressTimeHours:
+          type: integer
+          description: Express processing time in hours
+        expressPrice:
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: Express service price
+        sortOrder:
+          type: integer
+          description: Sort order for display
+          default: "0"
+        description:
+          type: string
+          description: Service/item description
+        nameUa:
+          type: string
+          description: Ukrainian name
+
+    PriceListItemsResponse:
+      type: object
+      required:
+        - priceListItems
+        - totalItems
+        - hasMore
+      properties:
+        priceListItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceListItemInfo"
+          description: List of price list items
+        totalItems:
+          type: integer
+          description: Total number of items matching the filter
+        hasMore:
+          type: boolean
+          description: Whether there are more items to load
+
+    # ErrorResponse centralized in common.yaml
+
+  securitySchemes:
+    cookieAuth:
+      $ref: "../../common.yaml#/components/securitySchemes/cookieAuth"

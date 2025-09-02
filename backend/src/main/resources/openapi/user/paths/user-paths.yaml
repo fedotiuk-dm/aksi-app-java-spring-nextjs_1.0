@@ -1,0 +1,421 @@
+paths:
+  /api/users:
+    get:
+      operationId: listUsers
+      summary: List users
+      description: Get paginated list of users with filtering
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: "../../common.yaml#/components/parameters/PageNumber"
+        - $ref: "../../common.yaml#/components/parameters/PageSize"
+        - $ref: "../../common.yaml#/components/parameters/SortBy"
+        - $ref: "../../common.yaml#/components/parameters/SortOrder"
+        - name: search
+          in: query
+          description: Search by username, first name, or last name
+          required: false
+          schema:
+            type: string
+            example: ivan
+        - name: role
+          in: query
+          description: Filter by role
+          required: false
+          schema:
+            $ref: "../../common.yaml#/components/schemas/UserRole"
+        - name: branchId
+          in: query
+          description: Filter by branch
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: active
+          in: query
+          description: Filter by active status
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/user-schemas.yaml#/components/schemas/UserListResponse"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+    post:
+      operationId: createUser
+      summary: Create new user
+      description: Create a new system user
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/user-schemas.yaml#/components/schemas/CreateUserRequest"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/user-schemas.yaml#/components/schemas/UserDetail"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "409":
+          $ref: "../../common.yaml#/components/responses/Conflict"
+
+  /api/users/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      operationId: getUserById
+      summary: Get user details
+      description: Get detailed information about a user
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/user-schemas.yaml#/components/schemas/UserDetail"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    patch:
+      operationId: updateUser
+      summary: Update user
+      description: Update user information
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/user-schemas.yaml#/components/schemas/UpdateUserRequest"
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/user-schemas.yaml#/components/schemas/UserDetail"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "../../common.yaml#/components/responses/Conflict"
+
+  /api/users/{userId}/password:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+
+    put:
+      operationId: changePassword
+      summary: Change user password
+      description: Change password for a user
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/user-schemas.yaml#/components/schemas/ChangePasswordRequest"
+      responses:
+        "204":
+          description: Password changed successfully
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/users/{userId}/activate:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      operationId: activateUser
+      summary: Activate user
+      description: Activate a deactivated user
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: User activated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/user-schemas.yaml#/components/schemas/UserDetail"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "../../common.yaml#/components/responses/Conflict"
+
+  /api/users/{userId}/deactivate:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      operationId: deactivateUser
+      summary: Deactivate user
+      description: Deactivate an active user
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: User deactivated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/user-schemas.yaml#/components/schemas/UserDetail"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "../../common.yaml#/components/responses/Conflict"
+
+  /api/users/{userId}/roles:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+
+    put:
+      operationId: updateUserRoles
+      summary: Update user roles
+      description: Replace user roles with new set
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/user-schemas.yaml#/components/schemas/UpdateRolesRequest"
+      responses:
+        "200":
+          description: Roles updated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/user-schemas.yaml#/components/schemas/UserDetail"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/users/{userId}/branches:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      operationId: getUserBranches
+      summary: Get user branches
+      description: List branches assigned to user
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: List of branches
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/user-schemas.yaml#/components/schemas/UserBranchesResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    put:
+      operationId: updateUserBranches
+      summary: Update user branches
+      description: Replace user branch assignments
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/user-schemas.yaml#/components/schemas/UpdateBranchesRequest"
+      responses:
+        "200":
+          description: Branches updated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/user-schemas.yaml#/components/schemas/UserBranchesResponse"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/roles/{role}/permissions:
+    parameters:
+      - name: role
+        in: path
+        required: true
+        description: User role
+        schema:
+          $ref: "../../common.yaml#/components/schemas/UserRole"
+
+    get:
+      operationId: getRolePermissions
+      summary: Get role permissions
+      description: Get all permissions associated with a specific role
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Role permissions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+  /api/users/{userId}/permissions:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Get user permissions
+      description: Get all permissions for a user based on their roles
+      operationId: getUserPermissions
+      tags:
+        - users
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: User permissions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  description: Permission string (e.g. "orders.create", "users.*")
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"

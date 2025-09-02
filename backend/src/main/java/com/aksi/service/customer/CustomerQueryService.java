@@ -92,17 +92,16 @@ public class CustomerQueryService {
     PageRequest pageRequest = PageRequest.of(offset / limit, limit);
     Page<CustomerInfo> page = searchCustomers(search, phone, email, discountCard, pageRequest);
 
-    CustomerListResponse response = new CustomerListResponse();
-    response.setData(page.getContent());
-    response.setTotalElements(page.getTotalElements());
-    response.setTotalPages(page.getTotalPages());
-    response.setSize(page.getSize());
-    response.setNumber(page.getNumber());
-    response.setNumberOfElements(page.getNumberOfElements());
-    response.setFirst(page.isFirst());
-    response.setLast(page.isLast());
-    response.setEmpty(page.isEmpty());
-    return response;
+    return new CustomerListResponse(
+        page.getContent(),
+        page.getTotalElements(),
+        page.getTotalPages(),
+        page.getSize(),
+        page.getNumber(),
+        page.getNumberOfElements(),
+        page.isFirst(),
+        page.isLast(),
+        page.isEmpty());
   }
 
   /**

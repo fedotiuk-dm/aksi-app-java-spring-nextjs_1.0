@@ -47,7 +47,8 @@ public class OrderController implements OrdersApi {
       @Nullable OrderStatus status,
       @Nullable UUID branchId,
       @Nullable Instant dateFrom,
-      @Nullable Instant dateTo) {
+      @Nullable Instant dateTo,
+      @Nullable String orderNumber) {
     OrderListResponse response =
         orderService.listOrders(
             page,
@@ -58,7 +59,8 @@ public class OrderController implements OrdersApi {
             status,
             branchId,
             dateFrom,
-            dateTo);
+            dateTo,
+            orderNumber);
     return ResponseEntity.ok(response);
   }
 
@@ -132,11 +134,7 @@ public class OrderController implements OrdersApi {
     return ResponseEntity.status(HttpStatus.CREATED).body(payment);
   }
 
-  @Override
-  public ResponseEntity<OrderInfo> getOrderByNumber(String orderNumber) {
-    OrderInfo order = orderService.getOrderByNumber(orderNumber);
-    return ResponseEntity.ok(order);
-  }
+
 
   @Override
   public ResponseEntity<OrderListResponse> getCustomerOrderHistory(

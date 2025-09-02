@@ -145,10 +145,10 @@ public class CartPricingQueryService {
     item.setQuantity(cartItem.getQuantity());
 
     if (cartItem.getCharacteristics() != null) {
-      var characteristics = new com.aksi.api.pricing.dto.ItemCharacteristics();
+      var characteristics = new com.aksi.api.pricing.dto.PricingItemCharacteristics();
       characteristics.setColor(cartItem.getCharacteristics().getColor());
       characteristics.setMaterial(cartItem.getCharacteristics().getMaterial());
-      // Note: pricing ItemCharacteristics doesn't have 'filler' field, only
+      // Note: pricing PricingItemCharacteristics doesn't have 'filler' field, only
       // material/color/wearLevel
       item.setCharacteristics(characteristics);
     }
@@ -170,11 +170,8 @@ public class CartPricingQueryService {
     CartItemPricingInfo pricing = new CartItemPricingInfo();
     pricing.setBasePrice(calculatedItem.getBasePrice());
     pricing.setTotal(calculatedItem.getTotal());
-
-    if (calculatedItem.getCalculations() != null) {
-      pricing.setSubtotal(calculatedItem.getCalculations().getSubtotal());
-      pricing.setModifiersTotalAmount(calculatedItem.getCalculations().getModifiersTotal());
-    }
+    pricing.setSubtotal(calculatedItem.getCalculations().getSubtotal());
+    pricing.setModifiersTotalAmount(calculatedItem.getCalculations().getModifiersTotal());
 
     return pricing;
   }

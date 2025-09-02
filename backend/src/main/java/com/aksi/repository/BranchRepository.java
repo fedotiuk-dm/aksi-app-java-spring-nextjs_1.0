@@ -22,9 +22,6 @@ public interface BranchRepository
   @Query("SELECT b FROM BranchEntity b WHERE b.active = true ORDER BY b.sortOrder, b.name")
   List<BranchEntity> findAllActiveOrderedBySortOrder();
 
-  /** Find branches by active status with pagination */
-  Page<BranchEntity> findByActiveOrderBySortOrderAscNameAsc(boolean active, Pageable pageable);
-
   /** Search branches by name or address with active status filter */
   @Query(
       "SELECT b FROM BranchEntity b WHERE "
@@ -44,9 +41,6 @@ public interface BranchRepository
       "SELECT COUNT(b) > 0 FROM BranchEntity b WHERE LOWER(b.name) = LOWER(:name) AND b.id != :excludeId")
   boolean existsByNameIgnoreCaseAndIdNot(
       @Param("name") String name, @Param("excludeId") UUID excludeId);
-
-  /** Count active branches */
-  long countByActiveTrue();
 
   /** Count branches by list of IDs - used for validation */
   long countByIdIn(List<UUID> ids);

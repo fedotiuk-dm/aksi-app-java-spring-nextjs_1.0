@@ -1,0 +1,162 @@
+paths:
+  /api/customers:
+    get:
+      operationId: listCustomers
+      summary: List customers
+      description: Search and list customers with optional filters
+      tags:
+        - customer
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: "../../common.yaml#/components/parameters/Search"
+        - name: phone
+          in: query
+          description: Filter by phone number
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: Filter by email
+          schema:
+            type: string
+        - name: discountCard
+          in: query
+          description: Filter by discount card number
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: Number of items to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          description: Number of items to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+
+      responses:
+        "200":
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/customer-schemas.yaml#/components/schemas/CustomerListResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+    post:
+      operationId: createCustomer
+      summary: Create customer
+      description: Create a new customer
+      tags:
+        - customer
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/customer-schemas.yaml#/components/schemas/CreateCustomerRequest"
+      responses:
+        "201":
+          description: Customer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/customer-schemas.yaml#/components/schemas/CustomerInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/customers/{customerId}:
+    parameters:
+      - name: customerId
+        in: path
+        required: true
+        description: Customer ID
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      operationId: getCustomer
+      summary: Get customer
+      description: Get customer details by ID
+      tags:
+        - customer
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Customer details
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/customer-schemas.yaml#/components/schemas/CustomerInfo"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    put:
+      operationId: updateCustomer
+      summary: Update customer
+      description: Update customer information
+      tags:
+        - customer
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/customer-schemas.yaml#/components/schemas/UpdateCustomerRequest"
+      responses:
+        "200":
+          description: Customer updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/customer-schemas.yaml#/components/schemas/CustomerInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/customers/{customerId}/exists:
+    parameters:
+      - name: customerId
+        in: path
+        required: true
+        description: Customer ID
+        schema:
+          type: string
+          format: uuid
+
+    head:
+      operationId: checkCustomerExists
+      summary: Check if customer exists
+      description: Check if customer exists by ID
+      tags:
+        - customer
+      security:
+        - cookieAuth: []
+      responses:
+        "204":
+          description: Customer exists
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
