@@ -23,6 +23,7 @@ import com.aksi.repository.OrderSpecification;
 import com.aksi.service.order.guard.OrderGuard;
 import com.aksi.service.order.util.OrderQueryUtils;
 import com.aksi.service.receipt.ReceiptService;
+import com.aksi.util.ResponseBuilderUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -207,17 +208,8 @@ public class OrderQueryService {
 
   /** Build order list response from page */
   private OrderListResponse buildOrderListResponse(Page<OrderEntity> ordersPage) {
-    var response = new OrderListResponse();
-    response.setData(ordersPage.map(this::enrichOrderInfo).getContent());
-    response.setTotalElements(ordersPage.getTotalElements());
-    response.setTotalPages(ordersPage.getTotalPages());
-    response.setSize(ordersPage.getSize());
-    response.setNumber(ordersPage.getNumber());
-    response.setNumberOfElements(ordersPage.getNumberOfElements());
-    response.setFirst(ordersPage.isFirst());
-    response.setLast(ordersPage.isLast());
-    response.setEmpty(ordersPage.isEmpty());
-    return response;
+    var data = ordersPage.map(this::enrichOrderInfo).getContent();
+    return ResponseBuilderUtil.buildGeneratedPaginatedResponse(OrderListResponse::new, data, ordersPage);
   }
 
   private OrderListResponse fetchToResponse(

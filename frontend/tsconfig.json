@@ -59,7 +59,17 @@
       // 🔧 Спільні компоненти
       "@shared/*": ["./shared/*"],
       "@shared/ui": ["./shared/ui"],
-      "@shared/lib": ["./shared/lib"]
+      "@shared/lib": ["./shared/lib"],
+
+      // 🎮 Game Boosting Calculator аліаси
+      "@game-boosting-calculator": ["./features/game-boosting-calculator"],
+      "@game-boosting-calculator/*": ["./features/game-boosting-calculator/*"],
+      "@game-boosting-calculator/store": ["./features/game-boosting-calculator/store"],
+      "@game-boosting-calculator/store/*": ["./features/game-boosting-calculator/store/*"],
+      "@game-boosting-calculator/hooks": ["./features/game-boosting-calculator/hooks"],
+      "@game-boosting-calculator/hooks/*": ["./features/game-boosting-calculator/hooks/*"],
+      "@game-boosting-calculator/components": ["./features/game-boosting-calculator/components"],
+      "@game-boosting-calculator/components/*": ["./features/game-boosting-calculator/components/*"]
     }
   },
   "include": [

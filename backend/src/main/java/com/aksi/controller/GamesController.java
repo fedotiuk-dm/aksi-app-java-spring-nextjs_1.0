@@ -1,5 +1,6 @@
 package com.aksi.controller;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -44,7 +45,6 @@ public class GamesController implements GamesApi {
   @Override
   public ResponseEntity<GameListResponse> gamesListGames(
       Integer page, Integer size, @Nullable String search, @Nullable Boolean active) {
-
     GameListResponse result = gameService.listGames(page, size, null, "asc", active, search);
     return ResponseEntity.ok(result);
   }
@@ -56,7 +56,7 @@ public class GamesController implements GamesApi {
   }
 
   @Override
-    public ResponseEntity<Game> gamesActivateGame(UUID gameId) {
+  public ResponseEntity<Game> gamesActivateGame(UUID gameId) {
     Game result = gameService.setActive(gameId, true);
     return ResponseEntity.ok(result);
   }
@@ -64,6 +64,18 @@ public class GamesController implements GamesApi {
   @Override
   public ResponseEntity<Game> gamesDeactivateGame(UUID gameId) {
     Game result = gameService.setActive(gameId, false);
+    return ResponseEntity.ok(result);
+  }
+
+  @Override
+  public ResponseEntity<Game> gamesGetGameByCode(String gameCode) {
+    Game result = gameService.getGameByCode(gameCode);
+    return ResponseEntity.ok(result);
+  }
+
+  @Override
+  public ResponseEntity<List<Game>> gamesGetAllActiveGames() {
+    List<Game> result = gameService.getAllActiveGames();
     return ResponseEntity.ok(result);
   }
 }

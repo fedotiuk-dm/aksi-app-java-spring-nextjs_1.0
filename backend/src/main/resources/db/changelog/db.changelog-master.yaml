@@ -116,3 +116,6 @@ databaseChangeLog:
   # Add operation_type column to price_modifiers table
   - include:
       file: db/changelog/changes/037-add-operation-type-to-price-modifiers.yaml
+  # Create game modifiers table for game boosting
+  - include:
+      file: db/changelog/changes/038-create-game-modifiers-table.yaml

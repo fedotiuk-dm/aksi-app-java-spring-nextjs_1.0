@@ -13,10 +13,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.aksi.api.game.dto.CalculationStatus;
+import com.aksi.api.game.dto.GameModifierOperation;
+import com.aksi.api.game.dto.GameModifierType;
 import com.aksi.api.game.dto.PriceConfiguration.CalculationTypeEnum;
-import com.aksi.api.pricing.dto.ModifierType;
+import com.aksi.domain.game.GameModifierEntity;
 import com.aksi.domain.game.PriceConfigurationEntity;
-import com.aksi.domain.pricing.PriceModifierEntity;
 
 @DisplayName("CalculatorFacade Integration Tests")
 class CalculatorFacadeTest {
@@ -39,7 +40,7 @@ class CalculatorFacadeTest {
     PriceConfigurationEntity config = createLinearConfig(1000, 50);
     int fromLevel = 1;
     int toLevel = 10;
-    List<PriceModifierEntity> modifiers = List.of(createPercentageModifier(10)); // 10% increase
+    List<GameModifierEntity> modifiers = List.of(createTimingModifier(1500)); // +$15 rush fee
     Map<String, Object> context = Map.of("difficulty", "HARD");
 
     GamePriceCalculationResult baseResult = createLinearCalculationResult(1000, 450, 1450);
@@ -68,7 +69,7 @@ class CalculatorFacadeTest {
     PriceConfigurationEntity config = createInvalidConfig();
     int fromLevel = 1;
     int toLevel = 5;
-    List<PriceModifierEntity> modifiers = List.of();
+    List<GameModifierEntity> modifiers = List.of();
     Map<String, Object> context = Map.of();
 
     GamePriceCalculationResult failedBaseResult = GamePriceCalculationResult.error(
@@ -93,7 +94,7 @@ class CalculatorFacadeTest {
     PriceConfigurationEntity config = createLinearConfig(500, 25);
     int fromLevel = 1;
     int toLevel = 5;
-    List<PriceModifierEntity> modifiers = List.of(); // Empty list
+    List<GameModifierEntity> modifiers = List.of(); // Empty list
     Map<String, Object> context = Map.of();
 
     GamePriceCalculationResult baseResult = createLinearCalculationResult(500, 100, 600);
@@ -121,10 +122,10 @@ class CalculatorFacadeTest {
     PriceConfigurationEntity config = createRangeConfig(1000);
     int fromLevel = 1;
     int toLevel = 3;
-    List<PriceModifierEntity> modifiers = List.of(
-        createPercentageModifier(15), // +15%
-        createFixedModifier(200),     // +200 cents
-        createDiscountModifier(50)    // -50 cents
+    List<GameModifierEntity> modifiers = List.of(
+        createTimingModifier(2500), // +$25 express
+        createSupportModifier(1000), // +$10 voice support
+        createPromotionalModifier(500) // -$5 discount
     );
     Map<String, Object> context = Map.of("vip", true);
 
@@ -153,7 +154,7 @@ class CalculatorFacadeTest {
     PriceConfigurationEntity config = createLinearConfig(0, 100);
     int fromLevel = 1;
     int toLevel = 5;
-    List<PriceModifierEntity> modifiers = List.of(createFixedModifier(500));
+    List<GameModifierEntity> modifiers = List.of(createSupportModifier(500));
     Map<String, Object> context = Map.of();
 
     GamePriceCalculationResult baseResult = createLinearCalculationResult(0, 400, 400);
@@ -179,7 +180,7 @@ class CalculatorFacadeTest {
     PriceConfigurationEntity config = createLinearConfig(2000, 0);
     int fromLevel = 1;
     int toLevel = 1;
-    List<PriceModifierEntity> modifiers = List.of(createDiscountModifier(500));
+    List<GameModifierEntity> modifiers = List.of(createPromotionalModifier(500));
     Map<String, Object> context = Map.of();
 
     GamePriceCalculationResult baseResult = createLinearCalculationResult(2000, 0, 2000);
@@ -206,7 +207,7 @@ class CalculatorFacadeTest {
     PriceConfigurationEntity config = createLinearConfig(100000, 1000);
     int fromLevel = 1;
     int toLevel = 100;
-    List<PriceModifierEntity> modifiers = List.of(createPercentageModifier(50));
+    List<GameModifierEntity> modifiers = List.of(createTimingModifier(1000));
     Map<String, Object> context = Map.of();
 
     GamePriceCalculationResult baseResult = createLinearCalculationResult(100000, 99000, 199000);
@@ -253,36 +254,42 @@ class CalculatorFacadeTest {
     return config;
   }
 
-  private PriceModifierEntity createPercentageModifier(int percentage) {
-    PriceModifierEntity modifier = new PriceModifierEntity();
+  private GameModifierEntity createTimingModifier(int value) {
+    GameModifierEntity modifier = new GameModifierEntity();
     modifier.setId(UUID.randomUUID());
-    modifier.setCode("PERCENTAGE_MOD");
-    modifier.setName("Percentage Modifier");
-    modifier.setType(ModifierType.PERCENTAGE);
-    modifier.setValue(percentage);
+    modifier.setCode("TIMING_RUSH");
+    modifier.setName("24 Hour Rush");
+    modifier.setType(GameModifierType.TIMING);
+    modifier.setOperation(GameModifierOperation.ADD);
+    modifier.setValue(value);
     modifier.setActive(true);
+    modifier.setGameCode("WOW");
     return modifier;
   }
 
-  private PriceModifierEntity createFixedModifier(int amount) {
-    PriceModifierEntity modifier = new PriceModifierEntity();
+  private GameModifierEntity createSupportModifier(int value) {
+    GameModifierEntity modifier = new GameModifierEntity();
     modifier.setId(UUID.randomUUID());
-    modifier.setCode("FIXED_MOD");
-    modifier.setName("Fixed Modifier");
-    modifier.setType(ModifierType.FIXED);
-    modifier.setValue(amount);
+    modifier.setCode("VOICE_SUPPORT");
+    modifier.setName("Voice Chat Support");
+    modifier.setType(GameModifierType.SUPPORT);
+    modifier.setOperation(GameModifierOperation.ADD);
+    modifier.setValue(value);
     modifier.setActive(true);
+    modifier.setGameCode("WOW");
     return modifier;
   }
 
-  private PriceModifierEntity createDiscountModifier(int amount) {
-    PriceModifierEntity modifier = new PriceModifierEntity();
+  private GameModifierEntity createPromotionalModifier(int value) {
+    GameModifierEntity modifier = new GameModifierEntity();
     modifier.setId(UUID.randomUUID());
-    modifier.setCode("DISCOUNT_MOD");
-    modifier.setName("Discount Modifier");
-    modifier.setType(ModifierType.DISCOUNT);
-    modifier.setValue(amount);
+    modifier.setCode("PROMO_DISCOUNT");
+    modifier.setName("Promotional Discount");
+    modifier.setType(GameModifierType.PROMOTIONAL);
+    modifier.setOperation(GameModifierOperation.SUBTRACT);
+    modifier.setValue(value);
     modifier.setActive(true);
+    modifier.setGameCode("WOW");
     return modifier;
   }
 

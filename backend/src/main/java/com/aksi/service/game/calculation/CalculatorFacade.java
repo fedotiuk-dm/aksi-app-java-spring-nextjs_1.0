@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.aksi.domain.game.GameModifierEntity;
 import com.aksi.domain.game.PriceConfigurationEntity;
-import com.aksi.domain.pricing.PriceModifierEntity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class CalculatorFacade {
       PriceConfigurationEntity config,
       int fromLevel,
       int toLevel,
-      List<PriceModifierEntity> applicableModifiers,
+      List<GameModifierEntity> applicableModifiers,
       Map<String, Object> context) {
 
     log.debug("Starting complete price calculation: config={}, levels={}→{}, modifiers={}",

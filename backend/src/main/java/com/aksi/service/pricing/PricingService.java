@@ -1,10 +1,10 @@
 package com.aksi.service.pricing;
 
-import com.aksi.api.pricing.dto.DiscountDto;
+import com.aksi.api.pricing.dto.Discount;
 import com.aksi.api.pricing.dto.DiscountsResponse;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
-import com.aksi.api.pricing.dto.PriceModifierDto;
+import com.aksi.api.pricing.dto.PriceModifier;
 import com.aksi.api.pricing.dto.PriceModifiersResponse;
 import com.aksi.api.pricing.dto.ServiceCategoryType;
 
@@ -54,7 +54,7 @@ public interface PricingService {
    * @param priceModifierDto Price modifier data
    * @return Created price modifier
    */
-  PriceModifierDto createPriceModifier(PriceModifierDto priceModifierDto);
+  PriceModifier createPriceModifier(PriceModifier priceModifierDto);
 
   /**
    * Update an existing price modifier
@@ -63,7 +63,7 @@ public interface PricingService {
    * @param priceModifierDto Updated price modifier data
    * @return Updated price modifier
    */
-  PriceModifierDto updatePriceModifier(String code, PriceModifierDto priceModifierDto);
+  PriceModifier updatePriceModifier(String code, PriceModifier priceModifierDto);
 
   /**
    * Delete a price modifier
@@ -80,7 +80,7 @@ public interface PricingService {
    * @param discountDto Discount data
    * @return Created discount
    */
-  DiscountDto createDiscount(DiscountDto discountDto);
+  Discount createDiscount(Discount discountDto);
 
   /**
    * Update an existing discount
@@ -89,7 +89,7 @@ public interface PricingService {
    * @param discountDto Updated discount data
    * @return Updated discount
    */
-  DiscountDto updateDiscount(String code, DiscountDto discountDto);
+  Discount updateDiscount(String code, Discount discountDto);
 
   /**
    * Delete a discount

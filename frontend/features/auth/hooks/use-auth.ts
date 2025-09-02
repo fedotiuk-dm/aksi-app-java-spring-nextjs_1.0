@@ -2,6 +2,8 @@
  * @fileoverview Основний auth хук для HttpOnly cookies
  */
 
+'use client';
+
 import { useEffect } from 'react';
 import {
   useAuthStore,
@@ -13,7 +15,7 @@ import {
   selectHasPermission,
   selectPermissions,
   selectCurrentBranchId,
-  selectCurrentBranchName
+  selectCurrentBranchName,
 } from '@/features/auth';
 import { useGetCurrentSession } from '@/shared/api/generated/auth';
 import { useLogout } from './use-logout';
@@ -27,7 +29,12 @@ export const useAuth = () => {
   const { logout: logoutAction } = useLogout();
 
   // Use generated hook to get current session
-  const { data: currentSession, isLoading, error, refetch } = useGetCurrentSession({
+  const {
+    data: currentSession,
+    isLoading,
+    error,
+    refetch,
+  } = useGetCurrentSession({
     query: {
       staleTime: 5 * 60 * 1000, // 5 minutes
       retry: false,

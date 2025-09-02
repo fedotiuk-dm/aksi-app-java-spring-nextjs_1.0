@@ -9,13 +9,13 @@ import com.aksi.api.game.dto.CalculationRequest;
 import com.aksi.api.game.dto.CalculationResult;
 import com.aksi.domain.game.DifficultyLevelEntity;
 import com.aksi.domain.game.GameEntity;
+import com.aksi.domain.game.GameModifierEntity;
 import com.aksi.domain.game.PriceConfigurationEntity;
 import com.aksi.domain.game.ServiceTypeEntity;
-import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.service.game.calculation.CalculatorFacade;
 import com.aksi.service.game.factory.CalculationContextFactory;
 import com.aksi.service.game.util.CalculationResultBuilder;
-import com.aksi.service.game.util.GameEntityQueryService;
+import com.aksi.service.game.util.EntityQueryUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,10 +30,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CalculatorCommandService {
 
-  private final GameEntityQueryService entityQueryService;
+  private final EntityQueryUtils entityQueryUtils;
   private final CalculationResultBuilder resultBuilder;
   private final CalculatorValidationService validationService;
-  private final ModifierService modifierService;
+  private final GameModifierService gameModifierService;
   private final CalculatorFacade calculatorFacade;
 
   private final CalculationContextFactory contextFactory;
@@ -56,26 +56,26 @@ public class CalculatorCommandService {
     validationService.validateCalculationRequest(request);
 
     // Find required entities
-    GameEntity game = entityQueryService.findGameByCode(request.getGameCode());
+    GameEntity game = entityQueryUtils.findGameByCode(request.getGameCode());
     DifficultyLevelEntity difficultyLevel =
-        entityQueryService.findDifficultyLevelByGameIdAndCode(
+        entityQueryUtils.findDifficultyLevelByGameIdAndCode(
             game.getId(), request.getDifficultyLevelCode());
     ServiceTypeEntity serviceType =
-        entityQueryService.findServiceTypeByGameIdAndCode(
+        entityQueryUtils.findServiceTypeByGameIdAndCode(
             game.getId(), request.getServiceTypeCode());
 
     // Find price configuration
     PriceConfigurationEntity priceConfig =
-        entityQueryService.findPriceConfigurationByCombination(
+        entityQueryUtils.findPriceConfigurationByCombination(
             game.getId(), difficultyLevel.getId(), serviceType.getId());
 
     // Get and apply modifiers
-    List<PriceModifierEntity> applicableModifiers =
-        modifierService.getActiveModifiersForCalculation(
+    List<GameModifierEntity> applicableModifiers =
+        gameModifierService.getActiveModifiersForCalculation(
             game.getId(), serviceType.getId(), request.getModifiers());
 
     // Validate modifier compatibility
-    modifierService.validateModifierCompatibility(applicableModifiers);
+    gameModifierService.validateModifierCompatibility(applicableModifiers);
 
     // Create calculation context for formula modifiers using factory
     var context =

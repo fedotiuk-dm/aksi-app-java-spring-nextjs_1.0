@@ -3,11 +3,11 @@ package com.aksi.service.pricing;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.api.pricing.dto.DiscountDto;
+import com.aksi.api.pricing.dto.Discount;
 import com.aksi.api.pricing.dto.DiscountsResponse;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
-import com.aksi.api.pricing.dto.PriceModifierDto;
+import com.aksi.api.pricing.dto.PriceModifier;
 import com.aksi.api.pricing.dto.PriceModifiersResponse;
 import com.aksi.api.pricing.dto.ServiceCategoryType;
 
@@ -64,14 +64,14 @@ public class PricingServiceImpl implements PricingService {
 
   @Override
   @Transactional
-  public PriceModifierDto createPriceModifier(PriceModifierDto priceModifierDto) {
+  public PriceModifier createPriceModifier(PriceModifier priceModifierDto) {
     log.info("Delegating creation of price modifier with code: {}", priceModifierDto.getCode());
     return commandService.createPriceModifier(priceModifierDto);
   }
 
   @Override
   @Transactional
-  public PriceModifierDto updatePriceModifier(String code, PriceModifierDto priceModifierDto) {
+  public PriceModifier updatePriceModifier(String code, PriceModifier priceModifierDto) {
     log.info("Delegating update of price modifier with code: {}", code);
     return commandService.updatePriceModifier(code, priceModifierDto);
   }
@@ -87,14 +87,14 @@ public class PricingServiceImpl implements PricingService {
 
   @Override
   @Transactional
-  public DiscountDto createDiscount(DiscountDto discountDto) {
+  public Discount createDiscount(Discount discountDto) {
     log.info("Delegating creation of discount with code: {}", discountDto.getCode());
     return commandService.createDiscount(discountDto);
   }
 
   @Override
   @Transactional
-  public DiscountDto updateDiscount(String code, DiscountDto discountDto) {
+  public Discount updateDiscount(String code, Discount discountDto) {
     log.info("Delegating update of discount with code: {}", code);
     return commandService.updateDiscount(code, discountDto);
   }

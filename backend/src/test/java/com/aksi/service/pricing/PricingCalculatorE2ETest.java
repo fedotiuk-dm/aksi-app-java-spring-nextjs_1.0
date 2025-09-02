@@ -17,8 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.aksi.api.pricelist.dto.PriceListItemInfo;
 import com.aksi.api.pricing.dto.AppliedModifier;
 import com.aksi.api.pricing.dto.GlobalPriceModifiers;
-import com.aksi.api.pricing.dto.ModifierType;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
+import com.aksi.api.pricing.dto.PricingModifierType;
 import com.aksi.api.pricing.dto.UrgencyType;
 import com.aksi.service.pricing.calculation.BaseAmountCalculator;
 import com.aksi.service.pricing.calculation.DiscountCalculator;
@@ -79,7 +79,7 @@ class PricingCalculatorE2ETest {
     // Modifiers: applied one fixed 300, total=300, subtotal=2300
     AppliedModifier m = new AppliedModifier();
     m.setCode("BUTTON_REPAIR");
-    m.setType(ModifierType.FIXED);
+    m.setType(PricingModifierType.FIXED);
     m.setValue(300);
     m.setAmount(300);
 
@@ -89,7 +89,7 @@ class PricingCalculatorE2ETest {
     // Urgency: +50% of 2300 = 1150
     AppliedModifier u = new AppliedModifier();
     u.setCode("EXPRESS_48H");
-    u.setType(ModifierType.PERCENTAGE);
+    u.setType(PricingModifierType.PERCENTAGE);
     u.setValue(50);
     u.setAmount(1150);
     when(urgencyCalculator.calculate(anyInt(), any(), any()))
@@ -98,7 +98,7 @@ class PricingCalculatorE2ETest {
     // Discount: 10% on (2300+1150)=3450 => 345
     AppliedModifier d = new AppliedModifier();
     d.setCode("EVERCARD");
-    d.setType(ModifierType.PERCENTAGE);
+    d.setType(PricingModifierType.PERCENTAGE);
     d.setValue(10);
     d.setAmount(-345);
     when(discountCalculator.calculate(anyInt(), anyInt(), any(), any()))

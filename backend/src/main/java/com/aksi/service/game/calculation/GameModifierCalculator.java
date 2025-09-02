@@ -5,14 +5,14 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.aksi.api.pricing.dto.OperationType;
-import com.aksi.domain.pricing.PriceModifierEntity;
+import com.aksi.api.game.dto.GameModifierOperation;
+import com.aksi.domain.game.GameModifierEntity;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Calculator for game-specific modifiers (similar to ModifierCalculator in pricing).
- * Handles percentage, fixed, formula, multiplier, and discount modifiers
+ * Calculator for game-specific modifiers using the new GameModifier domain.
+ * Handles timing, support, mode, quality, extra, promotional, and seasonal modifiers
  * for game boosting services.
  */
 @Component
@@ -28,7 +28,7 @@ public class GameModifierCalculator {
    * @return Modifier calculation result
    */
   public GameModifierCalculationResult calculate(
-      List<PriceModifierEntity> applicableModifiers, int basePrice, Map<String, Object> context) {
+      List<GameModifierEntity> applicableModifiers, int basePrice, Map<String, Object> context) {
 
     if (applicableModifiers.isEmpty()) {
       log.debug("No modifiers to apply");
@@ -37,12 +37,12 @@ public class GameModifierCalculator {
 
     int totalAdjustments = 0;
 
-    for (PriceModifierEntity modifier : applicableModifiers) {
+    for (GameModifierEntity modifier : applicableModifiers) {
       int adjustment = calculateModifierAdjustment(modifier, basePrice, context);
       totalAdjustments += adjustment;
 
-      log.debug("Applied modifier '{}': type={}, adjustment={}",
-          modifier.getCode(), modifier.getType(), adjustment);
+      log.debug("Applied modifier '{}': type={}, operation={}, adjustment={}",
+          modifier.getCode(), modifier.getType(), modifier.getOperation(), adjustment);
     }
 
     int finalPrice = basePrice + totalAdjustments;
@@ -62,14 +62,16 @@ public class GameModifierCalculator {
    * @return Adjustment amount in kopiykas
    */
   private int calculateModifierAdjustment(
-      PriceModifierEntity modifier, int basePrice, Map<String, Object> context) {
+      GameModifierEntity modifier, int basePrice, Map<String, Object> context) {
 
     int rawAdjustment = switch (modifier.getType()) {
-      case PERCENTAGE -> calculatePercentageAdjustment(modifier, basePrice);
-      case FIXED -> calculateFixedAdjustment(modifier, context);
-      case FORMULA -> calculateFormulaAdjustment(modifier, context);
-      case MULTIPLIER -> calculateMultiplierAdjustment(modifier, basePrice);
-      case DISCOUNT -> calculateDiscountAdjustment(modifier, basePrice);
+      case TIMING -> calculateTimingAdjustment(modifier, basePrice, context);
+      case SUPPORT -> calculateSupportAdjustment(modifier, basePrice, context);
+      case MODE -> calculateModeAdjustment(modifier, basePrice, context);
+      case QUALITY -> calculateQualityAdjustment(modifier, basePrice, context);
+      case EXTRA -> calculateExtraAdjustment(modifier, basePrice, context);
+      case PROMOTIONAL -> calculatePromotionalAdjustment(modifier, basePrice, context);
+      case SEASONAL -> calculateSeasonalAdjustment(modifier, basePrice, context);
     };
 
     // Apply operation type to the raw adjustment
@@ -84,106 +86,189 @@ public class GameModifierCalculator {
    * @param adjustment Raw adjustment value
    * @return Final adjustment amount
    */
-  private int applyOperation(OperationType operation, int basePrice, int adjustment) {
+  private int applyOperation(GameModifierOperation operation, int basePrice, int adjustment) {
     return switch (operation) {
       case ADD -> adjustment;
       case SUBTRACT -> -Math.abs(adjustment);
-      case MULTIPLY -> (int) ((long) basePrice * adjustment / 10000); // adjustment as multiplier (100 = 1.0x)
-      case DIVIDE -> adjustment != 0 ? (int) -((long) basePrice * 10000 / adjustment) : 0;
+      case MULTIPLY -> {
+        // adjustment represents multiplier (10000 = 1.0x, 15000 = 1.5x)
+        // Calculate final price: basePrice * (adjustment / 10000)
+        // Return adjustment: finalPrice - basePrice
+        long multiplier = (long) basePrice * adjustment;
+        int finalPrice = (int) (multiplier / 10000);
+        int adjustmentResult = finalPrice - basePrice;
+        log.debug("MULTIPLY operation: basePrice={}, adjustment={}, multiplier={}, finalPrice={}, adjustmentResult={}",
+            basePrice, adjustment, multiplier, finalPrice, adjustmentResult);
+        yield adjustmentResult;
+      }
+      case DIVIDE -> {
+        int divisor = adjustment / 100;
+        yield divisor != 0 ? -(basePrice / divisor) : 0;
+      }
     };
   }
 
   /**
-   * Calculate percentage-based adjustment using integer arithmetic.
-   * Value is stored as basis points (e.g., 1550 = 15.5%).
+   * Calculate timing-based adjustment (rush orders, weekend work, etc.).
+   * Timing modifiers typically add premium for expedited service.
+   * Uses percentage calculation with potential for higher multipliers during peak times.
    */
-  private int calculatePercentageAdjustment(PriceModifierEntity modifier, int basePrice) {
-    // Calculate: (basePrice * modifierValue) / 10000 to handle basis points
-    // Using long to avoid overflow during multiplication
-    long result = (long) basePrice * modifier.getValue() / 10000;
+  private int calculateTimingAdjustment(GameModifierEntity modifier, int basePrice, Map<String, Object> context) {
+    // Check for weekend/weekday context
+    boolean isWeekend = context != null && Boolean.TRUE.equals(context.get("isWeekend"));
+    int multiplier = isWeekend ? 125 : 100; // 25% extra on weekends
 
-    log.debug("Percentage adjustment: {}% of {} = {}",
-        modifier.getValue() / 100.0, basePrice, (int) result);
+    long result = (long) basePrice * modifier.getValue() * multiplier / 1000000;
+
+    log.debug("Timing adjustment: {}% ({}x multiplier) of {} = {}",
+        modifier.getValue() / 100.0, multiplier / 100.0, basePrice, (int) result);
 
     return (int) result;
   }
 
   /**
-   * Calculate fixed adjustment based on context (e.g., per level).
-   * For level-based services, multiplies by level difference.
+   * Calculate support adjustment (priority support, live chat, etc.).
+   * Support modifiers add value for enhanced customer service.
+   * Uses fixed amount for small values, percentage for larger ones.
    */
-  private int calculateFixedAdjustment(PriceModifierEntity modifier, Map<String, Object> context) {
-    // Extract level difference from context with null safety
-    Object levelDiffObj = context.get("levelDifference");
-    if (!(levelDiffObj instanceof Integer)) {
-      log.warn("Invalid levelDifference in context: {} (type: {})",
-          levelDiffObj, levelDiffObj != null ? levelDiffObj.getClass() : "null");
-      return modifier.getValue(); // fallback to single unit
+  private int calculateSupportAdjustment(GameModifierEntity modifier, int basePrice, Map<String, Object> context) {
+    int adjustment;
+
+    // Check for priority support context (suppress unused warning)
+    boolean isPriority = context != null && Boolean.TRUE.equals(context.get("isPrioritySupport"));
+    int priorityMultiplier = isPriority ? 120 : 100; // 20% extra for priority support
+
+    // If value is small (less than 100), treat as fixed amount in cents
+    if (Math.abs(modifier.getValue()) < 100) {
+      adjustment = modifier.getValue() * priorityMultiplier / 100; // Fixed amount with priority multiplier
+      log.debug("Support fixed adjustment: {} cents (priority: {})", adjustment, isPriority);
+    } else {
+      // Otherwise treat as percentage
+      adjustment = (int) ((long) basePrice * modifier.getValue() * priorityMultiplier / 1000000);
+      log.debug("Support percentage adjustment: {}% of {} (priority: {}) = {}",
+          modifier.getValue() / 100.0, basePrice, isPriority, adjustment);
     }
-
-    int levelDifference = (Integer) levelDiffObj;
-    int adjustment = modifier.getValue() * Math.max(1, levelDifference);
-
-    log.debug("Fixed adjustment: {} per level × {} levels = {}",
-        modifier.getValue(), levelDifference, adjustment);
 
     return adjustment;
   }
 
   /**
-   * Calculate formula-based adjustment using context values.
-   * Simple implementation - for production, use proper formula evaluator.
+   * Calculate mode adjustment (solo vs duo, ranked vs casual, etc.).
+   * Mode modifiers adjust price based on complexity or demand.
    */
-  private int calculateFormulaAdjustment(PriceModifierEntity modifier, Map<String, Object> context) {
-    // Extract level difference from context with null safety
-    Object levelDiffObj = context.get("levelDifference");
-    if (!(levelDiffObj instanceof Integer)) {
-      log.warn("Invalid levelDifference in context for formula: {} (type: {})",
-          levelDiffObj, levelDiffObj != null ? levelDiffObj.getClass() : "null");
-      return modifier.getValue(); // fallback
-    }
+  private int calculateModeAdjustment(GameModifierEntity modifier, int basePrice, Map<String, Object> context) {
+    // Check for ranked mode context
+    boolean isRanked = context != null && Boolean.TRUE.equals(context.get("isRankedMode"));
+    int modeMultiplier = isRanked ? 110 : 100; // 10% extra for ranked mode
 
-    int levelDifference = (Integer) levelDiffObj;
-    int adjustment = modifier.getValue() * Math.max(1, levelDifference);
+    // Mode modifiers are percentage-based with mode multiplier
+    long result = (long) basePrice * modifier.getValue() * modeMultiplier / 1000000;
 
-    log.debug("Formula adjustment: {} × {} levels = {} (simplified implementation)",
-        modifier.getValue(), levelDifference, adjustment);
+    log.debug("Mode adjustment: {}% of {} (ranked: {}) = {}",
+        modifier.getValue() / 100.0, basePrice, isRanked, (int) result);
 
-    return adjustment;
+    return (int) result;
   }
 
   /**
-   * Calculate multiplier-based adjustment (e.g., 1.5x = +50%).
-   * Multiplier is stored as basis points (e.g., 150 = 1.5x).
+   * Calculate quality adjustment (standard vs premium quality).
+   * Quality modifiers affect price based on service level.
    */
-  private int calculateMultiplierAdjustment(PriceModifierEntity modifier, int basePrice) {
-    // Calculate additional amount: (basePrice * (multiplier - 100)) / 100
-    if (modifier.getValue() <= 100) {
-      log.debug("Multiplier {} <= 1.0, no adjustment", modifier.getValue() / 100.0);
-      return 0; // No adjustment for multipliers <= 1.0
-    }
+  private int calculateQualityAdjustment(GameModifierEntity modifier, int basePrice, Map<String, Object> context) {
+    // Check for premium quality context
+    boolean isPremium = context != null && Boolean.TRUE.equals(context.get("isPremiumQuality"));
+    int qualityMultiplier = isPremium ? 115 : 100; // 15% extra for premium quality
 
-    long additionalAmount = (long) basePrice * (modifier.getValue() - 100) / 100;
+    // Quality modifiers are percentage-based with quality multiplier
+    long result = (long) basePrice * modifier.getValue() * qualityMultiplier / 1000000;
 
-    log.debug("Multiplier adjustment: {}x of {} = additional {}",
-        modifier.getValue() / 100.0, basePrice, (int) additionalAmount);
+    log.debug("Quality adjustment: {}% of {} (premium: {}) = {}",
+        modifier.getValue() / 100.0, basePrice, isPremium, (int) result);
 
-    return (int) additionalAmount;
+    return (int) result;
   }
 
   /**
-   * Calculate discount adjustment (reduces price).
-   * Discount is stored as basis points (e.g., 500 = 5% discount).
+   * Calculate extra services adjustment (additional features, custom requests).
+   * Extra modifiers add value for supplementary services.
    */
-  private int calculateDiscountAdjustment(PriceModifierEntity modifier, int basePrice) {
-    // Calculate discount amount: (basePrice * discountValue) / 10000
-    long discountAmount = (long) basePrice * modifier.getValue() / 10000;
+  private int calculateExtraAdjustment(GameModifierEntity modifier, int basePrice, Map<String, Object> context) {
+    // Check for custom request context
+    boolean isCustom = context != null && Boolean.TRUE.equals(context.get("isCustomRequest"));
+    int customMultiplier = isCustom ? 125 : 100; // 25% extra for custom requests
+
+    return switch (modifier.getOperation()) {
+      case ADD -> {
+        // Fixed amount with custom multiplier
+        long result = (long) modifier.getValue() * customMultiplier / 100;
+        log.debug("Extra services ADD adjustment: {} * {}% = {}", modifier.getValue(), customMultiplier, (int) result);
+        yield (int) result;
+      }
+      case SUBTRACT -> {
+        // Fixed amount discount with custom multiplier
+        long result = (long) modifier.getValue() * customMultiplier / 100;
+        log.debug("Extra services SUBTRACT adjustment: {} * {}% = {}", modifier.getValue(), customMultiplier, (int) result);
+        yield -(int) result;
+      }
+      case MULTIPLY -> {
+        // Multiplier value (e.g., 15000 = 1.5x) with custom multiplier applied
+        long multiplier = (long) modifier.getValue() * customMultiplier / 100;
+        log.debug("Extra services MULTIPLY: multiplier {} * {}% = {}", modifier.getValue(), customMultiplier, multiplier);
+        yield (int) multiplier;
+      }
+      case DIVIDE -> {
+        // Division value (e.g., 20000 = divide by 2) with custom multiplier
+        long divisor = (long) modifier.getValue() * customMultiplier / 100;
+        log.debug("Extra services DIVIDE: divisor {} * {}% = {}", modifier.getValue(), customMultiplier, divisor);
+        yield (int) divisor;
+      }
+    };
+  }
+
+  /**
+   * Calculate promotional adjustment (discounts, special offers).
+   * Promotional modifiers typically reduce price.
+   */
+  private int calculatePromotionalAdjustment(GameModifierEntity modifier, int basePrice, Map<String, Object> context) {
+    // Check for first-time customer context
+    boolean isFirstTime = context != null && Boolean.TRUE.equals(context.get("isFirstTimeCustomer"));
+    int loyaltyMultiplier = isFirstTime ? 120 : 100; // Extra discount for first-time customers
+
+    // Promotional modifiers are usually discounts with loyalty multiplier
+    long discountAmount = (long) basePrice * modifier.getValue() * loyaltyMultiplier / 1000000;
     int adjustment = -(int) discountAmount; // Negative because it's a discount
 
-    log.debug("Discount adjustment: {}% of {} = {}",
-        modifier.getValue() / 100.0, basePrice, adjustment);
+    log.debug("Promotional adjustment: {}% discount of {} (first-time: {}) = {}",
+        modifier.getValue() / 100.0, basePrice, isFirstTime, adjustment);
 
     return adjustment;
+  }
+
+  /**
+   * Calculate seasonal adjustment (holiday pricing, peak season premiums).
+   * Seasonal modifiers can be either premium or discount based on timing.
+   * Supports both positive (premium) and negative (discount) values.
+   */
+  private int calculateSeasonalAdjustment(GameModifierEntity modifier, int basePrice, Map<String, Object> context) {
+    // Check for holiday season context
+    boolean isHoliday = context != null && Boolean.TRUE.equals(context.get("isHolidaySeason"));
+    int holidayMultiplier = isHoliday ? 130 : 100; // 30% extra effect during holidays
+
+    // Seasonal modifiers can be either premium or discount based on value sign
+    long adjustment = (long) basePrice * Math.abs(modifier.getValue()) * holidayMultiplier / 1000000;
+
+    if (modifier.getValue() < 0) {
+      // Negative value = discount
+      int discount = -(int) adjustment;
+      log.debug("Seasonal discount: {}% of {} (holiday: {}) = {}",
+          Math.abs(modifier.getValue()) / 100.0, basePrice, isHoliday, discount);
+      return discount;
+    } else {
+      // Positive value = premium
+      log.debug("Seasonal premium: {}% of {} (holiday: {}) = {}",
+          modifier.getValue() / 100.0, basePrice, isHoliday, (int) adjustment);
+      return (int) adjustment;
+    }
   }
 
   /**

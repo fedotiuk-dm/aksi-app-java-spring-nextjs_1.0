@@ -1,0 +1,244 @@
+components:
+  schemas:
+    GameModifierType:
+      type: string
+      enum: [TIMING, SUPPORT, MODE, QUALITY, EXTRA, PROMOTIONAL, SEASONAL]
+      description: Type of game boosting modifier
+      x-enum-descriptions:
+        - Timing-related modifiers (rush, express, etc.)
+        - Support modifiers (voice chat, stream, etc.)
+        - Game mode modifiers (ranked, casual, etc.)
+        - Quality modifiers (premium, standard, etc.)
+        - Extra service modifiers (screenshot, replay, etc.)
+        - Promotional modifiers (discounts, bonuses, etc.)
+        - Seasonal modifiers (holiday specials, events, etc.)
+
+    GameModifierOperation:
+      type: string
+      enum: [ADD, SUBTRACT, MULTIPLY, DIVIDE]
+      description: Operation type for applying game modifiers
+      x-enum-descriptions:
+        - Add fixed amount to base price
+        - Subtract fixed amount from base price
+        - Multiply base price by factor
+        - Divide base price by factor
+
+    GameModifier:
+      type: object
+      required:
+        - code
+        - name
+        - type
+        - operation
+        - value
+        - gameCode
+        - active
+      properties:
+        code:
+          type: string
+          description: Unique modifier code within game
+          x-unique: true
+          example: "RUSH_24H"
+        name:
+          type: string
+          description: Modifier display name
+          example: "24 Hour Rush"
+        description:
+          type: string
+          description: Detailed description
+          example: "Complete the boost within 24 hours"
+        type:
+          $ref: "#/components/schemas/GameModifierType"
+        operation:
+          $ref: "#/components/schemas/GameModifierOperation"
+        value:
+          type: integer
+          description: |
+            Modifier value:
+            - For ADD/SUBTRACT: amount in cents (e.g., 5000 = $50.00)
+            - For MULTIPLY: multiplier * 100 (e.g., 150 = 1.5x, 200 = 2.0x)
+            - For DIVIDE: divisor * 100 (e.g., 200 = divide by 2.0)
+          example: 150
+        gameCode:
+          type: string
+          description: Game this modifier belongs to
+          example: "WOW"
+        serviceTypeCodes:
+          type: array
+          items:
+            type: string
+          description: Service types this modifier applies to
+          example: ["LEVEL_BOOST", "ACHIEVEMENT"]
+        active:
+          type: boolean
+          description: Is modifier active and available
+          default: true
+        sortOrder:
+          type: integer
+          description: Display order
+          default: 0
+        icon:
+          type: string
+          description: Icon identifier for UI
+          example: "LIGHTNING"
+        color:
+          type: string
+          description: Color code for UI
+          example: "#FF6B35"
+        priority:
+          type: integer
+          description: Priority for applying multiple modifiers (higher = applied later)
+          default: 0
+          minimum: 0
+          maximum: 100
+        maxUses:
+          type: integer
+          description: Maximum number of times this modifier can be used (null = unlimited)
+          minimum: 1
+        effectiveDate:
+          type: string
+          format: date-time
+          description: Date when modifier becomes effective
+        expirationDate:
+          type: string
+          format: date-time
+          description: Date when modifier expires
+        conditions:
+          type: string
+          description: JSON conditions for applying modifier
+          example: "minLevel: 10, maxLevel: 60"
+
+    GameModifierInfo:
+      allOf:
+        - $ref: "#/components/schemas/GameModifier"
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Modifier ID
+            createdAt:
+              type: string
+              format: date-time
+              description: Creation timestamp
+            updatedAt:
+              type: string
+              format: date-time
+              description: Last update timestamp
+
+    CreateGameModifierRequest:
+      type: object
+      required:
+        - code
+        - name
+        - type
+        - operation
+        - value
+        - gameCode
+      properties:
+        code:
+          type: string
+          description: Unique modifier code
+          x-unique: true
+        name:
+          type: string
+          description: Modifier display name
+        description:
+          type: string
+          description: Detailed description
+        type:
+          $ref: "#/components/schemas/GameModifierType"
+        operation:
+          $ref: "#/components/schemas/GameModifierOperation"
+        value:
+          type: integer
+          description: Modifier value
+        gameCode:
+          type: string
+          description: Game code
+        serviceTypeCodes:
+          type: array
+          items:
+            type: string
+          description: Applicable service types
+        sortOrder:
+          type: integer
+          description: Display order
+          default: 0
+        icon:
+          type: string
+          description: Icon identifier
+        color:
+          type: string
+          description: Color code
+
+    UpdateGameModifierRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Modifier display name
+        description:
+          type: string
+          description: Detailed description
+        type:
+          $ref: "#/components/schemas/GameModifierType"
+        operation:
+          $ref: "#/components/schemas/GameModifierOperation"
+        value:
+          type: integer
+          description: Modifier value
+        serviceTypeCodes:
+          type: array
+          items:
+            type: string
+          description: Applicable service types
+        active:
+          type: boolean
+          description: Is modifier active
+        sortOrder:
+          type: integer
+          description: Display order
+        icon:
+          type: string
+          description: Icon identifier
+        color:
+          type: string
+          description: Color code
+
+    GameModifiersResponse:
+      type: object
+      required:
+        - modifiers
+      properties:
+        modifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/GameModifier"
+          description: List of game modifiers
+        totalCount:
+          type: integer
+          description: Total number of modifiers
+        activeCount:
+          type: integer
+          description: Number of active modifiers
+
+    GameModifierFilter:
+      type: object
+      properties:
+        gameCode:
+          type: string
+          description: Filter by game code
+        type:
+          $ref: "#/components/schemas/GameModifierType"
+        operation:
+          $ref: "#/components/schemas/GameModifierOperation"
+        active:
+          type: boolean
+          description: Filter by active status
+        serviceTypeCode:
+          type: string
+          description: Filter by service type
+        search:
+          type: string
+          description: Free text search in name/description

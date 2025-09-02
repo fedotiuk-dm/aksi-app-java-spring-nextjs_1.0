@@ -13,7 +13,7 @@ MVN := ./mvnw
 .PHONY: update-versions check-updates update-properties update-dependencies update-plugins
 
 # Phony targets
-.PHONY: help up down stop start restart logs status shell clean reset db build test lint format dev install
+.PHONY: help up down stop start restart logs status shell clean reset db build test lint format dev install bundle-api generate-docs update-docs
 
 # Help target
 help: ## Show this help message
@@ -151,6 +151,43 @@ generate-api: ## Generate API from OpenAPI specs
 	@$(MVN) clean compile
 	@echo '✅ API generation complete!'
 
+# API Documentation operations
+bundle-api: ## Generate API bundle from all domain specs
+	@echo '🔄 Generating API bundle...'
+	@cd src/main/resources/openapi && \
+	npx @redocly/cli bundle \
+	  auth/auth-api.yaml \
+	  branch/branch-api.yaml \
+	  cart/cart-api.yaml \
+	  customer/customer-api.yaml \
+	  file/file-api.yaml \
+	  games/games-api.yaml \
+	  order/order-api.yaml \
+	  price-list/price-list-api.yaml \
+	  pricing/pricing-api.yaml \
+	  receipt/receipt-api.yaml \
+	  user/user-api.yaml \
+	  --output temp-bundle
+	@cd src/main/resources/openapi && \
+	npx @redocly/cli join temp-bundle/*.yaml --output aksi-bundled-new.yaml
+	@cd src/main/resources/openapi && \
+	if [ -f aksi-bundled.yaml ]; then cp aksi-bundled.yaml aksi-bundled-backup.yaml; fi && \
+	mv aksi-bundled-new.yaml aksi-bundled.yaml && \
+	rm -rf temp-bundle
+	@echo '✅ API bundle updated!'
+
+generate-docs: ## Generate HTML documentation from API bundle
+	@echo '📚 Generating HTML documentation...'
+	@mkdir -p src/main/docs/api
+	@cd src/main/resources/openapi && \
+	npx @redocly/cli build-docs aksi-bundled.yaml --output ../docs/api/index.html
+	@echo '✅ HTML documentation generated at src/main/docs/api/index.html!'
+
+update-docs: bundle-api generate-docs ## Update both API bundle and HTML docs
+	@echo '🎉 API bundle and documentation updated successfully!'
+	@echo '📁 Bundle: backend/src/main/resources/openapi/aksi-bundled.yaml'
+	@echo '🌐 Docs:   backend/src/main/docs/api/index.html'
+
 # Database operations
 db-migrate: ## Run database migrations
 	@echo '🗄️ Running migrations...'
@@ -199,6 +236,13 @@ _show_urls:
 	@echo '   make status          # Check status'
 	@echo '   make shell           # Open shell'
 	@echo '   make down            # Stop all services'
+	@echo ''
+	@echo '📚 API Documentation:'
+	@echo '   make bundle-api      # Generate API bundle from all domains'
+	@echo '   make generate-docs    # Generate HTML docs from API bundle'
+	@echo '   make update-docs      # Update both bundle and HTML docs'
+	@echo '   📁 Bundle: backend/src/main/resources/openapi/aksi-bundled.yaml'
+	@echo '   🌐 Docs:   backend/src/main/docs/api/index.html'
 	@echo ''
 	@echo '🔄 Dependency Updates:'
 	@echo '   make check-updates   # Show all available updates'

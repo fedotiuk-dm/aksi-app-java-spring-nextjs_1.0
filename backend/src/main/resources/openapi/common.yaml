@@ -212,12 +212,12 @@ components:
       description: |
         Unit of measure
 
-    ModifierType:
+    PricingModifierType:
       type: string
       enum: [PERCENTAGE, FIXED, FORMULA, MULTIPLIER, DISCOUNT]
       description: Type of price modifier
 
-    OperationType:
+    PricingOperationType:
       type: string
       enum: [ADD, SUBTRACT, MULTIPLY, DIVIDE]
       description: Operation type for applying modifiers

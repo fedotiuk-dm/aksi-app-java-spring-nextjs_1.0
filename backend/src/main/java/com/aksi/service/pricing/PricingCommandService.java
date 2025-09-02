@@ -3,8 +3,8 @@ package com.aksi.service.pricing;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.api.pricing.dto.DiscountDto;
-import com.aksi.api.pricing.dto.PriceModifierDto;
+import com.aksi.api.pricing.dto.Discount;
+import com.aksi.api.pricing.dto.PriceModifier;
 import com.aksi.domain.pricing.DiscountEntity;
 import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.mapper.PricingMapper;
@@ -40,7 +40,7 @@ public class PricingCommandService {
    * Create new price modifier with validation. Structured approach: validation -> creation ->
    * persistence -> response
    */
-  public PriceModifierDto createPriceModifier(PriceModifierDto priceModifierDto) {
+  public PriceModifier createPriceModifier(PriceModifier priceModifierDto) {
     log.info("Creating new price modifier with code: {}", priceModifierDto.getCode());
 
     // Step 1: Validate input using centralized validator
@@ -56,7 +56,7 @@ public class PricingCommandService {
     PriceModifierEntity saved = factory.savePriceModifierEntity(entity);
 
     // Step 5: Return mapped DTO
-    PriceModifierDto result = pricingMapper.toPriceModifierDto(saved);
+    PriceModifier result = pricingMapper.toPriceModifier(saved);
 
     log.info("Successfully created price modifier: {} (ID: {})", result.getCode(), saved.getId());
     return result;
@@ -66,7 +66,7 @@ public class PricingCommandService {
    * Update existing price modifier. Structured approach: loading -> validation -> updating ->
    * persistence -> response
    */
-  public PriceModifierDto updatePriceModifier(String code, PriceModifierDto priceModifierDto) {
+  public PriceModifier updatePriceModifier(String code, PriceModifier priceModifierDto) {
     log.info("Updating price modifier with code: {}", code);
 
     // Step 1: Load existing entity using guard
@@ -82,7 +82,7 @@ public class PricingCommandService {
     PriceModifierEntity saved = factory.savePriceModifierEntity(existing);
 
     // Step 5: Return updated DTO
-    PriceModifierDto result = pricingMapper.toPriceModifierDto(saved);
+    PriceModifier result = pricingMapper.toPriceModifier(saved);
 
     log.info("Successfully updated price modifier: {} (ID: {})", result.getCode(), saved.getId());
     return result;
@@ -111,7 +111,7 @@ public class PricingCommandService {
   // ===== DISCOUNT MANAGEMENT =====
 
   /** Create new discount with validation. Structured approach following price modifier pattern */
-  public DiscountDto createDiscount(DiscountDto discountDto) {
+  public Discount createDiscount(Discount discountDto) {
     log.info("Creating new discount with code: {}", discountDto.getCode());
 
     // Step 1: Validate input using centralized validator
@@ -127,14 +127,14 @@ public class PricingCommandService {
     DiscountEntity saved = factory.saveDiscountEntity(entity);
 
     // Step 5: Return mapped DTO
-    DiscountDto result = pricingMapper.toDiscountDto(saved);
+    Discount result = pricingMapper.toDiscount(saved);
 
     log.info("Successfully created discount: {} (ID: {})", result.getCode(), saved.getId());
     return result;
   }
 
   /** Update existing discount. Structured approach following price modifier pattern */
-  public DiscountDto updateDiscount(String code, DiscountDto discountDto) {
+  public Discount updateDiscount(String code, Discount discountDto) {
     log.info("Updating discount with code: {}", code);
 
     // Step 1: Load existing entity using guard
@@ -150,7 +150,7 @@ public class PricingCommandService {
     DiscountEntity saved = factory.saveDiscountEntity(existing);
 
     // Step 5: Return updated DTO
-    DiscountDto result = pricingMapper.toDiscountDto(saved);
+    Discount result = pricingMapper.toDiscount(saved);
 
     log.info("Successfully updated discount: {} (ID: {})", result.getCode(), saved.getId());
     return result;

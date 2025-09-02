@@ -35,12 +35,11 @@ class PricingQueryServiceAggregationTest {
   @Mock private PricingFactory factory;
   @Mock private PriceCalculationService calculationService;
 
-  private PricingQueryUtils utils;
   private PricingQueryService queryService;
 
   @BeforeEach
   void setUp() {
-    utils = new PricingQueryUtils();
+    PricingQueryUtils utils = new PricingQueryUtils();
     queryService =
         new PricingQueryService(
             pricingMapper, pricingCalculator, validator, guard, factory, utils, calculationService);
@@ -104,11 +103,11 @@ class PricingQueryServiceAggregationTest {
         .thenAnswer(
             inv -> {
               var t = new com.aksi.api.pricing.dto.CalculationTotals();
-              t.setItemsSubtotal((Integer) inv.getArgument(0));
-              t.setUrgencyAmount((Integer) inv.getArgument(1));
-              t.setDiscountAmount((Integer) inv.getArgument(2));
-              t.setDiscountApplicableAmount((Integer) inv.getArgument(3));
-              t.setTotal((Integer) inv.getArgument(4));
+              t.setItemsSubtotal(inv.getArgument(0));
+              t.setUrgencyAmount(inv.getArgument(1));
+              t.setDiscountAmount(inv.getArgument(2));
+              t.setDiscountApplicableAmount(inv.getArgument(3));
+              t.setTotal(inv.getArgument(4));
               return t;
             });
 
@@ -117,8 +116,8 @@ class PricingQueryServiceAggregationTest {
         .thenAnswer(
             inv -> {
               PriceCalculationResponse resp = new PriceCalculationResponse();
-              resp.setItems((List<CalculatedItemPrice>) inv.getArgument(0));
-              resp.setTotals((com.aksi.api.pricing.dto.CalculationTotals) inv.getArgument(1));
+              resp.setItems(inv.getArgument(0));
+              resp.setTotals(inv.getArgument(1));
               return resp;
             });
 

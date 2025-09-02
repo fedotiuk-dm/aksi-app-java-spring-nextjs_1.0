@@ -17,8 +17,12 @@ import {
   Link as MuiLink,
 } from '@mui/material';
 import Link from 'next/link';
-import { GameManagement } from './games/GameManagement';
-import { BoosterManagement } from './boosters/BoosterManagement';
+import { GameManagement } from '@game-boosting-calculator/components/admin/games/GameManagement';
+import { BoosterManagement } from '@game-boosting-calculator/components/admin/boosters/BoosterManagement';
+import { DifficultyLevelManagement } from '@game-boosting-calculator/components/admin/difficulty-levels/DifficultyLevelManagement';
+import { ServiceTypeManagement } from '@game-boosting-calculator/components/admin/service-types/ServiceTypeManagement';
+import { PriceConfigurationManagement } from '@game-boosting-calculator/components/admin/price-configurations/PriceConfigurationManagement';
+import { ModifiersManagement } from '@game-boosting-calculator/components/admin/modifiers/ModifiersManagement';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -71,9 +75,18 @@ export const GameBoostingAdmin = () => {
         {/* Tabs */}
         <Paper sx={{ width: '100%' }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={activeTab} onChange={handleTabChange}>
+            <Tabs
+              value={activeTab}
+              onChange={handleTabChange}
+              variant="scrollable"
+              scrollButtons="auto"
+            >
               <Tab label="Games" />
               <Tab label="Boosters" />
+              <Tab label="Difficulty Levels" />
+              <Tab label="Service Types" />
+              <Tab label="Price Configurations" />
+              <Tab label="Modifiers" />
             </Tabs>
           </Box>
 
@@ -83,6 +96,22 @@ export const GameBoostingAdmin = () => {
 
           <TabPanel value={activeTab} index={1}>
             <BoosterManagement />
+          </TabPanel>
+
+          <TabPanel value={activeTab} index={2}>
+            <DifficultyLevelManagement />
+          </TabPanel>
+
+          <TabPanel value={activeTab} index={3}>
+            <ServiceTypeManagement />
+          </TabPanel>
+
+          <TabPanel value={activeTab} index={4}>
+            <PriceConfigurationManagement />
+          </TabPanel>
+
+          <TabPanel value={activeTab} index={5}>
+            <ModifiersManagement />
           </TabPanel>
         </Paper>
       </Box>

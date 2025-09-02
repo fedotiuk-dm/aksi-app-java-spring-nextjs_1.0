@@ -1,25 +1,24 @@
 package com.aksi.service.pricing.calculation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.aksi.api.pricing.dto.AppliedModifier;
-import com.aksi.api.pricing.dto.ModifierType;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
+import com.aksi.api.pricing.dto.PricingModifierType;
 import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.service.pricing.PriceCalculationService;
 import com.aksi.service.pricing.calculation.ModifierCalculator.ModifierCalculationResult;
@@ -87,7 +86,7 @@ class ModifierCalculatorTest {
 
     // Mock modifier entity
     PriceModifierEntity modifier =
-        createModifierEntity("MATERIAL_BONUS", ModifierType.PERCENTAGE, 2000); // 20%
+        createModifierEntity("MATERIAL_BONUS", PricingModifierType.PERCENTAGE, 2000); // 20%
     when(guard.loadActiveModifiers(modifierCodes)).thenReturn(List.of(modifier));
 
     // Mock calculation service (20% of 1000 = 200)
@@ -103,7 +102,7 @@ class ModifierCalculatorTest {
 
     // Then: should apply percentage modifier
     assertEquals(1, result.appliedModifiers().size());
-    assertEquals("MATERIAL_BONUS", result.appliedModifiers().get(0).getCode());
+    assertEquals("MATERIAL_BONUS", result.appliedModifiers().getFirst().getCode());
     assertEquals(200, result.modifiersTotal());
     assertEquals(1200, result.subtotal()); // 1000 + 200
   }
@@ -118,7 +117,7 @@ class ModifierCalculatorTest {
     int baseAmount = 1500;
 
     // Mock modifier entity
-    PriceModifierEntity modifier = createModifierEntity("BUTTON_SEWING", ModifierType.FIXED, 50);
+    PriceModifierEntity modifier = createModifierEntity("BUTTON_SEWING", PricingModifierType.FIXED, 50);
     when(guard.loadActiveModifiers(modifierCodes)).thenReturn(List.of(modifier));
 
     // Mock calculation service (50 * 3 = 150)
@@ -134,7 +133,7 @@ class ModifierCalculatorTest {
 
     // Then: should apply fixed modifier
     assertEquals(1, result.appliedModifiers().size());
-    assertEquals("BUTTON_SEWING", result.appliedModifiers().get(0).getCode());
+    assertEquals("BUTTON_SEWING", result.appliedModifiers().getFirst().getCode());
     assertEquals(150, result.modifiersTotal());
     assertEquals(1650, result.subtotal()); // 1500 + 150
   }
@@ -150,11 +149,11 @@ class ModifierCalculatorTest {
 
     // Mock modifier entities
     PriceModifierEntity urgentModifier =
-        createModifierEntity("URGENT_CLEAN", ModifierType.PERCENTAGE, 5000); // 50%
+        createModifierEntity("URGENT_CLEAN", PricingModifierType.PERCENTAGE, 5000); // 50%
     PriceModifierEntity handWashModifier =
-        createModifierEntity("HAND_WASH", ModifierType.PERCENTAGE, 2000); // 20%
+        createModifierEntity("HAND_WASH", PricingModifierType.PERCENTAGE, 2000); // 20%
     PriceModifierEntity buttonModifier =
-        createModifierEntity("BUTTON_REPAIR", ModifierType.FIXED, 100);
+        createModifierEntity("BUTTON_REPAIR", PricingModifierType.FIXED, 100);
 
     List<PriceModifierEntity> modifiers =
         Arrays.asList(urgentModifier, handWashModifier, buttonModifier);
@@ -196,7 +195,7 @@ class ModifierCalculatorTest {
 
     // Guard filters out inactive modifiers
     PriceModifierEntity activeModifier =
-        createModifierEntity("ACTIVE_MOD", ModifierType.PERCENTAGE, 1000); // 10%
+        createModifierEntity("ACTIVE_MOD", PricingModifierType.PERCENTAGE, 1000); // 10%
     when(guard.loadActiveModifiers(modifierCodes)).thenReturn(List.of(activeModifier));
 
     when(priceCalculationService.calculateModifierAmount(
@@ -210,7 +209,7 @@ class ModifierCalculatorTest {
 
     // Then: should only include active modifier
     assertEquals(1, result.appliedModifiers().size());
-    assertEquals("ACTIVE_MOD", result.appliedModifiers().get(0).getCode());
+    assertEquals("ACTIVE_MOD", result.appliedModifiers().getFirst().getCode());
     assertEquals(100, result.modifiersTotal());
     assertEquals(1100, result.subtotal());
   }
@@ -224,7 +223,7 @@ class ModifierCalculatorTest {
     int baseAmount = 1000;
 
     PriceModifierEntity modifier =
-        createModifierEntity("ZERO_IMPACT", ModifierType.PERCENTAGE, 0); // 0%
+        createModifierEntity("ZERO_IMPACT", PricingModifierType.PERCENTAGE, 0); // 0%
     when(guard.loadActiveModifiers(modifierCodes)).thenReturn(List.of(modifier));
 
     when(priceCalculationService.calculateModifierAmount(eq(modifier), eq(baseAmount), anyInt()))
@@ -237,7 +236,7 @@ class ModifierCalculatorTest {
 
     // Then: should include modifier with zero amount
     assertEquals(1, result.appliedModifiers().size());
-    assertEquals("ZERO_IMPACT", result.appliedModifiers().get(0).getCode());
+    assertEquals("ZERO_IMPACT", result.appliedModifiers().getFirst().getCode());
     assertEquals(0, result.modifiersTotal());
     assertEquals(1000, result.subtotal()); // baseAmount + 0
   }
@@ -252,7 +251,7 @@ class ModifierCalculatorTest {
     int baseAmount = 50000; // 500.00 грн per item * 100
 
     PriceModifierEntity modifier =
-        createModifierEntity("BULK_DISCOUNT", ModifierType.PERCENTAGE, 500); // 5% discount
+        createModifierEntity("BULK_DISCOUNT", PricingModifierType.PERCENTAGE, 500); // 5% discount
     when(guard.loadActiveModifiers(modifierCodes)).thenReturn(List.of(modifier));
 
     when(priceCalculationService.calculateModifierAmount(eq(modifier), eq(baseAmount), eq(100)))
@@ -279,7 +278,7 @@ class ModifierCalculatorTest {
     return item;
   }
 
-  private PriceModifierEntity createModifierEntity(String code, ModifierType type, int value) {
+  private PriceModifierEntity createModifierEntity(String code, PricingModifierType type, int value) {
     PriceModifierEntity entity = new PriceModifierEntity();
     entity.setCode(code);
     entity.setType(type);

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Custom hook for Game Management
  * Handles all game-related API operations and state management
@@ -9,6 +11,8 @@ import {
   useGamesCreateGame,
   useGamesUpdateGame,
   useGamesDeleteGame,
+  useGamesActivateGame,
+  useGamesDeactivateGame,
   CreateGameRequestCategory,
   UpdateGameRequestCategory,
   GameCategory,
@@ -16,15 +20,17 @@ import {
 import { useGameManagementStore } from '../../../store/game-management-store';
 
 export const useGameManagement = () => {
-  // Orval API hooks
+  // Orval API hooks - load all games for management
   const listGamesQuery = useGamesListGames({
     page: 0,
     size: 100,
-    active: true,
+    active: undefined, // Load all games (active and inactive) for management
   });
   const createGameMutation = useGamesCreateGame();
   const updateGameMutation = useGamesUpdateGame();
   const deleteGameMutation = useGamesDeleteGame();
+  const activateGameMutation = useGamesActivateGame();
+  const deactivateGameMutation = useGamesDeactivateGame();
 
   // UI state from store
   const { setGames, setLoading, setError, clearError } = useGameManagementStore();
@@ -106,6 +112,30 @@ export const useGameManagement = () => {
     }
   };
 
+  const handleActivateGame = async (gameId: string) => {
+    try {
+      await activateGameMutation.mutateAsync({ gameId });
+      // List will automatically refresh due to React Query
+    } catch (error) {
+      console.error('Failed to activate game:', error);
+      throw error;
+    }
+  };
+
+  const handleDeactivateGame = async (gameId: string) => {
+    try {
+      await deactivateGameMutation.mutateAsync({ gameId });
+      // List will automatically refresh due to React Query
+    } catch (error) {
+      console.error('Failed to deactivate game:', error);
+      throw error;
+    }
+  };
+
+  const refreshGames = () => {
+    listGamesQuery.refetch();
+  };
+
   return {
     games,
     isLoading,
@@ -113,6 +143,9 @@ export const useGameManagement = () => {
     handleCreateGame,
     handleUpdateGame,
     handleDeleteGame,
+    handleActivateGame,
+    handleDeactivateGame,
+    refreshGames,
     // Separate category arrays for different operations
     createGameCategories: Object.values(CreateGameRequestCategory),
     updateGameCategories: Object.values(UpdateGameRequestCategory),

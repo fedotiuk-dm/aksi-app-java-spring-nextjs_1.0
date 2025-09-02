@@ -14,12 +14,12 @@ import lombok.extern.slf4j.Slf4j;
  * Calculator for TIME_BASED pricing: hourlyRate × estimatedHours × complexity.
  * Example: Professional services, mentoring, coaching
  * JSON format: {
- *   "hourlyRate": 2000,        // Rate in kopiykas ($20.00/hour)
- *   "baseHours": 8,            // Base time estimate
- *   "hoursPerLevel": 1,        // Additional hours per level
+ *   "hourlyRate": 2000, // Rate in kopiykas ($20.00/hour)
+ *   "baseHours": 8, // Base time estimate
+ *   "hoursPerLevel": 1, // Additional hours per level
  *   "complexityMultiplier": 1.5, // Complexity adjustment
- *   "minimumHours": 1,         // Minimum billable time
- *   "roundToHours": true       // Round up to full hours
+ *   "minimumHours": 1, // Minimum billable time
+ *   "roundToHours": true // Round up to full hours
  * }
  */
 @Component

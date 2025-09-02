@@ -5,10 +5,11 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.aksi.api.pricing.dto.DiscountDto;
+import com.aksi.api.pricing.dto.Discount;
 import com.aksi.api.pricing.dto.DiscountType;
 import com.aksi.api.pricing.dto.PriceCalculationRequest;
-import com.aksi.api.pricing.dto.PriceModifierDto;
+import com.aksi.api.pricing.dto.PriceModifier;
+import com.aksi.api.pricing.dto.PricingModifierType;
 import com.aksi.exception.BadRequestException;
 
 import lombok.RequiredArgsConstructor;
@@ -155,8 +156,8 @@ public class PricingValidator {
 
   // ===== DTO VALIDATION METHODS =====
 
-  /** Validate PriceModifierDto for creation. */
-  public void validatePriceModifierForCreation(PriceModifierDto dto) {
+  /** Validate PriceModifier for creation. */
+  public void validatePriceModifierForCreation(PriceModifier dto) {
     if (dto == null) {
       throw new BadRequestException("Price modifier DTO is required");
     }
@@ -194,14 +195,14 @@ public class PricingValidator {
     validateModifierValue(dto.getValue(), dto.getType());
   }
 
-  /** Validate PriceModifierDto for update. */
-  public void validatePriceModifierForUpdate(PriceModifierDto dto) {
+  /** Validate PriceModifier for update. */
+  public void validatePriceModifierForUpdate(PriceModifier dto) {
     validatePriceModifierForCreation(dto);
     // Additional update-specific validations can be added here
   }
 
   /** Validate DiscountDto for creation. */
-  public void validateDiscountForCreation(DiscountDto dto) {
+  public void validateDiscountForCreation(Discount dto) {
     if (dto == null) {
       throw new BadRequestException("Discount DTO is required");
     }
@@ -245,13 +246,13 @@ public class PricingValidator {
   }
 
   /** Validate DiscountDto for update. */
-  public void validateDiscountForUpdate(DiscountDto dto) {
+  public void validateDiscountForUpdate(Discount dto) {
     validateDiscountForCreation(dto);
     // Additional update-specific validations can be added here
   }
 
   /** Validate modifier value based on type. */
-  private void validateModifierValue(Integer value, com.aksi.api.pricing.dto.ModifierType type) {
+  private void validateModifierValue(Integer value, PricingModifierType type) {
     if (value == null) {
       throw new BadRequestException("Modifier value is required");
     }

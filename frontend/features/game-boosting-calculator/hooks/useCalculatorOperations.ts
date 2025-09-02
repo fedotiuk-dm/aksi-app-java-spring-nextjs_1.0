@@ -88,6 +88,9 @@ export const useCalculatorOperations = () => {
       const actualDifficultyLevelCode =
         difficultyLevelCode || difficultyLevels[0]?.code || 'STANDARD';
 
+      // Prepare modifiers for API request
+      const modifierObjects = selectedModifiers.map((code) => ({ code }));
+
       const result = await calculateMutation.mutateAsync({
         data: {
           gameCode: actualGameCode,
@@ -95,7 +98,7 @@ export const useCalculatorOperations = () => {
           difficultyLevelCode: actualDifficultyLevelCode,
           targetLevel: targetLevel,
           startLevel: startLevel,
-          modifiers: selectedModifiers,
+          modifiers: modifierObjects,
         },
       });
 

@@ -8,6 +8,7 @@
 import { Box, Button, Typography, TextField, Alert } from '@mui/material';
 import { useGameBoostingStore } from '../../store/game-boosting-store';
 import { useCalculatorOperations } from '../../hooks/useCalculatorOperations';
+import { ModifiersPanel } from './ModifiersPanel/';
 
 export const CalculatorSection = () => {
   const {
@@ -82,7 +83,7 @@ export const CalculatorSection = () => {
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Select additional services and modifiers to customize your boosting package
         </Typography>
-        {/* ModifiersPanel will be implemented next */}
+        <ModifiersPanel />
       </Box>
 
       {/* Calculate Button */}

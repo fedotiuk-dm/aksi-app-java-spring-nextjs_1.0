@@ -9,6 +9,7 @@ import com.aksi.api.game.dto.CreateDifficultyLevelRequest;
 import com.aksi.api.game.dto.UpdateDifficultyLevelRequest;
 import com.aksi.exception.BadRequestException;
 import com.aksi.exception.ConflictException;
+import com.aksi.service.game.util.EntityQueryUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DifficultyLevelValidationService {
 
-  private final GameQueryService gameQueryService;
+  private final EntityQueryUtils entityQueryUtils;
   private final DifficultyLevelQueryService difficultyLevelQueryService;
 
   /**
@@ -58,7 +59,7 @@ public class DifficultyLevelValidationService {
     Integer levelValue = request.getLevelValue();
 
     // Validate game exists
-    if (!gameQueryService.existsById(gameId)) {
+    if (!entityQueryUtils.existsById(gameId)) {
       throw new BadRequestException("Game not found: " + gameId);
     }
 

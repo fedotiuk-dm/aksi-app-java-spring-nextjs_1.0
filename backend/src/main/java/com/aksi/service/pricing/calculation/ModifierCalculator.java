@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.aksi.api.pricing.dto.AppliedModifier;
-import com.aksi.api.pricing.dto.ModifierType;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
+import com.aksi.api.pricing.dto.PricingModifierType;
 import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.service.pricing.PriceCalculationService;
 import com.aksi.service.pricing.factory.PricingFactory;
@@ -47,7 +47,7 @@ public class ModifierCalculator {
 
     // Pass 1: handle FORMULA (base override) if present
     for (PriceModifierEntity modifier : modifiers) {
-      if (modifier.getType() == ModifierType.FORMULA) {
+      if (modifier.getType() == PricingModifierType.FORMULA) {
         // Interpret value as absolute per-unit price override (in kopiykas)
         int overridePerUnit = modifier.getValue() != null ? modifier.getValue() : 0;
         int overrideAmount = overridePerUnit * item.getQuantity();
@@ -70,7 +70,7 @@ public class ModifierCalculator {
 
     // Pass 2: handle other modifiers based on effective base
     for (PriceModifierEntity modifier : modifiers) {
-      if (modifier.getType() == ModifierType.FORMULA) {
+      if (modifier.getType() == PricingModifierType.FORMULA) {
         continue;
       }
       int modifierAmount =

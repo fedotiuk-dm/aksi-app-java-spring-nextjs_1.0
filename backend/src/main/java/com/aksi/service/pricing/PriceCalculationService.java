@@ -9,7 +9,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.aksi.api.pricing.dto.DiscountType;
-import com.aksi.api.pricing.dto.OperationType;
+import com.aksi.api.pricing.dto.PricingOperationType;
 import com.aksi.api.pricing.dto.UrgencyType;
 import com.aksi.domain.pricing.PriceModifierEntity;
 
@@ -50,7 +50,7 @@ public class PriceCalculationService {
 
   /**
    * Calculate modifier amount based on type and operation. Following OrderWizard steps 3-5: special modifiers,
-   * multipliers, fixed services. Now supports OperationType for flexible modifier application.
+   * multipliers, fixed services. Now supports PricingOperationType for flexible modifier application.
    */
   public int calculateModifierAmount(PriceModifierEntity modifier, int baseAmount, int quantity) {
     int rawAmount = switch (modifier.getType()) {
@@ -73,7 +73,7 @@ public class PriceCalculationService {
    * @param adjustment Raw adjustment value
    * @return Final adjustment amount in kopiykas
    */
-  private int applyOperation(OperationType operation, int baseAmount, int adjustment) {
+  private int applyOperation(PricingOperationType operation, int baseAmount, int adjustment) {
     return switch (operation) {
       case ADD -> adjustment;
       case SUBTRACT -> -Math.abs(adjustment);

@@ -81,3 +81,6 @@ node_modules
 
 /OGEdge All Services test.xlsx
 /backend/scripts/analyze_prices.py
+# Згенеровані API файли (Orval) - не комітити в Git
+/frontend/shared/api/
+/frontend/shared/api/**/*

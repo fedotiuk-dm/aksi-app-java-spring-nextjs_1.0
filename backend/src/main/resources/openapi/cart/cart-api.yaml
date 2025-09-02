@@ -88,8 +88,8 @@ components:
       $ref: "../common.yaml#/components/schemas/FillerCondition"
     WearLevel:
       $ref: "../common.yaml#/components/schemas/WearLevel"
-    ModifierType:
-      $ref: "../common.yaml#/components/schemas/ModifierType"
+    PricingModifierType:
+      $ref: "../common.yaml#/components/schemas/PricingModifierType"
     UrgencyType:
       $ref: "../common.yaml#/components/schemas/UrgencyType"
     DiscountType:

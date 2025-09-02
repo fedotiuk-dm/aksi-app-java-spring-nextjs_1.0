@@ -4,22 +4,22 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
 import com.aksi.api.pricing.dto.AppliedModifier;
 import com.aksi.api.pricing.dto.CalculatedItemPrice;
 import com.aksi.api.pricing.dto.CalculationTotals;
-import com.aksi.api.pricing.dto.DiscountDto;
+import com.aksi.api.pricing.dto.Discount;
 import com.aksi.api.pricing.dto.DiscountType;
 import com.aksi.api.pricing.dto.DiscountsResponse;
 import com.aksi.api.pricing.dto.GlobalPriceModifiers;
 import com.aksi.api.pricing.dto.ItemPriceCalculation;
-import com.aksi.api.pricing.dto.ModifierType;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.api.pricing.dto.PriceCalculationResponse;
-import com.aksi.api.pricing.dto.PriceModifierDto;
+import com.aksi.api.pricing.dto.PriceModifier;
 import com.aksi.api.pricing.dto.PriceModifiersResponse;
+import com.aksi.api.pricing.dto.PricingModifierType;
 import com.aksi.api.pricing.dto.ServiceCategoryType;
 import com.aksi.api.pricing.dto.UrgencyType;
-import com.aksi.api.pricelist.dto.PriceListItemInfo;
 import com.aksi.domain.pricing.DiscountEntity;
 import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.exception.ConflictException;
@@ -69,7 +69,7 @@ public class PricingFactory {
     AppliedModifier urgencyModifier = new AppliedModifier();
     urgencyModifier.setCode(urgencyType.getValue());
     urgencyModifier.setName("Express completion " + urgencyType.getValue());
-    urgencyModifier.setType(ModifierType.PERCENTAGE);
+    urgencyModifier.setType(PricingModifierType.PERCENTAGE);
     urgencyModifier.setValue(percentage);
     urgencyModifier.setAmount(amount);
     return urgencyModifier;
@@ -81,7 +81,7 @@ public class PricingFactory {
     AppliedModifier discountModifier = new AppliedModifier();
     discountModifier.setCode(discountType.getValue());
     discountModifier.setName("Discount " + discountType.getValue());
-    discountModifier.setType(ModifierType.PERCENTAGE);
+    discountModifier.setType(PricingModifierType.PERCENTAGE);
     discountModifier.setValue(percentage);
     discountModifier.setAmount(-amount); // Discount is negative
     return discountModifier;
@@ -201,7 +201,7 @@ public class PricingFactory {
    * price modifiers listing API.
    */
   public PriceModifiersResponse createPriceModifiersResponse(
-      List<PriceModifierDto> allModifiers, List<PriceModifierDto> generalModifiers) {
+      List<PriceModifier> allModifiers, List<PriceModifier> generalModifiers) {
     PriceModifiersResponse response = new PriceModifiersResponse();
     response.setModifiers(allModifiers);
     response.setGeneralModifiers(generalModifiers);
@@ -212,7 +212,7 @@ public class PricingFactory {
    * Create DiscountsResponse with discounts list. Response factory method for discounts listing
    * API.
    */
-  public DiscountsResponse createDiscountsResponse(List<DiscountDto> discounts) {
+  public DiscountsResponse createDiscountsResponse(List<Discount> discounts) {
     DiscountsResponse response = new DiscountsResponse();
     response.setDiscounts(discounts);
     return response;

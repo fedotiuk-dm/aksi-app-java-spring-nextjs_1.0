@@ -22,27 +22,28 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.aksi.api.game.dto.CalculationRequest;
 import com.aksi.api.game.dto.CalculationResult;
 import com.aksi.api.game.dto.CalculationStatus;
+import com.aksi.api.game.dto.GameModifierOperation;
+import com.aksi.api.game.dto.GameModifierType;
 import com.aksi.api.game.dto.PriceConfiguration.CalculationTypeEnum;
-import com.aksi.api.pricing.dto.ModifierType;
-import com.aksi.api.pricing.dto.OperationType;
 import com.aksi.domain.game.DifficultyLevelEntity;
 import com.aksi.domain.game.GameEntity;
+import com.aksi.domain.game.GameModifierEntity;
 import com.aksi.domain.game.PriceConfigurationEntity;
 import com.aksi.domain.game.ServiceTypeEntity;
-import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.exception.NotFoundException;
 import com.aksi.service.game.calculation.CalculatorFacade;
 import com.aksi.service.game.calculation.CalculatorFacade.CompleteCalculationResult;
+import com.aksi.service.game.calculation.GamePriceCalculationResult;
 import com.aksi.service.game.factory.CalculationContextFactory;
 import com.aksi.service.game.util.CalculationResultBuilder;
-import com.aksi.service.game.util.GameEntityQueryService;
+import com.aksi.service.game.util.EntityQueryUtils;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CalculatorCommandService E2E Tests")
 class CalculatorCommandServiceTest {
 
   @Mock
-  private GameEntityQueryService entityQueryService;
+  private EntityQueryUtils entityQueryService;
 
   @Mock
   private CalculationResultBuilder resultBuilder;
@@ -51,7 +52,7 @@ class CalculatorCommandServiceTest {
   private CalculatorValidationService validationService;
 
   @Mock
-  private ModifierService modifierService;
+  private GameModifierService modifierService;
 
   @Mock
   private CalculatorFacade calculatorFacade;
@@ -84,11 +85,11 @@ class CalculatorCommandServiceTest {
     DifficultyLevelEntity difficultyLevel = createDifficultyLevel("HARD");
     PriceConfigurationEntity priceConfig = createLinearPriceConfig(1000, 50);
 
-    List<PriceModifierEntity> applicableModifiers = List.of(createPercentageModifier(15));
+    List<GameModifierEntity> applicableModifiers = List.of(createTimingModifier(1500));
     Map<String, Object> context = Map.of("difficulty", "HARD");
 
     CompleteCalculationResult completeResult = CompleteCalculationResult.success(
-        mock(com.aksi.service.game.calculation.GamePriceCalculationResult.class),
+        mock(GamePriceCalculationResult.class),
         217, // 15% of 1445 = 216.75 -> 217
         1662  // 1445 + 217 = 1662
     );
@@ -96,16 +97,16 @@ class CalculatorCommandServiceTest {
     CalculationResult expectedResult = createCalculationResult(1662);
 
     when(entityQueryService.findGameByCode("WOW")).thenReturn(game);
-    when(entityQueryService.findServiceTypeByCode("BOOSTING")).thenReturn(serviceType);
-    when(entityQueryService.findDifficultyLevelByCode("HARD")).thenReturn(difficultyLevel);
-    when(entityQueryService.findPriceConfiguration(game.getId(), serviceType.getId(), difficultyLevel.getId()))
+    when(entityQueryService.findServiceTypeByGameIdAndCode(game.getId(), "BOOSTING")).thenReturn(serviceType);
+    when(entityQueryService.findDifficultyLevelByGameIdAndCode(game.getId(), "HARD")).thenReturn(difficultyLevel);
+    when(entityQueryService.findPriceConfigurationByCombination(game.getId(), difficultyLevel.getId(), serviceType.getId()))
         .thenReturn(priceConfig);
-    when(modifierService.findApplicableModifiers(anyList())).thenReturn(applicableModifiers);
+    when(modifierService.getActiveModifiersForCalculation(game.getId(), serviceType.getId(), request.getModifiers())).thenReturn(applicableModifiers);
     doNothing().when(modifierService).validateModifierCompatibility(applicableModifiers);
     when(contextFactory.createGameBoostingContext(any(), any(), any(), any(), anyInt())).thenReturn(context);
     when(calculatorFacade.calculateCompletePrice(priceConfig, 1, 10, applicableModifiers, context))
         .thenReturn(completeResult);
-    when(resultBuilder.build(1662, 1000, 100, 100, 9, 217)).thenReturn(expectedResult);
+    when(resultBuilder.build(1662, 0, 100, 100, 9, 217)).thenReturn(expectedResult);
 
     // When
     CalculationResult result = commandService.calculateBoostingPrice(request);
@@ -125,7 +126,7 @@ class CalculatorCommandServiceTest {
     DifficultyLevelEntity difficultyLevel = createDifficultyLevel("DIAMOND");
     PriceConfigurationEntity priceConfig = createInvalidPriceConfig();
 
-    List<PriceModifierEntity> applicableModifiers = List.of();
+    List<GameModifierEntity> applicableModifiers = List.of();
     Map<String, Object> context = Map.of();
 
     CompleteCalculationResult failedResult = CompleteCalculationResult.error(
@@ -134,16 +135,16 @@ class CalculatorCommandServiceTest {
     CalculationResult expectedResult = createCalculationResult(1000);
 
     when(entityQueryService.findGameByCode("APEX")).thenReturn(game);
-    when(entityQueryService.findServiceTypeByCode("RANK_BOOST")).thenReturn(serviceType);
-    when(entityQueryService.findDifficultyLevelByCode("DIAMOND")).thenReturn(difficultyLevel);
-    when(entityQueryService.findPriceConfiguration(game.getId(), serviceType.getId(), difficultyLevel.getId()))
+    when(entityQueryService.findServiceTypeByGameIdAndCode(game.getId(), "RANK_BOOST")).thenReturn(serviceType);
+    when(entityQueryService.findDifficultyLevelByGameIdAndCode(game.getId(), "DIAMOND")).thenReturn(difficultyLevel);
+    when(entityQueryService.findPriceConfigurationByCombination(game.getId(), difficultyLevel.getId(), serviceType.getId()))
         .thenReturn(priceConfig);
-    when(modifierService.findApplicableModifiers(anyList())).thenReturn(applicableModifiers);
+    when(modifierService.getActiveModifiersForCalculation(game.getId(), serviceType.getId(), request.getModifiers())).thenReturn(applicableModifiers);
     doNothing().when(modifierService).validateModifierCompatibility(applicableModifiers);
     when(contextFactory.createGameBoostingContext(any(), any(), any(), any(), anyInt())).thenReturn(context);
     when(calculatorFacade.calculateCompletePrice(priceConfig, 1, 5, applicableModifiers, context))
         .thenReturn(failedResult);
-    when(resultBuilder.build(1000, 1000, 100, 100, 4, 0)).thenReturn(expectedResult);
+    when(resultBuilder.build(1000, 1000, 100, 100, 0, 0)).thenReturn(expectedResult);
 
     // When
     CalculationResult result = commandService.calculateBoostingPrice(request);
@@ -163,7 +164,7 @@ class CalculatorCommandServiceTest {
     DifficultyLevelEntity difficultyLevel = createDifficultyLevel("NORMAL");
     PriceConfigurationEntity priceConfig = createRangePriceConfig(500);
 
-    List<PriceModifierEntity> applicableModifiers = List.of(createFixedModifier(100));
+    List<GameModifierEntity> applicableModifiers = List.of(createSupportModifier(1000));
     Map<String, Object> context = Map.of("service", "LEVEL_BOOST");
 
     CompleteCalculationResult completeResult = CompleteCalculationResult.success(
@@ -175,16 +176,16 @@ class CalculatorCommandServiceTest {
     CalculationResult expectedResult = createCalculationResult(2600);
 
     when(entityQueryService.findGameByCode("WOW")).thenReturn(game);
-    when(entityQueryService.findServiceTypeByCode("LEVEL_BOOST")).thenReturn(serviceType);
-    when(entityQueryService.findDifficultyLevelByCode("NORMAL")).thenReturn(difficultyLevel);
-    when(entityQueryService.findPriceConfiguration(game.getId(), serviceType.getId(), difficultyLevel.getId()))
+    when(entityQueryService.findServiceTypeByGameIdAndCode(game.getId(), "LEVEL_BOOST")).thenReturn(serviceType);
+    when(entityQueryService.findDifficultyLevelByGameIdAndCode(game.getId(), "NORMAL")).thenReturn(difficultyLevel);
+    when(entityQueryService.findPriceConfigurationByCombination(game.getId(), difficultyLevel.getId(), serviceType.getId()))
         .thenReturn(priceConfig);
-    when(modifierService.findApplicableModifiers(anyList())).thenReturn(applicableModifiers);
+    when(modifierService.getActiveModifiersForCalculation(game.getId(), serviceType.getId(), request.getModifiers())).thenReturn(applicableModifiers);
     doNothing().when(modifierService).validateModifierCompatibility(applicableModifiers);
     when(contextFactory.createGameBoostingContext(any(), any(), any(), any(), anyInt())).thenReturn(context);
     when(calculatorFacade.calculateCompletePrice(priceConfig, 5, 25, applicableModifiers, context))
         .thenReturn(completeResult);
-    when(resultBuilder.build(2600, 500, 100, 100, 20, 100)).thenReturn(expectedResult);
+    when(resultBuilder.build(2600, 0, 100, 100, 20, 100)).thenReturn(expectedResult);
 
     // When
     CalculationResult result = commandService.calculateBoostingPrice(request);
@@ -206,10 +207,10 @@ class CalculatorCommandServiceTest {
     DifficultyLevelEntity difficultyLevel = createDifficultyLevel("GLOBAL");
     PriceConfigurationEntity priceConfig = createLinearPriceConfig(2000, 150);
 
-    List<PriceModifierEntity> applicableModifiers = List.of(
-        createPercentageModifier(-20), // VIP discount
-        createFixedModifier(500),     // Urgency bonus
-        createDiscountModifier(100)   // Additional discount
+    List<GameModifierEntity> applicableModifiers = List.of(
+        createPromotionalModifier(2000), // VIP discount
+        createTimingModifier(5000),     // Urgency bonus
+        createSupportModifier(1000)     // Voice support
     );
 
     Map<String, Object> context = Map.of("vip", true, "urgent", true);
@@ -223,17 +224,16 @@ class CalculatorCommandServiceTest {
     CalculationResult expectedResult = createCalculationResult(3290);
 
     when(entityQueryService.findGameByCode("CS2")).thenReturn(game);
-    when(entityQueryService.findServiceTypeByCode("RANK_BOOST")).thenReturn(serviceType);
-    when(entityQueryService.findDifficultyLevelByCode("GLOBAL")).thenReturn(difficultyLevel);
-    when(entityQueryService.findPriceConfiguration(game.getId(), serviceType.getId(), difficultyLevel.getId()))
+    when(entityQueryService.findServiceTypeByGameIdAndCode(game.getId(), "RANK_BOOST")).thenReturn(serviceType);
+    when(entityQueryService.findDifficultyLevelByGameIdAndCode(game.getId(), "GLOBAL")).thenReturn(difficultyLevel);
+    when(entityQueryService.findPriceConfigurationByCombination(game.getId(), difficultyLevel.getId(), serviceType.getId()))
         .thenReturn(priceConfig);
-    when(modifierService.findApplicableModifiers(List.of("VIP_DISCOUNT", "URGENCY_BONUS")))
-        .thenReturn(applicableModifiers);
-    doNothing().when(modifierService).validateModifierCompatibility(applicableModifiers);
+
+    doNothing().when(modifierService).validateModifierCompatibility(anyList());
     when(contextFactory.createGameBoostingContext(any(), any(), any(), any(), anyInt())).thenReturn(context);
-    when(calculatorFacade.calculateCompletePrice(priceConfig, 1, 10, applicableModifiers, context))
+    when(calculatorFacade.calculateCompletePrice(any(), anyInt(), anyInt(), anyList(), any()))
         .thenReturn(completeResult);
-    when(resultBuilder.build(3290, 2000, 100, 100, 9, 790)).thenReturn(expectedResult);
+    when(resultBuilder.build(3290, 0, 100, 100, 9, 790)).thenReturn(expectedResult);
 
     // When
     CalculationResult result = commandService.calculateBoostingPrice(request);
@@ -265,7 +265,7 @@ class CalculatorCommandServiceTest {
     GameEntity game = createGame("WOW");
 
     when(entityQueryService.findGameByCode("WOW")).thenReturn(game);
-    when(entityQueryService.findServiceTypeByCode("UNKNOWN_SERVICE")).thenThrow(new NotFoundException("Service type not found"));
+    when(entityQueryService.findServiceTypeByGameIdAndCode(game.getId(), "UNKNOWN_SERVICE")).thenThrow(new NotFoundException("Service type not found"));
 
     // When & Then
     assertThatThrownBy(() -> commandService.calculateBoostingPrice(request))
@@ -283,8 +283,7 @@ class CalculatorCommandServiceTest {
     ServiceTypeEntity serviceType = createServiceType("BOOSTING");
 
     when(entityQueryService.findGameByCode("WOW")).thenReturn(game);
-    when(entityQueryService.findServiceTypeByCode("BOOSTING")).thenReturn(serviceType);
-    when(entityQueryService.findDifficultyLevelByCode("UNKNOWN_DIFFICULTY")).thenThrow(new NotFoundException("Difficulty level not found"));
+    when(entityQueryService.findDifficultyLevelByGameIdAndCode(game.getId(), "UNKNOWN_DIFFICULTY")).thenThrow(new NotFoundException("Difficulty level not found"));
 
     // When & Then
     assertThatThrownBy(() -> commandService.calculateBoostingPrice(request))
@@ -303,8 +302,8 @@ class CalculatorCommandServiceTest {
     DifficultyLevelEntity difficultyLevel = createDifficultyLevel("HARD");
 
     when(entityQueryService.findGameByCode("WOW")).thenReturn(game);
-    when(entityQueryService.findServiceTypeByCode("BOOSTING")).thenReturn(serviceType);
-    when(entityQueryService.findDifficultyLevelByCode("HARD")).thenReturn(difficultyLevel);
+    when(entityQueryService.findServiceTypeByGameIdAndCode(game.getId(), "BOOSTING")).thenReturn(serviceType);
+    when(entityQueryService.findDifficultyLevelByGameIdAndCode(game.getId(), "HARD")).thenReturn(difficultyLevel);
     when(entityQueryService.findPriceConfigurationByCombination(game.getId(), difficultyLevel.getId(), serviceType.getId()))
         .thenThrow(new NotFoundException("Price configuration not found"));
 
@@ -386,30 +385,42 @@ class CalculatorCommandServiceTest {
     return config;
   }
 
-  private PriceModifierEntity createPercentageModifier(int percentage) {
-    PriceModifierEntity modifier = new PriceModifierEntity();
+  private GameModifierEntity createTimingModifier(int value) {
+    GameModifierEntity modifier = new GameModifierEntity();
     modifier.setId(UUID.randomUUID());
-    modifier.setType(ModifierType.PERCENTAGE);
-    modifier.setValue(percentage);
-    modifier.setOperation(OperationType.ADD);
+    modifier.setCode("TIMING_RUSH");
+    modifier.setName("24 Hour Rush");
+    modifier.setType(GameModifierType.TIMING);
+    modifier.setOperation(GameModifierOperation.ADD);
+    modifier.setValue(value);
+    modifier.setActive(true);
+    modifier.setGameCode("WOW");
     return modifier;
   }
 
-  private PriceModifierEntity createFixedModifier(int amount) {
-    PriceModifierEntity modifier = new PriceModifierEntity();
+  private GameModifierEntity createSupportModifier(int value) {
+    GameModifierEntity modifier = new GameModifierEntity();
     modifier.setId(UUID.randomUUID());
-    modifier.setType(ModifierType.FIXED);
-    modifier.setValue(amount);
-    modifier.setOperation(OperationType.ADD);
+    modifier.setCode("VOICE_SUPPORT");
+    modifier.setName("Voice Chat Support");
+    modifier.setType(GameModifierType.SUPPORT);
+    modifier.setOperation(GameModifierOperation.ADD);
+    modifier.setValue(value);
+    modifier.setActive(true);
+    modifier.setGameCode("WOW");
     return modifier;
   }
 
-  private PriceModifierEntity createDiscountModifier(int amount) {
-    PriceModifierEntity modifier = new PriceModifierEntity();
+  private GameModifierEntity createPromotionalModifier(int value) {
+    GameModifierEntity modifier = new GameModifierEntity();
     modifier.setId(UUID.randomUUID());
-    modifier.setType(ModifierType.FIXED);
-    modifier.setValue(amount);
-    modifier.setOperation(OperationType.SUBTRACT);
+    modifier.setCode("PROMO_DISCOUNT");
+    modifier.setName("Promotional Discount");
+    modifier.setType(GameModifierType.PROMOTIONAL);
+    modifier.setOperation(GameModifierOperation.SUBTRACT);
+    modifier.setValue(value);
+    modifier.setActive(true);
+    modifier.setGameCode("WOW");
     return modifier;
   }
 }
