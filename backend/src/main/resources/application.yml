@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev  # Default profile
+    active: dev # Default profile
   application:
     name: AKSI-Dry-Cleaning-Backend
   # Force English locale for validation messages
@@ -12,7 +12,7 @@ spring:
     basename: messages
     encoding: UTF-8
     fallback-to-system-locale: false
-    
+
 # Base configuration that applies to all profiles
 server:
   error:
@@ -33,30 +33,36 @@ logging:
 app:
   cors:
     allowed-origins: http://localhost:3000
-  
+
+  # File storage configuration (default values - can be overridden in profiles)
+  file-storage:
+    upload-dir: ${FILE_UPLOAD_DIR:./uploads}
+    base-url: ${FILE_BASE_URL:http://localhost:8080}
+    api-path: ${FILE_API_PATH:/api/files}
+
   # Security configuration (default values - override in profiles)
   security:
     # Rate limiting settings
     rate-limiting:
-      enabled: false  # Disabled by default for development
-    max-attempts-per-user: 999  # Very high for development
-    max-attempts-per-ip: 999    # Very high for development
-    lockout-duration-minutes: 1  # Short lockout for development
+      enabled: false # Disabled by default for development
+    max-attempts-per-user: 999 # Very high for development
+    max-attempts-per-ip: 999 # Very high for development
+    lockout-duration-minutes: 1 # Short lockout for development
     attempt-window-minutes: 60
-    
+
     # Password policy settings (relaxed for development)
     password:
-      min-length: 6  # Short for development
+      min-length: 6 # Short for development
       require-uppercase: false
       require-lowercase: false
       require-numbers: false
       require-special-chars: false
       allowed-special-chars: "@$!%*?&"
-    
+
     # Session management settings
     session:
-      default-timeout-minutes: 480  # 8 hours for development
-      max-concurrent-sessions: 10   # Many sessions for testing
+      default-timeout-minutes: 480 # 8 hours for development
+      max-concurrent-sessions: 10 # Many sessions for testing
       remember-me-timeout-days: 30
       session-fixation-protection: true
 
@@ -68,7 +74,7 @@ receipt:
   phone-prefix: "Тел: "
   date-time-format: "dd.MM.yyyy HH:mm"
   date-format: "dd.MM.yyyy"
-  
+
   font:
     directory: "fonts/"
     regular: "DejaVuSans.ttf"
@@ -77,7 +83,7 @@ receipt:
     heading-size: 12
     normal-size: 10
     small-size: 8
-  
+
   layout:
     page-width: 595.0
     page-height: 842.0
