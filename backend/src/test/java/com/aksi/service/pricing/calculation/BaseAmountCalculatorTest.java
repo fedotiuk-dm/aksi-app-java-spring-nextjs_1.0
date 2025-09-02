@@ -16,9 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.aksi.api.pricing.dto.ItemCharacteristics;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
-import com.aksi.api.service.dto.PriceListItemInfo;
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
 import com.aksi.service.pricing.calculation.BaseAmountCalculator.BaseCalculationResult;
 import com.aksi.service.pricing.util.PricingQueryUtils;
+
 
 /**
  * Unit tests for BaseAmountCalculator verifying OrderWizard pricing logic steps 1-2: 1. Base price

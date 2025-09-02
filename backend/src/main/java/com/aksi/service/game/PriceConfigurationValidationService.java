@@ -28,6 +28,7 @@ public class PriceConfigurationValidationService {
 
   private final EntityValidationUtils entityValidationUtils;
   private final PriceConfigurationQueryUtils priceConfigurationQueryUtils;
+  private final CalculationValidationUtils calculationValidationUtils;
 
   /**
    * Validate price configuration creation request.
@@ -64,7 +65,7 @@ public class PriceConfigurationValidationService {
     // Validate calculation formula if present
     String calculationFormula = request.getCalculationFormula();
     if (calculationFormula != null && !calculationFormula.trim().isEmpty()) {
-      CalculationValidationUtils.validateCalculationFormula(calculationFormula);
+      calculationValidationUtils.validateCalculationFormula(calculationFormula);
     }
   }
 
@@ -104,7 +105,7 @@ public class PriceConfigurationValidationService {
     // Validate calculation formula if present
     String calculationFormula = request.getCalculationFormula();
     if (calculationFormula != null && !calculationFormula.trim().isEmpty()) {
-      CalculationValidationUtils.validateCalculationFormula(calculationFormula);
+      calculationValidationUtils.validateCalculationFormula(calculationFormula);
     }
   }
 }

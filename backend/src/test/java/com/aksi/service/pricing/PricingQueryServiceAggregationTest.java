@@ -61,7 +61,7 @@ class PricingQueryServiceAggregationTest {
 
     // Mock guard.loadPriceListItem
     when(guard.loadPriceListItem(any()))
-        .thenReturn(new com.aksi.api.service.dto.PriceListItemInfo());
+        .thenReturn(new com.aksi.api.pricelist.dto.PriceListItemInfo());
 
     // Mock calculator results per item
     CalculatedItemPrice r1 = new CalculatedItemPrice();
