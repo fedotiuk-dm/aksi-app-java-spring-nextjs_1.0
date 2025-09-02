@@ -78,6 +78,32 @@ public class GameEntityQueryService {
   }
 
   /**
+   * Find service type by code (global search).
+   *
+   * @param serviceCode Service type code
+   * @return Service type entity
+   * @throws NotFoundException if service type not found
+   */
+  public ServiceTypeEntity findServiceTypeByCode(String serviceCode) {
+    return serviceTypeRepository
+        .findByCode(serviceCode)
+        .orElseThrow(() -> new NotFoundException("Service type not found: " + serviceCode));
+  }
+
+  /**
+   * Find difficulty level by code (global search).
+   *
+   * @param levelCode Difficulty level code
+   * @return Difficulty level entity
+   * @throws NotFoundException if difficulty level not found
+   */
+  public DifficultyLevelEntity findDifficultyLevelByCode(String levelCode) {
+    return difficultyLevelRepository
+        .findByCode(levelCode)
+        .orElseThrow(() -> new NotFoundException("Difficulty level not found: " + levelCode));
+  }
+
+  /**
    * Find price configuration by combination of game, difficulty level and service type.
    *
    * @param gameId Game ID
@@ -100,5 +126,20 @@ public class GameEntityQueryService {
                         + difficultyLevelId
                         + ", service: "
                         + serviceTypeId));
+  }
+
+  /**
+   * Find price configuration by combination of game, difficulty level and service type.
+   * Alternative method with same parameters but different order.
+   *
+   * @param gameId Game ID
+   * @param serviceTypeId Service type ID
+   * @param difficultyLevelId Difficulty level ID
+   * @return Price configuration entity
+   * @throws NotFoundException if price configuration not found
+   */
+  public PriceConfigurationEntity findPriceConfiguration(
+      UUID gameId, UUID serviceTypeId, UUID difficultyLevelId) {
+    return findPriceConfigurationByCombination(gameId, difficultyLevelId, serviceTypeId);
   }
 }

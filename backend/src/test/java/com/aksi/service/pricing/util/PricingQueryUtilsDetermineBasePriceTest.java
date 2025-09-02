@@ -1,14 +1,13 @@
 package com.aksi.service.pricing.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.aksi.api.service.dto.PriceListItemInfo;
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
 
 class PricingQueryUtilsDetermineBasePriceTest {
 

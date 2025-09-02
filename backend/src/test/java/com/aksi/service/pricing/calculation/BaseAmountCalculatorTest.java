@@ -1,22 +1,21 @@
 package com.aksi.service.pricing.calculation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.aksi.api.pricing.dto.ItemCharacteristics;
-import com.aksi.api.pricing.dto.PriceCalculationItem;
 import com.aksi.api.pricelist.dto.PriceListItemInfo;
+import com.aksi.api.pricing.dto.PriceCalculationItem;
+import com.aksi.api.pricing.dto.PricingItemCharacteristics;
 import com.aksi.service.pricing.calculation.BaseAmountCalculator.BaseCalculationResult;
 import com.aksi.service.pricing.util.PricingQueryUtils;
 
@@ -181,7 +180,7 @@ class BaseAmountCalculatorTest {
     item.setQuantity(quantity);
 
     if (color != null) {
-      ItemCharacteristics characteristics = new ItemCharacteristics();
+      PricingItemCharacteristics characteristics = new PricingItemCharacteristics();
       characteristics.setColor(color);
       item.setCharacteristics(characteristics);
     }

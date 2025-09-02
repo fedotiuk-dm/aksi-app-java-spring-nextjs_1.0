@@ -2,6 +2,7 @@ package com.aksi.service.game.calculation;
 
 import java.util.Map;
 
+import com.aksi.api.game.dto.CalculationStatus;
 import com.aksi.service.game.calculation.FormulaCalculator.FormulaCalculationResult;
 import com.aksi.service.game.calculation.LinearCalculator.LinearCalculationResult;
 import com.aksi.service.game.calculation.RangeCalculator.RangeCalculationResult;
@@ -19,6 +20,7 @@ public record GamePriceCalculationResult(
     String calculationMethod,
     boolean isSuccessful,
     String notes,
+    CalculationStatus status,
     Map<String, Object> calculationDetails) {
 
   /**
@@ -33,6 +35,7 @@ public record GamePriceCalculationResult(
         true,
         String.format("Linear calculation: base=%d, levelPrice=%d",
             linearResult.basePrice(), linearResult.levelPrice()),
+        CalculationStatus.SUCCESS,
         Map.of(
             "levelPrice", linearResult.levelPrice(),
             "calculationBreakdown", linearResult)
@@ -51,6 +54,7 @@ public record GamePriceCalculationResult(
         true,
         String.format("Range calculation: %d ranges applied - %s",
             rangeResult.appliedRanges().size(), rangeResult.calculationNote()),
+        CalculationStatus.SUCCESS,
         Map.of(
             "appliedRanges", rangeResult.appliedRanges(),
             "calculationNote", rangeResult.calculationNote(),
@@ -72,6 +76,7 @@ public record GamePriceCalculationResult(
             formulaResult.originalExpression(),
             formulaResult.processedExpression(),
             formulaResult.totalPrice()),
+        CalculationStatus.SUCCESS,
         Map.of(
             "originalExpression", formulaResult.originalExpression(),
             "processedExpression", formulaResult.processedExpression(),
@@ -98,6 +103,7 @@ public record GamePriceCalculationResult(
             timeResult.estimatedHours(),
             timeResult.hourlyRate() / 100.0,
             timeResult.complexityMultiplier()),
+        CalculationStatus.SUCCESS,
         Map.of(
             "hourlyRate", timeResult.hourlyRate(),
             "estimatedHours", timeResult.estimatedHours(),
@@ -120,6 +126,7 @@ public record GamePriceCalculationResult(
         "Error fallback",
         false,
         errorMessage,
+        CalculationStatus.FAILED,
         Map.of("error", errorMessage)
     );
   }

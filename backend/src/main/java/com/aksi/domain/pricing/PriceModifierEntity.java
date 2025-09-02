@@ -3,6 +3,7 @@ package com.aksi.domain.pricing;
 import java.util.List;
 
 import com.aksi.api.pricing.dto.ModifierType;
+import com.aksi.api.pricing.dto.OperationType;
 import com.aksi.domain.common.BaseEntity;
 
 import jakarta.persistence.CollectionTable;
@@ -49,6 +50,10 @@ public class PriceModifierEntity extends BaseEntity {
   @Column(name = "modifier_type", nullable = false, length = 20)
   @Enumerated(EnumType.STRING)
   private ModifierType type;
+
+  @Column(name = "operation_type", nullable = false, length = 20)
+  @Enumerated(EnumType.STRING)
+  private OperationType operation = OperationType.ADD;
 
   @Column(name = "modifier_value", nullable = false)
   private Integer value;

@@ -48,7 +48,7 @@ public class CalculatorFacade {
     GamePriceCalculationResult baseResult = gamePriceCalculator.calculatePrice(config, fromLevel, toLevel);
 
     if (!baseResult.isSuccessful()) {
-      log.warn("Base price calculation failed: {}", baseResult.notes());
+      log.info("Base price calculation failed: {}", baseResult.notes());
       return CompleteCalculationResult.error(baseResult.notes(), config.getBasePrice());
     }
 

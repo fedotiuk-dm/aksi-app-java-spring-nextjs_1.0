@@ -50,10 +50,16 @@ components:
           type: string
           default: "USD"
           example: "USD"
+        status:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/CalculationStatus"
+          description: Calculation result status
+          default: SUCCESS
         breakdown:
           $ref: "#/components/schemas/CalculationBreakdown"
       required:
         - finalPrice
+        - status
         - breakdown
 
     CalculationBreakdown:

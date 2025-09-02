@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.aksi.api.pricing.dto.OperationType;
 import com.aksi.domain.pricing.PriceModifierEntity;
 
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ public class GameModifierCalculator {
   }
 
   /**
-   * Calculate adjustment for a single modifier based on its type.
+   * Calculate adjustment for a single modifier based on its type and operation.
    *
    * @param modifier The modifier to apply
    * @param basePrice Base price for calculation
@@ -63,12 +64,32 @@ public class GameModifierCalculator {
   private int calculateModifierAdjustment(
       PriceModifierEntity modifier, int basePrice, Map<String, Object> context) {
 
-    return switch (modifier.getType()) {
+    int rawAdjustment = switch (modifier.getType()) {
       case PERCENTAGE -> calculatePercentageAdjustment(modifier, basePrice);
       case FIXED -> calculateFixedAdjustment(modifier, context);
       case FORMULA -> calculateFormulaAdjustment(modifier, context);
       case MULTIPLIER -> calculateMultiplierAdjustment(modifier, basePrice);
       case DISCOUNT -> calculateDiscountAdjustment(modifier, basePrice);
+    };
+
+    // Apply operation type to the raw adjustment
+    return applyOperation(modifier.getOperation(), basePrice, rawAdjustment);
+  }
+
+  /**
+   * Apply operation type to calculate final adjustment.
+   *
+   * @param operation The operation to apply
+   * @param basePrice Base price for relative operations
+   * @param adjustment Raw adjustment value
+   * @return Final adjustment amount
+   */
+  private int applyOperation(OperationType operation, int basePrice, int adjustment) {
+    return switch (operation) {
+      case ADD -> adjustment;
+      case SUBTRACT -> -Math.abs(adjustment);
+      case MULTIPLY -> (int) ((long) basePrice * adjustment / 10000); // adjustment as multiplier (100 = 1.0x)
+      case DIVIDE -> adjustment != 0 ? (int) -((long) basePrice * 10000 / adjustment) : 0;
     };
   }
 

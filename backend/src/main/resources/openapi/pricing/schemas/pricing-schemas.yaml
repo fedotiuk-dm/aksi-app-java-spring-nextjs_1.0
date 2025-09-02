@@ -263,6 +263,11 @@ components:
           description: Modifier description
         type:
           $ref: "../../common.yaml#/components/schemas/ModifierType"
+        operation:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/OperationType"
+          description: Operation type for applying the modifier
+          default: ADD
         value:
           type: integer
           description: |

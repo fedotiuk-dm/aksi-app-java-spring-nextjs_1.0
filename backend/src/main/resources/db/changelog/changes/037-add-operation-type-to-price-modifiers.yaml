@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-operation-type-to-price-modifiers
+      author: system
+      comment: Add operation_type column to price_modifiers table for specifying modifier operations
+      changes:
+        - addColumn:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: operation_type
+                  type: varchar(20)
+                  defaultValue: ADD
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: price_modifiers
+            indexName: idx_modifier_operation_type
+            columns:
+              - column:
+                  name: operation_type
+        - update:
+            tableName: price_modifiers
+            columns:
+              - column:
+                  name: operation_type
+                  value: ADD
+            where: operation_type IS NULL

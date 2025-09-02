@@ -113,3 +113,6 @@ databaseChangeLog:
   # Add test data for game services
   - include:
       file: db/changelog/changes/036-add-game-test-data.yaml
+  # Add operation_type column to price_modifiers table
+  - include:
+      file: db/changelog/changes/037-add-operation-type-to-price-modifiers.yaml

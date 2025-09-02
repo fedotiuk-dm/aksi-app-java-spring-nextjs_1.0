@@ -217,6 +217,25 @@ components:
       enum: [PERCENTAGE, FIXED, FORMULA, MULTIPLIER, DISCOUNT]
       description: Type of price modifier
 
+    OperationType:
+      type: string
+      enum: [ADD, SUBTRACT, MULTIPLY, DIVIDE]
+      description: Operation type for applying modifiers
+      x-enum-descriptions:
+        - Add modifier value to base price
+        - Subtract modifier value from base price
+        - Multiply base price by modifier value
+        - Divide base price by modifier value
+
+    CalculationStatus:
+      type: string
+      enum: [SUCCESS, FAILED, FALLBACK]
+      description: Calculation result status
+      x-enum-descriptions:
+        - Calculation completed successfully
+        - Calculation failed
+        - Calculation used fallback method
+
     DiscountType:
       type: string
       enum: [NONE, EVERCARD, SOCIAL_MEDIA, MILITARY, OTHER]
