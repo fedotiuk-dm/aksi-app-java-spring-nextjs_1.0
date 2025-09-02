@@ -53,79 +53,19 @@ public final class ValidationUtils {
    * Validate string format using regex pattern.
    *
    * @param value String value to validate
-   * @param fieldName Field name for error message
    * @param pattern Regex pattern
    * @param errorMessage Custom error message
    * @throws BadRequestException if validation fails
    */
-  public static void validatePattern(
-      String value, String fieldName, String pattern, String errorMessage) {
+  public static void validatePattern(String value, String pattern, String errorMessage) {
     if (!value.matches(pattern)) {
       throw new BadRequestException(errorMessage);
     }
   }
 
-  /**
-   * Validate code format (uppercase letters, numbers, underscores).
-   *
-   * @param code Code to validate
-   * @param fieldName Field name for error message
-   * @throws BadRequestException if validation fails
-   */
-  public static void validateCodeFormat(String code, String fieldName) {
-    validatePattern(
-        code,
-        fieldName,
-        "^[A-Z0-9_]+$",
-        fieldName + " must contain only uppercase letters, numbers, and underscores");
-  }
-
   // ===== NUMERIC VALIDATION =====
 
-  /**
-   * Validate that number is not null.
-   *
-   * @param value Number value to validate
-   * @param fieldName Field name for error message
-   * @throws BadRequestException if validation fails
-   */
-  public static void validateRequired(Number value, String fieldName) {
-    if (value == null) {
-      throw new BadRequestException(fieldName + " is required");
-    }
-  }
-
-  /**
-   * Validate integer range.
-   *
-   * @param value Integer value to validate
-   * @param fieldName Field name for error message
-   * @param minValue Minimum value (inclusive)
-   * @param maxValue Maximum value (inclusive)
-   * @throws BadRequestException if validation fails
-   */
-  public static void validateRange(Integer value, String fieldName, int minValue, int maxValue) {
-    if (value < minValue || value > maxValue) {
-      throw new BadRequestException(
-          fieldName + " must be between " + minValue + " and " + maxValue);
-    }
-  }
-
   // ===== ENTITY EXISTENCE VALIDATION =====
-
-  /**
-   * Validate that entity exists by checking boolean result.
-   *
-   * @param exists Boolean result from existence check
-   * @param entityType Entity type name for error message
-   * @param identifier Entity identifier
-   * @throws BadRequestException if entity doesn't exist
-   */
-  public static void validateEntityExists(boolean exists, String entityType, Object identifier) {
-    if (!exists) {
-      throw new BadRequestException(entityType + " not found: " + identifier);
-    }
-  }
 
   // ===== UNIQUENESS VALIDATION =====
 
@@ -176,7 +116,6 @@ public final class ValidationUtils {
 
       validatePattern(
           email,
-          fieldName,
           "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
           "Invalid " + fieldName.toLowerCase() + " format");
     }
@@ -195,7 +134,6 @@ public final class ValidationUtils {
     validateRequired(username, fieldName);
     validateLength(username, fieldName, 0, 100);
 
-    validatePattern(
-        username, fieldName, "^[a-zA-Z0-9._-]+$", fieldName + " contains invalid characters");
+    validatePattern(username, "^[a-zA-Z0-9._-]+$", fieldName + " contains invalid characters");
   }
 }

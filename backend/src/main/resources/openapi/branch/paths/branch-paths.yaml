@@ -1,0 +1,236 @@
+paths:
+  /api/branches:
+    get:
+      operationId: listBranches
+      summary: List branches
+      description: Get list of branches
+      tags:
+        - branches
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: "../../common.yaml#/components/parameters/PageNumber"
+        - $ref: "../../common.yaml#/components/parameters/PageSize"
+        - $ref: "../../common.yaml#/components/parameters/SortBy"
+        - $ref: "../../common.yaml#/components/parameters/SortOrder"
+        - name: active
+          in: query
+          description: Filter by active status
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: search
+          in: query
+          description: Search by name or address
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of branches
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/branch-schemas.yaml#/components/schemas/BranchListResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+    post:
+      operationId: createBranch
+      summary: Create new branch
+      description: Create a new branch (admin only)
+      tags:
+        - branches
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/branch-schemas.yaml#/components/schemas/CreateBranchRequest"
+      responses:
+        "201":
+          description: Branch created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/branch-schemas.yaml#/components/schemas/BranchInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "409":
+          $ref: "../../common.yaml#/components/responses/Conflict"
+
+  /api/branches/active:
+    get:
+      operationId: getAllActiveBranches
+      summary: Get all active branches
+      description: Get all active branches for dropdowns (no pagination)
+      tags:
+        - branches
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: List of active branches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "../schemas/branch-schemas.yaml#/components/schemas/BranchInfo"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/branches/{branchId}:
+    parameters:
+      - name: branchId
+        in: path
+        required: true
+        description: Branch ID
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      operationId: getBranchById
+      summary: Get branch details
+      description: Get detailed branch information
+      tags:
+        - branches
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Branch details
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/branch-schemas.yaml#/components/schemas/BranchInfo"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    put:
+      operationId: updateBranch
+      summary: Update branch
+      description: Update an existing branch (admin only)
+      tags:
+        - branches
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/branch-schemas.yaml#/components/schemas/UpdateBranchRequest"
+      responses:
+        "200":
+          description: Branch updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/branch-schemas.yaml#/components/schemas/BranchInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "../../common.yaml#/components/responses/Conflict"
+
+    delete:
+      operationId: deleteBranch
+      summary: Delete branch
+      description: Delete a branch (admin only)
+      tags:
+        - branches
+      security:
+        - cookieAuth: []
+      responses:
+        "204":
+          description: Branch deleted successfully
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/branches/{branchId}/activate:
+    parameters:
+      - name: branchId
+        in: path
+        required: true
+        description: Branch ID
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      operationId: activateBranch
+      summary: Activate branch
+      description: Activate a deactivated branch (admin only)
+      tags:
+        - branches
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Branch activated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/branch-schemas.yaml#/components/schemas/BranchInfo"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "../../common.yaml#/components/responses/Conflict"
+
+  /api/branches/{branchId}/deactivate:
+    parameters:
+      - name: branchId
+        in: path
+        required: true
+        description: Branch ID
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      operationId: deactivateBranch
+      summary: Deactivate branch
+      description: Deactivate an active branch (admin only)
+      tags:
+        - branches
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Branch deactivated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/branch-schemas.yaml#/components/schemas/BranchInfo"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "../../common.yaml#/components/responses/Conflict"

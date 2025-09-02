@@ -1,0 +1,148 @@
+paths:
+  /api/games/price-configurations:
+    get:
+      tags: [price-configurations]
+      operationId: gamesListPriceConfigurations
+      summary: Get price configurations
+      description: Get paginated list of price configurations with optional filtering
+      parameters:
+        - $ref: "../../common.yaml#/components/parameters/PageNumber"
+        - $ref: "../../common.yaml#/components/parameters/PageSize"
+        - name: gameId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by game ID
+        - name: serviceTypeId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by service type ID
+        - name: difficultyLevelId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by difficulty level ID
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+      responses:
+        "200":
+          description: List of price configurations
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/price-configurations-schemas.yaml#/components/schemas/PriceConfigurationListResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+    post:
+      tags: [price-configurations]
+      operationId: gamesCreatePriceConfiguration
+      summary: Create price configuration
+      description: Create a new price configuration in the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/price-configurations-schemas.yaml#/components/schemas/CreatePriceConfigurationRequest"
+      responses:
+        "201":
+          description: Price configuration created
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/price-configurations-schemas.yaml#/components/schemas/PriceConfiguration"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+  /api/games/price-configurations/{configId}:
+    get:
+      tags: [price-configurations]
+      operationId: gamesGetPriceConfigurationById
+      summary: Get price configuration by ID
+      description: Retrieve detailed information about a specific price configuration
+      parameters:
+        - name: configId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Price configuration found
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/price-configurations-schemas.yaml#/components/schemas/PriceConfiguration"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    put:
+      tags: [price-configurations]
+      operationId: gamesUpdatePriceConfiguration
+      summary: Update price configuration
+      description: Update an existing price configuration's information
+      parameters:
+        - name: configId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/price-configurations-schemas.yaml#/components/schemas/UpdatePriceConfigurationRequest"
+      responses:
+        "200":
+          description: Price configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/price-configurations-schemas.yaml#/components/schemas/PriceConfiguration"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    delete:
+      tags: [price-configurations]
+      operationId: gamesDeletePriceConfiguration
+      summary: Delete price configuration
+      description: Permanently delete a price configuration from the system
+      parameters:
+        - name: configId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Price configuration deleted
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"

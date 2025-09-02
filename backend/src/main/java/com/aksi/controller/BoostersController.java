@@ -24,25 +24,25 @@ public class BoostersController implements BoostersApi {
   private final BoosterService boosterService;
 
   @Override
-  public ResponseEntity<Booster> createBooster(CreateBoosterRequest createBoosterRequest) {
+  public ResponseEntity<Booster> gamesCreateBooster(CreateBoosterRequest createBoosterRequest) {
     Booster result = boosterService.createBooster(createBoosterRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(result);
   }
 
   @Override
-  public ResponseEntity<Void> deleteBooster(UUID boosterId) {
+  public ResponseEntity<Void> gamesDeleteBooster(UUID boosterId) {
     boosterService.deleteBooster(boosterId);
     return ResponseEntity.noContent().build();
   }
 
   @Override
-  public ResponseEntity<Booster> getBoosterById(UUID boosterId) {
+  public ResponseEntity<Booster> gamesGetBoosterById(UUID boosterId) {
     Booster result = boosterService.getBoosterById(boosterId);
     return ResponseEntity.ok(result);
   }
 
   @Override
-  public ResponseEntity<BoosterListResponse> listBoosters(
+  public ResponseEntity<BoosterListResponse> gamesListBoosters(
       Integer page, Integer size, @Nullable String search, @Nullable Boolean active) {
 
     BoosterListResponse result;
@@ -58,7 +58,7 @@ public class BoostersController implements BoostersApi {
   }
 
   @Override
-  public ResponseEntity<Booster> updateBooster(
+  public ResponseEntity<Booster> gamesUpdateBooster(
       UUID boosterId, UpdateBoosterRequest updateBoosterRequest) {
 
     Booster result = boosterService.updateBooster(boosterId, updateBoosterRequest);

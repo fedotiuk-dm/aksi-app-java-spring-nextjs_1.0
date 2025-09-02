@@ -98,8 +98,7 @@ public class CalculatorCommandService {
         100, // difficulty multiplier
         100, // service multiplier
         Math.max(0, request.getTargetLevel() - request.getStartLevel()),
-        modifierAdjustments,
-        game);
+        modifierAdjustments);
   }
 
   /**

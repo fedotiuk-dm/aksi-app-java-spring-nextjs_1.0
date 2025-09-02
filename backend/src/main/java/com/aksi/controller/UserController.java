@@ -70,7 +70,7 @@ public class UserController implements UsersApi {
   public ResponseEntity<UserListResponse> listUsers(
       Integer page,
       Integer size,
-      String sortBy,
+      @Nullable String sortBy,
       SortOrder sortOrder,
       @Nullable String search,
       @Nullable UserRole role,

@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 
 import com.aksi.api.game.dto.CalculationBreakdown;
 import com.aksi.api.game.dto.CalculationResult;
-import com.aksi.domain.game.GameEntity;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,7 +20,6 @@ public class CalculationResultBuilder {
    *
    * @param totalPrice Total calculated price in kopiykas
    * @param basePrice Base price in kopiykas
-   * @param game Game entity for context
    * @return Built CalculationResult
    */
   public CalculationResult build(
@@ -30,8 +28,7 @@ public class CalculationResultBuilder {
       int difficultyMultiplier,
       int serviceMultiplier,
       int levelAdjustment,
-      int totalAdjustment,
-      GameEntity game) {
+      int totalAdjustment) {
 
     // Build breakdown
     CalculationBreakdown breakdown = new CalculationBreakdown();
@@ -48,29 +45,6 @@ public class CalculationResultBuilder {
     result.setBreakdown(breakdown);
 
     log.debug("Built calculation result: finalPrice={}, basePrice={}", totalPrice, basePrice);
-
-    return result;
-  }
-
-  /**
-   * Build calculation result with error information.
-   *
-   * @param game Game entity for context
-   * @return CalculationResult with errors
-   */
-  public CalculationResult buildWithErrors(GameEntity game) {
-    CalculationBreakdown breakdown = new CalculationBreakdown();
-    breakdown.setBasePrice(0);
-    breakdown.setDifficultyMultiplier(100);
-    breakdown.setServiceMultiplier(100);
-    breakdown.setTotalAdjustment(0);
-
-    CalculationResult result = new CalculationResult();
-    result.setFinalPrice(0);
-    result.setCurrency("USD");
-    result.setBreakdown(breakdown);
-
-    log.debug("Built calculation result with errors for game: {}", game.getName());
 
     return result;
   }

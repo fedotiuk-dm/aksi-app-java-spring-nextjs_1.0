@@ -305,7 +305,7 @@ export const useDeleteDiscount = <TError = ErrorResponse | ErrorResponse | Error
  * Calculate price for one or more items with modifiers
  * @summary Calculate price for items
  */
-export const calculatePrice1 = (
+export const calculatePrice = (
     priceCalculationRequest: PriceCalculationRequest,
  options?: SecondParameter<typeof orvalFetcher>,signal?: AbortSignal
 ) => {
@@ -321,11 +321,11 @@ export const calculatePrice1 = (
   
 
 
-export const getCalculatePrice1MutationOptions = <TError = ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculatePrice1>>, TError,{data: PriceCalculationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
-): UseMutationOptions<Awaited<ReturnType<typeof calculatePrice1>>, TError,{data: PriceCalculationRequest}, TContext> => {
+export const getCalculatePriceMutationOptions = <TError = ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculatePrice>>, TError,{data: PriceCalculationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+): UseMutationOptions<Awaited<ReturnType<typeof calculatePrice>>, TError,{data: PriceCalculationRequest}, TContext> => {
 
-const mutationKey = ['calculatePrice1'];
+const mutationKey = ['calculatePrice'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -335,10 +335,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof calculatePrice1>>, {data: PriceCalculationRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof calculatePrice>>, {data: PriceCalculationRequest}> = (props) => {
           const {data} = props ?? {};
 
-          return  calculatePrice1(data,requestOptions)
+          return  calculatePrice(data,requestOptions)
         }
 
         
@@ -346,23 +346,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type CalculatePrice1MutationResult = NonNullable<Awaited<ReturnType<typeof calculatePrice1>>>
-    export type CalculatePrice1MutationBody = PriceCalculationRequest
-    export type CalculatePrice1MutationError = ErrorResponse | ErrorResponse
+    export type CalculatePriceMutationResult = NonNullable<Awaited<ReturnType<typeof calculatePrice>>>
+    export type CalculatePriceMutationBody = PriceCalculationRequest
+    export type CalculatePriceMutationError = ErrorResponse | ErrorResponse
 
     /**
  * @summary Calculate price for items
  */
-export const useCalculatePrice1 = <TError = ErrorResponse | ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculatePrice1>>, TError,{data: PriceCalculationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
+export const useCalculatePrice = <TError = ErrorResponse | ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculatePrice>>, TError,{data: PriceCalculationRequest}, TContext>, request?: SecondParameter<typeof orvalFetcher>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof calculatePrice1>>,
+        Awaited<ReturnType<typeof calculatePrice>>,
         TError,
         {data: PriceCalculationRequest},
         TContext
       > => {
 
-      const mutationOptions = getCalculatePrice1MutationOptions(options);
+      const mutationOptions = getCalculatePriceMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

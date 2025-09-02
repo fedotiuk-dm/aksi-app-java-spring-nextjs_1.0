@@ -24,7 +24,7 @@ public class PriceConfigurationsController implements PriceConfigurationsApi {
   private final PriceConfigurationService priceConfigurationService;
 
   @Override
-  public ResponseEntity<PriceConfiguration> createPriceConfiguration(
+  public ResponseEntity<PriceConfiguration> gamesCreatePriceConfiguration(
       CreatePriceConfigurationRequest createPriceConfigurationRequest) {
 
     PriceConfiguration result =
@@ -33,27 +33,26 @@ public class PriceConfigurationsController implements PriceConfigurationsApi {
   }
 
   @Override
-  public ResponseEntity<Void> deletePriceConfiguration(UUID priceConfigurationId) {
+  public ResponseEntity<Void> gamesDeletePriceConfiguration(UUID priceConfigurationId) {
     priceConfigurationService.deletePriceConfiguration(priceConfigurationId);
     return ResponseEntity.noContent().build();
   }
 
   @Override
-  public ResponseEntity<PriceConfiguration> getPriceConfigurationById(UUID priceConfigurationId) {
+  public ResponseEntity<PriceConfiguration> gamesGetPriceConfigurationById(UUID priceConfigurationId) {
     PriceConfiguration result =
         priceConfigurationService.getPriceConfigurationById(priceConfigurationId);
     return ResponseEntity.ok(result);
   }
 
   @Override
-  public ResponseEntity<PriceConfigurationListResponse> listPriceConfigurations(
+  public ResponseEntity<PriceConfigurationListResponse> gamesListPriceConfigurations(
       Integer page,
       Integer size,
       @Nullable UUID gameId,
       @Nullable UUID serviceTypeId,
       @Nullable UUID difficultyLevelId,
       @Nullable Boolean active) {
-
     PriceConfigurationListResponse result =
         priceConfigurationService.getPriceConfigurations(
             page, size, null, "asc", gameId, difficultyLevelId, serviceTypeId, active, null, null);
@@ -61,7 +60,7 @@ public class PriceConfigurationsController implements PriceConfigurationsApi {
   }
 
   @Override
-  public ResponseEntity<PriceConfiguration> updatePriceConfiguration(
+  public ResponseEntity<PriceConfiguration> gamesUpdatePriceConfiguration(
       UUID priceConfigurationId, UpdatePriceConfigurationRequest updatePriceConfigurationRequest) {
 
     PriceConfiguration result =

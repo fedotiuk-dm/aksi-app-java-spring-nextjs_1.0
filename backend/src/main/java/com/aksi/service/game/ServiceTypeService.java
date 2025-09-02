@@ -1,6 +1,5 @@
 package com.aksi.service.game;
 
-import java.util.List;
 import java.util.UUID;
 
 import com.aksi.api.game.dto.CreateServiceTypeRequest;
@@ -20,12 +19,6 @@ public interface ServiceTypeService {
   // Read operations
   ServiceType getServiceTypeById(UUID serviceTypeId);
 
-  ServiceType getServiceTypeByCode(String code);
-
-  List<ServiceType> getAllActiveServiceTypes();
-
-  List<ServiceType> getServiceTypesByGameId(UUID gameId);
-
   ServiceTypeListResponse getServiceTypes(
       Integer page,
       Integer size,
@@ -38,13 +31,6 @@ public interface ServiceTypeService {
   // Update operations
   ServiceType updateServiceType(UUID serviceTypeId, UpdateServiceTypeRequest request);
 
-  ServiceType setActive(UUID serviceTypeId, boolean active);
-
   // Delete operations
   void deleteServiceType(UUID serviceTypeId);
-
-  // Utility operations
-  List<ServiceType> searchServiceTypesByName(String searchTerm);
-
-  List<String> getDistinctCategories();
 }

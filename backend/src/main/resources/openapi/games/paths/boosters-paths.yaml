@@ -1,0 +1,131 @@
+paths:
+  /api/games/boosters:
+    get:
+      tags: [boosters]
+      operationId: gamesListBoosters
+      summary: Get all boosters
+      description: Get paginated list of boosters with optional filtering
+      parameters:
+        - $ref: "../../common.yaml#/components/parameters/PageNumber"
+        - $ref: "../../common.yaml#/components/parameters/PageSize"
+        - $ref: "../../common.yaml#/components/parameters/Search"
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+      responses:
+        "200":
+          description: List of boosters
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/boosters-schemas.yaml#/components/schemas/BoosterListResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+    post:
+      tags: [boosters]
+      operationId: gamesCreateBooster
+      summary: Create new booster
+      description: Create a new booster in the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/boosters-schemas.yaml#/components/schemas/CreateBoosterRequest"
+      responses:
+        "201":
+          description: Booster created
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/boosters-schemas.yaml#/components/schemas/Booster"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+  /api/games/boosters/{boosterId}:
+    get:
+      tags: [boosters]
+      operationId: gamesGetBoosterById
+      summary: Get booster by ID
+      description: Retrieve detailed information about a specific booster
+      parameters:
+        - name: boosterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Booster found
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/boosters-schemas.yaml#/components/schemas/Booster"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    put:
+      tags: [boosters]
+      operationId: gamesUpdateBooster
+      summary: Update booster
+      description: Update an existing booster's information
+      parameters:
+        - name: boosterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/boosters-schemas.yaml#/components/schemas/UpdateBoosterRequest"
+      responses:
+        "200":
+          description: Booster updated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/boosters-schemas.yaml#/components/schemas/Booster"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    delete:
+      tags: [boosters]
+      operationId: gamesDeleteBooster
+      summary: Delete booster
+      description: Permanently delete a booster from the system
+      parameters:
+        - name: boosterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Booster deleted
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"

@@ -4,14 +4,14 @@
  */
 
 import { useGameBoostingStore } from '../store/game-boosting-store';
-import { useListBoosters, useGetBoosterById } from '@api/game';
+import { useGamesListBoosters, useGamesGetBoosterById } from '@api/game';
 import type { Booster } from '@api/game';
 
 export const useBoosterOperations = () => {
   const { selectedBoosterId, setSelectedBooster } = useGameBoostingStore();
 
   // API hooks - only fetch when game is selected
-  const listBoostersQuery = useListBoosters(
+  const listBoostersQuery = useGamesListBoosters(
     {
       page: 0,
       size: 100,
@@ -24,7 +24,7 @@ export const useBoosterOperations = () => {
     }
   );
 
-  const selectedBoosterQuery = useGetBoosterById(selectedBoosterId || '', {
+  const selectedBoosterQuery = useGamesGetBoosterById(selectedBoosterId || '', {
     query: {
       enabled: !!selectedBoosterId,
     },

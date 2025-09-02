@@ -1,0 +1,101 @@
+openapi: 3.0.4
+info:
+  title: Auth API
+  description: Authentication API for dry cleaning management system operators
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: auth
+    description: Authentication and session management
+
+paths:
+  # Auth endpoints
+  /api/auth/login:
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1login"
+  /api/auth/logout:
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1logout"
+  /api/auth/session:
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1session"
+  /api/auth/sessions:
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1sessions"
+  /api/auth/sessions/{sessionId}:
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1sessions~1{sessionId}"
+  /api/auth/security/attempts:
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1attempts"
+  /api/auth/security/unlock/{username}:
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1unlock~1{username}"
+  /api/auth/security/unlock-ip/{ipAddress}:
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1unlock-ip~1{ipAddress}"
+  /api/auth/security/policy:
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1policy"
+  /api/auth/server-time:
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1server-time"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session cookie authentication
+
+  responses:
+    BadRequest:
+      $ref: "../common.yaml#/components/responses/BadRequest"
+    Unauthorized:
+      $ref: "../common.yaml#/components/responses/Unauthorized"
+    Forbidden:
+      $ref: "../common.yaml#/components/responses/Forbidden"
+    NotFound:
+      $ref: "../common.yaml#/components/responses/NotFound"
+    Conflict:
+      $ref: "../common.yaml#/components/responses/Conflict"
+    TooManyRequests:
+      $ref: "../common.yaml#/components/responses/TooManyRequests"
+
+  schemas:
+    # Import all schemas from auth-schemas.yaml
+    LoginRequest:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/LoginRequest"
+    LoginResponse:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/LoginResponse"
+    SessionInfo:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/SessionInfo"
+    UserSessionsResponse:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/UserSessionsResponse"
+    SessionDetail:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/SessionDetail"
+    SessionTerminationResponse:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/SessionTerminationResponse"
+    SecurityAttemptsResponse:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/SecurityAttemptsResponse"
+    SecurityOverview:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/SecurityOverview"
+    LoginAttempt:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/LoginAttempt"
+    BlockedUser:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/BlockedUser"
+    BlockedIp:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/BlockedIp"
+    SecurityPolicyResponse:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/SecurityPolicyResponse"
+    RateLimitingPolicy:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/RateLimitingPolicy"
+    PasswordPolicyInfo:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/PasswordPolicyInfo"
+    SessionPolicyInfo:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/SessionPolicyInfo"
+    ServerTimeResponse:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/ServerTimeResponse"
+
+security:
+  - cookieAuth: []

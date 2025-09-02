@@ -29,9 +29,8 @@ public class PriceConfigurationOperationUtils {
    * Soft delete a price configuration by setting it as inactive.
    *
    * @param priceConfigurationId Price configuration ID
-   * @return Updated price configuration
    */
-  public PriceConfiguration softDelete(UUID priceConfigurationId) {
+  public void softDelete(UUID priceConfigurationId) {
     log.info("Soft deleting price configuration: {}", priceConfigurationId);
 
     PriceConfigurationEntity entity = findEntityById(priceConfigurationId);
@@ -40,25 +39,7 @@ public class PriceConfigurationOperationUtils {
     PriceConfigurationEntity saved = priceConfigurationRepository.save(entity);
     log.info("Soft deleted price configuration: {}", priceConfigurationId);
 
-    return priceConfigurationMapper.toPriceConfigurationDto(saved);
-  }
-
-  /**
-   * Restore a soft deleted price configuration by setting it as active.
-   *
-   * @param priceConfigurationId Price configuration ID
-   * @return Restored price configuration
-   */
-  public PriceConfiguration restore(UUID priceConfigurationId) {
-    log.info("Restoring price configuration: {}", priceConfigurationId);
-
-    PriceConfigurationEntity entity = findEntityById(priceConfigurationId);
-    entity.setActive(true);
-
-    PriceConfigurationEntity saved = priceConfigurationRepository.save(entity);
-    log.info("Restored price configuration: {}", priceConfigurationId);
-
-    return priceConfigurationMapper.toPriceConfigurationDto(saved);
+    priceConfigurationMapper.toPriceConfigurationDto(saved);
   }
 
   /**
@@ -78,24 +59,6 @@ public class PriceConfigurationOperationUtils {
     log.info("Set price configuration {} active status to: {}", priceConfigurationId, active);
 
     return priceConfigurationMapper.toPriceConfigurationDto(saved);
-  }
-
-  /**
-   * Check if price configuration can be deleted (business rules validation).
-   *
-   * @param priceConfigurationId Price configuration ID
-   * @return true if can be deleted
-   */
-  public boolean canDelete(UUID priceConfigurationId) {
-    log.debug("Checking if price configuration can be deleted: {}", priceConfigurationId);
-
-    // Add business rules here:
-    // - Check if referenced by active orders
-    // - Check if referenced by active calculators
-    // - Check if it's the last configuration for a game/service type combination
-
-    // For now, always allow deletion (soft delete)
-    return true;
   }
 
   /**

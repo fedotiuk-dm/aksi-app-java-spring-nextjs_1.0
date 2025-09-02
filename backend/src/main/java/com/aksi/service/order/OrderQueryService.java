@@ -86,7 +86,8 @@ public class OrderQueryService {
       OrderStatus status,
       UUID branchId,
       Instant dateFrom,
-      Instant dateTo) {
+      Instant dateTo,
+      String orderNumber) {
 
     log.debug(
         "Listing orders - page: {}, size: {}, sortBy: {}, sortOrder: {}",
@@ -98,7 +99,7 @@ public class OrderQueryService {
     Pageable pageable = queryUtils.buildPageable(page, size, sortBy, sortOrder);
     String statusString = valueOf(status);
     Specification<OrderEntity> spec =
-        OrderSpecification.searchOrders(customerId, branchId, statusString, dateFrom, dateTo, null);
+        OrderSpecification.searchOrders(customerId, branchId, statusString, dateFrom, dateTo, orderNumber);
     return fetchToResponse(spec, pageable);
   }
 

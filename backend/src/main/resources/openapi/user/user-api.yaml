@@ -1,0 +1,101 @@
+openapi: 3.0.4
+info:
+  title: User API
+  description: User management API for dry cleaning service
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: users
+    description: User management operations
+
+paths:
+  # User endpoints
+  /api/users:
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users"
+  /api/users/{userId}:
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}"
+  /api/users/{userId}/password:
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}~1password"
+  /api/users/{userId}/activate:
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}~1activate"
+  /api/users/{userId}/deactivate:
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}~1deactivate"
+  /api/users/{userId}/roles:
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}~1roles"
+  /api/users/{userId}/branches:
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}~1branches"
+  /api/users/{userId}/permissions:
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}~1permissions"
+  /api/roles/{role}/permissions:
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1roles~1{role}~1permissions"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session cookie authentication
+
+  responses:
+    BadRequest:
+      $ref: "../common.yaml#/components/responses/BadRequest"
+    Unauthorized:
+      $ref: "../common.yaml#/components/responses/Unauthorized"
+    Forbidden:
+      $ref: "../common.yaml#/components/responses/Forbidden"
+    NotFound:
+      $ref: "../common.yaml#/components/responses/NotFound"
+    Conflict:
+      $ref: "../common.yaml#/components/responses/Conflict"
+
+  parameters:
+    PageNumber:
+      $ref: "../common.yaml#/components/parameters/PageNumber"
+    PageSize:
+      $ref: "../common.yaml#/components/parameters/PageSize"
+    SortBy:
+      $ref: "../common.yaml#/components/parameters/SortBy"
+    SortOrder:
+      $ref: "../common.yaml#/components/parameters/SortOrder"
+
+  schemas:
+    # Import all schemas from user-schemas.yaml
+    UserSummary:
+      $ref: "./schemas/user-schemas.yaml#/components/schemas/UserSummary"
+    UserDetail:
+      $ref: "./schemas/user-schemas.yaml#/components/schemas/UserDetail"
+    BranchAssignment:
+      $ref: "./schemas/user-schemas.yaml#/components/schemas/BranchAssignment"
+    CreateUserRequest:
+      $ref: "./schemas/user-schemas.yaml#/components/schemas/CreateUserRequest"
+    UpdateUserRequest:
+      $ref: "./schemas/user-schemas.yaml#/components/schemas/UpdateUserRequest"
+    ChangePasswordRequest:
+      $ref: "./schemas/user-schemas.yaml#/components/schemas/ChangePasswordRequest"
+    UpdateRolesRequest:
+      $ref: "./schemas/user-schemas.yaml#/components/schemas/UpdateRolesRequest"
+    UpdateBranchesRequest:
+      $ref: "./schemas/user-schemas.yaml#/components/schemas/UpdateBranchesRequest"
+    UserBranchesResponse:
+      $ref: "./schemas/user-schemas.yaml#/components/schemas/UserBranchesResponse"
+    UserListResponse:
+      $ref: "./schemas/user-schemas.yaml#/components/schemas/UserListResponse"
+
+    # Common schemas (if needed locally)
+    UserRole:
+      $ref: "../common.yaml#/components/schemas/UserRole"
+    PaginatedResponse:
+      $ref: "../common.yaml#/components/schemas/PaginatedResponse"
+
+security:
+  - cookieAuth: []

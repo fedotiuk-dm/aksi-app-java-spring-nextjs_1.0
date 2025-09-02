@@ -2,7 +2,7 @@ package com.aksi.repository;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.aksi.api.service.dto.ServiceCategoryType;
+import com.aksi.api.pricelist.dto.ServiceCategoryType;
 import com.aksi.domain.catalog.PriceListItemEntity;
 
 /** Specifications for PriceListItem queries */
@@ -17,7 +17,12 @@ public class PriceListItemSpecification {
   }
 
   public static Specification<PriceListItemEntity> hasCategory(ServiceCategoryType categoryCode) {
-    return SpecificationUtils.hasType(categoryCode);
+    return (root, query, criteriaBuilder) -> {
+      if (categoryCode == null) {
+        return criteriaBuilder.conjunction();
+      }
+      return criteriaBuilder.equal(root.get("categoryCode"), categoryCode);
+    };
   }
 
   /**

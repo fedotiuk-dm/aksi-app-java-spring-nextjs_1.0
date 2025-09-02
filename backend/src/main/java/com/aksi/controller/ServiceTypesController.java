@@ -24,7 +24,7 @@ public class ServiceTypesController implements ServiceTypesApi {
   private final ServiceTypeService serviceTypeService;
 
   @Override
-  public ResponseEntity<ServiceType> createServiceType(
+  public ResponseEntity<ServiceType> gamesCreateServiceType(
       CreateServiceTypeRequest createServiceTypeRequest) {
 
     ServiceType result = serviceTypeService.createServiceType(createServiceTypeRequest);
@@ -32,19 +32,19 @@ public class ServiceTypesController implements ServiceTypesApi {
   }
 
   @Override
-  public ResponseEntity<Void> deleteServiceType(UUID serviceTypeId) {
+  public ResponseEntity<Void> gamesDeleteServiceType(UUID serviceTypeId) {
     serviceTypeService.deleteServiceType(serviceTypeId);
     return ResponseEntity.noContent().build();
   }
 
   @Override
-  public ResponseEntity<ServiceType> getServiceTypeById(UUID serviceTypeId) {
+  public ResponseEntity<ServiceType> gamesGetServiceTypeById(UUID serviceTypeId) {
     ServiceType result = serviceTypeService.getServiceTypeById(serviceTypeId);
     return ResponseEntity.ok(result);
   }
 
   @Override
-  public ResponseEntity<ServiceTypeListResponse> listServiceTypes(
+  public ResponseEntity<ServiceTypeListResponse> gamesListServiceTypes(
       Integer page, Integer size, @Nullable UUID gameId, @Nullable Boolean active) {
 
     ServiceTypeListResponse result =
@@ -53,7 +53,7 @@ public class ServiceTypesController implements ServiceTypesApi {
   }
 
   @Override
-  public ResponseEntity<ServiceType> updateServiceType(
+  public ResponseEntity<ServiceType> gamesUpdateServiceType(
       UUID serviceTypeId, UpdateServiceTypeRequest updateServiceTypeRequest) {
 
     ServiceType result =

@@ -70,10 +70,8 @@ public class OrderCreationServiceImpl implements OrderCreationService {
 
     // Step 6: Map to DTO and enrich with calculated fields
     OrderInfo orderInfo = orderMapper.toOrderInfo(order);
-    if (orderInfo.getPricing() != null) {
-      orderInfo.getPricing().setPaidAmount(0); // New order has no payments
-      orderInfo.getPricing().setBalanceDue(order.getTotalAmount());
-    }
+    orderInfo.getPricing().setPaidAmount(0); // New order has no payments
+    orderInfo.getPricing().setBalanceDue(order.getTotalAmount());
     return orderInfo;
   }
 }

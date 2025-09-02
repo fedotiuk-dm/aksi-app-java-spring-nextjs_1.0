@@ -1,0 +1,155 @@
+components:
+  schemas:
+    Booster:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        discordUsername:
+          type: string
+          minLength: 1
+          maxLength: 100
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        contactEmail:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+          pattern: "^\\+?[1-9]\\d{1,14}$"
+        rating:
+          type: integer
+          minimum: 0
+          maximum: 500
+          description: Rating in basis points (100 = 1.0 star, 500 = 5.0 stars)
+        totalOrders:
+          type: integer
+          minimum: 0
+        successRate:
+          type: integer
+          minimum: 0
+          maximum: 10000
+          description: Success rate in basis points (10000 = 100.00%)
+        averageCompletionTime:
+          type: integer
+          minimum: 0
+          description: Average completion time in minutes
+        active:
+          type: boolean
+          default: true
+        verified:
+          type: boolean
+          default: false
+        lastActive:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - discordUsername
+        - displayName
+        - rating
+        - totalOrders
+        - successRate
+        - active
+        - verified
+
+    CreateBoosterRequest:
+      type: object
+      properties:
+        discordUsername:
+          type: string
+          minLength: 1
+          maxLength: 100
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        contactEmail:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+          pattern: "^\\+?[1-9]\\d{1,14}$"
+        verified:
+          type: boolean
+          default: false
+      required:
+        - discordUsername
+        - displayName
+        - contactEmail
+
+    UpdateBoosterRequest:
+      type: object
+      properties:
+        discordUsername:
+          type: string
+          minLength: 1
+          maxLength: 100
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        contactEmail:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+          pattern: "^\\+?[1-9]\\d{1,14}$"
+        active:
+          type: boolean
+        verified:
+          type: boolean
+      required: []
+
+    BoosterListResponse:
+      type: object
+      required:
+        - data
+        - totalElements
+        - totalPages
+        - size
+        - number
+        - numberOfElements
+        - first
+        - last
+        - empty
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Booster"
+          description: Page content
+        totalElements:
+          type: integer
+          format: int64
+          description: Total number of elements
+        totalPages:
+          type: integer
+          description: Total number of pages
+        size:
+          type: integer
+          description: Page size
+        number:
+          type: integer
+          description: Page number (0-based)
+        numberOfElements:
+          type: integer
+          description: Number of elements in current page
+        first:
+          type: boolean
+          description: Is first page
+        last:
+          type: boolean
+          description: Is last page
+        empty:
+          type: boolean
+          description: Is empty

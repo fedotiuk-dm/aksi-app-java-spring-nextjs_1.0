@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.4</version>
+        <version>3.5.5</version>
         <relativePath/>
     </parent>
 
@@ -19,14 +19,45 @@
     <description>Dry cleaning order management system with DDD architecture and cookie-based authentication</description>
 
     <properties>
+        <!-- Java Version -->
         <java.version>21</java.version>
+
+        <!-- Spring Boot Parent Version (inherited) -->
+        <spring-boot.version>3.5.5</spring-boot.version>
+
+        <!-- Main Dependencies Versions -->
         <mapstruct.version>1.6.3</mapstruct.version>
         <itext.version>5.5.13.4</itext.version>
         <zxing.version>3.5.3</zxing.version>
-        <springdoc.version>2.8.9</springdoc.version>
+        <springdoc.version>2.8.12</springdoc.version>
         <lombok.version>1.18.38</lombok.version>
-        <!-- JWT removed - using cookie-based auth -->
+
+        <!-- Security Dependencies Versions -->
+        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <commons-compress.version>1.28.0</commons-compress.version>
+        <pdfbox.version>3.0.5</pdfbox.version>
+        <jjwt.version>0.12.6</jjwt.version>
+        <jackson-databind.version>2.18.2</jackson-databind.version>
+        <snakeyaml.version>2.5</snakeyaml.version>
+        <testcontainers.version>1.21.3</testcontainers.version>
+        <liquibase.version>4.33.0</liquibase.version>
+        <liquibase-maven-plugin.version>4.30.0</liquibase-maven-plugin.version>
+
+        <!-- Maven Plugins Versions -->
         <maven-pmd-plugin.version>3.27.0</maven-pmd-plugin.version>
+        <openapi-generator-maven-plugin.version>7.15.0</openapi-generator-maven-plugin.version>
+        <spotless-maven-plugin.version>2.46.1</spotless-maven-plugin.version>
+        <google-java-format.version>1.27.0</google-java-format.version>
+        <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
+        <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+        <maven-versions-plugin.version>2.18.0</maven-versions-plugin.version>
+        <checkstyle.version>10.26.1</checkstyle.version>
+
+        <!-- Other Versions -->
+        <passay.version>1.6.5</passay.version>
+        <h2.version>2.3.232</h2.version>
+        <jjwt-api.version>0.2.7</jjwt-api.version>
+        <spring-security-test.version>3.5.0</spring-security-test.version>
     </properties>
 
     <dependencies>
@@ -34,20 +65,20 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.18.0</version>
+            <version>${commons-lang3.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.28.0</version>
+            <version>${commons-compress.version}</version>
         </dependency>
 
         <!-- Apache PDFBox for PDF generation -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
-            <version>3.0.5</version>
+            <version>${pdfbox.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -165,14 +196,14 @@
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
-            <version>0.2.6</version>
+            <version>${jjwt-api.version}</version>
         </dependency>
 
         <!-- JEXL for dynamic price calculation formulas -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-jexl3</artifactId>
-            <version>3.5.0</version>
+            <version>${spring-security-test.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -248,6 +279,7 @@
                 </excludes>
             </resource>
         </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -316,11 +348,27 @@
                 </executions>
             </plugin>
 
+            <!-- Maven Versions Plugin for dependency updates -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>${maven-versions-plugin.version}</version>
+                <configuration>
+                    <!-- Exclude snapshots and release candidates -->
+                    <allowSnapshots>false</allowSnapshots>
+                    <allowIncrementalUpdates>true</allowIncrementalUpdates>
+                    <allowMajorUpdates>false</allowMajorUpdates>
+                    <allowMinorUpdates>true</allowMinorUpdates>
+                    <!-- Generate backup files -->
+                    <generateBackupPoms>true</generateBackupPoms>
+                </configuration>
+            </plugin>
+
             <!-- OpenAPI Generator for DTO and controller generation -->
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>7.14.0</version>
+                <version>${openapi-generator-maven-plugin.version}</version>
                 <configuration>
                     <!-- Disable post-processing - using Spotless instead -->
                     <enablePostProcessFile>false</enablePostProcessFile>
@@ -337,7 +385,7 @@
                     </importMappings>
                 </configuration>
                 <executions>
-                    <!-- Auth API -->
+                    <!-- Generate Auth API -->
                     <execution>
                         <id>generate-auth-api</id>
                         <phase>generate-sources</phase>
@@ -345,7 +393,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/auth-api.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/auth/auth-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>com.aksi.api.auth</apiPackage>
                             <modelPackage>com.aksi.api.auth.dto</modelPackage>
@@ -360,127 +408,14 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
-
+                                <resolveFully>true</resolveFully>
+                                <generateExamples>false</generateExamples>
+                                <generateModelDocumentation>false</generateModelDocumentation>
                             </configOptions>
                         </configuration>
                     </execution>
 
-                    <!-- User API -->
-                    <execution>
-                        <id>generate-user-api</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/user-api.yaml</inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>com.aksi.api.user</apiPackage>
-                            <modelPackage>com.aksi.api.user.dto</modelPackage>
-                            <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
-                                <useTags>true</useTags>
-                                <dateLibrary>java8</dateLibrary>
-                                <java8>true</java8>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <performBeanValidation>true</performBeanValidation>
-                                <serializableModel>true</serializableModel>
-                                <delegatePattern>false</delegatePattern>
-                                <skipDefaultInterface>false</skipDefaultInterface>
-
-                            </configOptions>
-                        </configuration>
-                    </execution>
-
-                    <!-- Customer API -->
-                    <execution>
-                        <id>generate-customer-api</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/customer-api.yaml</inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>com.aksi.api.customer</apiPackage>
-                            <modelPackage>com.aksi.api.customer.dto</modelPackage>
-                            <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
-                                <useTags>true</useTags>
-                                <dateLibrary>java8</dateLibrary>
-                                <java8>true</java8>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <performBeanValidation>true</performBeanValidation>
-                                <serializableModel>true</serializableModel>
-                                <delegatePattern>false</delegatePattern>
-                                <skipDefaultInterface>false</skipDefaultInterface>
-
-                            </configOptions>
-                        </configuration>
-                    </execution>
-                    <!-- File API -->
-                    <execution>
-                        <id>generate-file-api</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/file-api.yaml</inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>com.aksi.api.file</apiPackage>
-                            <modelPackage>com.aksi.api.file.dto</modelPackage>
-                            <globalProperties>
-                                <skipFormModel>true</skipFormModel>
-                                <skipOperationExample>true</skipOperationExample>
-                            </globalProperties>
-                            <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
-                                <useTags>true</useTags>
-                                <dateLibrary>java8</dateLibrary>
-                                <java8>true</java8>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <performBeanValidation>true</performBeanValidation>
-                                <serializableModel>true</serializableModel>
-                                <delegatePattern>false</delegatePattern>
-                                <skipDefaultInterface>false</skipDefaultInterface>
-
-                            </configOptions>
-                        </configuration>
-                    </execution>
-
-                    <!-- Price List API -->
-                    <execution>
-                        <id>generate-price-list-api</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/price-list-api.yaml</inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>com.aksi.api.service</apiPackage>
-                            <modelPackage>com.aksi.api.service.dto</modelPackage>
-                            <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
-                                <useTags>true</useTags>
-                                <dateLibrary>java8</dateLibrary>
-                                <java8>true</java8>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <performBeanValidation>true</performBeanValidation>
-                                <serializableModel>true</serializableModel>
-                                <delegatePattern>false</delegatePattern>
-                                <skipDefaultInterface>false</skipDefaultInterface>
-
-                            </configOptions>
-                        </configuration>
-                    </execution>
-
-                    <!-- Cart API -->
+                    <!-- Generate Cart API -->
                     <execution>
                         <id>generate-cart-api</id>
                         <phase>generate-sources</phase>
@@ -488,7 +423,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/cart-api.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/cart/cart-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>com.aksi.api.cart</apiPackage>
                             <modelPackage>com.aksi.api.cart.dto</modelPackage>
@@ -503,142 +438,22 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
-
-                            </configOptions>
-                        </configuration>
-                    </execution>
-
-                    <!-- Branch API -->
-                    <execution>
-                        <id>generate-branch-api</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/branch-api.yaml</inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>com.aksi.api.branch</apiPackage>
-                            <modelPackage>com.aksi.api.branch.dto</modelPackage>
-                            <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
-                                <useTags>true</useTags>
-                                <dateLibrary>java8</dateLibrary>
-                                <java8>true</java8>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <performBeanValidation>true</performBeanValidation>
-                                <serializableModel>true</serializableModel>
-                                <delegatePattern>false</delegatePattern>
-                                <skipDefaultInterface>false</skipDefaultInterface>
-
-                            </configOptions>
-                        </configuration>
-                    </execution>
-
-                    <!-- Order API -->
-                    <execution>
-                        <id>generate-order-api</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/order-api.yaml</inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>com.aksi.api.order</apiPackage>
-                            <modelPackage>com.aksi.api.order.dto</modelPackage>
-                            <globalProperties>
-                                <skipFormModel>true</skipFormModel>
-                                <skipOperationExample>true</skipOperationExample>
-                            </globalProperties>
-                            <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
-                                <useTags>true</useTags>
-                                <dateLibrary>java8</dateLibrary>
-                                <java8>true</java8>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <performBeanValidation>true</performBeanValidation>
-                                <serializableModel>true</serializableModel>
-                                <delegatePattern>false</delegatePattern>
-                                <skipDefaultInterface>false</skipDefaultInterface>
-
-                            </configOptions>
-                        </configuration>
-                    </execution>
-
-                    <!-- Pricing API -->
-                    <execution>
-                        <id>generate-pricing-api</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/pricing-api.yaml</inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>com.aksi.api.pricing</apiPackage>
-                            <modelPackage>com.aksi.api.pricing.dto</modelPackage>
-                            <modelNameMappings>
-                                <modelNameMapping>PriceModifier=PriceModifierDto</modelNameMapping>
-                                <modelNameMapping>Discount=DiscountDto</modelNameMapping>
-                            </modelNameMappings>
-                            <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
-                                <useTags>true</useTags>
-                                <dateLibrary>java8</dateLibrary>
-                                <java8>true</java8>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <performBeanValidation>true</performBeanValidation>
-                                <serializableModel>true</serializableModel>
-                                <delegatePattern>false</delegatePattern>
-                                <skipDefaultInterface>false</skipDefaultInterface>
-
-                            </configOptions>
-                        </configuration>
-                    </execution>
-
-                    <!-- Receipt API -->
-                    <execution>
-                        <id>generate-receipt-api</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/receipt-api.yaml</inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>com.aksi.api.receipt</apiPackage>
-                            <modelPackage>com.aksi.api.receipt.dto</modelPackage>
-                            <configOptions>
-                                <interfaceOnly>true</interfaceOnly>
-                                <useTags>true</useTags>
-                                <dateLibrary>java8</dateLibrary>
-                                <java8>true</java8>
-                                <useSpringBoot3>true</useSpringBoot3>
-                                <useBeanValidation>true</useBeanValidation>
-                                <performBeanValidation>true</performBeanValidation>
-                                <serializableModel>true</serializableModel>
-                                <delegatePattern>false</delegatePattern>
-                                <skipDefaultInterface>false</skipDefaultInterface>
-                                                       <resolveFully>true</resolveFully>
-         <generateExamples>false</generateExamples>
+                                <resolveFully>true</resolveFully>
+                                <generateExamples>false</generateExamples>
                                 <generateModelDocumentation>false</generateModelDocumentation>
                             </configOptions>
                         </configuration>
                     </execution>
 
-                    <!-- Game Services API -->
+                    <!-- Generate Game API -->
                     <execution>
-                        <id>generate-game-services-api</id>
+                        <id>generate-game-api</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi/game-services-api.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/games/games-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>com.aksi.api.game</apiPackage>
                             <modelPackage>com.aksi.api.game.dto</modelPackage>
@@ -653,7 +468,258 @@
                                 <serializableModel>true</serializableModel>
                                 <delegatePattern>false</delegatePattern>
                                 <skipDefaultInterface>false</skipDefaultInterface>
+                                <resolveFully>true</resolveFully>
+                                <generateExamples>false</generateExamples>
+                                <generateModelDocumentation>false</generateModelDocumentation>
+                            </configOptions>
+                        </configuration>
+                    </execution>
 
+                    <!-- Generate Branch API -->
+                    <execution>
+                        <id>generate-branch-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/branch/branch-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.branch</apiPackage>
+                            <modelPackage>com.aksi.api.branch.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
+                                <resolveFully>true</resolveFully>
+                                <generateExamples>false</generateExamples>
+                                <generateModelDocumentation>false</generateModelDocumentation>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Generate User API -->
+                    <execution>
+                        <id>generate-user-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/user/user-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.user</apiPackage>
+                            <modelPackage>com.aksi.api.user.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
+                                <resolveFully>true</resolveFully>
+                                <generateExamples>false</generateExamples>
+                                <generateModelDocumentation>false</generateModelDocumentation>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Generate Customer API -->
+                    <execution>
+                        <id>generate-customer-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/customer/customer-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.customer</apiPackage>
+                            <modelPackage>com.aksi.api.customer.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
+                                <resolveFully>true</resolveFully>
+                                <generateExamples>false</generateExamples>
+                                <generateModelDocumentation>false</generateModelDocumentation>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Generate Order API -->
+                    <execution>
+                        <id>generate-order-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/order/order-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.order</apiPackage>
+                            <modelPackage>com.aksi.api.order.dto</modelPackage>
+                            <modelNameMappings>
+                                <modelNameMapping>ItemModifier=OrderItemModifier</modelNameMapping>
+                                <modelNameMapping>ModifierDetail=OrderModifierDetail</modelNameMapping>
+                            </modelNameMappings>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
+                                <resolveFully>true</resolveFully>
+                                <generateExamples>false</generateExamples>
+                                <generateModelDocumentation>false</generateModelDocumentation>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Generate Pricing API -->
+                    <execution>
+                        <id>generate-pricing-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/pricing/pricing-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.pricing</apiPackage>
+                            <modelPackage>com.aksi.api.pricing.dto</modelPackage>
+                            <modelNameMappings>
+                                <modelNameMapping>PriceModifier=PriceModifierDto</modelNameMapping>
+                                <modelNameMapping>Discount=DiscountDto</modelNameMapping>
+                                <modelNameMapping>ItemCharacteristics=PricingItemCharacteristics</modelNameMapping>
+                            </modelNameMappings>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
+                                <resolveFully>true</resolveFully>
+                                <generateExamples>false</generateExamples>
+                                <generateModelDocumentation>false</generateModelDocumentation>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Generate Price List API -->
+                    <execution>
+                        <id>generate-price-list-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/price-list/price-list-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.pricelist</apiPackage>
+                            <modelPackage>com.aksi.api.pricelist.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
+                                <resolveFully>true</resolveFully>
+                                <generateExamples>false</generateExamples>
+                                <generateModelDocumentation>false</generateModelDocumentation>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Generate Receipt API -->
+                    <execution>
+                        <id>generate-receipt-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/receipt/receipt-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.receipt</apiPackage>
+                            <modelPackage>com.aksi.api.receipt.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
+                                <resolveFully>true</resolveFully>
+                                <generateExamples>false</generateExamples>
+                                <generateModelDocumentation>false</generateModelDocumentation>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Generate File API -->
+                    <execution>
+                        <id>generate-file-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/file/file-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.file</apiPackage>
+                            <modelPackage>com.aksi.api.file.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
+                                <resolveFully>true</resolveFully>
+                                <generateExamples>false</generateExamples>
+                                <generateModelDocumentation>false</generateModelDocumentation>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -665,8 +731,21 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>2.44.5</version>
+                <version>${spotless-maven-plugin.version}</version>
                 <configuration>
+                    <!-- Enable up-to-date checking with proper index location -->
+                    <upToDateChecking>
+                        <enabled>true</enabled>
+                        <indexFile>${project.build.directory}/spotless-index</indexFile>
+                    </upToDateChecking>
+                    <!-- Optimize performance for large projects -->
+                    <formats>
+                        <format>
+                            <includes>
+                                <include>**/*.java</include>
+                            </includes>
+                        </format>
+                    </formats>
                     <java>
                         <!-- Include all project Java files + generated OpenAPI -->
                         <includes>
@@ -676,7 +755,7 @@
                         </includes>
                         <!-- Google Java Format -->
                         <googleJavaFormat>
-                            <version>1.27.0</version>
+                            <version>${google-java-format.version}</version>
                             <style>GOOGLE</style>
                         </googleJavaFormat>
                         <!-- Import order (must be BEFORE removeUnusedImports) -->
@@ -739,7 +818,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>${maven-checkstyle-plugin.version}</version>
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
                     <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
@@ -755,7 +834,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>10.26.1</version>
+                        <version>${checkstyle.version}</version>
                     </dependency>
                 </dependencies>
                 <executions>

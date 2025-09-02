@@ -1,9 +1,11 @@
 package com.aksi.service.pricing.calculation;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
 import com.aksi.api.pricing.dto.PriceCalculationItem;
-import com.aksi.api.service.dto.PriceListItemInfo;
 import com.aksi.service.pricing.util.PricingQueryUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,9 @@ public class BaseAmountCalculator {
   public BaseCalculationResult calculate(
       PriceCalculationItem item, PriceListItemInfo priceListItem) {
     // Step 1 & 2: Determine base price with color adjustments
-    String color = item.getCharacteristics() != null ? item.getCharacteristics().getColor() : null;
+    String color = Optional.ofNullable(item.getCharacteristics())
+        .map(characteristics -> characteristics.getColor())
+        .orElse(null);
     int basePrice = utils.determineBasePrice(priceListItem, color);
     int baseAmount = basePrice * item.getQuantity();
 

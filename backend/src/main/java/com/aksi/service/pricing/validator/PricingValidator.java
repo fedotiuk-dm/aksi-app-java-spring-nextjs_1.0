@@ -1,6 +1,7 @@
 package com.aksi.service.pricing.validator;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public class PricingValidator {
       throw new BadRequestException("Price calculation request is required");
     }
 
-    if (request.getItems() == null || request.getItems().isEmpty()) {
+    if (request.getItems().isEmpty()) {
       throw new BadRequestException("Price calculation request must contain at least one item");
     }
 
@@ -160,7 +161,7 @@ public class PricingValidator {
       throw new BadRequestException("Price modifier DTO is required");
     }
 
-    if (dto.getCode() == null || dto.getCode().trim().isEmpty()) {
+    if (dto.getCode().trim().isEmpty()) {
       throw new BadRequestException("Price modifier code is required");
     }
 
@@ -174,7 +175,7 @@ public class PricingValidator {
               + dto.getCode());
     }
 
-    if (dto.getName() == null || dto.getName().trim().isEmpty()) {
+    if (dto.getName().trim().isEmpty()) {
       throw new BadRequestException("Price modifier name is required");
     }
 
@@ -205,7 +206,7 @@ public class PricingValidator {
       throw new BadRequestException("Discount DTO is required");
     }
 
-    if (dto.getCode() == null || dto.getCode().trim().isEmpty()) {
+    if (dto.getCode().trim().isEmpty()) {
       throw new BadRequestException("Discount code is required");
     }
 
@@ -219,7 +220,7 @@ public class PricingValidator {
               + dto.getCode());
     }
 
-    if (dto.getName() == null || dto.getName().trim().isEmpty()) {
+    if (dto.getName().trim().isEmpty()) {
       throw new BadRequestException("Discount name is required");
     }
 
@@ -236,9 +237,11 @@ public class PricingValidator {
           "Discount percentage must be between 0 and 100: " + dto.getPercentage());
     }
 
-    if (dto.getDescription() != null && dto.getDescription().length() > 1000) {
-      throw new BadRequestException("Discount description too long");
-    }
+    Optional.ofNullable(dto.getDescription())
+        .filter(desc -> desc.length() > 1000)
+        .ifPresent(desc -> {
+          throw new BadRequestException("Discount description too long");
+        });
   }
 
   /** Validate DiscountDto for update. */
@@ -254,22 +257,21 @@ public class PricingValidator {
     }
 
     switch (type) {
-      case PERCENTAGE:
+      case PERCENTAGE -> {
         if (value < 0 || value > 10000) { // 10000 basis points = 100%
           throw new BadRequestException(
               "Percentage modifier value must be between 0 and 10000 basis points: " + value);
         }
-        break;
-      case FIXED:
+      }
+      case FIXED -> {
         if (value < 0) {
           throw new BadRequestException("Fixed modifier value must be non-negative: " + value);
         }
         if (value > 1000000) { // 10000 UAH max
           throw new BadRequestException("Fixed modifier value too large: " + value);
         }
-        break;
-      default:
-        log.warn("Unknown modifier type: {}", type);
+      }
+      default -> log.warn("Unknown modifier type: {}", type);
     }
   }
 

@@ -5,15 +5,15 @@
 
 import { useGameBoostingStore } from '../store/game-boosting-store';
 import {
-  useCalculatePrice,
-  useListGames,
-  useListServiceTypes,
-  useListDifficultyLevels,
+  useCalculateGamePrice,
+  useGamesListGames,
+  useGamesListServiceTypes,
+  useGamesListDifficultyLevels,
 } from '@api/game';
 
 // Hook for fetching available games
 export const useAvailableGames = () => {
-  const gamesQuery = useListGames(undefined, {
+  const gamesQuery = useGamesListGames(undefined, {
     query: { enabled: true },
   });
 
@@ -29,7 +29,7 @@ export const useAvailableGames = () => {
 // Hook for fetching available service types for a game
 export const useAvailableServiceTypes = (gameId?: string) => {
   const params = gameId ? { gameId } : undefined;
-  const serviceTypesQuery = useListServiceTypes(params, {
+  const serviceTypesQuery = useGamesListServiceTypes(params, {
     query: { enabled: !!gameId },
   });
 
@@ -43,7 +43,7 @@ export const useAvailableServiceTypes = (gameId?: string) => {
 // Hook for fetching available difficulty levels for a game
 export const useAvailableDifficultyLevels = (gameId?: string) => {
   const params = gameId ? { gameId } : undefined;
-  const difficultyLevelsQuery = useListDifficultyLevels(params, {
+  const difficultyLevelsQuery = useGamesListDifficultyLevels(params, {
     query: { enabled: !!gameId },
   });
 
@@ -69,7 +69,7 @@ export const useCalculatorOperations = () => {
   } = useGameBoostingStore();
 
   // API hooks
-  const calculateMutation = useCalculatePrice();
+  const calculateMutation = useCalculateGamePrice();
   const { defaultGame } = useAvailableGames();
   const { serviceTypes } = useAvailableServiceTypes(selectedGameId || undefined);
   const { difficultyLevels } = useAvailableDifficultyLevels(selectedGameId || undefined);

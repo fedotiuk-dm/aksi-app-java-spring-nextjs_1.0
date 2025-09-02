@@ -101,33 +101,33 @@ export const deleteDiscountParams = zod.object({
  * Calculate price for one or more items with modifiers
  * @summary Calculate price for items
  */
-export const calculatePrice1BodyItemsMax = 2147483647;
-export const calculatePrice1BodyGlobalModifiersDiscountPercentageMin = 0;
+export const calculatePriceBodyItemsMax = 2147483647;
+export const calculatePriceBodyGlobalModifiersDiscountPercentageMin = 0;
 
-export const calculatePrice1BodyGlobalModifiersDiscountPercentageMax = 100;
+export const calculatePriceBodyGlobalModifiersDiscountPercentageMax = 100;
 
 
-export const calculatePrice1Body = zod.object({
+export const calculatePriceBody = zod.object({
   "items": zod.array(zod.object({
   "priceListItemId": zod.uuid().describe('Price list item ID'),
   "quantity": zod.number().min(1).describe('Quantity (in units)'),
   "characteristics": zod.object({
-  "material": zod.string().optional().describe('Material type'),
-  "color": zod.string().optional().describe('Item color'),
-  "filler": zod.string().optional().describe('Filler type (for padded items)'),
-  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional(),
-  "wearLevel": zod.enum(['10', '30', '50', '75']).optional()
-}).optional(),
+  "material": zod.string().optional().describe('Material type (cotton, silk, wool, etc.)'),
+  "color": zod.string().optional().describe('Item color (affects processing and pricing)'),
+  "filler": zod.string().optional().describe('Filler type for items with filling'),
+  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional().describe('Filler condition assessment'),
+  "wearLevel": zod.union([zod.literal(10),zod.literal(30),zod.literal(50),zod.literal(75)]).optional().describe('Item wear level assessment')
+}).optional().describe('Item characteristics shared across cart, order, and pricing domains'),
   "modifierCodes": zod.array(zod.string()).optional().describe('Modifier codes to apply')
-})).min(1).max(calculatePrice1BodyItemsMax).describe('Items to calculate price for'),
+})).min(1).max(calculatePriceBodyItemsMax).describe('Items to calculate price for'),
   "globalModifiers": zod.object({
   "urgencyType": zod.enum(['NORMAL', 'EXPRESS_48H', 'EXPRESS_24H']).optional().describe('Urgency type: * `NORMAL` - Standard processing (0%) * `EXPRESS_48H` - Express 48 hours (+50%) * `EXPRESS_24H` - Express 24 hours (+100%) '),
   "discountType": zod.enum(['NONE', 'EVERCARD', 'SOCIAL_MEDIA', 'MILITARY', 'OTHER']).optional().describe('Discount type: * `NONE` - No discount (0%) * `EVERCARD` - Evercard discount (10%) * `SOCIAL_MEDIA` - Social media discount (5%) * `MILITARY` - Military discount (10%) * `OTHER` - Other discount (requires discountPercentage) '),
-  "discountPercentage": zod.number().min(calculatePrice1BodyGlobalModifiersDiscountPercentageMin).max(calculatePrice1BodyGlobalModifiersDiscountPercentageMax).optional().describe('Discount percentage (required for OTHER type)')
+  "discountPercentage": zod.number().min(calculatePriceBodyGlobalModifiersDiscountPercentageMin).max(calculatePriceBodyGlobalModifiersDiscountPercentageMax).optional().describe('Discount percentage (required for OTHER type)')
 }).optional()
 })
 
-export const calculatePrice1Response = zod.object({
+export const calculatePriceResponse = zod.object({
   "items": zod.array(zod.object({
   "priceListItemId": zod.uuid(),
   "itemName": zod.string().describe('Item name from price list'),

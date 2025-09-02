@@ -1,7 +1,7 @@
 package com.aksi.domain.catalog;
 
-import com.aksi.api.service.dto.ServiceCategoryType;
-import com.aksi.api.service.dto.UnitOfMeasure;
+import com.aksi.api.pricelist.dto.ServiceCategoryType;
+import com.aksi.api.pricelist.dto.UnitOfMeasure;
 import com.aksi.domain.common.BaseEntity;
 
 import jakarta.persistence.Column;

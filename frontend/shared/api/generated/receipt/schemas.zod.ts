@@ -56,7 +56,7 @@ export const emailOrderReceiptParams = zod.object({
 })
 
 export const emailOrderReceiptBody = zod.object({
-  "email": zod.string().optional().describe('Email address (if not specified, use customer\'s email)'),
+  "email": zod.email().optional().describe('Email address (if not specified, use customer\'s email)'),
   "subject": zod.string().optional().describe('Email subject'),
   "message": zod.string().optional().describe('Additional message')
 })

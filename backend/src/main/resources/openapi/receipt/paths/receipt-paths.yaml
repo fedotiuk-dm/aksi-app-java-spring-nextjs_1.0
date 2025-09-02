@@ -1,0 +1,137 @@
+paths:
+  /api/receipts/order/{orderId}:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID to generate receipt for
+        schema:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+
+    get:
+      operationId: generateOrderReceipt
+      summary: Generate receipt for order
+      description: Generate PDF receipt for existing order
+      tags:
+        - receipts
+      parameters:
+        - name: locale
+          in: query
+          required: false
+          description: Locale for receipt generation (e.g. uk, en)
+          schema:
+            type: string
+            default: "uk"
+            example: "uk"
+      responses:
+        "200":
+          description: Receipt generated successfully
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              description: Content disposition header for file download
+              schema:
+                type: string
+            Content-Type:
+              description: Content type
+              schema:
+                type: string
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+  /api/receipts/preview:
+    post:
+      operationId: generateReceiptPreview
+      summary: Generate receipt preview
+      description: Generate PDF receipt preview from provided data (without creating order)
+      tags:
+        - receipts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/receipt-schemas.yaml#/components/schemas/ReceiptPreviewRequest"
+      responses:
+        "200":
+          description: Receipt preview generated successfully
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              description: Content disposition header
+              schema:
+                type: string
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+
+  /api/receipts/order/{orderId}/email:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      operationId: emailOrderReceipt
+      summary: Email receipt to customer
+      description: Generate and email receipt to customer
+      tags:
+        - receipts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/receipt-schemas.yaml#/components/schemas/EmailReceiptRequest"
+      responses:
+        "200":
+          description: Receipt emailed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/receipt-schemas.yaml#/components/schemas/EmailReceiptResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+
+  /api/receipts/templates:
+    get:
+      operationId: getReceiptTemplates
+      summary: Get available receipt templates
+      description: Get list of available receipt templates
+      tags:
+        - receipts
+      responses:
+        "200":
+          description: Templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "../schemas/receipt-schemas.yaml#/components/schemas/ReceiptTemplate"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"

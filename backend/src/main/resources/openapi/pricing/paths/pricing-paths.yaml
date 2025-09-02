@@ -1,0 +1,277 @@
+paths:
+  /api/pricing/calculate:
+    post:
+      operationId: calculatePrice
+      summary: Calculate price for items
+      description: Calculate price for one or more items with modifiers
+      tags:
+        - pricing
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/pricing-schemas.yaml#/components/schemas/PriceCalculationRequest"
+      responses:
+        "200":
+          description: Price calculation result
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/pricing-schemas.yaml#/components/schemas/PriceCalculationResponse"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/pricing/modifiers:
+    get:
+      operationId: listPriceModifiers
+      summary: List available price modifiers
+      description: Get list of all available price modifiers
+      tags:
+        - pricing
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: categoryCode
+          in: query
+          description: Filter by category code
+          required: false
+          schema:
+            $ref: "../../common.yaml#/components/schemas/ServiceCategoryType"
+        - $ref: "../../common.yaml#/components/parameters/SortBy"
+        - $ref: "../../common.yaml#/components/parameters/SortOrder"
+        - name: active
+          in: query
+          description: Filter by active status
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        "200":
+          description: List of price modifiers
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/pricing-schemas.yaml#/components/schemas/PriceModifiersResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/pricing/discounts:
+    get:
+      operationId: listDiscounts
+      summary: List available discounts
+      description: Get list of all available discount types
+      tags:
+        - pricing
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: active
+          in: query
+          description: Filter by active status
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - $ref: "../../common.yaml#/components/parameters/SortBy"
+        - $ref: "../../common.yaml#/components/parameters/SortOrder"
+      responses:
+        "200":
+          description: List of discounts
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/pricing-schemas.yaml#/components/schemas/DiscountsResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  # Admin endpoints for price modifiers
+  /api/pricing/admin/modifiers:
+    post:
+      operationId: createPriceModifier
+      summary: Create a new price modifier
+      description: Create a new price modifier (admin only)
+      tags:
+        - pricing
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/pricing-schemas.yaml#/components/schemas/PriceModifier"
+      responses:
+        "201":
+          description: Price modifier created
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/pricing-schemas.yaml#/components/schemas/PriceModifier"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+  /api/pricing/admin/modifiers/{code}:
+    put:
+      operationId: updatePriceModifier
+      summary: Update price modifier
+      description: Update an existing price modifier (admin only)
+      tags:
+        - pricing
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: code
+          in: path
+          description: Price modifier code
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/pricing-schemas.yaml#/components/schemas/PriceModifier"
+      responses:
+        "200":
+          description: Price modifier updated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/pricing-schemas.yaml#/components/schemas/PriceModifier"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    delete:
+      operationId: deletePriceModifier
+      summary: Delete price modifier
+      description: Delete a price modifier (admin only)
+      tags:
+        - pricing
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: code
+          in: path
+          description: Price modifier code
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Price modifier deleted
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  # Admin endpoints for discounts
+  /api/pricing/admin/discounts:
+    post:
+      operationId: createDiscount
+      summary: Create a new discount
+      description: Create a new discount (admin only)
+      tags:
+        - pricing
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/pricing-schemas.yaml#/components/schemas/Discount"
+      responses:
+        "201":
+          description: Discount created
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/pricing-schemas.yaml#/components/schemas/Discount"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+  /api/pricing/admin/discounts/{code}:
+    put:
+      operationId: updateDiscount
+      summary: Update discount
+      description: Update an existing discount (admin only)
+      tags:
+        - pricing
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: code
+          in: path
+          description: Discount code
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/pricing-schemas.yaml#/components/schemas/Discount"
+      responses:
+        "200":
+          description: Discount updated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/pricing-schemas.yaml#/components/schemas/Discount"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    delete:
+      operationId: deleteDiscount
+      summary: Delete discount
+      description: Delete a discount (admin only)
+      tags:
+        - pricing
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: code
+          in: path
+          description: Discount code
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Discount deleted
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"

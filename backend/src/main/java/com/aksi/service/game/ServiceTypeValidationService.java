@@ -8,8 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aksi.api.game.dto.CreateServiceTypeRequest;
 import com.aksi.api.game.dto.UpdateServiceTypeRequest;
 import com.aksi.exception.ConflictException;
-import com.aksi.repository.GameRepository;
-import com.aksi.repository.ServiceTypeRepository;
+import com.aksi.service.game.util.EntityValidationUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ServiceTypeValidationService {
 
-  private final ServiceTypeRepository serviceTypeRepository;
-  private final GameRepository gameRepository;
+  private final EntityValidationUtils entityValidationUtils;
 
   /**
    * Validate service type creation request.
@@ -37,10 +35,7 @@ public class ServiceTypeValidationService {
     log.debug("Validating service type creation request: {}", request.getCode());
 
     // Validate game exists
-    validateGameExists(request.getGameId());
-
-    // Validate code uniqueness
-    validateCodeUniqueness(request.getCode(), null);
+    entityValidationUtils.validateGameExists(request.getGameId());
 
     // Validate sort order
     validateSortOrder(request.getSortOrder());
@@ -57,45 +52,10 @@ public class ServiceTypeValidationService {
     log.debug("Validating service type update request for id: {}", serviceTypeId);
 
     // Validate game exists
-    validateGameExists(request.getGameId());
-
-    // Validate code uniqueness (excluding current service type)
-    validateCodeUniqueness(request.getCode(), serviceTypeId);
+    entityValidationUtils.validateGameExists(request.getGameId());
 
     // Validate sort order
     validateSortOrder(request.getSortOrder());
-  }
-
-  /**
-   * Validate that game exists.
-   *
-   * @param gameId Game ID
-   * @throws ConflictException if game not found
-   */
-  private void validateGameExists(UUID gameId) {
-    if (!gameRepository.existsById(gameId)) {
-      log.error("Game not found with id: {}", gameId);
-      throw new ConflictException("Game not found with id: " + gameId);
-    }
-  }
-
-  /**
-   * Validate code uniqueness.
-   *
-   * @param code Service type code
-   * @param excludeServiceTypeId Service type ID to exclude from uniqueness check (for updates)
-   * @throws ConflictException if code already exists
-   */
-  private void validateCodeUniqueness(String code, UUID excludeServiceTypeId) {
-    boolean exists =
-        excludeServiceTypeId != null
-            ? serviceTypeRepository.existsByCodeAndIdNot(code, excludeServiceTypeId)
-            : serviceTypeRepository.existsByCode(code);
-
-    if (exists) {
-      log.error("Service type with code '{}' already exists", code);
-      throw new ConflictException("Service type with code '" + code + "' already exists");
-    }
   }
 
   /**
@@ -108,35 +68,6 @@ public class ServiceTypeValidationService {
     if (sortOrder != null && sortOrder < 0) {
       log.error("Sort order must be non-negative, got: {}", sortOrder);
       throw new ConflictException("Sort order must be non-negative");
-    }
-  }
-
-  /**
-   * Validate that service type can be deleted (no dependencies).
-   *
-   * @param serviceTypeId Service type ID
-   * @throws ConflictException if service type cannot be deleted
-   */
-  public void validateForDelete(UUID serviceTypeId) {
-    log.debug("Validating service type deletion for id: {}", serviceTypeId);
-
-    // Check if service type has active price configurations
-    if (serviceTypeRepository.hasActivePriceConfigurations(serviceTypeId)) {
-      log.error("Cannot delete service type with active price configurations: {}", serviceTypeId);
-      throw new ConflictException("Cannot delete service type with active price configurations");
-    }
-  }
-
-  /**
-   * Validate that service type exists.
-   *
-   * @param serviceTypeId Service type ID
-   * @throws ConflictException if service type not found
-   */
-  public void validateServiceTypeExists(UUID serviceTypeId) {
-    if (!serviceTypeRepository.existsById(serviceTypeId)) {
-      log.error("Service type not found with id: {}", serviceTypeId);
-      throw new ConflictException("Service type not found with id: " + serviceTypeId);
     }
   }
 }

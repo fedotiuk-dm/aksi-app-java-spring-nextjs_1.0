@@ -24,25 +24,25 @@ public class GamesController implements GamesApi {
   private final GameService gameService;
 
   @Override
-  public ResponseEntity<Game> createGame(CreateGameRequest createGameRequest) {
+  public ResponseEntity<Game> gamesCreateGame(CreateGameRequest createGameRequest) {
     Game result = gameService.createGame(createGameRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(result);
   }
 
   @Override
-  public ResponseEntity<Void> deleteGame(UUID gameId) {
+  public ResponseEntity<Void> gamesDeleteGame(UUID gameId) {
     gameService.deleteGame(gameId);
     return ResponseEntity.noContent().build();
   }
 
   @Override
-  public ResponseEntity<Game> getGameById(UUID gameId) {
+  public ResponseEntity<Game> gamesGetGameById(UUID gameId) {
     Game result = gameService.getGameById(gameId);
     return ResponseEntity.ok(result);
   }
 
   @Override
-  public ResponseEntity<GameListResponse> listGames(
+  public ResponseEntity<GameListResponse> gamesListGames(
       Integer page, Integer size, @Nullable String search, @Nullable Boolean active) {
 
     GameListResponse result = gameService.listGames(page, size, null, "asc", active, search);
@@ -50,19 +50,19 @@ public class GamesController implements GamesApi {
   }
 
   @Override
-  public ResponseEntity<Game> updateGame(UUID gameId, UpdateGameRequest updateGameRequest) {
+  public ResponseEntity<Game> gamesUpdateGame(UUID gameId, UpdateGameRequest updateGameRequest) {
     Game result = gameService.updateGame(gameId, updateGameRequest);
     return ResponseEntity.ok(result);
   }
 
   @Override
-  public ResponseEntity<Game> activateGame(UUID gameId) {
+    public ResponseEntity<Game> gamesActivateGame(UUID gameId) {
     Game result = gameService.setActive(gameId, true);
     return ResponseEntity.ok(result);
   }
 
   @Override
-  public ResponseEntity<Game> deactivateGame(UUID gameId) {
+  public ResponseEntity<Game> gamesDeactivateGame(UUID gameId) {
     Game result = gameService.setActive(gameId, false);
     return ResponseEntity.ok(result);
   }

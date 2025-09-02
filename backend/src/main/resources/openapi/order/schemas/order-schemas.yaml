@@ -1,0 +1,461 @@
+components:
+  parameters:
+    PageNumber:
+      $ref: "../../common.yaml#/components/parameters/PageNumber"
+    PageSize:
+      $ref: "../../common.yaml#/components/parameters/PageSize"
+    SortOrder:
+      $ref: "../../common.yaml#/components/parameters/SortOrder"
+
+  schemas:
+    OrderInfo:
+      type: object
+      required:
+        - id
+        - orderNumber
+        - customerId
+        - customer
+        - branchId
+        - status
+        - items
+        - pricing
+        - createdAt
+        - expectedCompletionDate
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Order ID
+        orderNumber:
+          type: string
+          description: Order number
+        customerId:
+          type: string
+          format: uuid
+          description: Customer ID
+        customer:
+          $ref: "#/components/schemas/CustomerSummary"
+        branchId:
+          type: string
+          format: uuid
+          description: Branch ID
+        uniqueLabel:
+          type: string
+          description: Unique label (QR code)
+        status:
+          $ref: "../../common.yaml#/components/schemas/OrderStatus"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItemInfo"
+        pricing:
+          $ref: "#/components/schemas/OrderPricingInfo"
+        payments:
+          type: array
+          items:
+            $ref: "#/components/schemas/PaymentInfo"
+        notes:
+          type: string
+          description: Order notes
+        customerSignature:
+          type: string
+          description: Customer signature (base64)
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation time
+        createdBy:
+          type: string
+          description: Created by user ID
+        expectedCompletionDate:
+          type: string
+          format: date-time
+          description: Expected completion date
+        actualCompletionDate:
+          type: string
+          format: date-time
+          description: Actual completion date
+
+    CustomerSummary:
+      type: object
+      required:
+        - id
+        - firstName
+        - lastName
+        - phone
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+
+    OrderItemInfo:
+      type: object
+      required:
+        - id
+        - priceListItemId
+        - priceListItem
+        - quantity
+        - characteristics
+        - pricing
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Order item ID
+        priceListItemId:
+          type: string
+          format: uuid
+          description: Price list item ID
+        priceListItem:
+          allOf:
+            - $ref: "#/components/schemas/PriceListItemSummary"
+          description: Price list item details
+        quantity:
+          type: integer
+          description: Quantity (in units)
+        characteristics:
+          allOf:
+            - $ref: "#/components/schemas/OrderItemCharacteristics"
+          description: Item characteristics
+        stains:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemStain"
+          description: Item stains
+        defects:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemDefect"
+          description: Item defects
+        risks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemRisk"
+          description: Item risks
+        photos:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemPhotoInfo"
+          description: Item photos
+        modifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItemModifier"
+          description: Applied modifiers
+        pricing:
+          allOf:
+            - $ref: "#/components/schemas/OrderItemPricingInfo"
+          description: Item pricing details
+
+    PriceListItemSummary:
+      type: object
+      required:
+        - id
+        - name
+        - categoryCode
+        - unitOfMeasure
+        - basePrice
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        categoryCode:
+          $ref: "../../common.yaml#/components/schemas/ServiceCategoryType"
+        unitOfMeasure:
+          $ref: "../../common.yaml#/components/schemas/UnitOfMeasure"
+        basePrice:
+          type: integer
+          description: Base price in kopiykas
+
+    # Use shared ItemCharacteristics from common.yaml (renamed from OrderItemCharacteristics)
+    OrderItemCharacteristics:
+      $ref: "../../common.yaml#/components/schemas/ItemCharacteristics"
+
+    ItemStain:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          $ref: "../../common.yaml#/components/schemas/StainType"
+        description:
+          type: string
+          description: Additional description
+
+    ItemDefect:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          $ref: "../../common.yaml#/components/schemas/DefectType"
+        description:
+          type: string
+          description: Additional description
+
+    ItemRisk:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          $ref: "../../common.yaml#/components/schemas/RiskType"
+        description:
+          type: string
+          description: Risk description
+
+    ItemPhotoInfo:
+      type: object
+      required:
+        - id
+        - url
+        - type
+        - uploadedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Photo ID
+        url:
+          type: string
+          description: Photo URL
+        type:
+          $ref: "../../common.yaml#/components/schemas/PhotoType"
+        description:
+          type: string
+          description: Photo description
+        uploadedAt:
+          type: string
+          format: date-time
+          description: Upload time
+        uploadedBy:
+          type: string
+          description: Uploaded by user ID
+
+    OrderItemModifier:
+      type: object
+      required:
+        - code
+        - name
+        - type
+        - value
+      properties:
+        code:
+          type: string
+          description: Modifier code
+        name:
+          type: string
+          description: Modifier name
+        type:
+          $ref: "../../common.yaml#/components/schemas/ModifierType"
+        value:
+          type: number
+          description: Modifier value
+
+    OrderItemPricingInfo:
+      type: object
+      required:
+        - basePrice
+        - modifiersTotalAmount
+        - subtotal
+        - urgencyAmount
+        - discountAmount
+        - total
+      properties:
+        basePrice:
+          type: integer
+          description: Base price in kopiykas
+        modifierDetails:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderModifierDetail"
+          description: Applied modifier details
+        modifiersTotalAmount:
+          type: integer
+          description: Total modifiers amount
+        subtotal:
+          type: integer
+          description: Subtotal (base + modifiers)
+        urgencyAmount:
+          type: integer
+          description: Urgency surcharge
+        discountAmount:
+          type: integer
+          description: Discount amount
+        total:
+          type: integer
+          description: Total price
+
+    OrderModifierDetail:
+      type: object
+      required:
+        - code
+        - name
+        - amount
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        amount:
+          type: integer
+
+    OrderPricingInfo:
+      type: object
+      required:
+        - itemsSubtotal
+        - urgencyAmount
+        - discountAmount
+        - total
+        - paidAmount
+        - balanceDue
+      properties:
+        itemsSubtotal:
+          type: integer
+          description: Sum of all items subtotals
+        urgencyAmount:
+          type: integer
+          description: Total urgency amount
+        discountAmount:
+          type: integer
+          description: Total discount amount
+        discountApplicableAmount:
+          type: integer
+          description: Amount eligible for discount
+        total:
+          type: integer
+          description: Final total
+        paidAmount:
+          type: integer
+          description: Total paid amount
+        balanceDue:
+          type: integer
+          description: Balance due
+
+    PaymentInfo:
+      type: object
+      required:
+        - id
+        - amount
+        - method
+        - paidAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        amount:
+          type: integer
+          description: Payment amount in kopiykas
+        method:
+          $ref: "../../common.yaml#/components/schemas/PaymentMethod"
+        paidAt:
+          type: string
+          format: date-time
+        paidBy:
+          type: string
+          description: User ID who registered payment
+
+    CreateOrderRequest:
+      type: object
+      required:
+        - cartId
+        - branchId
+      properties:
+        cartId:
+          type: string
+          format: uuid
+          description: Cart ID to create order from
+        branchId:
+          type: string
+          format: uuid
+          description: Branch ID
+        uniqueLabel:
+          type: string
+          description: Unique label (QR code)
+        notes:
+          type: string
+          description: Order notes
+        customerSignature:
+          type: string
+          description: Customer signature (base64)
+        termsAccepted:
+          type: boolean
+          description: Terms and conditions accepted
+          default: false
+
+    UpdateOrderStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: "../../common.yaml#/components/schemas/OrderStatus"
+        notes:
+          type: string
+          description: Status change notes
+
+    UpdateItemCharacteristicsRequest:
+      type: object
+      properties:
+        characteristics:
+          $ref: "#/components/schemas/OrderItemCharacteristics"
+        stains:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemStain"
+        defects:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemDefect"
+        risks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemRisk"
+
+    AddPaymentRequest:
+      type: object
+      required:
+        - amount
+        - method
+      properties:
+        amount:
+          type: integer
+          minimum: 1
+          description: Payment amount in kopiykas
+        method:
+          $ref: "../../common.yaml#/components/schemas/PaymentMethod"
+
+    SaveSignatureRequest:
+      type: object
+      required:
+        - signature
+      properties:
+        signature:
+          type: string
+          description: Customer signature in base64 format
+          example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+
+    # Pagination schema
+    OrderListResponse:
+      allOf:
+        - $ref: "../../common.yaml#/components/schemas/PaginatedResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/OrderInfo"
+
+  securitySchemes:
+    cookieAuth:
+      $ref: "../../common.yaml#/components/securitySchemes/cookieAuth"

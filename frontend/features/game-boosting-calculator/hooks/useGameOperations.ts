@@ -4,20 +4,20 @@
  */
 
 import { useGameBoostingStore } from '../store/game-boosting-store';
-import { useListGames, useGetGameById } from '@api/game';
+import { useGamesListGames, useGamesGetGameById } from '@api/game';
 import type { Game } from '@api/game';
 
 export const useGameOperations = () => {
   const { selectedGameId, setSelectedGame } = useGameBoostingStore();
 
   // API hooks
-  const listGamesQuery = useListGames({
+  const listGamesQuery = useGamesListGames({
     page: 0,
     size: 100,
     active: true,
   });
 
-  const selectedGameQuery = useGetGameById(selectedGameId || '', {
+  const selectedGameQuery = useGamesGetGameById(selectedGameId || '', {
     query: {
       enabled: !!selectedGameId,
     },

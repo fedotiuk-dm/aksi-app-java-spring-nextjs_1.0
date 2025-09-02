@@ -8,7 +8,7 @@
 import React, { useState } from 'react';
 import { Autocomplete, TextField, CircularProgress, Box, Typography, Chip } from '@mui/material';
 import { useGameBoostingStore } from '../../store/game-boosting-store';
-import { useListGames } from '@api/game';
+import { useGamesListGames } from '@api/game';
 import type { Game } from '@api/game';
 
 export const GameSearch = () => {
@@ -20,7 +20,7 @@ export const GameSearch = () => {
     data: gamesResponse,
     isLoading,
     error,
-  } = useListGames({
+  } = useGamesListGames({
     page: 0,
     size: 50,
     search: searchTerm || undefined,

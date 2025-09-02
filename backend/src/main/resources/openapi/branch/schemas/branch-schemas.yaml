@@ -1,0 +1,145 @@
+components:
+  # Use common responses from common.yaml instead of duplicating
+
+  schemas:
+    BranchInfo:
+      type: object
+      required:
+        - id
+        - name
+        - address
+        - phone
+        - active
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Branch ID
+        name:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/UniqueName"
+          description: Branch name
+        address:
+          type: string
+          description: Branch address
+        phone:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/PhoneNumber"
+          description: Branch phone number
+        email:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/Email"
+          description: Branch email
+        workingHours:
+          type: string
+          description: Working hours (e.g., "Пн-Пт 8:00-20:00, Сб 9:00-18:00")
+        active:
+          type: boolean
+          description: Is branch active
+        description:
+          type: string
+          description: Branch description
+        sortOrder:
+          type: integer
+          description: Sort order for display
+          default: 0
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp (UTC)
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp (UTC)
+
+    CreateBranchRequest:
+      type: object
+      required:
+        - name
+        - address
+        - phone
+      properties:
+        name:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/UniqueName"
+          description: Branch name
+        address:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: Branch address
+        phone:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/PhoneNumber"
+          description: Branch phone number
+        email:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/Email"
+          description: Branch email
+        workingHours:
+          type: string
+          maxLength: 255
+          description: Working hours
+        active:
+          type: boolean
+          description: Is branch active
+          default: true
+        description:
+          type: string
+          maxLength: 1000
+          description: Branch description
+        sortOrder:
+          type: integer
+          description: Sort order for display
+          default: 0
+
+    UpdateBranchRequest:
+      type: object
+      properties:
+        name:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/UniqueName"
+          description: Branch name
+        address:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: Branch address
+        phone:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/PhoneNumber"
+          description: Branch phone number
+        email:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/Email"
+          description: Branch email
+        workingHours:
+          type: string
+          maxLength: 255
+          description: Working hours
+        active:
+          type: boolean
+          description: Is branch active
+        description:
+          type: string
+          maxLength: 1000
+          description: Branch description
+        sortOrder:
+          type: integer
+          description: Sort order for display
+
+    BranchListResponse:
+      allOf:
+        - $ref: "../../common.yaml#/components/schemas/PaginatedResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/BranchInfo"
+
+    # ErrorResponse moved to common.yaml
+
+  securitySchemes:
+    cookieAuth:
+      $ref: "../../common.yaml#/components/securitySchemes/cookieAuth"

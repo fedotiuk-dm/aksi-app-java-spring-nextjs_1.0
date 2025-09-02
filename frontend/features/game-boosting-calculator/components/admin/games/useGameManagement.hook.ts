@@ -5,10 +5,10 @@
 
 import { useEffect } from 'react';
 import {
-  useListGames,
-  useCreateGame,
-  useUpdateGame,
-  useDeleteGame,
+  useGamesListGames,
+  useGamesCreateGame,
+  useGamesUpdateGame,
+  useGamesDeleteGame,
   CreateGameRequestCategory,
   UpdateGameRequestCategory,
   GameCategory,
@@ -17,14 +17,14 @@ import { useGameManagementStore } from '../../../store/game-management-store';
 
 export const useGameManagement = () => {
   // Orval API hooks
-  const listGamesQuery = useListGames({
+  const listGamesQuery = useGamesListGames({
     page: 0,
     size: 100,
     active: true,
   });
-  const createGameMutation = useCreateGame();
-  const updateGameMutation = useUpdateGame();
-  const deleteGameMutation = useDeleteGame();
+  const createGameMutation = useGamesCreateGame();
+  const updateGameMutation = useGamesUpdateGame();
+  const deleteGameMutation = useGamesDeleteGame();
 
   // UI state from store
   const { setGames, setLoading, setError, clearError } = useGameManagementStore();
@@ -86,7 +86,7 @@ export const useGameManagement = () => {
   ) => {
     try {
       await updateGameMutation.mutateAsync({
-        id: gameId,
+        gameId,
         data: gameData,
       });
       // List will automatically refresh due to React Query
@@ -98,7 +98,7 @@ export const useGameManagement = () => {
 
   const handleDeleteGame = async (gameId: string) => {
     try {
-      await deleteGameMutation.mutateAsync({ id: gameId });
+      await deleteGameMutation.mutateAsync({ gameId });
       // List will automatically refresh due to React Query
     } catch (error) {
       console.error('Failed to delete game:', error);

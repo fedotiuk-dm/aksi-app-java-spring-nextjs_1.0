@@ -13,6 +13,7 @@ import com.aksi.api.cart.dto.AddCartItemRequest;
 import com.aksi.api.cart.dto.ItemCharacteristics;
 import com.aksi.api.cart.dto.UpdateCartItemRequest;
 import com.aksi.api.cart.dto.UpdateCartModifiersRequest;
+import com.aksi.api.pricing.dto.PricingItemCharacteristics;
 import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
 import com.aksi.domain.cart.CartItemCharacteristicsEntity;
@@ -193,13 +194,16 @@ public class CartCommandService {
   private void updateItemCharacteristics(CartItem cartItem, ItemCharacteristics characteristics) {
     if (characteristics == null) return;
 
+    // Convert cart ItemCharacteristics to pricing PricingItemCharacteristics
+    PricingItemCharacteristics pricingCharacteristics = cartItemMapper.toPricingCharacteristics(characteristics);
+
     if (cartItem.getCharacteristics() == null) {
-      CartItemCharacteristicsEntity entity = cartItemMapper.toEntity(characteristics);
+      CartItemCharacteristicsEntity entity = cartItemMapper.toEntity(pricingCharacteristics);
       entity.setCartItem(cartItem);
       cartItem.setCharacteristics(entity);
     } else {
       cartItemMapper.updateCharacteristicsFromRequest(
-          characteristics, cartItem.getCharacteristics());
+          pricingCharacteristics, cartItem.getCharacteristics());
     }
   }
 

@@ -1,0 +1,64 @@
+openapi: 3.0.4
+info:
+  title: File API
+  description: File management API for dry cleaning service
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: files
+    description: File management operations
+
+paths:
+  # File endpoints
+  /api/files/{filePath}:
+    $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1{filePath}"
+  /api/files/upload:
+    $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1upload"
+  /api/files/upload/base64:
+    $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1upload~1base64"
+  /api/files/{filePath}/info:
+    $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1{filePath}~1info"
+  /api/files/{filePath}/base64:
+    $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1{filePath}~1base64"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session cookie authentication
+
+  responses:
+    BadRequest:
+      $ref: "../common.yaml#/components/responses/BadRequest"
+    Unauthorized:
+      $ref: "../common.yaml#/components/responses/Unauthorized"
+    Forbidden:
+      $ref: "../common.yaml#/components/responses/Forbidden"
+    NotFound:
+      $ref: "../common.yaml#/components/responses/NotFound"
+    PayloadTooLarge:
+      $ref: "../common.yaml#/components/responses/PayloadTooLarge"
+
+  schemas:
+    # Import all schemas from file-schemas.yaml
+    Base64FileUploadRequest:
+      $ref: "./schemas/file-schemas.yaml#/components/schemas/Base64FileUploadRequest"
+    FileUploadResponse:
+      $ref: "./schemas/file-schemas.yaml#/components/schemas/FileUploadResponse"
+    FileInfo:
+      $ref: "./schemas/file-schemas.yaml#/components/schemas/FileInfo"
+    Base64FileResponse:
+      $ref: "./schemas/file-schemas.yaml#/components/schemas/Base64FileResponse"
+
+security: [] # No authentication required for file serving

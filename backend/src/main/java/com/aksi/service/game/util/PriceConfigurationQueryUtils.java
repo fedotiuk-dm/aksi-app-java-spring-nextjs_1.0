@@ -41,25 +41,6 @@ public class PriceConfigurationQueryUtils {
   }
 
   /**
-   * Count active price configurations with optimized strategy.
-   *
-   * @param gameId Game ID filter (optional)
-   * @return Count of active configurations
-   */
-  public long countActivePriceConfigurations(UUID gameId) {
-    if (gameId != null) {
-      log.debug("Counting active price configurations for game: {}", gameId);
-      return priceConfigurationRepository.countActiveByGameId(gameId);
-    } else {
-      log.debug("Counting all active price configurations");
-      // Note: This would require a new repository method for efficiency
-      return priceConfigurationRepository
-          .findAllActiveOrderBySortOrder(Pageable.unpaged())
-          .getTotalElements();
-    }
-  }
-
-  /**
    * Check if combination already exists (for uniqueness validation).
    *
    * @param gameId Game ID

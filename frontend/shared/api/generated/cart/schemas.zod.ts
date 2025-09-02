@@ -45,12 +45,12 @@ export const updateCartModifiersResponse = zod.object({
 }),
   "quantity": zod.number().min(1).describe('Quantity (in units)'),
   "characteristics": zod.object({
-  "material": zod.string().optional().describe('Material type'),
-  "color": zod.string().optional().describe('Item color'),
-  "filler": zod.string().optional().describe('Filler type (for padded items)'),
-  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional(),
-  "wearLevel": zod.enum(['10', '30', '50', '75']).optional()
-}),
+  "material": zod.string().optional().describe('Material type (cotton, silk, wool, etc.)'),
+  "color": zod.string().optional().describe('Item color (affects processing and pricing)'),
+  "filler": zod.string().optional().describe('Filler type for items with filling'),
+  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional().describe('Filler condition assessment'),
+  "wearLevel": zod.union([zod.literal(10),zod.literal(30),zod.literal(50),zod.literal(75)]).optional().describe('Item wear level assessment')
+}).describe('Item characteristics shared across cart, order, and pricing domains'),
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
@@ -102,12 +102,12 @@ export const updateCartItemParams = zod.object({
 export const updateCartItemBody = zod.object({
   "quantity": zod.number().min(1).optional().describe('New quantity in smallest unit (piece=1; kilogram=grams)'),
   "characteristics": zod.object({
-  "material": zod.string().optional().describe('Material type'),
-  "color": zod.string().optional().describe('Item color'),
-  "filler": zod.string().optional().describe('Filler type (for padded items)'),
-  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional(),
-  "wearLevel": zod.enum(['10', '30', '50', '75']).optional()
-}).optional(),
+  "material": zod.string().optional().describe('Material type (cotton, silk, wool, etc.)'),
+  "color": zod.string().optional().describe('Item color (affects processing and pricing)'),
+  "filler": zod.string().optional().describe('Filler type for items with filling'),
+  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional().describe('Filler condition assessment'),
+  "wearLevel": zod.union([zod.literal(10),zod.literal(30),zod.literal(50),zod.literal(75)]).optional().describe('Item wear level assessment')
+}).optional().describe('Item characteristics shared across cart, order, and pricing domains'),
   "modifierCodes": zod.array(zod.string()).optional().describe('Updated modifier codes')
 })
 
@@ -123,12 +123,12 @@ export const updateCartItemResponse = zod.object({
 }),
   "quantity": zod.number().min(1).describe('Quantity (in units)'),
   "characteristics": zod.object({
-  "material": zod.string().optional().describe('Material type'),
-  "color": zod.string().optional().describe('Item color'),
-  "filler": zod.string().optional().describe('Filler type (for padded items)'),
-  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional(),
-  "wearLevel": zod.enum(['10', '30', '50', '75']).optional()
-}),
+  "material": zod.string().optional().describe('Material type (cotton, silk, wool, etc.)'),
+  "color": zod.string().optional().describe('Item color (affects processing and pricing)'),
+  "filler": zod.string().optional().describe('Filler type for items with filling'),
+  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional().describe('Filler condition assessment'),
+  "wearLevel": zod.union([zod.literal(10),zod.literal(30),zod.literal(50),zod.literal(75)]).optional().describe('Item wear level assessment')
+}).describe('Item characteristics shared across cart, order, and pricing domains'),
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),
@@ -168,12 +168,12 @@ export const addCartItemBody = zod.object({
   "priceListItemId": zod.uuid().describe('Price list item ID'),
   "quantity": zod.number().min(1).describe('Quantity in smallest unit (piece=1; kilogram=grams)'),
   "characteristics": zod.object({
-  "material": zod.string().optional().describe('Material type'),
-  "color": zod.string().optional().describe('Item color'),
-  "filler": zod.string().optional().describe('Filler type (for padded items)'),
-  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional(),
-  "wearLevel": zod.enum(['10', '30', '50', '75']).optional()
-}).optional(),
+  "material": zod.string().optional().describe('Material type (cotton, silk, wool, etc.)'),
+  "color": zod.string().optional().describe('Item color (affects processing and pricing)'),
+  "filler": zod.string().optional().describe('Filler type for items with filling'),
+  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional().describe('Filler condition assessment'),
+  "wearLevel": zod.union([zod.literal(10),zod.literal(30),zod.literal(50),zod.literal(75)]).optional().describe('Item wear level assessment')
+}).optional().describe('Item characteristics shared across cart, order, and pricing domains'),
   "modifierCodes": zod.array(zod.string()).optional().describe('Modifier codes to apply')
 })
 
@@ -224,12 +224,12 @@ export const getCartResponse = zod.object({
 }),
   "quantity": zod.number().min(1).describe('Quantity (in units)'),
   "characteristics": zod.object({
-  "material": zod.string().optional().describe('Material type'),
-  "color": zod.string().optional().describe('Item color'),
-  "filler": zod.string().optional().describe('Filler type (for padded items)'),
-  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional(),
-  "wearLevel": zod.enum(['10', '30', '50', '75']).optional()
-}),
+  "material": zod.string().optional().describe('Material type (cotton, silk, wool, etc.)'),
+  "color": zod.string().optional().describe('Item color (affects processing and pricing)'),
+  "filler": zod.string().optional().describe('Filler type for items with filling'),
+  "fillerCondition": zod.enum(['NORMAL', 'COMPRESSED']).optional().describe('Filler condition assessment'),
+  "wearLevel": zod.union([zod.literal(10),zod.literal(30),zod.literal(50),zod.literal(75)]).optional().describe('Item wear level assessment')
+}).describe('Item characteristics shared across cart, order, and pricing domains'),
   "modifiers": zod.array(zod.object({
   "code": zod.string().describe('Modifier code'),
   "name": zod.string().describe('Modifier name'),

@@ -1,0 +1,111 @@
+openapi: 3.0.4
+info:
+  title: Pricing API
+  description: Pricing management API for dry cleaning service
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: pricing
+    description: Pricing management operations
+
+paths:
+  # Pricing endpoints
+  /api/pricing/calculate:
+    $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1calculate"
+  /api/pricing/modifiers:
+    $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1modifiers"
+  /api/pricing/discounts:
+    $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1discounts"
+  /api/pricing/admin/modifiers:
+    $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1admin~1modifiers"
+  /api/pricing/admin/modifiers/{code}:
+    $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1admin~1modifiers~1{code}"
+  /api/pricing/admin/discounts:
+    $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1admin~1discounts"
+  /api/pricing/admin/discounts/{code}:
+    $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1admin~1discounts~1{code}"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session cookie authentication
+
+  responses:
+    BadRequest:
+      $ref: "../common.yaml#/components/responses/BadRequest"
+    Unauthorized:
+      $ref: "../common.yaml#/components/responses/Unauthorized"
+    Forbidden:
+      $ref: "../common.yaml#/components/responses/Forbidden"
+    NotFound:
+      $ref: "../common.yaml#/components/responses/NotFound"
+
+  parameters:
+    PageNumber:
+      $ref: "../common.yaml#/components/parameters/PageNumber"
+    PageSize:
+      $ref: "../common.yaml#/components/parameters/PageSize"
+    SortBy:
+      $ref: "../common.yaml#/components/parameters/SortBy"
+    SortOrder:
+      $ref: "../common.yaml#/components/parameters/SortOrder"
+
+  schemas:
+    # Import all schemas from pricing-schemas.yaml
+    PriceCalculationRequest:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/PriceCalculationRequest"
+    PriceCalculationItem:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/PriceCalculationItem"
+    PricingItemCharacteristics:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/PricingItemCharacteristics"
+    GlobalPriceModifiers:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/GlobalPriceModifiers"
+    PriceCalculationResponse:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/PriceCalculationResponse"
+    CalculatedItemPrice:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/CalculatedItemPrice"
+    ItemPriceCalculation:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/ItemPriceCalculation"
+    AppliedModifier:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/AppliedModifier"
+    CalculationTotals:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/CalculationTotals"
+    PriceModifier:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/PriceModifier"
+    PriceModifierInfo:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/PriceModifierInfo"
+    Discount:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/Discount"
+    DiscountInfo:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/DiscountInfo"
+    PriceModifiersResponse:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/PriceModifiersResponse"
+    DiscountsResponse:
+      $ref: "./schemas/pricing-schemas.yaml#/components/schemas/DiscountsResponse"
+
+    # Common schemas (if needed locally)
+    ServiceCategoryType:
+      $ref: "../common.yaml#/components/schemas/ServiceCategoryType"
+    UnitOfMeasure:
+      $ref: "../common.yaml#/components/schemas/UnitOfMeasure"
+    ModifierType:
+      $ref: "../common.yaml#/components/schemas/ModifierType"
+    DiscountType:
+      $ref: "../common.yaml#/components/schemas/DiscountType"
+    UrgencyType:
+      $ref: "../common.yaml#/components/schemas/UrgencyType"
+
+security:
+  - cookieAuth: []

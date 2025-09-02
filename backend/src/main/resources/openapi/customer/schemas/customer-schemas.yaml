@@ -1,0 +1,190 @@
+components:
+  securitySchemes:
+    cookieAuth:
+      $ref: "../../common.yaml#/components/securitySchemes/cookieAuth"
+  schemas:
+    CustomerInfo:
+      type: object
+      required:
+        - id
+        - firstName
+        - lastName
+        - phonePrimary
+        - active
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Customer ID
+        firstName:
+          type: string
+          description: First name
+        lastName:
+          type: string
+          description: Last name
+        phonePrimary:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/PhoneNumber"
+          description: Primary phone number (must be unique for active customers)
+          x-unique-active: true
+        email:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/Email"
+          description: Email address (must be unique for active customers)
+          x-unique-active: true
+        address:
+          type: string
+          description: Address
+        contactPreferences:
+          type: array
+          items:
+            $ref: "../../common.yaml#/components/schemas/ContactPreference"
+          description: Preferred contact methods
+        infoSource:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/InfoSource"
+          description: How customer learned about the service
+        infoSourceOther:
+          type: string
+          description: Other info source details
+        notes:
+          type: string
+          description: Internal notes about customer
+        discountCardNumber:
+          type: string
+          description: Discount card number (unique)
+        active:
+          type: boolean
+          description: Whether customer is active
+        createdAt:
+          type: string
+          format: date-time
+          description: Registration date (UTC)
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp (UTC)
+        version:
+          type: integer
+          format: int64
+          description: Version for optimistic locking
+
+    CreateCustomerRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - phonePrimary
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: First name
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Last name
+        phonePrimary:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/PhoneNumber"
+          description: Primary phone number (must be unique for active customers)
+          x-unique-active: true
+        email:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/Email"
+          description: Email address (must be unique for active customers)
+          x-unique-active: true
+        address:
+          type: string
+          maxLength: 500
+          description: Address
+        contactPreferences:
+          type: array
+          items:
+            $ref: "../../common.yaml#/components/schemas/ContactPreference"
+          description: Preferred contact methods
+        infoSource:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/InfoSource"
+          description: How customer learned about the service
+        infoSourceOther:
+          type: string
+          maxLength: 200
+          description: Other info source details (required if infoSource is OTHER)
+        notes:
+          type: string
+          maxLength: 1000
+          description: Internal notes about customer
+        discountCardNumber:
+          type: string
+          maxLength: 20
+          description: Discount card number (must be unique)
+          x-unique: true
+
+    UpdateCustomerRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: First name
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Last name
+        phonePrimary:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/PhoneNumber"
+          description: Primary phone number (must be unique for active customers)
+          x-unique-active: true
+        email:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/Email"
+          description: Email address (must be unique for active customers)
+          x-unique-active: true
+        address:
+          type: string
+          maxLength: 500
+          description: Address
+        contactPreferences:
+          type: array
+          items:
+            $ref: "../../common.yaml#/components/schemas/ContactPreference"
+          description: Preferred contact methods
+        infoSource:
+          allOf:
+            - $ref: "../../common.yaml#/components/schemas/InfoSource"
+          description: How customer learned about the service
+        infoSourceOther:
+          type: string
+          maxLength: 200
+          description: Other info source details
+        notes:
+          type: string
+          maxLength: 1000
+          description: Internal notes about customer
+        discountCardNumber:
+          type: string
+          maxLength: 20
+          description: Discount card number (must be unique)
+          x-unique: true
+        active:
+          type: boolean
+          description: Whether customer is active
+
+    CustomerListResponse:
+      allOf:
+        - $ref: "../../common.yaml#/components/schemas/PaginatedResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/CustomerInfo"
+
+  # Security schemes and error responses centralized in common.yaml

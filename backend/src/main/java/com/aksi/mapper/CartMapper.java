@@ -7,8 +7,8 @@ import org.mapstruct.Mapping;
 
 import com.aksi.api.cart.dto.CartInfo;
 import com.aksi.api.cart.dto.CartItemInfo;
+import com.aksi.api.cart.dto.CartItemModifier;
 import com.aksi.api.cart.dto.ItemCharacteristics;
-import com.aksi.api.cart.dto.ItemModifier;
 import com.aksi.api.cart.dto.PriceListItemSummary;
 import com.aksi.domain.cart.CartEntity;
 import com.aksi.domain.cart.CartItem;
@@ -44,12 +44,12 @@ public interface CartMapper {
   @Mapping(source = "unitOfMeasure", target = "unitOfMeasure")
   PriceListItemSummary toPriceListItemSummary(PriceListItemEntity priceListItemEntity);
 
-  // CartItemCharacteristics to ItemCharacteristics
-  @Mapping(source = "fillerCondition", target = "fillerCondition", defaultValue = "NORMAL")
+  // CartItemCharacteristics to PricingItemCharacteristics
+  @Mapping(source = "material", target = "material", defaultValue = "NORMAL")
   ItemCharacteristics toItemCharacteristics(CartItemCharacteristicsEntity characteristics);
 
-  // CartItemModifier to ItemModifier
-  ItemModifier toItemModifier(CartItemModifierEntity modifier);
+  // CartItemModifier to CartItemModifier
+  CartItemModifier toItemModifier(CartItemModifierEntity modifier);
 
-  List<ItemModifier> toItemModifierList(List<CartItemModifierEntity> modifiers);
+  List<CartItemModifier> toItemModifierList(List<CartItemModifierEntity> modifiers);
 }

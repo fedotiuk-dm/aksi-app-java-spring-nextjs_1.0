@@ -1,0 +1,24 @@
+paths:
+  /api/games/calculator/calculate:
+    post:
+      tags: [calculator]
+      operationId: calculateGamePrice
+      summary: Calculate game boosting price
+      description: Calculate the total price for game boosting service based on selected parameters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/calculator-schemas.yaml#/components/schemas/CalculationRequest"
+      responses:
+        "200":
+          description: Calculation successful
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/calculator-schemas.yaml#/components/schemas/CalculationResult"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"

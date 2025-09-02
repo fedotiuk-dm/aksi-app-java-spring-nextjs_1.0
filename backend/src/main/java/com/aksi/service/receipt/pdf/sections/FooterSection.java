@@ -35,9 +35,9 @@ public class FooterSection implements ReceiptSection {
     }
 
     // Notes
-    if (orderData.getNotes() != null && !orderData.getNotes().isEmpty()) {
-      String notesText =
-          formatter.formatLabelValue(messages.getNotesLabel(locale), orderData.getNotes());
+    String notes = orderData.getNotes();
+    if (notes != null && !notes.isEmpty()) {
+      String notesText = formatter.formatLabelValue(messages.getNotesLabel(locale), notes);
       builder
           .beginText()
           .setFont("regular", PdfConstants.FONT_SIZE_SMALL)

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useCalculatePrice1 as useCalculatePrice } from '@api/pricing';
+import { useCalculatePrice } from '@api/pricing';
 import type { CartInfo } from '@api/cart';
 
 /**

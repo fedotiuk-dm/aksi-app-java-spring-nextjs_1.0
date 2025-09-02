@@ -18,7 +18,7 @@ public class CalculatorController implements CalculatorApi {
   private final CalculatorService calculatorService;
 
   @Override
-  public ResponseEntity<CalculationResult> calculatePrice(CalculationRequest calculationRequest) {
+  public ResponseEntity<CalculationResult> calculateGamePrice(CalculationRequest calculationRequest) {
     CalculationResult result = calculatorService.calculatePrice(calculationRequest);
     return ResponseEntity.ok(result);
   }

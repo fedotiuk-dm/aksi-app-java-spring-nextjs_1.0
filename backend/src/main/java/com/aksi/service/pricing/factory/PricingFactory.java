@@ -19,7 +19,7 @@ import com.aksi.api.pricing.dto.PriceModifierDto;
 import com.aksi.api.pricing.dto.PriceModifiersResponse;
 import com.aksi.api.pricing.dto.ServiceCategoryType;
 import com.aksi.api.pricing.dto.UrgencyType;
-import com.aksi.api.service.dto.PriceListItemInfo;
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
 import com.aksi.domain.pricing.DiscountEntity;
 import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.exception.ConflictException;

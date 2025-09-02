@@ -1,0 +1,57 @@
+extends:
+  - recommended
+
+apis:
+  auth:
+    root: ./auth/auth-api.yaml
+  branch:
+    root: ./branch/branch-api.yaml
+  cart:
+    root: ./cart/cart-api.yaml
+  customer:
+    root: ./customer/customer-api.yaml
+  file:
+    root: ./file/file-api.yaml
+  games:
+    root: ./games/games-api.yaml
+  order:
+    root: ./order/order-api.yaml
+  price-list:
+    root: ./price-list/price-list-api.yaml
+  pricing:
+    root: ./pricing/pricing-api.yaml
+  receipt:
+    root: ./receipt/receipt-api.yaml
+  user:
+    root: ./user/user-api.yaml
+
+rules:
+  # Якість документації
+  operation-description: error
+  operation-summary: error
+  operation-operationId-unique: error
+
+  # Консистентність
+  paths-kebab-case: error
+  no-ambiguous-paths: warn
+
+  # Схеми
+  no-unused-components: warn
+
+  # Додаткові правила для якості
+  operation-tag-defined: error
+  path-declaration-must-exist: error
+  no-unresolved-refs: error
+
+  # Параметри
+  path-parameters-defined: error
+  operation-parameters-unique: error
+
+  # Responses
+  operation-2xx-response: error
+  operation-4xx-response: warn
+
+  # Вимкнути деякі стандартні правила для розробки
+  info-license: off
+  no-server-example.com: off
+  no-server-variables-empty-enum: off

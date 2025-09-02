@@ -1,0 +1,159 @@
+components:
+  schemas:
+    ServiceType:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        gameId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        code:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: "^[A-Z0-9_-]+$"
+        description:
+          type: string
+          maxLength: 500
+        baseMultiplier:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          description: Base multiplier in basis points (100 = 1.0x, 200 = 2.0x)
+          default: 100
+        active:
+          type: boolean
+          default: true
+        sortOrder:
+          type: integer
+          minimum: 0
+          default: 0
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - gameId
+        - name
+        - code
+        - baseMultiplier
+        - active
+        - sortOrder
+
+    CreateServiceTypeRequest:
+      type: object
+      properties:
+        gameId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        code:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: "^[A-Z0-9_-]+$"
+        description:
+          type: string
+          maxLength: 500
+        baseMultiplier:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 100
+        sortOrder:
+          type: integer
+          minimum: 0
+          default: 0
+        active:
+          type: boolean
+          default: true
+      required:
+        - gameId
+        - name
+        - code
+        - baseMultiplier
+
+    UpdateServiceTypeRequest:
+      type: object
+      properties:
+        gameId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        code:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: "^[A-Z0-9_-]+$"
+        description:
+          type: string
+          maxLength: 500
+        baseMultiplier:
+          type: integer
+          minimum: 1
+          maximum: 1000
+        sortOrder:
+          type: integer
+          minimum: 0
+        active:
+          type: boolean
+      required: []
+
+    ServiceTypeListResponse:
+      type: object
+      required:
+        - data
+        - totalElements
+        - totalPages
+        - size
+        - number
+        - numberOfElements
+        - first
+        - last
+        - empty
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceType"
+          description: Page content
+        totalElements:
+          type: integer
+          format: int64
+          description: Total number of elements
+        totalPages:
+          type: integer
+          description: Total number of pages
+        size:
+          type: integer
+          description: Page size
+        number:
+          type: integer
+          description: Page number (0-based)
+        numberOfElements:
+          type: integer
+          description: Number of elements in current page
+        first:
+          type: boolean
+          description: Is first page
+        last:
+          type: boolean
+          description: Is last page
+        empty:
+          type: boolean
+          description: Is empty

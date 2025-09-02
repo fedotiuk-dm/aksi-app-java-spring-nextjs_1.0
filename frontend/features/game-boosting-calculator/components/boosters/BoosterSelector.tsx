@@ -16,7 +16,7 @@ import {
   Rating,
 } from '@mui/material';
 import { useGameBoostingStore } from '../../store/game-boosting-store';
-import { useListBoosters } from '@api/game';
+import { useGamesListBoosters } from '@api/game';
 import type { Booster } from '@api/game';
 
 export const BoosterSelector = () => {
@@ -28,7 +28,7 @@ export const BoosterSelector = () => {
     data: boostersResponse,
     isLoading,
     error,
-  } = useListBoosters(
+  } = useGamesListBoosters(
     {
       page: 0,
       size: 50,

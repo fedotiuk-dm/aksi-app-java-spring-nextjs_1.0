@@ -24,7 +24,7 @@ public class DifficultyLevelsController implements DifficultyLevelsApi {
   private final DifficultyLevelService difficultyLevelService;
 
   @Override
-  public ResponseEntity<DifficultyLevel> createDifficultyLevel(
+  public ResponseEntity<DifficultyLevel> gamesCreateDifficultyLevel(
       CreateDifficultyLevelRequest createDifficultyLevelRequest) {
 
     DifficultyLevel result =
@@ -33,19 +33,19 @@ public class DifficultyLevelsController implements DifficultyLevelsApi {
   }
 
   @Override
-  public ResponseEntity<Void> deleteDifficultyLevel(UUID difficultyLevelId) {
+  public ResponseEntity<Void> gamesDeleteDifficultyLevel(UUID difficultyLevelId) {
     difficultyLevelService.deleteDifficultyLevel(difficultyLevelId);
     return ResponseEntity.noContent().build();
   }
 
   @Override
-  public ResponseEntity<DifficultyLevel> getDifficultyLevelById(UUID difficultyLevelId) {
+  public ResponseEntity<DifficultyLevel> gamesGetDifficultyLevelById(UUID difficultyLevelId) {
     DifficultyLevel result = difficultyLevelService.getDifficultyLevelById(difficultyLevelId);
     return ResponseEntity.ok(result);
   }
 
   @Override
-  public ResponseEntity<DifficultyLevelListResponse> listDifficultyLevels(
+  public ResponseEntity<DifficultyLevelListResponse> gamesListDifficultyLevels(
       Integer page, Integer size, @Nullable UUID gameId, @Nullable Boolean active) {
 
     DifficultyLevelListResponse result =
@@ -54,7 +54,7 @@ public class DifficultyLevelsController implements DifficultyLevelsApi {
   }
 
   @Override
-  public ResponseEntity<DifficultyLevel> updateDifficultyLevel(
+  public ResponseEntity<DifficultyLevel> gamesUpdateDifficultyLevel(
       UUID difficultyLevelId, UpdateDifficultyLevelRequest updateDifficultyLevelRequest) {
 
     DifficultyLevel result =
@@ -64,13 +64,13 @@ public class DifficultyLevelsController implements DifficultyLevelsApi {
   }
 
   @Override
-  public ResponseEntity<DifficultyLevel> activateDifficultyLevel(UUID difficultyLevelId) {
+  public ResponseEntity<DifficultyLevel> gamesActivateDifficultyLevel(UUID difficultyLevelId) {
     DifficultyLevel result = difficultyLevelService.setActive(difficultyLevelId, true);
     return ResponseEntity.ok(result);
   }
 
   @Override
-  public ResponseEntity<DifficultyLevel> deactivateDifficultyLevel(UUID difficultyLevelId) {
+  public ResponseEntity<DifficultyLevel> gamesDeactivateDifficultyLevel(UUID difficultyLevelId) {
     DifficultyLevel result = difficultyLevelService.setActive(difficultyLevelId, false);
     return ResponseEntity.ok(result);
   }

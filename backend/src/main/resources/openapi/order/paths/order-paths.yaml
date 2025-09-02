@@ -1,0 +1,598 @@
+paths:
+  /api/orders:
+    get:
+      operationId: listOrders
+      summary: List orders
+      description: Get paginated list of orders
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: "../../common.yaml#/components/parameters/PageNumber"
+        - $ref: "../../common.yaml#/components/parameters/PageSize"
+        - $ref: "../../common.yaml#/components/parameters/SortBy"
+        - $ref: "../../common.yaml#/components/parameters/SortOrder"
+        - $ref: "../../common.yaml#/components/parameters/CustomerId"
+        - name: status
+          in: query
+          description: Filter by order status
+          required: false
+          schema:
+            $ref: "../../common.yaml#/components/schemas/OrderStatus"
+        - $ref: "../../common.yaml#/components/parameters/BranchId"
+        - $ref: "../../common.yaml#/components/parameters/DateFrom"
+        - $ref: "../../common.yaml#/components/parameters/DateTo"
+        - name: orderNumber
+          in: query
+          description: Search by specific order number
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/order-schemas.yaml#/components/schemas/OrderListResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+    post:
+      operationId: createOrder
+      summary: Create order from cart
+      description: Create a new order from the current cart
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/order-schemas.yaml#/components/schemas/CreateOrderRequest"
+      responses:
+        "201":
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/order-schemas.yaml#/components/schemas/OrderInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/orders/{orderId}:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      operationId: getOrderById
+      summary: Get order details
+      description: Get detailed order information
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/order-schemas.yaml#/components/schemas/OrderInfo"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    patch:
+      operationId: updateOrderStatus
+      summary: Update order status
+      description: Update the status of an order
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/order-schemas.yaml#/components/schemas/UpdateOrderStatusRequest"
+      responses:
+        "200":
+          description: Order updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/order-schemas.yaml#/components/schemas/OrderInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/orders/{orderId}/items/{itemId}/characteristics:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: string
+          format: uuid
+      - name: itemId
+        in: path
+        required: true
+        description: Order item ID
+        schema:
+          type: string
+          format: uuid
+
+    put:
+      operationId: updateItemCharacteristics
+      summary: Update item characteristics
+      description: Update characteristics, stains, and defects of an order item
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/order-schemas.yaml#/components/schemas/UpdateItemCharacteristicsRequest"
+      responses:
+        "200":
+          description: Characteristics updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/order-schemas.yaml#/components/schemas/OrderItemInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/orders/{orderId}/items/{itemId}/photos:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: string
+          format: uuid
+      - name: itemId
+        in: path
+        required: true
+        description: Order item ID
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      operationId: uploadItemPhoto
+      summary: Upload item photo
+      description: Upload a photo for an order item
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              title: UploadItemPhotoRequest
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Photo file (max 5MB)
+                photoType:
+                  $ref: "../../common.yaml#/components/schemas/PhotoType"
+                photoDescription:
+                  type: string
+                  description: Photo description
+      responses:
+        "201":
+          description: Photo uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/order-schemas.yaml#/components/schemas/ItemPhotoInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+        "413":
+          $ref: "../../common.yaml#/components/responses/PayloadTooLarge"
+
+  /api/orders/{orderId}/items/{itemId}/photos/{photoId}:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: photoId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    delete:
+      operationId: deleteItemPhoto
+      summary: Delete item photo
+      description: Delete a photo from an order item
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      responses:
+        "204":
+          description: Photo deleted successfully
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/orders/{orderId}/receipt:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      operationId: getOrderReceipt
+      summary: Get order receipt
+      description: Get receipt PDF for an order
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Receipt PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/orders/{orderId}/signature:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      operationId: saveCustomerSignature
+      summary: Save customer signature
+      description: Save customer signature for order in base64 format
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/order-schemas.yaml#/components/schemas/SaveSignatureRequest"
+      responses:
+        "200":
+          description: Signature saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/order-schemas.yaml#/components/schemas/OrderInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/orders/customer/{customerId}/history:
+    get:
+      operationId: getCustomerOrderHistory
+      summary: Get customer order history
+      description: Get paginated order history for a specific customer
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: Customer ID
+          schema:
+            type: string
+            format: uuid
+        - $ref: "../../common.yaml#/components/parameters/PageNumber"
+        - $ref: "../../common.yaml#/components/parameters/PageSize"
+        - $ref: "../../common.yaml#/components/parameters/SortBy"
+        - $ref: "../../common.yaml#/components/parameters/SortOrder"
+      responses:
+        "200":
+          description: Customer order history
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/order-schemas.yaml#/components/schemas/OrderListResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/orders/customer/{customerId}/recent:
+    get:
+      operationId: getCustomerRecentOrders
+      summary: Get customer recent orders
+      description: Get customer's most recent orders (limited list)
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: Customer ID
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          description: Maximum number of orders to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        "200":
+          description: Recent orders list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "../schemas/order-schemas.yaml#/components/schemas/OrderInfo"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/orders/due-for-completion:
+    get:
+      operationId: getOrdersDueForCompletion
+      summary: Get orders due for completion
+      description: Get orders that are due for completion within specified days
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: days
+          in: query
+          description: Number of days to look ahead
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 30
+            default: 7
+        - $ref: "../../common.yaml#/components/parameters/PageNumber"
+        - $ref: "../../common.yaml#/components/parameters/PageSize"
+        - $ref: "../../common.yaml#/components/parameters/SortBy"
+        - $ref: "../../common.yaml#/components/parameters/SortOrder"
+      responses:
+        "200":
+          description: Orders due for completion
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/order-schemas.yaml#/components/schemas/OrderListResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/orders/overdue:
+    get:
+      operationId: getOverdueOrders
+      summary: Get overdue orders
+      description: Get orders that are past their expected completion date
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: "../../common.yaml#/components/parameters/PageNumber"
+        - $ref: "../../common.yaml#/components/parameters/PageSize"
+        - $ref: "../../common.yaml#/components/parameters/SortBy"
+        - $ref: "../../common.yaml#/components/parameters/SortOrder"
+      responses:
+        "200":
+          description: Overdue orders
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/order-schemas.yaml#/components/schemas/OrderListResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/orders/by-status:
+    get:
+      operationId: getOrdersByStatus
+      summary: Get orders by status
+      description: Get all orders with specific status (non-paginated)
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Order status
+          required: true
+          schema:
+            $ref: "../../common.yaml#/components/schemas/OrderStatus"
+        - name: branchId
+          in: query
+          description: Filter by branch ID
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Orders with specified status
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "../schemas/order-schemas.yaml#/components/schemas/OrderInfo"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/orders/{orderId}/items:
+    get:
+      operationId: getOrderItems
+      summary: Get order items
+      description: Get all items for a specific order
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Order ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Order items list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "../schemas/order-schemas.yaml#/components/schemas/OrderItemInfo"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/orders/{orderId}/payments:
+    get:
+      operationId: getOrderPayments
+      summary: Get order payments
+      description: Get payment history for a specific order
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Order ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Order payments list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "../schemas/order-schemas.yaml#/components/schemas/PaymentInfo"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/orders/{orderId}/payment:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        description: Order ID
+        schema:
+          type: string
+          format: uuid
+
+    post:
+      operationId: addOrderPayment
+      summary: Add payment to order
+      description: Register a payment for an order
+      tags:
+        - orders
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/order-schemas.yaml#/components/schemas/AddPaymentRequest"
+      responses:
+        "201":
+          description: Payment registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/order-schemas.yaml#/components/schemas/PaymentInfo"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"

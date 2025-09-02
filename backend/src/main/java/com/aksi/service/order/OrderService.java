@@ -204,6 +204,7 @@ public interface OrderService {
    * @param branchId Branch ID filter (optional)
    * @param dateFrom Creation date from filter (optional)
    * @param dateTo Creation date to filter (optional)
+   * @param orderNumber Order number filter (optional)
    * @return OrderListResponse with pagination info
    */
   OrderListResponse listOrders(
@@ -215,5 +216,6 @@ public interface OrderService {
       OrderStatus status,
       UUID branchId,
       Instant dateFrom,
-      Instant dateTo);
+      Instant dateTo,
+      String orderNumber);
 }

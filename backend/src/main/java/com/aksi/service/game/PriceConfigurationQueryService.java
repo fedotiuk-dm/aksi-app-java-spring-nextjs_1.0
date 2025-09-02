@@ -1,7 +1,5 @@
 package com.aksi.service.game;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -13,7 +11,6 @@ import com.aksi.api.game.dto.PriceConfiguration;
 import com.aksi.api.game.dto.PriceConfigurationListResponse;
 import com.aksi.domain.game.PriceConfigurationEntity;
 import com.aksi.exception.NotFoundException;
-import com.aksi.mapper.PriceConfigurationMapper;
 import com.aksi.repository.PriceConfigurationRepository;
 import com.aksi.service.game.factory.PriceConfigurationFactory;
 import com.aksi.service.game.util.PriceConfigurationQueryUtils;
@@ -23,8 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Query service for price configuration-related read operations. All methods are read-only and
- * optimized for queries.
+ * Query service for price configuration-related read operations. Provides basic read operations
+ * used by the main service layer.
  */
 @Service
 @Transactional(readOnly = true)
@@ -33,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 public class PriceConfigurationQueryService {
 
   private final PriceConfigurationRepository priceConfigurationRepository;
-  private final PriceConfigurationMapper priceConfigurationMapper;
   private final PriceConfigurationFactory priceConfigurationFactory;
   private final PriceConfigurationQueryUtils priceConfigurationQueryUtils;
 
@@ -56,91 +52,6 @@ public class PriceConfigurationQueryService {
                         "Price configuration not found with id: " + priceConfigurationId));
 
     return priceConfigurationFactory.toDto(entity);
-  }
-
-  /**
-   * Check if price configuration exists by ID.
-   *
-   * @param priceConfigurationId Price configuration ID
-   * @return true if price configuration exists
-   */
-  public boolean existsById(UUID priceConfigurationId) {
-    return priceConfigurationRepository.existsById(priceConfigurationId);
-  }
-
-  /**
-   * Get price configuration by combination of game, difficulty level and service type.
-   *
-   * @param gameId Game ID
-   * @param difficultyLevelId Difficulty level ID
-   * @param serviceTypeId Service type ID
-   * @return Optional price configuration
-   */
-  public Optional<PriceConfiguration> getPriceConfigurationByCombination(
-      UUID gameId, UUID difficultyLevelId, UUID serviceTypeId) {
-    log.debug(
-        "Getting price configuration by combination: game={}, difficulty={}, service={}",
-        gameId,
-        difficultyLevelId,
-        serviceTypeId);
-
-    return priceConfigurationRepository
-        .findByIdsAndActive(gameId, difficultyLevelId, serviceTypeId)
-        .map(priceConfigurationMapper::toPriceConfigurationDto);
-  }
-
-  /**
-   * Get all price configurations for a game.
-   *
-   * @param gameId Game ID
-   * @return List of price configurations
-   */
-  public List<PriceConfiguration> getPriceConfigurationsByGameId(UUID gameId) {
-    log.debug("Getting price configurations by game id: {}", gameId);
-
-    List<PriceConfigurationEntity> entities =
-        priceConfigurationRepository.findByGameIdAndActiveTrue(gameId);
-    return priceConfigurationFactory.toDtoList(entities);
-  }
-
-  /**
-   * Get all active price configurations.
-   *
-   * @return List of active price configurations
-   */
-  public List<PriceConfiguration> getAllActivePriceConfigurations() {
-    log.debug("Getting all active price configurations");
-
-    List<PriceConfigurationEntity> entities =
-        priceConfigurationRepository.findAllActiveOrderBySortOrder();
-    return priceConfigurationFactory.toDtoList(entities);
-  }
-
-  /**
-   * Get default price configurations.
-   *
-   * @return List of default price configurations
-   */
-  public List<PriceConfiguration> getDefaultPriceConfigurations() {
-    log.debug("Getting default price configurations");
-
-    List<PriceConfigurationEntity> entities =
-        priceConfigurationRepository.findDefaultConfigurations();
-    return priceConfigurationFactory.toDtoList(entities);
-  }
-
-  /**
-   * Get default price configurations for a specific game.
-   *
-   * @param gameId Game ID
-   * @return List of default price configurations for the game
-   */
-  public List<PriceConfiguration> getDefaultPriceConfigurationsByGameId(UUID gameId) {
-    log.debug("Getting default price configurations for game: {}", gameId);
-
-    List<PriceConfigurationEntity> entities =
-        priceConfigurationRepository.findDefaultByGameId(gameId);
-    return priceConfigurationFactory.toDtoList(entities);
   }
 
   /**
@@ -192,27 +103,6 @@ public class PriceConfigurationQueryService {
     Page<PriceConfigurationEntity> priceConfigurationPage =
         priceConfigurationQueryUtils.getPriceConfigurations(gameId, pageable);
 
-    return buildPriceConfigurationsResponse(priceConfigurationPage);
-  }
-
-  /**
-   * Count active price configurations for a game.
-   *
-   * @param gameId Game ID
-   * @return Count of active price configurations
-   */
-  public long countActiveByGameId(UUID gameId) {
-    return priceConfigurationQueryUtils.countActivePriceConfigurations(gameId);
-  }
-
-  /**
-   * Build price configurations response from page.
-   *
-   * @param priceConfigurationPage Page of price configuration entities
-   * @return Price configurations response
-   */
-  private PriceConfigurationListResponse buildPriceConfigurationsResponse(
-      Page<PriceConfigurationEntity> priceConfigurationPage) {
     return priceConfigurationFactory.createListResponse(priceConfigurationPage);
   }
 }

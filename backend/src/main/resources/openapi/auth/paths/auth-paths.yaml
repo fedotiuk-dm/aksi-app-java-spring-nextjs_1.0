@@ -1,0 +1,288 @@
+paths:
+  /api/auth/login:
+    post:
+      operationId: login
+      summary: Login to system
+      description: Authenticate operator and return session cookie
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/auth-schemas.yaml#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Successful login
+          headers:
+            Set-Cookie:
+              description: Session cookie for authentication (e.g., SESSION=abc123xyz; Path=/; HttpOnly; Secure; SameSite=Strict)
+              schema:
+                type: string
+            X-CSRF-TOKEN:
+              description: CSRF token for protection
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/auth-schemas.yaml#/components/schemas/LoginResponse"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "429":
+          $ref: "../../common.yaml#/components/responses/TooManyRequests"
+
+  /api/auth/logout:
+    post:
+      operationId: logout
+      summary: Logout from system
+      description: Terminate current session
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Successful logout
+          headers:
+            Set-Cookie:
+              description: Clear session cookie (e.g., SESSION=; Path=/; Max-Age=0)
+              schema:
+                type: string
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/auth/session:
+    get:
+      operationId: getCurrentSession
+      summary: Get current session info
+      description: Information about current user and session
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Session information
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/auth-schemas.yaml#/components/schemas/SessionInfo"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+    delete:
+      operationId: invalidateAllSessions
+      summary: Terminate all sessions for user
+      description: Logout user from all devices (admin only)
+      tags:
+        - auth
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: User ID to invalidate sessions for
+          schema:
+            type: string
+            format: uuid
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: All sessions terminated
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/auth/sessions:
+    get:
+      operationId: getUserSessions
+      summary: Get all user sessions
+      description: List all active sessions for current user or specified user (admin only)
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          description: User ID to get sessions for (admin only, defaults to current user)
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: List of user sessions
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/auth-schemas.yaml#/components/schemas/UserSessionsResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    delete:
+      operationId: terminateOtherSessions
+      summary: Terminate all other sessions
+      description: Logout user from all devices except current session
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Other sessions terminated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/auth-schemas.yaml#/components/schemas/SessionTerminationResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/auth/sessions/{sessionId}:
+    parameters:
+      - name: sessionId
+        in: path
+        required: true
+        description: Session ID to terminate
+        schema:
+          type: string
+
+    delete:
+      operationId: terminateSession
+      summary: Terminate specific session
+      description: Terminate a specific user session
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Session terminated successfully
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/auth/security/attempts:
+    get:
+      operationId: getSecurityAttempts
+      summary: Get login attempt statistics
+      description: Get rate limiting and security attempt statistics (admin only)
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Security attempt statistics
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/auth-schemas.yaml#/components/schemas/SecurityAttemptsResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+  /api/auth/security/unlock/{username}:
+    parameters:
+      - name: username
+        in: path
+        required: true
+        description: Username to unlock
+        schema:
+          type: string
+
+    post:
+      operationId: unlockUser
+      summary: Unlock blocked user
+      description: Clear failed login attempts and unlock blocked user (admin only)
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: User unlocked successfully
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/auth/security/unlock-ip/{ipAddress}:
+    post:
+      operationId: unlockIp
+      summary: Unlock IP address
+      description: Clear failed login attempts and unlock blocked IP address (admin only)
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: ipAddress
+          in: path
+          required: true
+          description: IP address to unlock
+          schema:
+            type: string
+            example: "192.168.1.100"
+      responses:
+        "200":
+          description: IP address unlocked successfully
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+  /api/auth/security/policy:
+    get:
+      operationId: getSecurityPolicy
+      summary: Get current security policy
+      description: Get current security policy settings (rate limits, password policy, etc.)
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Current security policy
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/auth-schemas.yaml#/components/schemas/SecurityPolicyResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/auth/server-time:
+    get:
+      operationId: getServerTime
+      summary: Get current server time
+      description: |
+        Returns current server timestamp for time synchronization between frontend and backend.
+        Used to avoid hydration issues and ensure consistent time across client and server.
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Current server time information
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/auth-schemas.yaml#/components/schemas/ServerTimeResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"

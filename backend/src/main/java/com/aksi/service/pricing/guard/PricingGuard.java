@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.aksi.api.pricing.dto.ServiceCategoryType;
-import com.aksi.api.service.dto.PriceListItemInfo;
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
 import com.aksi.domain.pricing.DiscountEntity;
 import com.aksi.domain.pricing.PriceModifierEntity;
 import com.aksi.exception.ConflictException;

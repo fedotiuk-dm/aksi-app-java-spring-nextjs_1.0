@@ -1,0 +1,537 @@
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          pattern: "^[a-zA-Z0-9_]+$"
+          description: Operator username
+          example: operator1
+        password:
+          type: string
+          minLength: 6
+          maxLength: 100
+          # Pattern removed for dev mode - production should use strict pattern
+          # pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$'
+          description: Password (min 6 chars for dev, 12 for prod)
+          example: Admin123!
+        rememberMe:
+          type: boolean
+          default: false
+          description: Remember session for 30 days
+        branchId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Branch ID for login (optional, can be selected later)
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+    LoginResponse:
+      type: object
+      required:
+        - userId
+        - username
+        - roles
+        - requiresBranchSelection
+        - isBlocked
+        - attemptsRemaining
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: User ID
+          example: "660e8400-e29b-41d4-a716-446655440001"
+        username:
+          type: string
+          description: Username
+          example: operator1
+        firstName:
+          type: string
+          description: First name
+          example: Ivan
+        lastName:
+          type: string
+          description: Last name
+          example: Petrenko
+        roles:
+          type: array
+          minItems: 1
+          items:
+            $ref: "../../common.yaml#/components/schemas/UserRole"
+          description: User roles
+        permissions:
+          type: array
+          items:
+            type: string
+          description: User permissions
+          example: ["CREATE_ORDER", "VIEW_CUSTOMERS", "EDIT_ORDER"]
+        branchId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Current branch ID
+        branchName:
+          type: string
+          nullable: true
+          description: Current branch name
+          example: Main Street Branch
+        requiresBranchSelection:
+          type: boolean
+          description: Whether branch selection is required
+        isBlocked:
+          type: boolean
+          description: Whether user account is blocked due to failed attempts
+          example: false
+        attemptsRemaining:
+          type: integer
+          description: Number of login attempts remaining before lockout
+          minimum: 0
+          example: 5
+        lockoutExpiresAt:
+          type: string
+          nullable: true
+          format: date-time
+          description: When account lockout expires (if blocked)
+
+    SessionInfo:
+      type: object
+      required:
+        - sessionId
+        - userId
+        - username
+        - createdAt
+        - lastAccessedAt
+      properties:
+        sessionId:
+          type: string
+          description: Session ID
+          example: "KJ3h4k2j3h4k23j4h23k4j"
+        userId:
+          type: string
+          format: uuid
+          description: User ID
+        username:
+          type: string
+          description: Username
+        roles:
+          type: array
+          items:
+            $ref: "../../common.yaml#/components/schemas/UserRole"
+        branchId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Current branch ID
+        branchName:
+          type: string
+          nullable: true
+          description: Current branch name
+        createdAt:
+          type: string
+          format: date-time
+          description: Session creation time
+        lastAccessedAt:
+          type: string
+          format: date-time
+          description: Last access time
+        expiresAt:
+          type: string
+          format: date-time
+          description: Session expiration time
+        ipAddress:
+          type: string
+          description: IP address
+          example: "192.168.1.1"
+        userAgent:
+          type: string
+          description: Browser user agent
+
+    # Error schemas
+
+    # Session Management schemas
+    UserSessionsResponse:
+      type: object
+      required:
+        - sessions
+        - totalCount
+        - currentSessionId
+      properties:
+        sessions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionDetail"
+          description: List of user sessions
+        totalCount:
+          type: integer
+          description: Total number of sessions
+          example: 3
+        currentSessionId:
+          type: string
+          description: Current session ID
+          example: "KJ3h4k2j3h4k23j4h23k4j"
+
+    SessionDetail:
+      type: object
+      required:
+        - sessionId
+        - createdAt
+        - lastAccessedAt
+        - expiresAt
+        - ipAddress
+        - isCurrentSession
+      properties:
+        sessionId:
+          type: string
+          description: Session ID
+          example: "KJ3h4k2j3h4k23j4h23k4j"
+        createdAt:
+          type: string
+          format: date-time
+          description: Session creation time
+        lastAccessedAt:
+          type: string
+          format: date-time
+          description: Last access time
+        expiresAt:
+          type: string
+          format: date-time
+          description: Session expiration time
+        ipAddress:
+          type: string
+          description: IP address
+          example: "192.168.1.1"
+        userAgent:
+          type: string
+          description: Browser user agent
+          example: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        location:
+          type: string
+          nullable: true
+          description: Approximate location based on IP
+          example: "Kiev, Ukraine"
+        deviceType:
+          type: string
+          nullable: true
+          description: Device type (mobile, tablet, desktop)
+          example: "desktop"
+        isCurrentSession:
+          type: boolean
+          description: Is this the current session
+          example: true
+
+    SessionTerminationResponse:
+      type: object
+      required:
+        - terminatedCount
+        - message
+      properties:
+        terminatedCount:
+          type: integer
+          description: Number of sessions terminated
+          example: 2
+        message:
+          type: string
+          description: Success message
+          example: "Successfully terminated 2 other sessions"
+
+    # Security Management schemas
+    SecurityAttemptsResponse:
+      type: object
+      required:
+        - overview
+        - recentAttempts
+        - blockedUsers
+        - blockedIps
+      properties:
+        overview:
+          $ref: "#/components/schemas/SecurityOverview"
+        recentAttempts:
+          type: array
+          items:
+            $ref: "#/components/schemas/LoginAttempt"
+          maxItems: 50
+          description: Recent login attempts (last 50)
+        blockedUsers:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlockedUser"
+          description: Currently blocked users
+        blockedIps:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlockedIp"
+          description: Currently blocked IP addresses
+
+    SecurityOverview:
+      type: object
+      required:
+        - totalFailedAttemptsToday
+        - totalBlockedUsers
+        - totalBlockedIps
+        - peakAttemptTime
+      properties:
+        totalFailedAttemptsToday:
+          type: integer
+          description: Total failed attempts today
+          example: 147
+        totalBlockedUsers:
+          type: integer
+          description: Currently blocked users count
+          example: 3
+        totalBlockedIps:
+          type: integer
+          description: Currently blocked IPs count
+          example: 8
+        peakAttemptTime:
+          type: string
+          format: date-time
+          description: Time of highest attempt rate today
+        averageAttemptsPerHour:
+          type: number
+          format: double
+          description: Average failed attempts per hour
+          example: 6.2
+
+    LoginAttempt:
+      type: object
+      required:
+        - timestamp
+        - username
+        - ipAddress
+        - success
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Attempt timestamp
+        username:
+          type: string
+          description: Username attempted
+          example: "operator1"
+        ipAddress:
+          type: string
+          description: IP address
+          example: "192.168.1.1"
+        userAgent:
+          type: string
+          nullable: true
+          description: User agent
+        location:
+          type: string
+          nullable: true
+          description: Approximate location
+          example: "Kiev, Ukraine"
+        success:
+          type: boolean
+          description: Whether attempt was successful
+        failureReason:
+          type: string
+          nullable: true
+          description: Reason for failure
+          example: "Invalid password"
+
+    BlockedUser:
+      type: object
+      required:
+        - username
+        - failedAttempts
+        - lastAttemptAt
+        - blockedUntil
+      properties:
+        username:
+          type: string
+          description: Blocked username
+          example: "operator1"
+        failedAttempts:
+          type: integer
+          description: Number of failed attempts
+          example: 5
+        lastAttemptAt:
+          type: string
+          format: date-time
+          description: Last failed attempt time
+        blockedUntil:
+          type: string
+          format: date-time
+          description: When block expires
+        lastAttemptIp:
+          type: string
+          description: IP of last attempt
+          example: "192.168.1.1"
+
+    BlockedIp:
+      type: object
+      required:
+        - ipAddress
+        - failedAttempts
+        - lastAttemptAt
+        - blockedUntil
+      properties:
+        ipAddress:
+          type: string
+          description: Blocked IP address
+          example: "192.168.1.1"
+        failedAttempts:
+          type: integer
+          description: Number of failed attempts
+          example: 12
+        lastAttemptAt:
+          type: string
+          format: date-time
+          description: Last failed attempt time
+        blockedUntil:
+          type: string
+          format: date-time
+          description: When block expires
+        location:
+          type: string
+          nullable: true
+          description: Approximate location
+          example: "Kiev, Ukraine"
+        lastUsername:
+          type: string
+          nullable: true
+          description: Last username attempted from this IP
+          example: "operator1"
+
+    SecurityPolicyResponse:
+      type: object
+      required:
+        - rateLimiting
+        - passwordPolicy
+        - sessionPolicy
+      properties:
+        rateLimiting:
+          $ref: "#/components/schemas/RateLimitingPolicy"
+        passwordPolicy:
+          $ref: "#/components/schemas/PasswordPolicyInfo"
+        sessionPolicy:
+          $ref: "#/components/schemas/SessionPolicyInfo"
+
+    RateLimitingPolicy:
+      type: object
+      required:
+        - maxAttemptsPerUser
+        - maxAttemptsPerIp
+        - lockoutDurationMinutes
+        - enabled
+      properties:
+        maxAttemptsPerUser:
+          type: integer
+          description: Max failed attempts per user
+          example: 5
+        maxAttemptsPerIp:
+          type: integer
+          description: Max failed attempts per IP
+          example: 10
+        lockoutDurationMinutes:
+          type: integer
+          description: Lockout duration in minutes
+          example: 15
+        enabled:
+          type: boolean
+          description: Is rate limiting enabled
+          example: true
+
+    PasswordPolicyInfo:
+      type: object
+      required:
+        - minLength
+        - requireUppercase
+        - requireLowercase
+        - requireNumbers
+        - requireSpecialChars
+      properties:
+        minLength:
+          type: integer
+          description: Minimum password length
+          example: 12
+        requireUppercase:
+          type: boolean
+          description: Require uppercase letters
+          example: true
+        requireLowercase:
+          type: boolean
+          description: Require lowercase letters
+          example: true
+        requireNumbers:
+          type: boolean
+          description: Require numbers
+          example: true
+        requireSpecialChars:
+          type: boolean
+          description: Require special characters
+          example: true
+        allowedSpecialChars:
+          type: string
+          description: Allowed special characters
+          example: "@$!%*?&"
+
+    SessionPolicyInfo:
+      type: object
+      required:
+        - defaultTimeoutMinutes
+        - maxConcurrentSessions
+        - rememberMeTimeoutDays
+      properties:
+        defaultTimeoutMinutes:
+          type: integer
+          description: Default session timeout in minutes
+          example: 60
+        maxConcurrentSessions:
+          type: integer
+          description: Max concurrent sessions per user
+          example: 3
+        rememberMeTimeoutDays:
+          type: integer
+          description: Remember me timeout in days
+          example: 30
+        sessionFixationProtection:
+          type: boolean
+          description: Is session fixation protection enabled
+          example: true
+
+    ServerTimeResponse:
+      type: object
+      required:
+        - timestamp
+        - epochMillis
+        - timezone
+        - utcOffset
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Current server time in ISO 8601 format (UTC)
+          example: "2024-01-15T14:30:45.123Z"
+        epochMillis:
+          type: integer
+          format: int64
+          description: Current server time as Unix epoch milliseconds
+          example: 1705327845123
+        timezone:
+          type: string
+          description: Server timezone identifier
+          example: "Europe/Kiev"
+        utcOffset:
+          type: string
+          description: UTC offset for server timezone
+          example: "+02:00"
+        date:
+          type: string
+          format: date
+          description: Current server date (YYYY-MM-DD)
+          example: "2024-01-15"
+        time:
+          type: string
+          description: Current server time (HH:mm:ss)
+          example: "14:30:45"
+
+security:
+  - cookieAuth: []

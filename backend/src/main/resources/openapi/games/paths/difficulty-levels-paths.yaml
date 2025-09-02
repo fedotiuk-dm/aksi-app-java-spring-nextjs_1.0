@@ -1,0 +1,190 @@
+paths:
+  /api/games/difficulty-levels:
+    get:
+      tags: [difficulty-levels]
+      operationId: gamesListDifficultyLevels
+      summary: Get difficulty levels
+      description: Get paginated list of difficulty levels with optional filtering
+      parameters:
+        - $ref: "../../common.yaml#/components/parameters/PageNumber"
+        - $ref: "../../common.yaml#/components/parameters/PageSize"
+        - name: gameId
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by game ID
+        - name: active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+      responses:
+        "200":
+          description: List of difficulty levels
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/difficulty-levels-schemas.yaml#/components/schemas/DifficultyLevelListResponse"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+    post:
+      tags: [difficulty-levels]
+      operationId: gamesCreateDifficultyLevel
+      summary: Create difficulty level
+      description: Create a new difficulty level in the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/difficulty-levels-schemas.yaml#/components/schemas/CreateDifficultyLevelRequest"
+      responses:
+        "201":
+          description: Difficulty level created
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/difficulty-levels-schemas.yaml#/components/schemas/DifficultyLevel"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+
+  /api/games/difficulty-levels/{difficultyLevelId}:
+    get:
+      tags: [difficulty-levels]
+      operationId: gamesGetDifficultyLevelById
+      summary: Get difficulty level by ID
+      description: Retrieve detailed information about a specific difficulty level
+      parameters:
+        - name: difficultyLevelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Difficulty level found
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/difficulty-levels-schemas.yaml#/components/schemas/DifficultyLevel"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    put:
+      tags: [difficulty-levels]
+      operationId: gamesUpdateDifficultyLevel
+      summary: Update difficulty level
+      description: Update an existing difficulty level's information
+      parameters:
+        - name: difficultyLevelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/difficulty-levels-schemas.yaml#/components/schemas/UpdateDifficultyLevelRequest"
+      responses:
+        "200":
+          description: Difficulty level updated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/difficulty-levels-schemas.yaml#/components/schemas/DifficultyLevel"
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+    delete:
+      tags: [difficulty-levels]
+      operationId: gamesDeleteDifficultyLevel
+      summary: Delete difficulty level
+      description: Permanently delete a difficulty level from the system
+      parameters:
+        - name: difficultyLevelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Difficulty level deleted
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/games/difficulty-levels/{difficultyLevelId}/activate:
+    patch:
+      tags: [difficulty-levels]
+      operationId: gamesActivateDifficultyLevel
+      summary: Activate difficulty level
+      description: Mark a difficulty level as active and available
+      parameters:
+        - name: difficultyLevelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Difficulty level activated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/difficulty-levels-schemas.yaml#/components/schemas/DifficultyLevel"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/games/difficulty-levels/{difficultyLevelId}/deactivate:
+    patch:
+      tags: [difficulty-levels]
+      operationId: gamesDeactivateDifficultyLevel
+      summary: Deactivate difficulty level
+      description: Mark a difficulty level as inactive and unavailable
+      parameters:
+        - name: difficultyLevelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Difficulty level deactivated
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/difficulty-levels-schemas.yaml#/components/schemas/DifficultyLevel"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"

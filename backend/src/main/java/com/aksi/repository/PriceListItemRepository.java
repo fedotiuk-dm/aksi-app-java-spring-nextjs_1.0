@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.aksi.api.service.dto.ServiceCategoryType;
+import com.aksi.api.pricelist.dto.ServiceCategoryType;
 import com.aksi.domain.catalog.PriceListItemEntity;
 
 /** Repository for PriceListItem entity */

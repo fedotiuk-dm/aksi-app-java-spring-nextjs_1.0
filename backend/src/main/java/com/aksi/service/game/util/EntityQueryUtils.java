@@ -67,21 +67,4 @@ public class EntityQueryUtils {
         .findById(serviceTypeId)
         .orElseThrow(() -> new NotFoundException("Service type not found: " + serviceTypeId));
   }
-
-  /**
-   * Find multiple entities at once with consistent error handling.
-   *
-   * @param gameId Game ID
-   * @param difficultyLevelId Difficulty level ID
-   * @param serviceTypeId Service type ID
-   * @return Array of found entities [game, difficultyLevel, serviceType]
-   * @throws NotFoundException if any entity not found
-   */
-  public Object[] findEntities(UUID gameId, UUID difficultyLevelId, UUID serviceTypeId) {
-    GameEntity game = findGameEntity(gameId);
-    DifficultyLevelEntity difficultyLevel = findDifficultyLevelEntity(difficultyLevelId);
-    ServiceTypeEntity serviceType = findServiceTypeEntity(serviceTypeId);
-
-    return new Object[] {game, difficultyLevel, serviceType};
-  }
 }

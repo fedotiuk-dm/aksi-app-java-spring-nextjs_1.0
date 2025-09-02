@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.domain.game.BoosterEntity;
 import com.aksi.domain.game.DifficultyLevelEntity;
 import com.aksi.domain.game.GameEntity;
 import com.aksi.domain.game.PriceConfigurationEntity;
@@ -17,6 +16,7 @@ import com.aksi.repository.GameRepository;
 import com.aksi.repository.PriceConfigurationRepository;
 import com.aksi.repository.ServiceTypeRepository;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,20 +34,7 @@ public class GameEntityQueryService {
   private final DifficultyLevelRepository difficultyLevelRepository;
   private final ServiceTypeRepository serviceTypeRepository;
   private final PriceConfigurationRepository priceConfigurationRepository;
-  private final BoosterRepository boosterRepository;
-
-  /**
-   * Find game by ID.
-   *
-   * @param gameId Game ID
-   * @return Game entity
-   * @throws NotFoundException if game not found
-   */
-  public GameEntity findGameById(UUID gameId) {
-    return gameRepository
-        .findById(gameId)
-        .orElseThrow(() -> new NotFoundException("Game not found: " + gameId));
-  }
+  @Getter private final BoosterRepository boosterRepository;
 
   /**
    * Find game by code.
@@ -60,20 +47,6 @@ public class GameEntityQueryService {
     return gameRepository
         .findByCode(gameCode)
         .orElseThrow(() -> new NotFoundException("Game not found: " + gameCode));
-  }
-
-  /**
-   * Find difficulty level by ID.
-   *
-   * @param difficultyLevelId Difficulty level ID
-   * @return Difficulty level entity
-   * @throws NotFoundException if difficulty level not found
-   */
-  public DifficultyLevelEntity findDifficultyLevelById(UUID difficultyLevelId) {
-    return difficultyLevelRepository
-        .findById(difficultyLevelId)
-        .orElseThrow(
-            () -> new NotFoundException("Difficulty level not found: " + difficultyLevelId));
   }
 
   /**
@@ -91,19 +64,6 @@ public class GameEntityQueryService {
   }
 
   /**
-   * Find service type by ID.
-   *
-   * @param serviceTypeId Service type ID
-   * @return Service type entity
-   * @throws NotFoundException if service type not found
-   */
-  public ServiceTypeEntity findServiceTypeById(UUID serviceTypeId) {
-    return serviceTypeRepository
-        .findById(serviceTypeId)
-        .orElseThrow(() -> new NotFoundException("Service type not found: " + serviceTypeId));
-  }
-
-  /**
    * Find service type by game ID and code.
    *
    * @param gameId Game ID
@@ -115,20 +75,6 @@ public class GameEntityQueryService {
     return serviceTypeRepository
         .findByGameIdAndCode(gameId, serviceCode)
         .orElseThrow(() -> new NotFoundException("Service type not found: " + serviceCode));
-  }
-
-  /**
-   * Find price configuration by ID.
-   *
-   * @param priceConfigurationId Price configuration ID
-   * @return Price configuration entity
-   * @throws NotFoundException if price configuration not found
-   */
-  public PriceConfigurationEntity findPriceConfigurationById(UUID priceConfigurationId) {
-    return priceConfigurationRepository
-        .findById(priceConfigurationId)
-        .orElseThrow(
-            () -> new NotFoundException("Price configuration not found: " + priceConfigurationId));
   }
 
   /**
@@ -154,18 +100,5 @@ public class GameEntityQueryService {
                         + difficultyLevelId
                         + ", service: "
                         + serviceTypeId));
-  }
-
-  /**
-   * Find booster by ID.
-   *
-   * @param boosterId Booster ID
-   * @return Booster entity
-   * @throws NotFoundException if booster not found
-   */
-  public BoosterEntity findBoosterById(UUID boosterId) {
-    return boosterRepository
-        .findById(boosterId)
-        .orElseThrow(() -> new NotFoundException("Booster not found: " + boosterId));
   }
 }

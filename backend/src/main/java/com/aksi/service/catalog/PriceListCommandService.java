@@ -5,9 +5,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.api.service.dto.CreatePriceListItemRequest;
-import com.aksi.api.service.dto.PriceListItemInfo;
-import com.aksi.api.service.dto.UpdatePriceListItemRequest;
+import com.aksi.api.pricelist.dto.CreatePriceListItemRequest;
+import com.aksi.api.pricelist.dto.PriceListItemInfo;
+import com.aksi.api.pricelist.dto.UpdatePriceListItemRequest;
 import com.aksi.domain.catalog.PriceListItemEntity;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.PriceListItemMapper;

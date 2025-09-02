@@ -8,11 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aksi.api.game.dto.CreateServiceTypeRequest;
 import com.aksi.api.game.dto.ServiceType;
 import com.aksi.api.game.dto.UpdateServiceTypeRequest;
-import com.aksi.domain.game.GameEntity;
 import com.aksi.domain.game.ServiceTypeEntity;
 import com.aksi.exception.NotFoundException;
-import com.aksi.mapper.ServiceTypeMapper;
 import com.aksi.repository.ServiceTypeRepository;
+import com.aksi.service.game.factory.ServiceTypeFactory;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ServiceTypeCommandService {
 
   private final ServiceTypeRepository serviceTypeRepository;
-  private final ServiceTypeMapper serviceTypeMapper;
   private final ServiceTypeValidationService validationService;
-  private final GameQueryService gameQueryService;
+  private final ServiceTypeFactory serviceTypeFactory;
 
   /**
    * Create a new service type.
@@ -46,17 +44,14 @@ public class ServiceTypeCommandService {
     // Validate request
     validationService.validateForCreate(request);
 
-    // Find required entities using utility
-    GameEntity game = gameQueryService.findGameEntityById(request.getGameId());
+    // Create entity using factory
+    ServiceTypeEntity entity = serviceTypeFactory.createEntity(request);
 
-    // Create entity
-    ServiceTypeEntity entity = serviceTypeMapper.toServiceTypeEntity(request);
-    entity.setGame(game);
-
+    // Save entity
     ServiceTypeEntity savedEntity = serviceTypeRepository.save(entity);
     log.info("Created service type with id: {}", savedEntity.getId());
 
-    return serviceTypeMapper.toServiceTypeDto(savedEntity);
+    return serviceTypeFactory.toDto(savedEntity);
   }
 
   /**
@@ -81,25 +76,18 @@ public class ServiceTypeCommandService {
             .orElseThrow(
                 () -> new NotFoundException("Service type not found with id: " + serviceTypeId));
 
-    // Find required entities using utility
-    GameEntity game = gameQueryService.findGameEntityById(request.getGameId());
+    // Update entity using factory
+    ServiceTypeEntity updatedEntity = serviceTypeFactory.updateEntity(existingEntity, request);
 
-    // Update fields
-    existingEntity.setGame(game);
-    existingEntity.setCode(request.getCode());
-    existingEntity.setName(request.getName());
-    existingEntity.setDescription(request.getDescription());
-    existingEntity.setActive(request.getActive());
-    existingEntity.setSortOrder(request.getSortOrder());
-
-    ServiceTypeEntity savedEntity = serviceTypeRepository.save(existingEntity);
+    // Save updated entity
+    ServiceTypeEntity savedEntity = serviceTypeRepository.save(updatedEntity);
     log.info("Updated service type with id: {}", savedEntity.getId());
 
-    return serviceTypeMapper.toServiceTypeDto(savedEntity);
+    return serviceTypeFactory.toDto(savedEntity);
   }
 
   /**
-   * Soft delete a service type by setting it as inactive.
+   * Delete a service type by setting it as inactive.
    *
    * @param serviceTypeId Service type ID
    * @throws NotFoundException if service type not found
@@ -117,71 +105,5 @@ public class ServiceTypeCommandService {
     serviceTypeRepository.save(entity);
 
     log.info("Deleted service type with id: {}", serviceTypeId);
-  }
-
-  /**
-   * Restore a soft deleted service type by setting it as active.
-   *
-   * @param serviceTypeId Service type ID
-   * @return Restored service type
-   * @throws NotFoundException if service type not found
-   */
-  public ServiceType restoreServiceType(UUID serviceTypeId) {
-    log.info("Restoring service type with id: {}", serviceTypeId);
-
-    ServiceTypeEntity entity =
-        serviceTypeRepository
-            .findById(serviceTypeId)
-            .orElseThrow(
-                () -> new NotFoundException("Service type not found with id: " + serviceTypeId));
-
-    entity.setActive(true);
-    ServiceTypeEntity savedEntity = serviceTypeRepository.save(entity);
-
-    log.info("Restored service type with id: {}", serviceTypeId);
-
-    return serviceTypeMapper.toServiceTypeDto(savedEntity);
-  }
-
-  /**
-   * Activate a service type.
-   *
-   * @param serviceTypeId Service type ID
-   * @return Updated service type
-   */
-  public ServiceType activateServiceType(UUID serviceTypeId) {
-    log.info("Activating service type: {}", serviceTypeId);
-
-    ServiceTypeEntity entity =
-        serviceTypeRepository
-            .findById(serviceTypeId)
-            .orElseThrow(() -> new NotFoundException("Service type not found: " + serviceTypeId));
-
-    entity.setActive(true);
-    ServiceTypeEntity saved = serviceTypeRepository.save(entity);
-
-    log.info("Activated service type: {}", serviceTypeId);
-    return serviceTypeMapper.toServiceTypeDto(saved);
-  }
-
-  /**
-   * Deactivate a service type.
-   *
-   * @param serviceTypeId Service type ID
-   * @return Updated service type
-   */
-  public ServiceType deactivateServiceType(UUID serviceTypeId) {
-    log.info("Deactivating service type: {}", serviceTypeId);
-
-    ServiceTypeEntity entity =
-        serviceTypeRepository
-            .findById(serviceTypeId)
-            .orElseThrow(() -> new NotFoundException("Service type not found: " + serviceTypeId));
-
-    entity.setActive(false);
-    ServiceTypeEntity saved = serviceTypeRepository.save(entity);
-
-    log.info("Deactivated service type: {}", serviceTypeId);
-    return serviceTypeMapper.toServiceTypeDto(saved);
   }
 }

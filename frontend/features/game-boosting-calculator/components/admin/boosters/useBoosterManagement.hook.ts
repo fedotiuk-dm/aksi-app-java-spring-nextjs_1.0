@@ -4,19 +4,24 @@
  */
 
 import { useEffect } from 'react';
-import { useListBoosters, useCreateBooster, useUpdateBooster, useDeleteBooster } from '@api/game';
+import {
+  useGamesListBoosters,
+  useGamesCreateBooster,
+  useGamesUpdateBooster,
+  useGamesDeleteBooster,
+} from '@api/game';
 import { useBoosterManagementStore } from '../../../store/booster-management-store';
 
 export const useBoosterManagement = () => {
   // Orval API hooks
-  const listBoostersQuery = useListBoosters({
+  const listBoostersQuery = useGamesListBoosters({
     page: 0,
     size: 100,
     active: true,
   });
-  const createBoosterMutation = useCreateBooster();
-  const updateBoosterMutation = useUpdateBooster();
-  const deleteBoosterMutation = useDeleteBooster();
+  const createBoosterMutation = useGamesCreateBooster();
+  const updateBoosterMutation = useGamesUpdateBooster();
+  const deleteBoosterMutation = useGamesDeleteBooster();
 
   // UI state from store
   const { setBoosters, setLoading, setError, clearError } = useBoosterManagementStore();
@@ -79,7 +84,7 @@ export const useBoosterManagement = () => {
   ) => {
     try {
       await updateBoosterMutation.mutateAsync({
-        id: boosterId,
+        boosterId,
         data: boosterData,
       });
       // List will automatically refresh due to React Query
@@ -91,7 +96,7 @@ export const useBoosterManagement = () => {
 
   const handleDeleteBooster = async (boosterId: string) => {
     try {
-      await deleteBoosterMutation.mutateAsync({ id: boosterId });
+      await deleteBoosterMutation.mutateAsync({ boosterId });
       // List will automatically refresh due to React Query
     } catch (error) {
       console.error('Failed to delete booster:', error);

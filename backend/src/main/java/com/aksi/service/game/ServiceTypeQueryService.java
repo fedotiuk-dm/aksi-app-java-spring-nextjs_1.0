@@ -1,7 +1,5 @@
 package com.aksi.service.game;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -9,13 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.api.game.dto.Game.CategoryEnum;
 import com.aksi.api.game.dto.ServiceType;
 import com.aksi.api.game.dto.ServiceTypeListResponse;
 import com.aksi.domain.game.ServiceTypeEntity;
 import com.aksi.exception.NotFoundException;
-import com.aksi.mapper.ServiceTypeMapper;
 import com.aksi.repository.ServiceTypeRepository;
+import com.aksi.service.game.factory.ServiceTypeFactory;
 import com.aksi.util.PaginationUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ServiceTypeQueryService {
 
   private final ServiceTypeRepository serviceTypeRepository;
-  private final ServiceTypeMapper serviceTypeMapper;
+  private final ServiceTypeFactory serviceTypeFactory;
 
   /**
    * Get service type by ID.
@@ -50,44 +47,7 @@ public class ServiceTypeQueryService {
             .orElseThrow(
                 () -> new NotFoundException("Service type not found with id: " + serviceTypeId));
 
-    return serviceTypeMapper.toServiceTypeDto(entity);
-  }
-
-  /**
-   * Get service type by code.
-   *
-   * @param code Service type code
-   * @return Optional service type
-   */
-  public Optional<ServiceType> getServiceTypeByCode(String code) {
-    log.debug("Getting service type by code: {}", code);
-
-    return serviceTypeRepository.findByCode(code).map(serviceTypeMapper::toServiceTypeDto);
-  }
-
-  /**
-   * Get all active service types.
-   *
-   * @return List of active service types
-   */
-  public List<ServiceType> getAllActiveServiceTypes() {
-    log.debug("Getting all active service types");
-
-    List<ServiceTypeEntity> entities = serviceTypeRepository.findByActiveTrueOrderBySortOrderAsc();
-    return serviceTypeMapper.toServiceTypeDtoList(entities);
-  }
-
-  /**
-   * Get service types by game ID.
-   *
-   * @param gameId Game ID
-   * @return List of service types for the game
-   */
-  public List<ServiceType> getServiceTypesByGameId(UUID gameId) {
-    log.debug("Getting service types by game id: {}", gameId);
-
-    List<ServiceTypeEntity> entities = serviceTypeRepository.findByGameIdAndActiveTrue(gameId);
-    return serviceTypeMapper.toServiceTypeDtoList(entities);
+    return serviceTypeFactory.toDto(entity);
   }
 
   /**
@@ -129,55 +89,6 @@ public class ServiceTypeQueryService {
     Page<ServiceTypeEntity> serviceTypePage =
         serviceTypeRepository.findServiceTypesWithSearch(active, gameId, searchTerm, pageable);
 
-    return buildServiceTypesResponse(serviceTypePage);
-  }
-
-  /**
-   * Search service types by name.
-   *
-   * @param searchTerm Search term
-   * @return List of matching service types
-   */
-  public List<ServiceType> searchServiceTypesByName(String searchTerm) {
-    log.debug("Searching service types by name: {}", searchTerm);
-
-    List<ServiceTypeEntity> entities = serviceTypeRepository.searchByName(searchTerm);
-    return serviceTypeMapper.toServiceTypeDtoList(entities);
-  }
-
-  /**
-   * Get distinct categories from active service types.
-   *
-   * @return List of distinct categories
-   */
-  public List<String> getDistinctCategories() {
-    log.debug("Getting distinct categories from active service types");
-
-    return serviceTypeRepository.findDistinctCategories().stream()
-        .map(CategoryEnum::toString)
-        .toList();
-  }
-
-  /**
-   * Build service types response from page.
-   *
-   * @param serviceTypePage Page of service type entities
-   * @return Service types response
-   */
-  private ServiceTypeListResponse buildServiceTypesResponse(
-      Page<ServiceTypeEntity> serviceTypePage) {
-    List<ServiceType> serviceTypes =
-        serviceTypeMapper.toServiceTypeDtoList(serviceTypePage.getContent());
-
-    return new ServiceTypeListResponse(
-        serviceTypes,
-        serviceTypePage.getTotalElements(),
-        serviceTypePage.getTotalPages(),
-        serviceTypePage.getSize(),
-        serviceTypePage.getNumber(),
-        serviceTypePage.getNumberOfElements(),
-        serviceTypePage.isFirst(),
-        serviceTypePage.isLast(),
-        serviceTypePage.isEmpty());
+    return serviceTypeFactory.createListResponse(serviceTypePage);
   }
 }

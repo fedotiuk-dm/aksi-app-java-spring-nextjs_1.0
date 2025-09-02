@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aksi.api.service.dto.ServiceCategoryType;
+import com.aksi.api.pricelist.dto.ServiceCategoryType;
 import com.aksi.repository.PriceListItemRepository;
 
 import lombok.RequiredArgsConstructor;

@@ -1,0 +1,162 @@
+openapi: 3.0.4
+info:
+  title: Order API
+  description: Order management API for dry cleaning service
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: orders
+    description: Order management operations
+
+paths:
+  # Order endpoints
+  /api/orders:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders"
+  /api/orders/by-status:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1by-status"
+  /api/orders/due-for-completion:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1due-for-completion"
+  /api/orders/overdue:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1overdue"
+
+  /api/orders/customer/{customerId}/history:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1customer~1{customerId}~1history"
+  /api/orders/customer/{customerId}/recent:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1customer~1{customerId}~1recent"
+  /api/orders/{orderId}:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}"
+  /api/orders/{orderId}/items/{itemId}/characteristics:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1items~1{itemId}~1characteristics"
+  /api/orders/{orderId}/items/{itemId}/photos:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1items~1{itemId}~1photos"
+  /api/orders/{orderId}/items/{itemId}/photos/{photoId}:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1items~1{itemId}~1photos~1{photoId}"
+  /api/orders/{orderId}/receipt:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1receipt"
+  /api/orders/{orderId}/signature:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1signature"
+  /api/orders/{orderId}/items:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1items"
+  /api/orders/{orderId}/payments:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1payments"
+  /api/orders/{orderId}/payment:
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1payment"
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION
+      description: Session cookie authentication
+
+  responses:
+    BadRequest:
+      $ref: "../common.yaml#/components/responses/BadRequest"
+    Unauthorized:
+      $ref: "../common.yaml#/components/responses/Unauthorized"
+    Forbidden:
+      $ref: "../common.yaml#/components/responses/Forbidden"
+    NotFound:
+      $ref: "../common.yaml#/components/responses/NotFound"
+    Conflict:
+      $ref: "../common.yaml#/components/responses/Conflict"
+
+  parameters:
+    PageNumber:
+      $ref: "../common.yaml#/components/parameters/PageNumber"
+    PageSize:
+      $ref: "../common.yaml#/components/parameters/PageSize"
+    SortBy:
+      $ref: "../common.yaml#/components/parameters/SortBy"
+    SortOrder:
+      $ref: "../common.yaml#/components/parameters/SortOrder"
+    CustomerId:
+      $ref: "../common.yaml#/components/parameters/CustomerId"
+    BranchId:
+      $ref: "../common.yaml#/components/parameters/BranchId"
+    DateFrom:
+      $ref: "../common.yaml#/components/parameters/DateFrom"
+    DateTo:
+      $ref: "../common.yaml#/components/parameters/DateTo"
+
+  schemas:
+    # Import all schemas from order-schemas.yaml
+    OrderInfo:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/OrderInfo"
+    CustomerSummary:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/CustomerSummary"
+    OrderItemInfo:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/OrderItemInfo"
+    PriceListItemSummary:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/PriceListItemSummary"
+    OrderItemCharacteristics:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/OrderItemCharacteristics"
+    ItemStain:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/ItemStain"
+    ItemDefect:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/ItemDefect"
+    ItemRisk:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/ItemRisk"
+    ItemPhotoInfo:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/ItemPhotoInfo"
+    OrderItemModifier:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/OrderItemModifier"
+    OrderItemPricingInfo:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/OrderItemPricingInfo"
+    OrderModifierDetail:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/OrderModifierDetail"
+    OrderPricingInfo:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/OrderPricingInfo"
+    PaymentInfo:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/PaymentInfo"
+    CreateOrderRequest:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/CreateOrderRequest"
+    UpdateOrderStatusRequest:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/UpdateOrderStatusRequest"
+    UpdateItemCharacteristicsRequest:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/UpdateItemCharacteristicsRequest"
+    AddPaymentRequest:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/AddPaymentRequest"
+    SaveSignatureRequest:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/SaveSignatureRequest"
+    OrderListResponse:
+      $ref: "./schemas/order-schemas.yaml#/components/schemas/OrderListResponse"
+
+    # Common schemas (if needed locally)
+    OrderStatus:
+      $ref: "../common.yaml#/components/schemas/OrderStatus"
+    PhotoType:
+      $ref: "../common.yaml#/components/schemas/PhotoType"
+    PaymentMethod:
+      $ref: "../common.yaml#/components/schemas/PaymentMethod"
+    ServiceCategoryType:
+      $ref: "../common.yaml#/components/schemas/ServiceCategoryType"
+    UnitOfMeasure:
+      $ref: "../common.yaml#/components/schemas/UnitOfMeasure"
+    FillerCondition:
+      $ref: "../common.yaml#/components/schemas/FillerCondition"
+    WearLevel:
+      $ref: "../common.yaml#/components/schemas/WearLevel"
+    StainType:
+      $ref: "../common.yaml#/components/schemas/StainType"
+    DefectType:
+      $ref: "../common.yaml#/components/schemas/DefectType"
+    RiskType:
+      $ref: "../common.yaml#/components/schemas/RiskType"
+    ModifierType:
+      $ref: "../common.yaml#/components/schemas/ModifierType"
+    PaginatedResponse:
+      $ref: "../common.yaml#/components/schemas/PaginatedResponse"
+
+security:
+  - cookieAuth: []
