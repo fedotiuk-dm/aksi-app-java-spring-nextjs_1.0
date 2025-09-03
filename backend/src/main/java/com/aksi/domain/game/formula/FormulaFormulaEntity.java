@@ -16,8 +16,8 @@ import lombok.Setter;
  * <p>
  * Example:
  * expression = "basePrice + (levelDiff * pricePerLevel * multiplier)"
- * variables = {"multiplier": 1.5}
- * Result: basePrice + (levelDiff × pricePerLevel × 1.5)
+ * variables = {"multiplier": 150}
+ * Result: basePrice + (levelDiff × pricePerLevel × 150 / 100)
  */
 public class FormulaFormulaEntity extends CalculationFormulaEntity {
 

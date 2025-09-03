@@ -1,6 +1,5 @@
 package com.aksi.domain.game.formula;
 
-
 import java.util.Objects;
 
 import com.aksi.api.game.dto.CalculationFormula.TypeEnum;
@@ -16,16 +15,15 @@ import lombok.Setter;
  * hourlyRate = 2000 cents/hour ($20)
  * baseHours = 8 hours
  * hoursPerLevel = 1 hour per level
- * complexityMultiplier = 1.5
+ * complexityMultiplier = 150 (150% = 1.5x)
  * For levels 1-10: 8 + (9 × 1) = 17 hours
- * Result: 2000 × 17 × 1.5 = 51000 cents ($510)
+ * Result: 2000 × 17 × 150 / 100 = 51000 cents ($510)
  */
 @Setter
 @Getter
 public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
 
-  // Гетери та сетери
-  @JsonProperty("hourlyRate")
+    @JsonProperty("hourlyRate")
     private Integer hourlyRate;
 
     @JsonProperty("baseHours")
@@ -35,7 +33,7 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
     private int hoursPerLevel;
 
     @JsonProperty("complexityMultiplier")
-    private Float complexityMultiplier;
+    private Integer complexityMultiplier; // Changed to Integer to match the error
 
     @JsonProperty("minimumHours")
     private Integer minimumHours;
@@ -46,11 +44,11 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
     // Конструктори
     public TimeBasedFormulaEntity() {
         super(TypeEnum.TIME_BASED);
-        this.complexityMultiplier = 1.0f;
+        this.complexityMultiplier = 100;
         this.roundToHours = true;
     }
 
-  @Override
+    @Override
     public Integer calculate(Integer basePrice, int fromLevel, int toLevel) {
         if (basePrice == null) {
             throw new IllegalArgumentException("Base price cannot be null");
@@ -58,13 +56,15 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
         if (hourlyRate == null) {
             throw new IllegalArgumentException("Hourly rate cannot be null");
         }
+        if (complexityMultiplier == null) {
+            throw new IllegalArgumentException("Complexity multiplier cannot be null");
+        }
 
         int finalEstimatedHours = calculateEstimatedHours(fromLevel, toLevel);
 
         // Calculate time cost with integer arithmetic
-        // Convert complexityMultiplier to integer percentage (1.5 = 150%)
-        int complexityPercent = complexityMultiplier != null ?
-            Math.round(complexityMultiplier * 100.0f) : 100;
+        // complexityMultiplier is already in percentage (100 = 1.0x)
+        int complexityPercent = complexityMultiplier; // Now safe since we checked for null above
 
         long timeCost = (long) hourlyRate * finalEstimatedHours * complexityPercent / 100;
 
@@ -88,7 +88,6 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
 
         // Округлення до повних годин якщо потрібно
         if (roundToHours) {
-            finalEstimatedHours = (int) (double) finalEstimatedHours;
             finalEstimatedHours = Math.max(minHours, finalEstimatedHours);
         }
 
@@ -109,7 +108,7 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
         if (hoursPerLevel < 0) {
             throw new IllegalArgumentException("Hours per level cannot be negative");
         }
-        if (complexityMultiplier != null && complexityMultiplier <= 0.0f) {
+        if (complexityMultiplier == null || complexityMultiplier <= 0) {
             throw new IllegalArgumentException("Complexity multiplier must be positive");
         }
         if (minimumHours != null && minimumHours <= 0) {
@@ -117,7 +116,7 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
         }
     }
 
-  @Override
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

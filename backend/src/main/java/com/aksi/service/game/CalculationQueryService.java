@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.game.dto.CalculationBreakdown;
 import com.aksi.api.game.dto.CalculationMetadata;
+import com.aksi.api.game.dto.GameModifierOperation;
 import com.aksi.api.game.dto.ModifierAdjustment;
 import com.aksi.api.game.dto.UniversalCalculationRequest;
 import com.aksi.api.game.dto.UniversalCalculationResponse;
-import com.aksi.api.game.dto.GameModifierOperation;
 import com.aksi.api.game.dto.UniversalCalculationResponse.FormulaTypeEnum;
 import com.aksi.domain.game.GameModifierEntity;
 import com.aksi.domain.game.formula.CalculationFormulaEntity;
@@ -260,14 +260,23 @@ public class CalculationQueryService {
       return 0;
     }
 
-    // Convert modifier value to integer (assuming it's a percentage for MULTIPLY/DIVIDE)
-    int modifierValue = Math.round(modifier.getValue()); // 50 stays 50 (represents 50%)
+    // Get modifier value (already an integer, represents percentage for MULTIPLY/DIVIDE)
+    int modifierValue = modifier.getValue(); // 50 represents 50%
 
     return switch (modifier.getOperation()) {
       case ADD -> {
-        // Basic addition - can be enhanced with level multiplier
-        int levelDiff = Math.max(0, targetLevel - startLevel);
-        yield modifierValue * Math.max(1, levelDiff);
+        // Check if this is a fixed cost modifier (ranked/PvP) or level-dependent
+        if (modifier.getCode() != null &&
+            (modifier.getCode().contains("RANKED") ||
+             modifier.getCode().contains("PVP") ||
+             modifier.getCode().contains("RP"))) {
+          // Fixed addition for ranked/PvP systems (independent of levels)
+          yield modifierValue;
+        } else {
+          // Level-dependent addition for regular boosts
+          int levelDiff = Math.max(0, targetLevel - startLevel);
+          yield modifierValue * Math.max(1, levelDiff);
+        }
       }
       case SUBTRACT -> -modifierValue;
       case MULTIPLY -> {

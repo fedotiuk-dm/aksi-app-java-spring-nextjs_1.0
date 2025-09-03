@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import com.aksi.api.game.dto.CalculationFormula.TypeEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
 /**
  * Range-based calculation formula.
@@ -19,9 +20,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * ]
  * For levels 1-8: 4.0 + 5.0 = 9.0 (only ranges that are fully covered)
  */
+@Getter
 public class RangeFormulaEntity extends CalculationFormulaEntity {
 
-    @JsonProperty("ranges")
+  // Гетери та методи для роботи з діапазонами
+  @JsonProperty("ranges")
     private final List<PriceRangeEntity> ranges = new ArrayList<>();
 
     // Конструктори
@@ -82,14 +85,8 @@ public class RangeFormulaEntity extends CalculationFormulaEntity {
         return r1.getFrom() <= r2.getTo() && r2.getFrom() <= r1.getTo();
     }
 
-    // Гетери та методи для роботи з діапазонами
-    public List<PriceRangeEntity> getRanges() {
-        return ranges;
-    }
 
-
-
-    @Override
+  @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
