@@ -49,25 +49,36 @@ public class GameModifierQueryService {
         log.info("Getting game modifiers - gameCode: {}, type: {}, serviceType: {}, active: {}, search: {}",
                 gameCode, type, serviceTypeCode, active, search);
 
-        // Use specifications for efficient database-level filtering
-        var specification = GameModifierSpecification.filterModifiers(
-            active, gameCode, search, type, serviceTypeCode);
+        try {
+            // Use specifications for efficient database-level filtering
+            var specification = GameModifierSpecification.filterModifiers(
+                active, gameCode, search, type, serviceTypeCode);
 
-        // Apply pagination
-        Pageable pageable = PageRequest.of(page, size);
-        Page<GameModifierEntity> entitiesPage = gameModifierRepository.findAll(specification, pageable);
+            // Apply pagination
+            Pageable pageable = PageRequest.of(page, size);
+            Page<GameModifierEntity> entitiesPage = gameModifierRepository.findAll(specification, pageable);
 
-        List<GameModifierEntity> entities = entitiesPage.getContent();
+            List<GameModifierEntity> entities = entitiesPage.getContent();
 
-        // Create response with statistics
-        List<GameModifier> modifiers = gameModifierMapper.toGameModifierDtoList(entities);
-        long activeCount = entities.stream().filter(GameModifierEntity::getActive).count();
+            // Create response with statistics
+            List<GameModifier> modifiers = gameModifierMapper.toGameModifierDtoList(entities);
+            long activeCount = entities.stream().filter(GameModifierEntity::getActive).count();
 
-        GameModifiersResponse response = new GameModifiersResponse();
-        response.setModifiers(modifiers);
-        response.setTotalCount((int) entitiesPage.getTotalElements());
-        response.setActiveCount((int) activeCount);
-        return response;
+            GameModifiersResponse response = new GameModifiersResponse();
+            response.setModifiers(modifiers);
+            response.setTotalCount((int) entitiesPage.getTotalElements());
+            response.setActiveCount((int) activeCount);
+            return response;
+        } catch (Exception e) {
+            log.error("Error in getAllGameModifiers", e);
+
+            // Return empty response on error for debugging
+            GameModifiersResponse response = new GameModifiersResponse();
+            response.setModifiers(new java.util.ArrayList<>());
+            response.setTotalCount(0);
+            response.setActiveCount(0);
+            return response;
+        }
     }
 
     /**

@@ -19,18 +19,12 @@ import {
   MenuItem,
   Box,
 } from '@mui/material';
-import type { Game } from '@api/game';
+import type { Game, CreateServiceTypeRequest } from '@api/game';
 
 interface ServiceTypeCreateModalProps {
   children: React.ReactNode;
   games: Game[];
-  onCreate: (serviceTypeData: {
-    name: string;
-    code: string;
-    gameId: string;
-    basePrice: number;
-    description?: string;
-  }) => Promise<void>;
+  onCreate: (serviceTypeData: CreateServiceTypeRequest) => Promise<void>;
 }
 
 export const ServiceTypeCreateModal: React.FC<ServiceTypeCreateModalProps> = ({
@@ -43,7 +37,7 @@ export const ServiceTypeCreateModal: React.FC<ServiceTypeCreateModalProps> = ({
     name: '',
     code: '',
     gameId: '',
-    basePrice: 0,
+    baseMultiplier: 100,
     description: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,7 +45,7 @@ export const ServiceTypeCreateModal: React.FC<ServiceTypeCreateModalProps> = ({
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setFormData({ name: '', code: '', gameId: '', basePrice: 0, description: '' });
+    setFormData({ name: '', code: '', gameId: '', baseMultiplier: 100, description: '' });
   };
 
   const handleSubmit = async () => {
@@ -59,7 +53,7 @@ export const ServiceTypeCreateModal: React.FC<ServiceTypeCreateModalProps> = ({
       !formData.name.trim() ||
       !formData.code.trim() ||
       !formData.gameId ||
-      formData.basePrice <= 0
+      formData.baseMultiplier <= 0
     ) {
       return;
     }
@@ -70,7 +64,7 @@ export const ServiceTypeCreateModal: React.FC<ServiceTypeCreateModalProps> = ({
         name: formData.name.trim(),
         code: formData.code.trim(),
         gameId: formData.gameId,
-        basePrice: formData.basePrice,
+        baseMultiplier: formData.baseMultiplier,
         description: formData.description.trim() || undefined,
       });
       handleClose();
@@ -128,13 +122,13 @@ export const ServiceTypeCreateModal: React.FC<ServiceTypeCreateModalProps> = ({
             </FormControl>
 
             <TextField
-              label="Base Price"
+              label="Base Multiplier (basis points)"
               type="number"
-              value={formData.basePrice}
+              value={formData.baseMultiplier}
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
-                  basePrice: parseFloat(e.target.value) || 0,
+                  baseMultiplier: parseFloat(e.target.value) || 0,
                 }))
               }
               fullWidth
@@ -165,7 +159,7 @@ export const ServiceTypeCreateModal: React.FC<ServiceTypeCreateModalProps> = ({
               !formData.name.trim() ||
               !formData.code.trim() ||
               !formData.gameId ||
-              formData.basePrice <= 0 ||
+              formData.baseMultiplier <= 0 ||
               isSubmitting
             }
           >

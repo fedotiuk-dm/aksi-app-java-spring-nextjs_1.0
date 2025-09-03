@@ -33,7 +33,7 @@ interface ServiceTypeEditModalProps {
       name?: string;
       code?: string;
       gameId?: string;
-      basePrice?: number;
+      baseMultiplier?: number;
       description?: string;
       active?: boolean;
     }
@@ -51,7 +51,7 @@ export const ServiceTypeEditModal: React.FC<ServiceTypeEditModalProps> = ({
     name: '',
     code: '',
     gameId: '',
-    basePrice: 0,
+    baseMultiplier: 100,
     description: '',
     active: true,
   });
@@ -63,7 +63,7 @@ export const ServiceTypeEditModal: React.FC<ServiceTypeEditModalProps> = ({
         name: serviceType.name,
         code: serviceType.code,
         gameId: serviceType.gameId,
-        basePrice: serviceType.basePrice,
+        baseMultiplier: serviceType.baseMultiplier,
         description: serviceType.description || '',
         active: serviceType.active,
       });
@@ -80,7 +80,7 @@ export const ServiceTypeEditModal: React.FC<ServiceTypeEditModalProps> = ({
       !formData.name.trim() ||
       !formData.code.trim() ||
       !formData.gameId ||
-      formData.basePrice <= 0
+      formData.baseMultiplier <= 0
     ) {
       return;
     }
@@ -91,7 +91,7 @@ export const ServiceTypeEditModal: React.FC<ServiceTypeEditModalProps> = ({
         name: formData.name.trim(),
         code: formData.code.trim(),
         gameId: formData.gameId,
-        basePrice: formData.basePrice,
+        baseMultiplier: formData.baseMultiplier,
         description: formData.description.trim() || undefined,
         active: formData.active,
       });
@@ -108,7 +108,7 @@ export const ServiceTypeEditModal: React.FC<ServiceTypeEditModalProps> = ({
       formData.name !== serviceType.name ||
       formData.code !== serviceType.code ||
       formData.gameId !== serviceType.gameId ||
-      formData.basePrice !== serviceType.basePrice ||
+      formData.baseMultiplier !== serviceType.baseMultiplier ||
       formData.description !== (serviceType.description || '') ||
       formData.active !== serviceType.active
     );
@@ -160,13 +160,13 @@ export const ServiceTypeEditModal: React.FC<ServiceTypeEditModalProps> = ({
             </FormControl>
 
             <TextField
-              label="Base Price"
+              label="Base Multiplier (basis points)"
               type="number"
-              value={formData.basePrice}
+              value={formData.baseMultiplier}
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
-                  basePrice: parseFloat(e.target.value) || 0,
+                  baseMultiplier: parseFloat(e.target.value) || 0,
                 }))
               }
               fullWidth
@@ -207,7 +207,7 @@ export const ServiceTypeEditModal: React.FC<ServiceTypeEditModalProps> = ({
               !formData.name.trim() ||
               !formData.code.trim() ||
               !formData.gameId ||
-              formData.basePrice <= 0 ||
+              formData.baseMultiplier <= 0 ||
               !hasChanges() ||
               isSubmitting
             }

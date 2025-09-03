@@ -20,21 +20,30 @@ import {
   Box,
   FormControlLabel,
   Switch,
+  Typography,
 } from '@mui/material';
-import { PricingModifierType, PricingOperationType, PriceModifier } from '@api/pricing';
+import {
+  GameModifierInfo,
+  GameModifierType,
+  GameModifierOperation,
+  UpdateGameModifierRequest,
+  Game,
+  ServiceType,
+} from '@api/game';
 
 interface ModifierEditModalProps {
   children: React.ReactNode;
-  modifier: PriceModifier;
-  onUpdate: (
-    modifierCode: string,
-    modifierData: Partial<Omit<PriceModifier, 'id' | 'createdAt' | 'updatedAt'>>
-  ) => Promise<void>;
+  modifier: GameModifierInfo;
+  games: Game[]; // Game objects for selection
+  serviceTypes: ServiceType[]; // Service type objects for selection
+  onUpdate: (id: string, modifierData: UpdateGameModifierRequest) => Promise<void>;
 }
 
 export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
   children,
   modifier,
+  games, // eslint-disable-line @typescript-eslint/no-unused-vars -- Will be used for game selection in future
+  serviceTypes,
   onUpdate,
 }) => {
   const [open, setOpen] = useState(false);
@@ -42,11 +51,14 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
     code: '',
     name: '',
     description: '',
-    type: '' as PricingModifierType,
-    operation: PricingOperationType.ADD,
+    type: '' as GameModifierType,
+    operation: '' as GameModifierOperation,
     value: 0,
+    serviceTypeCodes: [] as string[],
     sortOrder: 0,
     active: true,
+    icon: '',
+    color: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -57,10 +69,13 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
         name: modifier.name,
         description: modifier.description || '',
         type: modifier.type,
-        operation: modifier.operation || PricingOperationType.ADD,
+        operation: modifier.operation || 'ADD',
         value: modifier.value,
+        serviceTypeCodes: modifier.serviceTypeCodes || [],
         sortOrder: modifier.sortOrder || 0,
         active: modifier.active,
+        icon: modifier.icon || '',
+        color: modifier.color || '',
       });
     }
   }, [modifier]);
@@ -71,21 +86,30 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (!formData.code.trim() || !formData.name.trim() || !formData.type || formData.value <= 0) {
+    if (
+      !formData.code.trim() ||
+      !formData.name.trim() ||
+      !formData.type ||
+      !formData.operation ||
+      formData.value <= 0
+    ) {
       return;
     }
 
     setIsSubmitting(true);
     try {
       await onUpdate(modifier.code, {
-        code: formData.code.trim(),
-        name: formData.name.trim(),
+        name: formData.name.trim() || undefined,
         description: formData.description.trim() || undefined,
-        type: formData.type,
-        operation: formData.operation,
-        value: formData.value,
-        sortOrder: formData.sortOrder,
+        type: formData.type || undefined,
+        operation: formData.operation || undefined,
+        value: formData.value || undefined,
+        serviceTypeCodes:
+          formData.serviceTypeCodes.length > 0 ? formData.serviceTypeCodes : undefined,
+        sortOrder: formData.sortOrder || undefined,
         active: formData.active,
+        icon: formData.icon.trim() || undefined,
+        color: formData.color.trim() || undefined,
       });
       handleClose();
     } catch (error) {
@@ -103,20 +127,26 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
       formData.type !== modifier.type ||
       formData.operation !== modifier.operation ||
       formData.value !== modifier.value ||
+      JSON.stringify(formData.serviceTypeCodes.sort()) !==
+        JSON.stringify((modifier.serviceTypeCodes || []).sort()) ||
       formData.sortOrder !== (modifier.sortOrder || 0) ||
-      formData.active !== modifier.active
+      formData.active !== modifier.active ||
+      formData.icon !== (modifier.icon || '') ||
+      formData.color !== (modifier.color || '')
     );
   };
 
   const getValueHelperText = () => {
+    if (!formData.operation) return 'Value for the modifier';
+
     switch (formData.operation) {
-      case PricingOperationType.MULTIPLY:
+      case 'MULTIPLY':
         return 'Multiplier value (e.g., 150 = 1.5x multiplier)';
-      case PricingOperationType.ADD:
+      case 'ADD':
         return 'Fixed amount to add (in cents, e.g., 500 = $5.00)';
-      case PricingOperationType.SUBTRACT:
+      case 'SUBTRACT':
         return 'Fixed amount to subtract (in cents, e.g., 200 = -$2.00)';
-      case PricingOperationType.DIVIDE:
+      case 'DIVIDE':
         return 'Divider value (e.g., 200 = divide by 2)';
       default:
         return 'Value for the modifier operation';
@@ -130,20 +160,32 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
       </Box>
 
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-        <DialogTitle>Edit Price Modifier</DialogTitle>
+        <DialogTitle>Edit Game Modifier</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField
-              label="Modifier Code"
-              value={formData.code}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, code: e.target.value.toUpperCase() }))
-              }
-              fullWidth
-              required
-              autoFocus
-              helperText="Use uppercase letters, numbers, underscores and hyphens only"
-            />
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Modifier Code"
+                value={formData.code}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, code: e.target.value.toUpperCase() }))
+                }
+                fullWidth
+                required
+                autoFocus
+                helperText="Use uppercase letters, numbers, underscores and hyphens only"
+              />
+
+              <TextField
+                label="Game Code"
+                value={modifier.gameCode}
+                fullWidth
+                InputProps={{
+                  readOnly: true,
+                }}
+                helperText="Game code cannot be changed"
+              />
+            </Box>
 
             <TextField
               label="Modifier Name"
@@ -162,17 +204,17 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      type: e.target.value as PricingModifierType,
+                      type: e.target.value as GameModifierType,
                     }))
                   }
                 >
                   <MenuItem value="TIMING">Timing</MenuItem>
                   <MenuItem value="SUPPORT">Support</MenuItem>
                   <MenuItem value="MODE">Mode</MenuItem>
-                  <MenuItem value="MEDIA">Media</MenuItem>
-                  <MenuItem value="TEAM">Team</MenuItem>
                   <MenuItem value="QUALITY">Quality</MenuItem>
-                  <MenuItem value="URGENCY">Urgency</MenuItem>
+                  <MenuItem value="EXTRA">Extra</MenuItem>
+                  <MenuItem value="PROMOTIONAL">Promotional</MenuItem>
+                  <MenuItem value="SEASONAL">Seasonal</MenuItem>
                 </Select>
               </FormControl>
 
@@ -184,17 +226,54 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      operation: e.target.value as PricingOperationType,
+                      operation: e.target.value as GameModifierOperation,
                     }))
                   }
                 >
-                  <MenuItem value={PricingOperationType.ADD}>Add Fixed Amount</MenuItem>
-                  <MenuItem value={PricingOperationType.MULTIPLY}>Multiply</MenuItem>
-                  <MenuItem value={PricingOperationType.SUBTRACT}>Subtract</MenuItem>
-                  <MenuItem value={PricingOperationType.DIVIDE}>Divide</MenuItem>
+                  <MenuItem value="ADD">Add Fixed Amount</MenuItem>
+                  <MenuItem value="SUBTRACT">Subtract Fixed Amount</MenuItem>
+                  <MenuItem value="MULTIPLY">Multiply</MenuItem>
+                  <MenuItem value="DIVIDE">Divide</MenuItem>
                 </Select>
               </FormControl>
             </Box>
+
+            {/* Service Types Selection */}
+            <FormControl fullWidth>
+              <InputLabel>Applicable Service Types (Optional)</InputLabel>
+              <Select
+                multiple
+                value={formData.serviceTypeCodes}
+                label="Applicable Service Types (Optional)"
+                onChange={(e) => {
+                  const value = e.target.value as string[];
+                  setFormData((prev) => ({ ...prev, serviceTypeCodes: value }));
+                }}
+                renderValue={(selected) => {
+                  if (selected.length === 0) return 'All service types';
+                  return serviceTypes
+                    .filter((service) => selected.includes(service.code))
+                    .map((service) => service.name)
+                    .join(', ');
+                }}
+              >
+                {serviceTypes.map((service) => (
+                  <MenuItem key={service.id} value={service.code}>
+                    <Box>
+                      <Typography variant="body2" fontWeight="medium">
+                        {service.name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {service.code}
+                      </Typography>
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Select>
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 1 }}>
+                Leave empty to apply to all service types, or select specific ones
+              </Typography>
+            </FormControl>
 
             <TextField
               label="Value"
@@ -246,6 +325,27 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
               rows={3}
               placeholder="Brief description of the modifier..."
             />
+
+            {/* Additional Optional Fields */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Icon (Optional)"
+                value={formData.icon}
+                onChange={(e) => setFormData((prev) => ({ ...prev, icon: e.target.value }))}
+                fullWidth
+                placeholder="e.g., star, clock, trophy"
+                helperText="Icon identifier for UI display"
+              />
+
+              <TextField
+                label="Color (Optional)"
+                value={formData.color}
+                onChange={(e) => setFormData((prev) => ({ ...prev, color: e.target.value }))}
+                fullWidth
+                placeholder="e.g., #FF5733, blue, success.main"
+                helperText="Color code for UI styling"
+              />
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions>
@@ -259,6 +359,7 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
               !formData.code.trim() ||
               !formData.name.trim() ||
               !formData.type ||
+              !formData.operation ||
               formData.value <= 0 ||
               !hasChanges() ||
               isSubmitting

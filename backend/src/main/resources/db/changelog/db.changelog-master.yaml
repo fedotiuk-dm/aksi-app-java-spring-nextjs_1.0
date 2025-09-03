@@ -119,3 +119,9 @@ databaseChangeLog:
   # Create game modifiers table for game boosting
   - include:
       file: db/changelog/changes/038-create-game-modifiers-table.yaml
+  # Create simple test data for calculator testing
+  - include:
+      file: db/changelog/changes/039-simple-game-test-data.yaml
+  # Create diverse seed data for different calculator types
+  - include:
+      file: db/changelog/changes/040-create-diverse-calculator-seed-data.yaml

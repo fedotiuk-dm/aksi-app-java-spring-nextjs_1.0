@@ -17,6 +17,7 @@ import {
   Alert,
 } from '@mui/material';
 import type { PriceConfiguration } from '@api/game';
+import { PriceDisplay } from '@/shared/ui/atoms/PriceDisplay';
 
 interface PriceConfigurationDeleteModalProps {
   children: React.ReactNode;
@@ -75,16 +76,17 @@ export const PriceConfigurationDeleteModal: React.FC<PriceConfigurationDeleteMod
 
             <Box sx={{ mt: 2 }}>
               <Typography variant="body2" color="text.secondary">
-                Game: {priceConfiguration.game?.name || 'N/A'}
+                Game ID: {priceConfiguration.gameId}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Service Type: {priceConfiguration.serviceType?.name || 'N/A'}
+                Service Type ID: {priceConfiguration.serviceTypeId}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Difficulty Level: {priceConfiguration.difficultyLevel?.name || 'N/A'}
+                Difficulty Level ID: {priceConfiguration.difficultyLevelId}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Final Price: ${priceConfiguration.finalPrice}
+                Base Price:{' '}
+                <PriceDisplay amount={priceConfiguration.basePrice} currency="USD" inline={true} />
               </Typography>
             </Box>
           </Box>

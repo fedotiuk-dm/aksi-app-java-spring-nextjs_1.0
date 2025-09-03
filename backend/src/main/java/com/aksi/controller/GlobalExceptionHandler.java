@@ -310,11 +310,21 @@ public class GlobalExceptionHandler {
       return null;
     }
 
-    // Log full stack trace only in development
+    // Log error details based on profile
     if (productionProfile()) {
       log.error("Unexpected error: {}", getShortErrorMessage(e));
     } else {
-      log.error("Unexpected error: {}", e.getMessage());
+      String causeMessage = "N/A";
+      try {
+        Throwable cause = e.getCause();
+        if (cause != null) {
+          causeMessage = cause.getMessage() != null ? cause.getMessage() : cause.getClass().getSimpleName();
+        }
+      } catch (Exception causeException) {
+        causeMessage = "Unable to get cause";
+      }
+
+      log.error("Unexpected error: {} | Cause: {}", e.getMessage(), causeMessage);
     }
 
     return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", null);
@@ -386,7 +396,7 @@ public class GlobalExceptionHandler {
 
     // Extract meaningful parts from common error messages
     if (message.contains("detached entity passed to persist")) {
-      return "Entity relationship error: detached entity passed to persist";
+      return "Database entity error";
     }
 
     if (message.contains("ConstraintViolationException")) {
@@ -399,6 +409,18 @@ public class GlobalExceptionHandler {
 
     if (message.contains("JpaSystemException")) {
       return "Database system error";
+    }
+
+    if (message.contains("UnsupportedOperationException")) {
+      return "Database operation error";
+    }
+
+    if (message.contains("array_to_string")) {
+      return "Database query error";
+    }
+
+    if (message.contains("PluralValuedSimplePathInterpretation")) {
+      return "Database field access error";
     }
 
     // For other errors, take first 200 characters to avoid overly long logs

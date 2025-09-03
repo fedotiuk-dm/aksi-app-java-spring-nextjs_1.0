@@ -17,12 +17,12 @@ import {
   Alert,
   Chip,
 } from '@mui/material';
-import { PriceModifier } from '@api/pricing';
+import { GameModifierInfo } from '@api/game';
 
 interface ModifierDeleteModalProps {
   children: React.ReactNode;
-  modifier: PriceModifier;
-  onDelete: (modifierCode: string) => Promise<void>;
+  modifier: GameModifierInfo;
+  onDelete: (id: string) => Promise<void>;
 }
 
 export const ModifierDeleteModal: React.FC<ModifierDeleteModalProps> = ({
@@ -52,14 +52,18 @@ export const ModifierDeleteModal: React.FC<ModifierDeleteModalProps> = ({
     }
   };
 
-  const getModifierDisplayValue = (modifier: PriceModifier) => {
+  const getModifierDisplayValue = (modifier: GameModifierInfo) => {
+    if (!modifier.operation) return `${modifier.value}`;
+
     switch (modifier.operation) {
       case 'MULTIPLY':
         return `${modifier.value / 100}x`;
       case 'ADD':
         return `+$${modifier.value / 100}`;
-      case 'PERCENTAGE':
-        return `+${modifier.value}%`;
+      case 'SUBTRACT':
+        return `-$${modifier.value / 100}`;
+      case 'DIVIDE':
+        return `÷${modifier.value / 100}`;
       default:
         return `${modifier.value}`;
     }
@@ -72,16 +76,21 @@ export const ModifierDeleteModal: React.FC<ModifierDeleteModalProps> = ({
       </Box>
 
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle color="error">Delete Price Modifier</DialogTitle>
+        <DialogTitle color="error">Delete Game Modifier</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 1 }}>
             <Typography variant="body1" gutterBottom>
               Are you sure you want to delete the modifier &ldquo;{modifier.name}&rdquo;?
             </Typography>
 
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Code: {modifier.code}
-            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                Code: {modifier.code}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Game: {modifier.gameCode}
+              </Typography>
+            </Box>
 
             <Alert severity="warning" sx={{ mb: 2 }}>
               This action cannot be undone. The modifier will be permanently removed and may affect

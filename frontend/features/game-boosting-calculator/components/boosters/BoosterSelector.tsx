@@ -57,30 +57,36 @@ export const BoosterSelector = () => {
     return booster.displayName;
   };
 
-  const renderOption = (props: React.HTMLAttributes<HTMLLIElement>, booster: Booster) => (
-    <Box component="li" {...props}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
-        <Avatar sx={{ width: 40, height: 40, bgcolor: 'primary.main' }}>
-          {booster.displayName?.charAt(0)?.toUpperCase()}
-        </Avatar>
+  const renderOption = (
+    props: React.HTMLAttributes<HTMLLIElement> & { key?: React.Key },
+    booster: Booster
+  ) => {
+    const { key, ...otherProps } = props;
+    return (
+      <Box component="li" key={key} {...otherProps}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
+          <Avatar sx={{ width: 40, height: 40, bgcolor: 'primary.main' }}>
+            {booster.displayName?.charAt(0)?.toUpperCase()}
+          </Avatar>
 
-        <Box sx={{ flex: 1 }}>
-          <Typography variant="body1" fontWeight="medium">
-            {booster.displayName}
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-            <Rating value={(booster.rating || 0) / 100} readOnly size="small" precision={0.1} />
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="body1" fontWeight="medium">
+              {booster.displayName}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+              <Rating value={(booster.rating || 0) / 100} readOnly size="small" precision={0.1} />
+              <Typography variant="body2" color="text.secondary">
+                ({((booster.rating || 0) / 100).toFixed(1)})
+              </Typography>
+            </Box>
             <Typography variant="body2" color="text.secondary">
-              ({((booster.rating || 0) / 100).toFixed(1)})
+              {booster.totalOrders} orders completed
             </Typography>
           </Box>
-          <Typography variant="body2" color="text.secondary">
-            {booster.totalOrders} orders completed
-          </Typography>
         </Box>
       </Box>
-    </Box>
-  );
+    );
+  };
 
   if (!selectedGameId) {
     return (

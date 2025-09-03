@@ -117,6 +117,7 @@ const DOMAIN_TAGS = {
     'service-types',
     'price-configurations',
     'boosters',
+    'modifiers',
     'calculator',
   ],
 };

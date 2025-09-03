@@ -74,10 +74,10 @@ export const ServiceTypeDeleteModal: React.FC<ServiceTypeDeleteModalProps> = ({
             </Alert>
 
             <Typography variant="body2" color="text.secondary">
-              Game: {serviceType.game?.name || 'N/A'}
+              Game ID: {serviceType.gameId}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Base Price: ${serviceType.basePrice}
+              Base Multiplier: {serviceType.baseMultiplier / 100}x
             </Typography>
           </Box>
         </DialogContent>

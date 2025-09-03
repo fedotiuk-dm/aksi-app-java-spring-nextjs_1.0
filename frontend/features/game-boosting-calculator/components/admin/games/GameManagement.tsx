@@ -39,6 +39,7 @@ import {
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import { useGameManagement } from './useGameManagement.hook';
+import { Game } from '@api/game';
 
 import { GameCreateModal } from '../modals/GameCreateModal';
 import { GameEditModal } from '../modals/GameEditModal';
@@ -69,7 +70,7 @@ export const GameManagement = () => {
 
   // Filter and sort games
   const filteredAndSortedGames = games
-    .filter((game) => {
+    .filter((game: Game) => {
       const matchesSearch =
         game.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         game.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -117,11 +118,20 @@ export const GameManagement = () => {
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {filteredAndSortedGames.length} of {games.length} games
-            {games.filter((g) => g.active).length > 0 && (
-              <> • {games.filter((g) => g.active).length} active</>
+            {games.filter((g: Game) => g.active).length > 0 && (
+              <> • {games.filter((g: Game) => g.active).length} active</>
             )}
           </Typography>
         </Box>
+
+        {/* Error Display */}
+        {error && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            <Typography variant="body2" fontWeight="medium">
+              Error loading games: {String(error)}
+            </Typography>
+          </Alert>
+        )}
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button
             variant="outlined"
@@ -280,7 +290,7 @@ export const GameManagement = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredAndSortedGames.map((game) => (
+              filteredAndSortedGames.map((game: Game) => (
                 <TableRow key={game.id}>
                   <TableCell>
                     <Typography variant="body1" fontWeight="medium">

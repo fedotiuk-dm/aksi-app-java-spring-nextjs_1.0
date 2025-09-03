@@ -1,0 +1,559 @@
+databaseChangeLog:
+  - changeSet:
+      id: 040-create-diverse-calculator-seed-data
+      author: aksi
+      comment: Create seed data for different calculator types with various price configurations
+
+  - changeSet:
+      id: 040-add-base-multiplier-column
+      author: aksi
+      comment: Add base_multiplier column to service_types table
+      changes:
+        - addColumn:
+            tableName: service_types
+            columns:
+              - column:
+                  name: base_multiplier
+                  type: integer
+                  defaultValueNumeric: 100
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 040-cleanup-existing-test-data
+      author: aksi
+      comment: Clean up existing test data before creating diverse seed data
+      changes:
+        - delete:
+            tableName: game_modifier_service_types
+        - delete:
+            tableName: game_modifiers
+        - delete:
+            tableName: price_configurations
+        - delete:
+            tableName: difficulty_levels
+        - delete:
+            tableName: service_types
+        - delete:
+            tableName: games
+        - delete:
+            tableName: boosters
+
+  - changeSet:
+      id: 040-create-diverse-games
+      author: aksi
+      comment: Create games with different categories and price calculation types
+      changes:
+        - insert:
+            tableName: games
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: code
+                  value: "LOL"
+              - column:
+                  name: name
+                  value: "League of Legends"
+              - column:
+                  name: category
+                  value: "MOBA"
+              - column:
+                  name: description
+                  value: "Popular MOBA game with ranked boosting"
+              - column:
+                  name: active
+                  value: "true"
+        - insert:
+            tableName: games
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440002"
+              - column:
+                  name: code
+                  value: "VAL"
+              - column:
+                  name: name
+                  value: "Valorant"
+              - column:
+                  name: category
+                  value: "FPS"
+              - column:
+                  name: description
+                  value: "Tactical FPS with competitive ranking"
+              - column:
+                  name: active
+                  value: "true"
+        - insert:
+            tableName: games
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: code
+                  value: "CS2"
+              - column:
+                  name: name
+                  value: "Counter-Strike 2"
+              - column:
+                  name: category
+                  value: "FPS"
+              - column:
+                  name: description
+                  value: "Classic FPS with matchmaking"
+              - column:
+                  name: active
+                  value: "true"
+
+  - changeSet:
+      id: 040-create-service-types
+      author: aksi
+      comment: Create different service types for various boosting options
+      changes:
+        - insert:
+            tableName: service_types
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: game_id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: code
+                  value: "BOOSTING"
+              - column:
+                  name: name
+                  value: "Rank Boosting"
+              - column:
+                  name: base_multiplier
+                  value: "100"
+              - column:
+                  name: active
+                  value: "true"
+        - insert:
+            tableName: service_types
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440011"
+              - column:
+                  name: game_id
+                  value: "550e8400-e29b-41d4-a716-446655440002"
+              - column:
+                  name: code
+                  value: "BOOSTING"
+              - column:
+                  name: name
+                  value: "Rank Boosting"
+              - column:
+                  name: base_multiplier
+                  value: "120"
+              - column:
+                  name: active
+                  value: "true"
+        - insert:
+            tableName: service_types
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440012"
+              - column:
+                  name: game_id
+                  value: "550e8400-e29b-41d4-a716-446655440003"
+              - column:
+                  name: code
+                  value: "BOOSTING"
+              - column:
+                  name: name
+                  value: "Rank Boosting"
+              - column:
+                  name: base_multiplier
+                  value: "80"
+              - column:
+                  name: active
+                  value: "true"
+
+  - changeSet:
+      id: 040-create-difficulty-levels
+      author: aksi
+      comment: Create difficulty levels with different pricing strategies
+      changes:
+        - insert:
+            tableName: difficulty_levels
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: game_id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: code
+                  value: "BRONZE"
+              - column:
+                  name: name
+                  value: "Bronze"
+              - column:
+                  name: level_value
+                  value: "1"
+              - column:
+                  name: active
+                  value: "true"
+        - insert:
+            tableName: difficulty_levels
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: game_id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: code
+                  value: "SILVER"
+              - column:
+                  name: name
+                  value: "Silver"
+              - column:
+                  name: level_value
+                  value: "2"
+              - column:
+                  name: active
+                  value: "true"
+        - insert:
+            tableName: difficulty_levels
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440021"
+              - column:
+                  name: game_id
+                  value: "550e8400-e29b-41d4-a716-446655440002"
+              - column:
+                  name: code
+                  value: "IRON"
+              - column:
+                  name: name
+                  value: "Iron"
+              - column:
+                  name: level_value
+                  value: "1"
+              - column:
+                  name: active
+                  value: "true"
+        - insert:
+            tableName: difficulty_levels
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440031"
+              - column:
+                  name: game_id
+                  value: "550e8400-e29b-41d4-a716-446655440003"
+              - column:
+                  name: code
+                  value: "SILVER_I"
+              - column:
+                  name: name
+                  value: "Silver I"
+              - column:
+                  name: level_value
+                  value: "1"
+              - column:
+                  name: active
+                  value: "true"
+
+  - changeSet:
+      id: 040-create-price-configurations-v3
+      author: aksi
+      comment: Create price configurations with different calculation types and pricing
+      changes:
+        - insert:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: id
+                  value: "880e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: game_id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: service_type_id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: difficulty_level_id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: base_price
+                  value: "15000"
+              - column:
+                  name: calculation_type
+                  value: "LINEAR"
+              - column:
+                  name: price_per_level
+                  value: "2000"
+              - column:
+                  name: sort_order
+                  value: "1"
+              - column:
+                  name: active
+                  value: "true"
+              - column:
+                  name: is_default
+                  value: "false"
+        - insert:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: id
+                  value: "880e8400-e29b-41d4-a716-446655440002"
+              - column:
+                  name: game_id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: service_type_id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: difficulty_level_id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: base_price
+                  value: "25000"
+              - column:
+                  name: calculation_type
+                  value: "LINEAR"
+              - column:
+                  name: price_per_level
+                  value: "3000"
+              - column:
+                  name: sort_order
+                  value: "2"
+              - column:
+                  name: active
+                  value: "true"
+              - column:
+                  name: is_default
+                  value: "false"
+        - insert:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: id
+                  value: "880e8400-e29b-41d4-a716-446655440003"
+              - column:
+                  name: game_id
+                  value: "550e8400-e29b-41d4-a716-446655440002"
+              - column:
+                  name: service_type_id
+                  value: "550e8400-e29b-41d4-a716-446655440011"
+              - column:
+                  name: difficulty_level_id
+                  value: "550e8400-e29b-41d4-a716-446655440021"
+              - column:
+                  name: base_price
+                  value: "20000"
+              - column:
+                  name: calculation_type
+                  value: "LINEAR"
+              - column:
+                  name: price_per_level
+                  value: "2500"
+              - column:
+                  name: sort_order
+                  value: "1"
+              - column:
+                  name: active
+                  value: "true"
+              - column:
+                  name: is_default
+                  value: "false"
+        - insert:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: id
+                  value: "880e8400-e29b-41d4-a716-446655440004"
+              - column:
+                  name: game_id
+                  value: "550e8400-e29b-41d4-a716-446655440003"
+              - column:
+                  name: service_type_id
+                  value: "550e8400-e29b-41d4-a716-446655440012"
+              - column:
+                  name: difficulty_level_id
+                  value: "550e8400-e29b-41d4-a716-446655440031"
+              - column:
+                  name: base_price
+                  value: "10000"
+              - column:
+                  name: calculation_type
+                  value: "LINEAR"
+              - column:
+                  name: price_per_level
+                  value: "1500"
+              - column:
+                  name: sort_order
+                  value: "1"
+              - column:
+                  name: active
+                  value: "true"
+              - column:
+                  name: is_default
+                  value: "false"
+
+  - changeSet:
+      id: 040-create-game-modifiers
+      author: aksi
+      comment: Create various modifiers for different games and operations
+      changes:
+        - insert:
+            tableName: game_modifiers
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: code
+                  value: "RUSH_24H"
+              - column:
+                  name: name
+                  value: "24 Hour Rush"
+              - column:
+                  name: description
+                  value: "Complete in 24 hours or less"
+              - column:
+                  name: game_code
+                  value: "LOL"
+              - column:
+                  name: modifier_type
+                  value: "TIMING"
+              - column:
+                  name: operation_type
+                  value: "MULTIPLY"
+              - column:
+                  name: modifier_value
+                  value: "150"
+              - column:
+                  name: active
+                  value: "true"
+        - insert:
+            tableName: game_modifiers
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: code
+                  value: "STREAM"
+              - column:
+                  name: name
+                  value: "With Stream"
+              - column:
+                  name: description
+                  value: "Include live streaming"
+              - column:
+                  name: game_code
+                  value: "VAL"
+              - column:
+                  name: modifier_type
+                  value: "MEDIA"
+              - column:
+                  name: operation_type
+                  value: "ADD"
+              - column:
+                  name: modifier_value
+                  value: "5000"
+              - column:
+                  name: active
+                  value: "true"
+        - insert:
+            tableName: game_modifiers
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: code
+                  value: "DUO_BOOST"
+              - column:
+                  name: name
+                  value: "Duo Boost"
+              - column:
+                  name: description
+                  value: "Boost with a partner"
+              - column:
+                  name: game_code
+                  value: "CS2"
+              - column:
+                  name: modifier_type
+                  value: "TEAM"
+              - column:
+                  name: operation_type
+                  value: "MULTIPLY"
+              - column:
+                  name: modifier_value
+                  value: "120"
+              - column:
+                  name: active
+                  value: "true"
+        - insert:
+            tableName: game_modifiers
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: code
+                  value: "VIP_SERVICE"
+              - column:
+                  name: name
+                  value: "VIP Service"
+              - column:
+                  name: description
+                  value: "Premium booster with priority"
+              - column:
+                  name: modifier_type
+                  value: "QUALITY"
+              - column:
+                  name: operation_type
+                  value: "ADD"
+              - column:
+                  name: modifier_value
+                  value: "10000"
+              - column:
+                  name: active
+                  value: "true"
+
+  - changeSet:
+      id: 040-create-boosters
+      author: aksi
+      comment: Create sample boosters for testing
+      changes:
+        - insert:
+            tableName: boosters
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: discord_username
+                  value: "boostmaster#1234"
+              - column:
+                  name: display_name
+                  value: "BoostMaster"
+              - column:
+                  name: contact_email
+                  value: "boostmaster@example.com"
+              - column:
+                  name: rating
+                  value: "450"
+              - column:
+                  name: total_orders
+                  value: "150"
+              - column:
+                  name: active
+                  value: "true"

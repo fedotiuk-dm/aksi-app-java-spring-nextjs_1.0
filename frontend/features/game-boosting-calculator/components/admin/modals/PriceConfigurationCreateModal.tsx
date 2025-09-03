@@ -20,19 +20,21 @@ import {
   Box,
   Typography,
 } from '@mui/material';
-import type { Game, ServiceType, DifficultyLevel } from '@api/game';
+import type {
+  Game,
+  ServiceType,
+  DifficultyLevel,
+  CreatePriceConfigurationRequest,
+  CreatePriceConfigurationRequestCalculationType,
+} from '@api/game';
+import { PriceDisplay } from '@/shared/ui/atoms/PriceDisplay';
 
 interface PriceConfigurationCreateModalProps {
   children: React.ReactNode;
   games: Game[];
   serviceTypes: ServiceType[];
   difficultyLevels: DifficultyLevel[];
-  onCreate: (priceConfigurationData: {
-    gameId: string;
-    serviceTypeId: string;
-    difficultyLevelId: string;
-    description?: string;
-  }) => Promise<void>;
+  onCreate: (priceConfigurationData: CreatePriceConfigurationRequest) => Promise<void>;
 }
 
 export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateModalProps> = ({
@@ -99,7 +101,10 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
         gameId: formData.gameId,
         serviceTypeId: formData.serviceTypeId,
         difficultyLevelId: formData.difficultyLevelId,
-        description: formData.description.trim() || undefined,
+        basePrice: Math.round(finalPrice * 100), // Convert to cents
+        calculationType: 'FIXED' as CreatePriceConfigurationRequestCalculationType,
+        pricePerLevel: 0,
+        sortOrder: 0,
       });
       handleClose();
     } catch (error) {
@@ -116,9 +121,9 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
   );
 
   // Calculate final price preview
-  const basePrice = selectedServiceType?.basePrice || 0;
-  const multiplier = selectedDifficultyLevel?.priceMultiplier || 1;
-  const finalPrice = basePrice * multiplier;
+  const baseMultiplier = selectedServiceType?.baseMultiplier || 100;
+  const levelValue = selectedDifficultyLevel?.levelValue || 1;
+  const finalPrice = (baseMultiplier / 100) * levelValue;
 
   return (
     <>
@@ -157,7 +162,7 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
               >
                 {availableServiceTypes.map((serviceType) => (
                   <MenuItem key={serviceType.id} value={serviceType.id}>
-                    {serviceType.name} - ${serviceType.basePrice}
+                    {serviceType.name} - {serviceType.baseMultiplier / 100}x
                   </MenuItem>
                 ))}
               </Select>
@@ -174,7 +179,7 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
               >
                 {availableDifficultyLevels.map((difficultyLevel) => (
                   <MenuItem key={difficultyLevel.id} value={difficultyLevel.id}>
-                    {difficultyLevel.name} - {difficultyLevel.priceMultiplier}x
+                    {difficultyLevel.name} - Level {difficultyLevel.levelValue}
                   </MenuItem>
                 ))}
               </Select>
@@ -197,11 +202,16 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
                 <Box
                   sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
-                  <Typography variant="body2">Base Price: ${basePrice}</Typography>
-                  <Typography variant="body2">Multiplier: {multiplier}x</Typography>
+                  <Typography variant="body2">
+                    Calculated Price:{' '}
+                    <PriceDisplay amount={finalPrice} currency="USD" inline={true} />
+                  </Typography>
+                  <Typography variant="body2">
+                    Base Multiplier: {(baseMultiplier / 100).toFixed(1)}x
+                  </Typography>
                 </Box>
                 <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
-                  Final Price: ${finalPrice.toFixed(2)}
+                  Final Price: <PriceDisplay amount={finalPrice} currency="USD" inline={true} />
                 </Typography>
               </Box>
             )}

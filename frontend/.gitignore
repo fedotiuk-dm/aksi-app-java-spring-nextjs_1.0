@@ -101,5 +101,5 @@ Thumbs.db
 *.env
 
 # Згенеровані API файли (Orval) - не комітити в Git
-/lib/api/
-/lib/api/**/*
+#/shared/api/
+#/shared/api/**/*

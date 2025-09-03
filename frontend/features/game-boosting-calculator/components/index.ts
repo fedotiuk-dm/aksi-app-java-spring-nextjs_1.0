@@ -11,7 +11,7 @@ export { BoosterSelector } from './boosters/BoosterSelector';
 //export { BoosterTable } from './boosters/BoosterTable';
 
 export { CalculatorSection } from './calculator/CalculatorSection';
-export { ModifiersPanel } from './calculator/ModifiersPanel/';
+export { ModifiersPanel } from './calculator/ModifiersPanel/ModifiersPanel';
 //export { PricingCalculator } from './calculator/PricingCalculator';
 
 export { SummarySection } from './summary/SummarySection';

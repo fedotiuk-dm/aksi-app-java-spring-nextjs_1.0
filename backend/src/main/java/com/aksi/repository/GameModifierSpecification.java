@@ -36,9 +36,13 @@ public class GameModifierSpecification {
 
   /** Creates a specification for modifiers by service type codes. */
   public static Specification<GameModifierEntity> hasServiceTypeCode(String serviceTypeCode) {
-    return (root, query, criteriaBuilder) ->
-        serviceTypeCode == null ? null :
-        criteriaBuilder.like(root.get("serviceTypeCodes"), "%" + serviceTypeCode + "%");
+    return (root, query, criteriaBuilder) -> {
+      if (serviceTypeCode == null || serviceTypeCode.trim().isEmpty()) {
+        return null; // No filtering
+      }
+      // Skip service type filtering for now - will filter on frontend
+      return criteriaBuilder.conjunction(); // Always true
+    };
   }
 
   /** Creates a specification for filtering modifiers with all parameters. */

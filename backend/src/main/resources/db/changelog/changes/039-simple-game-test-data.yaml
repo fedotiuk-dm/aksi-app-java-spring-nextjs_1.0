@@ -1,0 +1,244 @@
+databaseChangeLog:
+  - changeSet:
+      id: 039-simple-game-test-data
+      author: aksi
+      comment: Create minimal test data set for calculator testing
+      runOnChange: false
+
+      changes:
+        # Clean up existing data
+        - delete:
+            tableName: game_modifier_service_types
+        - delete:
+            tableName: game_modifiers
+        - delete:
+            tableName: price_configurations
+        - delete:
+            tableName: difficulty_levels
+        - delete:
+            tableName: service_types
+        - delete:
+            tableName: boosters
+        - delete:
+            tableName: games
+
+        # Create Game: League of Legends
+        - insert:
+            tableName: games
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  value: LOL
+              - column:
+                  name: name
+                  value: League of Legends
+              - column:
+                  name: description
+                  value: Popular MOBA game
+              - column:
+                  name: category
+                  value: MOBA
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 1
+              - column:
+                  name: created_at
+                  valueComputed: now()
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+
+        # Create Difficulty Level for LOL
+        - insert:
+            tableName: difficulty_levels
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: game_id
+                  valueComputed: (SELECT id FROM games WHERE code = 'LOL')
+              - column:
+                  name: code
+                  value: STANDARD
+              - column:
+                  name: name
+                  value: Standard
+              - column:
+                  name: level_value
+                  valueNumeric: 1
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 1
+              - column:
+                  name: created_at
+                  valueComputed: now()
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+
+        # Create Service Type for LOL
+        - insert:
+            tableName: service_types
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: game_id
+                  valueComputed: (SELECT id FROM games WHERE code = 'LOL')
+              - column:
+                  name: code
+                  value: BOOSTING
+              - column:
+                  name: name
+                  value: Rank Boosting
+              - column:
+                  name: description
+                  value: Professional rank boosting service
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 1
+              - column:
+                  name: created_at
+                  valueComputed: now()
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+
+        # Create Price Configuration
+        - insert:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: game_id
+                  valueComputed: (SELECT id FROM games WHERE code = 'LOL')
+              - column:
+                  name: difficulty_level_id
+                  valueComputed: (SELECT id FROM difficulty_levels WHERE code = 'STANDARD' AND game_id = (SELECT id FROM games WHERE code = 'LOL'))
+              - column:
+                  name: service_type_id
+                  valueComputed: (SELECT id FROM service_types WHERE code = 'BOOSTING' AND game_id = (SELECT id FROM games WHERE code = 'LOL'))
+              - column:
+                  name: base_price
+                  valueNumeric: 15000
+              - column:
+                  name: price_per_level
+                  valueNumeric: 2000
+              - column:
+                  name: calculation_formula
+                  value: basePrice + (levelDifference * pricePerLevel)
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: is_default
+                  valueBoolean: true
+              - column:
+                  name: sort_order
+                  valueNumeric: 1
+              - column:
+                  name: created_at
+                  valueComputed: now()
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+
+        # Create Game Modifier
+        - insert:
+            tableName: game_modifiers
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: code
+                  value: RUSH_24H
+              - column:
+                  name: name
+                  value: 24 Hour Rush
+              - column:
+                  name: description
+                  value: Complete within 24 hours
+              - column:
+                  name: modifier_type
+                  value: TIMING
+              - column:
+                  name: operation_type
+                  value: MULTIPLY
+              - column:
+                  name: modifier_value
+                  valueNumeric: 150
+              - column:
+                  name: game_code
+                  value: LOL
+              - column:
+                  name: sort_order
+                  valueNumeric: 1
+              - column:
+                  name: icon
+                  value: ⚡
+              - column:
+                  name: color
+                  value: "#FF6B35"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: created_at
+                  valueComputed: now()
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+
+        # Link modifier to service type
+        - insert:
+            tableName: game_modifier_service_types
+            columns:
+              - column:
+                  name: game_modifier_id
+                  valueComputed: (SELECT id FROM game_modifiers WHERE code = 'RUSH_24H')
+              - column:
+                  name: service_type_code
+                  value: BOOSTING
+
+        # Create Booster (using only existing columns)
+        - insert:
+            tableName: boosters
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: discord_username
+                  value: boostmaster#1234
+              - column:
+                  name: display_name
+                  value: BoostMaster
+              - column:
+                  name: contact_email
+                  value: boostmaster@example.com
+              - column:
+                  name: rating
+                  valueNumeric: 450
+              - column:
+                  name: total_orders
+                  valueNumeric: 150
+              - column:
+                  name: active
+                  valueBoolean: true

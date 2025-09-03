@@ -76,6 +76,16 @@ export const useGameBoostingStore = create<GameBoostingStore>()(
           selectedGameId: gameId,
           selectedGame: game,
           currentStep: gameId ? 'booster-selection' : GAME_SELECTION_STEP,
+          // Reset dependent fields when game changes
+          selectedBoosterId: null,
+          selectedBooster: null,
+          serviceTypeCode: '',
+          difficultyLevelCode: '',
+          selectedModifiers: [],
+          basePrice: 0,
+          calculatedPrice: null,
+          startLevel: 1,
+          targetLevel: 100,
         });
       },
 
@@ -84,6 +94,14 @@ export const useGameBoostingStore = create<GameBoostingStore>()(
           selectedBoosterId: boosterId,
           selectedBooster: booster,
           currentStep: boosterId ? 'calculator' : 'booster-selection',
+          // Set default service type for boosting calculator
+          serviceTypeCode: boosterId ? 'BOOSTING' : '',
+          // Reset calculator state when booster changes
+          selectedModifiers: [],
+          calculatedPrice: null,
+          basePrice: 0,
+          startLevel: 1,
+          targetLevel: 100,
         });
       },
 
