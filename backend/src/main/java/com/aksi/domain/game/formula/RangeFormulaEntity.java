@@ -10,19 +10,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Range-based calculation formula.
- * Each level range has its own price.
+ * Each level range has its own FIXED price for the entire range.
  * <p>
  * Example:
  * ranges = [
- *   {from: 1, to: 5, price: 100},  // levels 1-5 at 100 cents each
- *   {from: 6, to: 10, price: 200}  // levels 6-10 at 200 cents each
+ *   {from: 1, to: 5, price: 4.0},   // levels 1-5 cost 4.0 total
+ *   {from: 6, to: 10, price: 5.0}   // levels 6-10 cost 5.0 total
  * ]
- * For levels 1-8: (5 × 100) + (3 × 200) = 1100 cents
+ * For levels 1-8: 4.0 + 5.0 = 9.0 (only ranges that are fully covered)
  */
 public class RangeFormulaEntity extends CalculationFormulaEntity {
 
     @JsonProperty("ranges")
-    private List<PriceRangeEntity> ranges = new ArrayList<>();
+    private final List<PriceRangeEntity> ranges = new ArrayList<>();
 
     // Конструктори
     public RangeFormulaEntity() {
@@ -34,37 +34,26 @@ public class RangeFormulaEntity extends CalculationFormulaEntity {
         if (basePrice == null) {
             throw new IllegalArgumentException("Base price cannot be null");
         }
-        if (ranges == null || ranges.isEmpty()) {
-            throw new IllegalArgumentException("Ranges cannot be null or empty");
+        if (ranges.isEmpty()) {
+            throw new IllegalArgumentException("Ranges cannot be empty");
         }
 
         BigDecimal total = BigDecimal.ZERO;
 
-        // Проходимо по всіх рівнях від fromLevel до toLevel
-        for (int level = fromLevel; level <= toLevel; level++) {
-            BigDecimal levelPrice = findPriceForLevel(level);
-            total = total.add(levelPrice);
-        }
-
-        return basePrice.add(total);
-    }
-
-    /**
-     * Знайти ціну для конкретного рівня
-     */
-    private BigDecimal findPriceForLevel(int level) {
+        // Знаходимо всі діапазони, які перекриваються з запитуваним діапазоном рівнів
         for (PriceRangeEntity range : ranges) {
-            if (range.containsLevel(level)) {
-                return range.getPrice();
+            if (range.getFrom() <= toLevel && range.getTo() >= fromLevel) {
+                // Діапазон перекривається - додаємо його фіксовану ціну
+                total = total.add(range.getPrice());
             }
         }
-        // If level doesn't fit in any range, return 0
-        return BigDecimal.ZERO;
+
+                return basePrice.add(total);
     }
 
     @Override
     public void validate() {
-        if (ranges == null || ranges.isEmpty()) {
+        if (ranges.isEmpty()) {
             throw new IllegalArgumentException("At least one price range is required for RangeFormula");
         }
 
@@ -93,9 +82,9 @@ public class RangeFormulaEntity extends CalculationFormulaEntity {
         return r1.getFrom() <= r2.getTo() && r2.getFrom() <= r1.getTo();
     }
 
-    // Гетери та сетери
+    // Гетери та методи для роботи з діапазонами
     public List<PriceRangeEntity> getRanges() {
-        return new ArrayList<>(ranges);
+        return List.copyOf(ranges);
     }
 
 

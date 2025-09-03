@@ -1,6 +1,7 @@
 package com.aksi.service.game;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
@@ -11,13 +12,21 @@ import com.aksi.api.game.dto.CalculationMetadata;
 import com.aksi.api.game.dto.ModifierAdjustment;
 import com.aksi.api.game.dto.UniversalCalculationRequest;
 import com.aksi.api.game.dto.UniversalCalculationResponse;
+import com.aksi.api.game.dto.GameModifierOperation;
 import com.aksi.api.game.dto.UniversalCalculationResponse.FormulaTypeEnum;
-import com.aksi.domain.game.PriceConfigurationEntity;
+import com.aksi.domain.game.GameModifierEntity;
 import com.aksi.domain.game.formula.CalculationFormulaEntity;
+import com.aksi.domain.game.formula.FormulaFormulaEntity;
+import com.aksi.domain.game.formula.LinearFormulaEntity;
+import com.aksi.domain.game.formula.RangeFormulaEntity;
+import com.aksi.domain.game.formula.TimeBasedFormulaEntity;
 import com.aksi.mapper.PriceConfigurationMapper;
+import com.aksi.repository.GameRepository;
+import com.aksi.repository.ServiceTypeRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 
 /**
  * Query service for calculation-related read operations. Handles all calculation logic
@@ -31,29 +40,10 @@ public class CalculationQueryService {
 
   private final CalculationValidationService validationService;
   private final PriceConfigurationMapper priceConfigurationMapper;
+  private final GameModifierService gameModifierService;
+  private final GameRepository gameRepository;
+  private final ServiceTypeRepository serviceTypeRepository;
 
-  /**
-   * Calculate price based on configuration and levels.
-   *
-   * @param config Price configuration with formula
-   * @param fromLevel Starting level
-   * @param toLevel Target level
-   * @return Calculated price in cents
-   */
-  public BigDecimal calculatePrice(PriceConfigurationEntity config, int fromLevel, int toLevel) {
-    if (config == null) {
-      throw new IllegalArgumentException("Price configuration cannot be null");
-    }
-
-    CalculationFormulaEntity formula = config.getCalculationFormula();
-    if (formula == null) {
-      // If no formula, return base price
-      log.debug("No formula found for config {}, using base price {}", config.getId(), config.getBasePrice());
-      return BigDecimal.valueOf(config.getBasePrice());
-    }
-
-    return calculatePrice(formula, BigDecimal.valueOf(config.getBasePrice()), fromLevel, toLevel);
-  }
 
   /**
    * Calculate price based on formula.
@@ -93,43 +83,34 @@ public class CalculationQueryService {
     }
   }
 
-  /**
-   * Validate formula.
-   *
-   * @param formula Formula to validate
-   * @throws IllegalArgumentException if formula is invalid
-   */
-  public void validateFormula(CalculationFormulaEntity formula) {
-    validationService.validateFormula(formula);
-  }
 
   /**
-   * Get formula description for logging.
+   * Get formula description for internal logging.
    *
    * @param formula Formula
    * @return Text description of formula
    */
-  public String getFormulaDescription(CalculationFormulaEntity formula) {
+  private String getFormulaDescription(CalculationFormulaEntity formula) {
     if (formula == null) {
       return "null";
     }
 
     return switch (formula.getType()) {
       case LINEAR -> {
-        var linear = (com.aksi.domain.game.formula.LinearFormulaEntity) formula;
+        var linear = (LinearFormulaEntity) formula;
         yield String.format("Linear(pricePerLevel=%s)", linear.getPricePerLevel());
       }
       case RANGE -> {
-        var range = (com.aksi.domain.game.formula.RangeFormulaEntity) formula;
+        var range = (RangeFormulaEntity) formula;
         yield String.format("Range(%d ranges)", range.getRanges().size());
       }
       case TIME_BASED -> {
-        var timeBased = (com.aksi.domain.game.formula.TimeBasedFormulaEntity) formula;
+        var timeBased = (TimeBasedFormulaEntity) formula;
         yield String.format("TimeBased(hourlyRate=%s, baseHours=%d)",
                            timeBased.getHourlyRate(), timeBased.getBaseHours());
       }
       case FORMULA -> {
-        var formulaExpr = (com.aksi.domain.game.formula.FormulaFormulaEntity) formula;
+        var formulaExpr = (FormulaFormulaEntity) formula;
         yield String.format("Formula(expression='%s', %d variables)",
                            formulaExpr.getExpression(), formulaExpr.getVariables().size());
       }
@@ -178,6 +159,50 @@ public class CalculationQueryService {
     BigDecimal basePrice = BigDecimal.ZERO;
     BigDecimal calculatedPrice = calculatePrice(domainFormula, basePrice, startLevel, targetLevel);
 
+    // Apply modifiers if specified
+    var modifierAdjustments = new ArrayList<ModifierAdjustment>();
+    BigDecimal totalModifierAdjustment = BigDecimal.ZERO;
+
+    var modifiers = context.getModifiers();
+    if (modifiers != null && !modifiers.isEmpty()) {
+      try {
+        // Get game and service type IDs
+        var gameEntity = gameRepository.findByCode(context.getGameCode())
+            .orElseThrow(() -> new IllegalArgumentException("Game not found: " + context.getGameCode()));
+        var serviceTypeEntity = serviceTypeRepository.findByCode(context.getServiceTypeCode())
+            .orElseThrow(() -> new IllegalArgumentException("Service type not found: " + context.getServiceTypeCode()));
+
+        // Get active modifiers for calculation with validation
+        var modifierEntities = gameModifierService.getActiveModifiersForCalculation(
+            gameEntity.getId(), serviceTypeEntity.getId(), modifiers);
+
+        // Validate modifier compatibility
+        gameModifierService.validateModifierCompatibility(modifierEntities);
+
+        // Apply each modifier to the price
+        for (var modifierEntity : modifierEntities) {
+          BigDecimal adjustment = calculateModifierAdjustment(modifierEntity, calculatedPrice, startLevel, targetLevel);
+
+          if (adjustment.compareTo(BigDecimal.ZERO) != 0) {
+            var adjustmentDto = new ModifierAdjustment();
+            adjustmentDto.setModifierCode(modifierEntity.getCode());
+            adjustmentDto.setAdjustment(adjustment.intValue());
+            adjustmentDto.setType(mapOperationToTypeEnum(GameModifierOperation.fromValue(modifierEntity.getOperation().getValue())));
+
+            modifierAdjustments.add(adjustmentDto);
+            totalModifierAdjustment = totalModifierAdjustment.add(adjustment);
+          }
+        }
+
+        // Add modifier adjustments to final price
+        calculatedPrice = calculatedPrice.add(totalModifierAdjustment);
+
+      } catch (Exception e) {
+        log.warn("Failed to apply modifiers {}: {}", modifiers, e.getMessage());
+        // Continue with calculation without modifiers
+      }
+    }
+
     // End timing
     long endTime = System.nanoTime();
     long executionTimeMs = (endTime - startTime) / 1_000_000; // Convert nanoseconds to milliseconds
@@ -191,9 +216,9 @@ public class CalculationQueryService {
 
     // Add breakdown
     var breakdown = new CalculationBreakdown();
-    breakdown.setBaseCalculation(calculatedPrice.intValue());
-    breakdown.setModifierAdjustments(new ArrayList<ModifierAdjustment>());
-    breakdown.setTotalAdjustment(0);
+    breakdown.setBaseCalculation(calculatedPrice.intValue() - totalModifierAdjustment.intValue());
+    breakdown.setModifierAdjustments(modifierAdjustments);
+    breakdown.setTotalAdjustment(totalModifierAdjustment.intValue());
     breakdown.setFinalPrice(calculatedPrice.intValue());
     response.setBreakdown(breakdown);
 
@@ -206,8 +231,8 @@ public class CalculationQueryService {
     // Get formula version from domain entity
     metadata.setFormulaVersion(domainFormula.getType().getValue());
 
-    // Count applied modifiers (currently 0, will be implemented with real modifiers)
-    metadata.setAppliedModifiersCount(0);
+    // Count applied modifiers
+    metadata.setAppliedModifiersCount(modifierAdjustments.size());
 
     // Calculate level difference
     metadata.setLevelDifference(targetLevel - startLevel);
@@ -215,5 +240,58 @@ public class CalculationQueryService {
     response.setMetadata(metadata);
 
     return response;
+  }
+
+  /**
+   * Calculate adjustment amount for a specific modifier.
+   *
+   * @param modifier the modifier entity
+   * @param basePrice the base price before modifier
+   * @param startLevel starting level for level-based calculations
+   * @param targetLevel target level for level-based calculations
+   * @return adjustment amount to add to the price
+   */
+  private BigDecimal calculateModifierAdjustment(
+      GameModifierEntity modifier,
+      BigDecimal basePrice,
+      int startLevel,
+      int targetLevel) {
+
+    if (modifier == null || modifier.getValue() == null) {
+      return BigDecimal.ZERO;
+    }
+
+    BigDecimal modifierValue = BigDecimal.valueOf(modifier.getValue());
+
+    return switch (modifier.getOperation()) {
+      case ADD -> {
+        // Basic addition - can be enhanced with level multiplier
+        int levelDiff = Math.max(0, targetLevel - startLevel);
+        BigDecimal levelMultiplier = levelDiff > 0 ? BigDecimal.valueOf(levelDiff) : BigDecimal.ONE;
+        yield modifierValue.multiply(levelMultiplier);
+      }
+      case SUBTRACT -> modifierValue.negate();
+      case MULTIPLY -> {
+        // Apply multiplier (e.g., 1.5 = +50%)
+        BigDecimal multiplier = BigDecimal.ONE.add(modifierValue);
+        yield basePrice.multiply(multiplier).subtract(basePrice);
+      }
+      case DIVIDE -> {
+        // Apply division (reduce price)
+        BigDecimal divisor = BigDecimal.ONE.add(modifierValue);
+        yield basePrice.divide(divisor, RoundingMode.HALF_UP).negate().add(basePrice);
+      }
+    };
+  }
+
+  /**
+   * Maps GameModifierOperation to ModifierAdjustment.TypeEnum for DTO compatibility
+   */
+  private ModifierAdjustment.TypeEnum mapOperationToTypeEnum(GameModifierOperation operation) {
+    return switch (operation) {
+      case ADD, SUBTRACT -> ModifierAdjustment.TypeEnum.FIXED;
+      case MULTIPLY -> ModifierAdjustment.TypeEnum.MULTIPLIER;
+      case DIVIDE -> ModifierAdjustment.TypeEnum.PERCENTAGE;
+    };
   }
 }

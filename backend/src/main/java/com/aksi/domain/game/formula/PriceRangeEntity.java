@@ -4,12 +4,15 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * Price range for range-based calculations.
- * Defines price per level within from-to levels inclusive.
+ * Defines FIXED price for the entire range from-to levels inclusive.
+ * <p>
+ * Example: {from: 1, to: 5, price: 4.0} means levels 1-5 cost 4.0 total
  */
 @Setter
 @Getter
@@ -29,16 +32,9 @@ public class PriceRangeEntity {
         this.from = from;
         this.to = to;
         this.price = price;
-    }
+        }
 
     /**
-     * Check if level falls within this range
-     */
-    public boolean containsLevel(int level) {
-        return level >= from && level <= to;
-    }
-
-  /**
      * Validate the range
      */
     public void validate() {

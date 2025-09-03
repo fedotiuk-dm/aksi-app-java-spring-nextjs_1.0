@@ -85,6 +85,14 @@
         <module name="IllegalImport">
             <property name="illegalPkgs" value="java.awt, javax.swing, sun."/>
         </module>
+        <module name="ImportOrder">
+            <property name="groups" value="java,javax,jakarta,org.springframework,org.springframework.*,com.aksi,lombok"/>
+            <property name="ordered" value="true"/>
+            <property name="separated" value="true"/>
+            <property name="option" value="top"/>
+            <property name="sortStaticImportsAlphabetically" value="true"/>
+            <message key="import.ordering" value="Import statement is not in the correct order. Imports should be grouped and ordered: java.*, javax.*, jakarta.*, org.springframework.*, com.aksi.*, lombok.*"/>
+        </module>
         <module name="RedundantImport"/>
         <module name="UnusedImports">
             <property name="processJavadoc" value="false"/>

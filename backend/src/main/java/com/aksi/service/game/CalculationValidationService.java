@@ -71,27 +71,4 @@ public class CalculationValidationService {
     log.debug("Calculation parameters validation passed");
   }
 
-  /**
-   * Validate calculation formula as JSON string.
-   *
-   * @param calculationFormula JSON string representation of formula
-   * @throws IllegalArgumentException if formula is invalid
-   */
-  public void validateCalculationFormula(String calculationFormula) {
-    log.debug("Validating calculation formula string: {}", calculationFormula);
-
-    if (calculationFormula == null || calculationFormula.trim().isEmpty()) {
-      throw new IllegalArgumentException("Calculation formula cannot be null or empty");
-    }
-
-    // Basic JSON structure validation
-    if (!calculationFormula.trim().startsWith("{")) {
-      throw new IllegalArgumentException("Calculation formula must be a valid JSON object");
-    }
-
-    // TODO: Add more sophisticated JSON validation for formula structure
-    // For now, just check that it's not obviously malformed
-
-    log.debug("Calculation formula string validation passed");
-  }
 }

@@ -36,16 +36,6 @@ public interface ModifierService {
   List<PriceModifierEntity> getModifiersByCodes(List<String> modifierCodes);
 
   /**
-   * Find applicable modifiers for calculation (alias for getModifiersByCodes).
-   *
-   * @param modifierCodes List of modifier codes
-   * @return List of applicable modifier entities
-   */
-  default List<PriceModifierEntity> findApplicableModifiers(List<String> modifierCodes) {
-    return getModifiersByCodes(modifierCodes);
-  }
-
-  /**
    * Validate modifier compatibility and prerequisites.
    *
    * @param modifiers List of modifiers to validate
