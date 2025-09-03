@@ -5,10 +5,11 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aksi.api.game.dto.CalculationFormula;
 import com.aksi.api.game.dto.CreatePriceConfigurationRequest;
 import com.aksi.api.game.dto.UpdatePriceConfigurationRequest;
 import com.aksi.exception.ConflictException;
-import com.aksi.service.game.util.CalculationValidationUtils;
+import com.aksi.mapper.PriceConfigurationMapper;
 import com.aksi.service.game.util.EntityValidationUtils;
 import com.aksi.service.game.util.PriceConfigurationQueryUtils;
 import com.aksi.service.game.util.PriceValidationUtils;
@@ -28,7 +29,8 @@ public class PriceConfigurationValidationService {
 
   private final EntityValidationUtils entityValidationUtils;
   private final PriceConfigurationQueryUtils priceConfigurationQueryUtils;
-  private final CalculationValidationUtils calculationValidationUtils;
+  private final CalculationValidationService calculationValidationService;
+  private final PriceConfigurationMapper priceConfigurationMapper;
 
   /**
    * Validate price configuration creation request.
@@ -63,9 +65,12 @@ public class PriceConfigurationValidationService {
     PriceValidationUtils.validatePrices(request.getBasePrice(), request.getPricePerLevel());
 
     // Validate calculation formula if present
-    String calculationFormula = request.getCalculationFormula();
-    if (calculationFormula != null && !calculationFormula.trim().isEmpty()) {
-      calculationValidationUtils.validateCalculationFormula(calculationFormula);
+    if (request.getCalculationFormula() != null && request.getCalculationFormula().isPresent()) {
+      CalculationFormula calculationFormula = request.getCalculationFormula().get();
+      com.aksi.domain.game.formula.CalculationFormulaEntity domainFormula =
+          priceConfigurationMapper.toDomainFormula(calculationFormula);
+      calculationValidationService.validateFormula(domainFormula);
+      log.debug("Formula validation passed for: {}", calculationFormula.getType());
     }
   }
 
@@ -103,9 +108,12 @@ public class PriceConfigurationValidationService {
     PriceValidationUtils.validatePrices(request.getBasePrice(), request.getPricePerLevel());
 
     // Validate calculation formula if present
-    String calculationFormula = request.getCalculationFormula();
-    if (calculationFormula != null && !calculationFormula.trim().isEmpty()) {
-      calculationValidationUtils.validateCalculationFormula(calculationFormula);
+    if (request.getCalculationFormula() != null && request.getCalculationFormula().isPresent()) {
+      CalculationFormula calculationFormula = request.getCalculationFormula().get();
+      com.aksi.domain.game.formula.CalculationFormulaEntity domainFormula =
+          priceConfigurationMapper.toDomainFormula(calculationFormula);
+      calculationValidationService.validateFormula(domainFormula);
+      log.debug("Formula validation passed for: {}", calculationFormula.getType());
     }
   }
 }

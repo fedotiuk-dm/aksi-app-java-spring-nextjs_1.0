@@ -1,12 +1,15 @@
 package com.aksi.domain.game;
 
-import com.aksi.api.game.dto.PriceConfiguration.CalculationTypeEnum;
+import java.time.Instant;
+
+import org.hibernate.annotations.Type;
+
 import com.aksi.domain.common.BaseEntity;
+import com.aksi.domain.game.formula.CalculationFormulaEntity;
+import com.aksi.domain.game.hibernate.CalculationFormulaUserType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,6 +20,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Price configuration entity for game services.
+ * Stores pricing information with calculation formulas.
+ */
 @Entity
 @Table(name = "price_configurations")
 @Getter
@@ -26,35 +33,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PriceConfigurationEntity extends BaseEntity {
 
-  @Column(name = "base_price", nullable = false)
-  @Builder.Default
-  private Integer basePrice = 0; // Price in kopiykas
-
-  @Column(name = "price_per_level", nullable = false)
-  @Builder.Default
-  private Integer pricePerLevel = 0; // Additional price per level in kopiykas
-
-  @Column(name = "calculation_type", nullable = false, length = 20)
-  @Enumerated(EnumType.STRING)
-  @Builder.Default
-  private CalculationTypeEnum calculationType = CalculationTypeEnum.LINEAR;
-
-  @Column(name = "calculation_formula", columnDefinition = "text")
-  private String calculationFormula; // Formula for complex calculations
-
-  @Column(name = "active", nullable = false)
-  @Builder.Default
-  private Boolean active = true;
-
-  @Column(name = "is_default", nullable = false)
-  @Builder.Default
-  private Boolean isDefault = false;
-
-  @Column(name = "sort_order", nullable = false)
-  @Builder.Default
-  private Integer sortOrder = 0;
-
-  // Relations
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "game_id", nullable = false)
   private GameEntity game;
@@ -66,4 +44,36 @@ public class PriceConfigurationEntity extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "service_type_id", nullable = false)
   private ServiceTypeEntity serviceType;
+
+  @Column(name = "base_price", nullable = false)
+  private Integer basePrice; // in cents
+
+  @Column(name = "price_per_level")
+  @Builder.Default
+  private Integer pricePerLevel = 0; // in cents
+
+  @Column(name = "currency")
+  @Builder.Default
+  private String currency = "USD";
+
+  @Column(name = "calculation_type")
+  private String calculationType; // LINEAR, RANGE, FORMULA, TIME_BASED
+
+  @Type(CalculationFormulaUserType.class)
+  @Column(name = "calculation_formula", columnDefinition = "TEXT")
+  private CalculationFormulaEntity calculationFormula;
+
+  @Column(name = "active")
+  @Builder.Default
+  private Boolean active = true;
+
+  @Column(name = "sort_order")
+  @Builder.Default
+  private Integer sortOrder = 0;
+
+  @Column(name = "created_at")
+  private Instant createdAt;
+
+  @Column(name = "updated_at")
+  private Instant updatedAt;
 }

@@ -123,5 +123,11 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/039-simple-game-test-data.yaml
   # Create diverse seed data for different calculator types
+  # - include:
+  #     file: db/changelog/changes/040-create-diverse-calculator-seed-data.yaml
+  # Migrate calculation formulas from String to JSON polymorphic objects
   - include:
-      file: db/changelog/changes/040-create-diverse-calculator-seed-data.yaml
+      file: db/changelog/changes/041-migrate-calculation-formulas-to-json.yaml
+  # Add currency column to price_configurations table
+  - include:
+      file: db/changelog/changes/042-add-currency-column-to-price-configurations.yaml

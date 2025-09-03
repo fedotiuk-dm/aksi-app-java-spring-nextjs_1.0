@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-currency-column-to-price-configurations
+      author: system
+      comment: Add currency column to price_configurations table
+      changes:
+        - addColumn:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: currency
+                  type: varchar(10)
+                  defaultValue: "USD"
+                  constraints:
+                    nullable: false
+                  remarks: Currency code for the price configuration
+
+  - changeSet:
+      id: update-price-configurations-currency-default
+      author: system
+      comment: Update existing records to have USD currency if null
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: UPDATE price_configurations SET currency = 'USD' WHERE currency IS NULL;
+
+  - changeSet:
+      id: add-currency-index
+      author: system
+      comment: Add index on currency column for better query performance
+      changes:
+        - createIndex:
+            tableName: price_configurations
+            indexName: idx_price_configurations_currency
+            columns:
+              - column:
+                  name: currency
+            unique: false

@@ -75,8 +75,8 @@ paths:
     $ref: "./paths/modifiers-paths.yaml#/paths/~1api~1games~1modifiers~1{modifierId}~1deactivate"
 
   # Calculator endpoints
-  /api/games/calculator/calculate:
-    $ref: "./paths/calculator-paths.yaml#/paths/~1api~1games~1calculator~1calculate"
+  /api/games/calculator/formulas/{formulaType}/calculate:
+    $ref: "./paths/calculator-paths.yaml#/paths/~1api~1games~1calculator~1formulas~1{formulaType}~1calculate"
 
   # Games with parameters (must be last to avoid conflicts)
   /api/games/by-code/{code}:
@@ -172,12 +172,7 @@ components:
       $ref: "./schemas/price-configurations-schemas.yaml#/components/schemas/UpdatePriceConfigurationRequest"
 
     # Import all schemas from calculator-schemas.yaml
-    CalculationRequest:
-      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/CalculationRequest"
-    CalculationResult:
-      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/CalculationResult"
-    CalculationBreakdown:
-      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/CalculationBreakdown"
+    # Legacy schemas removed - use new polymorphic formula schemas
 
     # Import all schemas from modifiers-schemas.yaml
     GameModifierType:
@@ -196,6 +191,24 @@ components:
       $ref: "./schemas/modifiers-schemas.yaml#/components/schemas/GameModifiersResponse"
     GameModifierFilter:
       $ref: "./schemas/modifiers-schemas.yaml#/components/schemas/GameModifierFilter"
+
+    # Polymorphic Calculation Formula schemas
+    CalculationFormula:
+      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/CalculationFormula"
+    UniversalCalculationRequest:
+      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/UniversalCalculationRequest"
+    UniversalCalculationResponse:
+      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/UniversalCalculationResponse"
+    LinearFormula:
+      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/LinearFormula"
+    RangeFormula:
+      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/RangeFormula"
+    FormulaFormula:
+      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/FormulaFormula"
+    TimeBasedFormula:
+      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/TimeBasedFormula"
+    PriceRange:
+      $ref: "./schemas/calculator-schemas.yaml#/components/schemas/PriceRange"
 
     # Common schemas (if needed locally)
     PaginatedResponse:

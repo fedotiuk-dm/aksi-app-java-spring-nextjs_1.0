@@ -1,23 +1,192 @@
 paths:
-  /api/games/calculator/calculate:
+  /api/games/calculator/formulas:
+    get:
+      tags: [calculator]
+      operationId: getAvailableFormulas
+      summary: Get available calculation formulas
+      description: Retrieve all available calculation formula types and their configurations
+      responses:
+        "200":
+          description: List of available formulas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  formulas:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          enum: [LINEAR, RANGE, FORMULA, TIME_BASED]
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        requiredFields:
+                          type: array
+                          items:
+                            type: string
+                required:
+                  - formulas
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/games/calculator/formulas/{formulaType}/validate:
     post:
       tags: [calculator]
-      operationId: calculateGamePrice
-      summary: Calculate game boosting price
-      description: Calculate the total price for game boosting service based on selected parameters
+      operationId: validateFormula
+      summary: Validate calculation formula
+      description: Validate a calculation formula configuration before using it
+      parameters:
+        - name: formulaType
+          in: path
+          required: true
+          description: Type of formula to validate (LINEAR, RANGE, FORMULA, TIME_BASED)
+          schema:
+            type: string
+            enum: [LINEAR, RANGE, FORMULA, TIME_BASED]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "../schemas/calculator-schemas.yaml#/components/schemas/CalculationRequest"
+              $ref: "../schemas/calculator-schemas.yaml#/components/schemas/CalculationFormula"
       responses:
         "200":
-          description: Calculation successful
+          description: Formula validation successful
           content:
             application/json:
               schema:
-                $ref: "../schemas/calculator-schemas.yaml#/components/schemas/CalculationResult"
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  /api/games/calculator/formulas/{formulaType}/preview:
+    post:
+      tags: [calculator]
+      operationId: previewFormulaCalculation
+      summary: Preview formula calculation result
+      description: Calculate price using formula without saving configuration
+      parameters:
+        - name: formulaType
+          in: path
+          required: true
+          description: Type of formula to preview (LINEAR, RANGE, FORMULA, TIME_BASED)
+          schema:
+            type: string
+            enum: [LINEAR, RANGE, FORMULA, TIME_BASED]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - formula
+                - fromLevel
+                - toLevel
+                - basePrice
+              properties:
+                formula:
+                  $ref: "../schemas/calculator-schemas.yaml#/components/schemas/CalculationFormula"
+                fromLevel:
+                  type: integer
+                  minimum: 1
+                  example: 1
+                toLevel:
+                  type: integer
+                  minimum: 1
+                  example: 60
+                basePrice:
+                  type: integer
+                  minimum: 0
+                  description: Base price in cents
+                  example: 10000
+                pricePerLevel:
+                  type: integer
+                  minimum: 0
+                  description: Price per level in cents
+                  example: 1000
+      responses:
+        "200":
+          description: Preview calculation successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  formulaType:
+                    type: string
+                  fromLevel:
+                    type: integer
+                  toLevel:
+                    type: integer
+                  levelDifference:
+                    type: integer
+                  basePrice:
+                    type: integer
+                  calculatedPrice:
+                    type: integer
+                  breakdown:
+                    type: object
+                    description: Detailed calculation breakdown
+                  formulaValid:
+                    type: boolean
+                  validationErrors:
+                    type: array
+                    items:
+                      type: string
+        "400":
+          $ref: "../../common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+
+  # Universal calculation endpoint
+  /api/games/calculator/formulas/{formulaType}/calculate:
+    post:
+      tags: [calculator]
+      operationId: calculateWithFormula
+      summary: "[UNIVERSAL] Calculate price using any formula type"
+      description: Universal endpoint for price calculation with any supported formula type and full context
+      parameters:
+        - name: formulaType
+          in: path
+          required: true
+          description: Type of formula to calculate with (LINEAR, RANGE, FORMULA, TIME_BASED)
+          schema:
+            type: string
+            enum: [LINEAR, RANGE, FORMULA, TIME_BASED]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/calculator-schemas.yaml#/components/schemas/UniversalCalculationRequest"
+      responses:
+        "200":
+          description: Universal calculation successful
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/calculator-schemas.yaml#/components/schemas/UniversalCalculationResponse"
         "400":
           $ref: "../../common.yaml#/components/responses/BadRequest"
         "401":

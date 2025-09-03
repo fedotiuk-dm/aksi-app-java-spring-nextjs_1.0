@@ -4,11 +4,18 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
+import com.aksi.api.game.dto.CalculationFormula;
 import com.aksi.api.game.dto.CreatePriceConfigurationRequest;
 import com.aksi.api.game.dto.PriceConfiguration;
 import com.aksi.api.game.dto.UpdatePriceConfigurationRequest;
 import com.aksi.domain.game.PriceConfigurationEntity;
+import com.aksi.domain.game.formula.CalculationFormulaEntity;
+import com.aksi.domain.game.formula.FormulaFormulaEntity;
+import com.aksi.domain.game.formula.LinearFormulaEntity;
+import com.aksi.domain.game.formula.RangeFormulaEntity;
+import com.aksi.domain.game.formula.TimeBasedFormulaEntity;
 
 /** MapStruct mapper for PriceConfiguration domain */
 @Mapper(componentModel = "spring", config = BaseMapperConfig.class)
@@ -16,32 +23,38 @@ public interface PriceConfigurationMapper {
 
   // Entity to DTO mappings
 
-  @Mapping(target = "gameId", source = "game.id")
-  @Mapping(target = "difficultyLevelId", source = "difficultyLevel.id")
-  @Mapping(target = "serviceTypeId", source = "serviceType.id")
+  @Mapping(target = "calculationFormula", ignore = true) // Polymorphic object handled separately
   PriceConfiguration toPriceConfigurationDto(PriceConfigurationEntity entity);
 
-  @Mapping(target = "gameId", source = "game.id")
-  @Mapping(target = "difficultyLevelId", source = "difficultyLevel.id")
-  @Mapping(target = "serviceTypeId", source = "serviceType.id")
+  @Mapping(target = "calculationFormula", ignore = true) // Polymorphic object handled separately
   List<PriceConfiguration> toPriceConfigurationDtoList(List<PriceConfigurationEntity> entities);
 
   // DTO to Entity mappings
 
-  @Mapping(target = "game", ignore = true)
-  @Mapping(target = "difficultyLevel", ignore = true)
-  @Mapping(target = "serviceType", ignore = true)
   @Mapping(target = "active", ignore = true)
+  @Mapping(target = "calculationFormula", ignore = true) // Polymorphic object handled separately
   PriceConfigurationEntity toPriceConfigurationEntity(CreatePriceConfigurationRequest dto);
 
   // Update entity from DTO (only non-null fields)
-  @Mapping(target = "game", ignore = true)
-  @Mapping(target = "difficultyLevel", ignore = true)
-  @Mapping(target = "serviceType", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "calculationFormula", ignore = true) // Polymorphic object handled separately
   void updatePriceConfigurationFromDto(
       UpdatePriceConfigurationRequest dto,
-      @org.mapstruct.MappingTarget PriceConfigurationEntity entity);
+      @MappingTarget PriceConfigurationEntity entity);
+
+  // Formula conversion from API DTO to Domain
+  default CalculationFormulaEntity toDomainFormula(CalculationFormula apiFormula) {
+    if (apiFormula == null) return null;
+
+    // Convert based on formula type
+    return switch (apiFormula.getType().getValue()) {
+      case "LINEAR" -> new LinearFormulaEntity();
+      case "RANGE" -> new RangeFormulaEntity();
+      case "FORMULA" -> new FormulaFormulaEntity();
+      case "TIME_BASED" -> new TimeBasedFormulaEntity();
+      default -> throw new IllegalArgumentException("Unsupported calculation formula type: " + apiFormula.getType());
+    };
+  }
 }
