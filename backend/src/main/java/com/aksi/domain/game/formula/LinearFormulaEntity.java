@@ -1,10 +1,10 @@
 package com.aksi.domain.game.formula;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 import com.aksi.api.game.dto.CalculationFormula.TypeEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,7 +22,7 @@ public class LinearFormulaEntity extends CalculationFormulaEntity {
 
   // Гетери та сетери
   @JsonProperty("pricePerLevel")
-    private BigDecimal pricePerLevel;
+    private Integer pricePerLevel;
 
     // Конструктори
     public LinearFormulaEntity() {
@@ -30,7 +30,7 @@ public class LinearFormulaEntity extends CalculationFormulaEntity {
     }
 
   @Override
-    public BigDecimal calculate(BigDecimal basePrice, int fromLevel, int toLevel) {
+    public Integer calculate(Integer basePrice, int fromLevel, int toLevel) {
         if (basePrice == null) {
             throw new IllegalArgumentException("Base price cannot be null");
         }
@@ -39,9 +39,9 @@ public class LinearFormulaEntity extends CalculationFormulaEntity {
         }
 
         int levelDiff = Math.max(0, toLevel - fromLevel);
-        BigDecimal levelPrice = pricePerLevel.multiply(BigDecimal.valueOf(levelDiff));
+        int levelPrice = pricePerLevel * levelDiff;
 
-        return basePrice.add(levelPrice);
+        return basePrice + levelPrice;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class LinearFormulaEntity extends CalculationFormulaEntity {
         if (pricePerLevel == null) {
             throw new IllegalArgumentException("Price per level is required for LinearFormula");
         }
-        if (pricePerLevel.compareTo(BigDecimal.ZERO) < 0) {
+        if (pricePerLevel < 0) {
             throw new IllegalArgumentException("Price per level cannot be negative");
         }
     }

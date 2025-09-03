@@ -1,7 +1,6 @@
 package com.aksi.domain.game.formula;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+
 import java.util.Objects;
 
 import com.aksi.api.game.dto.CalculationFormula.TypeEnum;
@@ -27,7 +26,7 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
 
   // Гетери та сетери
   @JsonProperty("hourlyRate")
-    private BigDecimal hourlyRate;
+    private Integer hourlyRate;
 
     @JsonProperty("baseHours")
     private int baseHours;
@@ -36,7 +35,7 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
     private int hoursPerLevel;
 
     @JsonProperty("complexityMultiplier")
-    private BigDecimal complexityMultiplier;
+    private Float complexityMultiplier;
 
     @JsonProperty("minimumHours")
     private Integer minimumHours;
@@ -47,12 +46,12 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
     // Конструктори
     public TimeBasedFormulaEntity() {
         super(TypeEnum.TIME_BASED);
-        this.complexityMultiplier = BigDecimal.ONE;
+        this.complexityMultiplier = 1.0f;
         this.roundToHours = true;
     }
 
   @Override
-    public BigDecimal calculate(BigDecimal basePrice, int fromLevel, int toLevel) {
+    public Integer calculate(Integer basePrice, int fromLevel, int toLevel) {
         if (basePrice == null) {
             throw new IllegalArgumentException("Base price cannot be null");
         }
@@ -62,13 +61,14 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
 
         int finalEstimatedHours = calculateEstimatedHours(fromLevel, toLevel);
 
-        // Calculate time cost
-        BigDecimal timeCost = hourlyRate
-            .multiply(BigDecimal.valueOf(finalEstimatedHours))
-            .multiply(complexityMultiplier)
-            .setScale(0, RoundingMode.HALF_UP);
+        // Calculate time cost with integer arithmetic
+        // Convert complexityMultiplier to integer percentage (1.5 = 150%)
+        int complexityPercent = complexityMultiplier != null ?
+            Math.round(complexityMultiplier * 100.0f) : 100;
 
-        return basePrice.add(timeCost);
+        long timeCost = (long) hourlyRate * finalEstimatedHours * complexityPercent / 100;
+
+        return basePrice + (int) timeCost;
     }
 
     /**
@@ -100,7 +100,7 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
         if (hourlyRate == null) {
             throw new IllegalArgumentException("Hourly rate is required for TimeBasedFormula");
         }
-        if (hourlyRate.compareTo(BigDecimal.ZERO) <= 0) {
+        if (hourlyRate <= 0) {
             throw new IllegalArgumentException("Hourly rate must be positive");
         }
         if (baseHours < 0) {
@@ -109,7 +109,7 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
         if (hoursPerLevel < 0) {
             throw new IllegalArgumentException("Hours per level cannot be negative");
         }
-        if (complexityMultiplier != null && complexityMultiplier.compareTo(BigDecimal.ZERO) <= 0) {
+        if (complexityMultiplier != null && complexityMultiplier <= 0.0f) {
             throw new IllegalArgumentException("Complexity multiplier must be positive");
         }
         if (minimumHours != null && minimumHours <= 0) {

@@ -1,10 +1,11 @@
 package com.aksi.domain.game.formula;
 
-import java.math.BigDecimal;
+
 
 import com.aksi.api.game.dto.CalculationFormula.TypeEnum;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,7 +41,7 @@ public abstract class CalculationFormulaEntity {
      * @param toLevel target level
      * @return calculated price in cents
      */
-    public abstract BigDecimal calculate(BigDecimal basePrice, int fromLevel, int toLevel);
+    public abstract Integer calculate(Integer basePrice, int fromLevel, int toLevel);
 
     /**
      * Validate formula parameters

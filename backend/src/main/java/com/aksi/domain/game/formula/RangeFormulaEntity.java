@@ -1,6 +1,6 @@
 package com.aksi.domain.game.formula;
 
-import java.math.BigDecimal;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,8 +29,8 @@ public class RangeFormulaEntity extends CalculationFormulaEntity {
         super(TypeEnum.RANGE);
     }
 
-  @Override
-    public BigDecimal calculate(BigDecimal basePrice, int fromLevel, int toLevel) {
+    @Override
+    public Integer calculate(Integer basePrice, int fromLevel, int toLevel) {
         if (basePrice == null) {
             throw new IllegalArgumentException("Base price cannot be null");
         }
@@ -38,17 +38,17 @@ public class RangeFormulaEntity extends CalculationFormulaEntity {
             throw new IllegalArgumentException("Ranges cannot be empty");
         }
 
-        BigDecimal total = BigDecimal.ZERO;
+        int total = 0;
 
         // Знаходимо всі діапазони, які перекриваються з запитуваним діапазоном рівнів
         for (PriceRangeEntity range : ranges) {
             if (range.getFrom() <= toLevel && range.getTo() >= fromLevel) {
                 // Діапазон перекривається - додаємо його фіксовану ціну
-                total = total.add(range.getPrice());
+                total += range.getPrice();
             }
         }
 
-                return basePrice.add(total);
+        return basePrice + total;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class RangeFormulaEntity extends CalculationFormulaEntity {
 
     // Гетери та методи для роботи з діапазонами
     public List<PriceRangeEntity> getRanges() {
-        return List.copyOf(ranges);
+        return ranges;
     }
 
 

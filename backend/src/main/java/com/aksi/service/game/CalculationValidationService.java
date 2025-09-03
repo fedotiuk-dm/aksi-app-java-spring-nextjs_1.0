@@ -1,6 +1,6 @@
 package com.aksi.service.game;
 
-import java.math.BigDecimal;
+
 
 import org.springframework.stereotype.Service;
 
@@ -48,7 +48,7 @@ public class CalculationValidationService {
    * @param toLevel Target level
    * @throws IllegalArgumentException if parameters are invalid
    */
-  public void validateCalculationParameters(BigDecimal basePrice, int fromLevel, int toLevel) {
+  public void validateCalculationParameters(Integer basePrice, int fromLevel, int toLevel) {
     log.debug("Validating calculation parameters: basePrice={}, fromLevel={}, toLevel={}",
               basePrice, fromLevel, toLevel);
 
@@ -56,7 +56,7 @@ public class CalculationValidationService {
       throw new IllegalArgumentException("Base price cannot be null");
     }
 
-    if (basePrice.compareTo(BigDecimal.ZERO) < 0) {
+    if (basePrice < 0) {
       throw new IllegalArgumentException("Base price cannot be negative");
     }
 

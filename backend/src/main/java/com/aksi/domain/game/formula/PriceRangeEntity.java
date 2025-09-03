@@ -1,6 +1,5 @@
 package com.aksi.domain.game.formula;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,9 +25,9 @@ public class PriceRangeEntity {
     private int to;
 
     @JsonProperty("price")
-    private BigDecimal price;
+    private Integer price;
 
-  public PriceRangeEntity(int from, int to, BigDecimal price) {
+  public PriceRangeEntity(int from, int to, Integer price) {
         this.from = from;
         this.to = to;
         this.price = price;
@@ -47,7 +46,7 @@ public class PriceRangeEntity {
         if (price == null) {
             throw new IllegalArgumentException("Price cannot be null");
         }
-        if (price.compareTo(BigDecimal.ZERO) < 0) {
+        if (price < 0) {
             throw new IllegalArgumentException("Price cannot be negative");
         }
     }

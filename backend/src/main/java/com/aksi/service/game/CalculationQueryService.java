@@ -1,7 +1,6 @@
 package com.aksi.service.game;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+
 import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
@@ -54,7 +53,7 @@ public class CalculationQueryService {
    * @param toLevel Target level
    * @return Calculated price in cents
    */
-  public BigDecimal calculatePrice(CalculationFormulaEntity formula, BigDecimal basePrice, int fromLevel, int toLevel) {
+  public Integer calculatePrice(CalculationFormulaEntity formula, Integer basePrice, int fromLevel, int toLevel) {
     if (formula == null) {
       throw new IllegalArgumentException("Formula cannot be null");
     }
@@ -70,7 +69,7 @@ public class CalculationQueryService {
 
     try {
       // Perform polymorphic calculation
-      BigDecimal result = formula.calculate(basePrice, fromLevel, toLevel);
+      Integer result = formula.calculate(basePrice, fromLevel, toLevel);
 
       log.debug("Calculated price using {}: basePrice={}, fromLevel={}, toLevel={}, result={}",
                getFormulaDescription(formula), basePrice, fromLevel, toLevel, result);
@@ -156,12 +155,12 @@ public class CalculationQueryService {
     validationService.validateFormula(domainFormula);
 
     // Perform calculation with default base price
-    BigDecimal basePrice = BigDecimal.ZERO;
-    BigDecimal calculatedPrice = calculatePrice(domainFormula, basePrice, startLevel, targetLevel);
+    Integer basePrice = 0;
+    Integer calculatedPrice = calculatePrice(domainFormula, basePrice, startLevel, targetLevel);
 
     // Apply modifiers if specified
     var modifierAdjustments = new ArrayList<ModifierAdjustment>();
-    BigDecimal totalModifierAdjustment = BigDecimal.ZERO;
+    Integer totalModifierAdjustment = 0;
 
     var modifiers = context.getModifiers();
     if (modifiers != null && !modifiers.isEmpty()) {
@@ -181,21 +180,21 @@ public class CalculationQueryService {
 
         // Apply each modifier to the price
         for (var modifierEntity : modifierEntities) {
-          BigDecimal adjustment = calculateModifierAdjustment(modifierEntity, calculatedPrice, startLevel, targetLevel);
+          Integer adjustment = calculateModifierAdjustment(modifierEntity, calculatedPrice, startLevel, targetLevel);
 
-          if (adjustment.compareTo(BigDecimal.ZERO) != 0) {
+          if (adjustment != 0) {
             var adjustmentDto = new ModifierAdjustment();
             adjustmentDto.setModifierCode(modifierEntity.getCode());
-            adjustmentDto.setAdjustment(adjustment.intValue());
+            adjustmentDto.setAdjustment(adjustment);
             adjustmentDto.setType(mapOperationToTypeEnum(GameModifierOperation.fromValue(modifierEntity.getOperation().getValue())));
 
             modifierAdjustments.add(adjustmentDto);
-            totalModifierAdjustment = totalModifierAdjustment.add(adjustment);
+            totalModifierAdjustment += adjustment;
           }
         }
 
         // Add modifier adjustments to final price
-        calculatedPrice = calculatedPrice.add(totalModifierAdjustment);
+        calculatedPrice += totalModifierAdjustment;
 
       } catch (Exception e) {
         log.warn("Failed to apply modifiers {}: {}", modifiers, e.getMessage());
@@ -209,17 +208,17 @@ public class CalculationQueryService {
 
     // Build response
     var response = new UniversalCalculationResponse();
-    response.setFinalPrice(calculatedPrice.intValue());
+    response.setFinalPrice(calculatedPrice);
     response.setCurrency("USD");
     response.setStatus(UniversalCalculationResponse.StatusEnum.SUCCESS);
     response.setFormulaType(FormulaTypeEnum.fromValue(formulaType));
 
     // Add breakdown
     var breakdown = new CalculationBreakdown();
-    breakdown.setBaseCalculation(calculatedPrice.intValue() - totalModifierAdjustment.intValue());
+    breakdown.setBaseCalculation(calculatedPrice - totalModifierAdjustment);
     breakdown.setModifierAdjustments(modifierAdjustments);
-    breakdown.setTotalAdjustment(totalModifierAdjustment.intValue());
-    breakdown.setFinalPrice(calculatedPrice.intValue());
+    breakdown.setTotalAdjustment(totalModifierAdjustment);
+    breakdown.setFinalPrice(calculatedPrice);
     response.setBreakdown(breakdown);
 
     // Add metadata
@@ -251,35 +250,36 @@ public class CalculationQueryService {
    * @param targetLevel target level for level-based calculations
    * @return adjustment amount to add to the price
    */
-  private BigDecimal calculateModifierAdjustment(
+  private Integer calculateModifierAdjustment(
       GameModifierEntity modifier,
-      BigDecimal basePrice,
+      Integer basePrice,
       int startLevel,
       int targetLevel) {
 
     if (modifier == null || modifier.getValue() == null) {
-      return BigDecimal.ZERO;
+      return 0;
     }
 
-    BigDecimal modifierValue = BigDecimal.valueOf(modifier.getValue());
+    // Convert modifier value to integer (assuming it's a percentage for MULTIPLY/DIVIDE)
+    int modifierValue = Math.round(modifier.getValue()); // 50 stays 50 (represents 50%)
 
     return switch (modifier.getOperation()) {
       case ADD -> {
         // Basic addition - can be enhanced with level multiplier
         int levelDiff = Math.max(0, targetLevel - startLevel);
-        BigDecimal levelMultiplier = levelDiff > 0 ? BigDecimal.valueOf(levelDiff) : BigDecimal.ONE;
-        yield modifierValue.multiply(levelMultiplier);
+        yield modifierValue * Math.max(1, levelDiff);
       }
-      case SUBTRACT -> modifierValue.negate();
+      case SUBTRACT -> -modifierValue;
       case MULTIPLY -> {
-        // Apply multiplier (e.g., 1.5 = +50%)
-        BigDecimal multiplier = BigDecimal.ONE.add(modifierValue);
-        yield basePrice.multiply(multiplier).subtract(basePrice);
+        // Apply multiplier (e.g., 50 = +50% = multiply by 1.5)
+        long multiplier = 100 + modifierValue; // 50 becomes 150 (1.5x)
+        long adjustment = (long) basePrice * multiplier / 100 - basePrice;
+        yield (int) adjustment;
       }
       case DIVIDE -> {
         // Apply division (reduce price)
-        BigDecimal divisor = BigDecimal.ONE.add(modifierValue);
-        yield basePrice.divide(divisor, RoundingMode.HALF_UP).negate().add(basePrice);
+        long adjustment = basePrice - (basePrice * 100 / Math.max(1, modifierValue));
+        yield (int) adjustment;
       }
     };
   }

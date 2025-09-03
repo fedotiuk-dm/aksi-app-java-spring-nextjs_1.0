@@ -1,6 +1,7 @@
 package com.aksi.domain.game.hibernate;
 
 import com.aksi.domain.game.formula.CalculationFormulaEntity;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 
@@ -31,7 +32,7 @@ public class CalculationFormulaJsonType {
 
         try {
             return objectMapper.writeValueAsString(value);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to serialize CalculationFormula: " + value, e);
         }
     }
@@ -46,7 +47,7 @@ public class CalculationFormulaJsonType {
 
         try {
             return objectMapper.readValue(string, CalculationFormulaEntity.class);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to deserialize CalculationFormula: " + string, e);
         }
     }
@@ -62,7 +63,7 @@ public class CalculationFormulaJsonType {
         try {
             String json = objectMapper.writeValueAsString(value);
             return objectMapper.readValue(json, CalculationFormulaEntity.class);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to deep copy CalculationFormula", e);
         }
     }
