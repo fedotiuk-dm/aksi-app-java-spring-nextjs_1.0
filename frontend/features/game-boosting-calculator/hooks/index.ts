@@ -4,7 +4,11 @@
 // Main calculator hooks
 export { useGameOperations } from './useGameOperations';
 export { useBoosterOperations } from './useBoosterOperations';
-export { useCalculatorOperations } from './useCalculatorOperations';
+export { useGameCalculatorOperations } from './useGameCalculatorOperations';
+export { useAvailableGames } from './useGameCalculatorOperations';
+export { useAvailableServiceTypes } from './useGameCalculatorOperations';
+export { useAvailableDifficultyLevels } from './useGameCalculatorOperations';
+export { useAvailableModifiers } from './useGameCalculatorOperations';
 
 // Admin management hooks
 export { useGameManagement } from '../components/admin/games/useGameManagement.hook';

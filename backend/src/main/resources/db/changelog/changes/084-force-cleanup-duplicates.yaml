@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: force-cleanup-duplicate-modifiers
+      author: system
+      comment: Force cleanup of duplicate game modifiers
+      runOnChange: false
+
+      changes:
+        - sql:
+            comment: Force cleanup duplicate modifiers
+            sql: |
+              -- Delete all duplicate modifiers except the most recent one for each (code, game_code) pair
+              WITH ranked_modifiers AS (
+                SELECT id,
+                       ROW_NUMBER() OVER (
+                         PARTITION BY code, COALESCE(game_code, '')
+                         ORDER BY created_at DESC
+                       ) as rn
+                FROM game_modifiers
+              )
+              DELETE FROM game_modifier_service_types
+              WHERE game_modifier_id IN (
+                SELECT id FROM ranked_modifiers WHERE rn > 1
+              );
+
+              -- Delete duplicate modifiers themselves
+              WITH ranked_modifiers AS (
+                SELECT id,
+                       ROW_NUMBER() OVER (
+                         PARTITION BY code, COALESCE(game_code, '')
+                         ORDER BY created_at DESC
+                       ) as rn
+                FROM game_modifiers
+              )
+              DELETE FROM game_modifiers
+              WHERE id IN (
+                SELECT id FROM ranked_modifiers WHERE rn > 1
+              );

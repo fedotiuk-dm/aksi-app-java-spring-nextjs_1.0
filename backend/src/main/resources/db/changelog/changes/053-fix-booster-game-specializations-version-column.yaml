@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: fix-booster-game-specializations-version-column-type
+      author: system
+      comment: Fix version column type from INTEGER to BIGINT to match BaseEntity
+      runOnChange: false
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: booster_game_specializations
+        - columnExists:
+            tableName: booster_game_specializations
+            columnName: version
+
+      changes:
+        # Change version column type from INTEGER to BIGINT
+        - modifyDataType:
+            tableName: booster_game_specializations
+            columnName: version
+            newDataType: bigint
+            defaultValueNumeric: 0

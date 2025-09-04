@@ -5,6 +5,9 @@ import org.springframework.data.jpa.domain.Specification;
 import com.aksi.api.game.dto.GameModifierType;
 import com.aksi.domain.game.GameModifierEntity;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+
 public class GameModifierSpecification {
 
   public static Specification<GameModifierEntity> hasActive(Boolean active) {
@@ -12,8 +15,19 @@ public class GameModifierSpecification {
   }
 
   public static Specification<GameModifierEntity> hasGameCode(String gameCode) {
-    return (root, query, criteriaBuilder) ->
-        gameCode == null ? null : criteriaBuilder.equal(root.get("gameCode"), gameCode);
+    return (root, query, criteriaBuilder) -> {
+      if (gameCode == null) {
+        return criteriaBuilder.isNull(root.get("gameCode"));
+      } else if (gameCode.trim().isEmpty() || "*".equals(gameCode)) {
+        return criteriaBuilder.or(
+            criteriaBuilder.isNull(root.get("gameCode")),
+            criteriaBuilder.equal(root.get("gameCode"), ""),
+            criteriaBuilder.equal(root.get("gameCode"), "*")
+        );
+      } else {
+        return criteriaBuilder.equal(root.get("gameCode"), gameCode);
+      }
+    };
   }
 
   public static Specification<GameModifierEntity> searchByNameOrCode(String search) {
@@ -26,7 +40,12 @@ public class GameModifierSpecification {
 
   /** Creates a specification for finding active modifiers for a game. */
   public static Specification<GameModifierEntity> findActiveModifiersForGame(String gameCode) {
-    return Specification.allOf(hasActive(true), hasGameCode(gameCode), orderBySortOrder());
+    return Specification.allOf(
+        hasActive(true),
+        // Game-specific modifiers for this game OR game-agnostic modifiers (empty game_code)
+        Specification.anyOf(hasGameCode(gameCode), hasGameCode(""), hasGameCode("*")),
+        orderBySortOrder()
+    );
   }
 
   /** Creates a specification for modifiers by type. */
@@ -40,8 +59,10 @@ public class GameModifierSpecification {
       if (serviceTypeCode == null || serviceTypeCode.trim().isEmpty()) {
         return null; // No filtering
       }
-      // Skip service type filtering for now - will filter on frontend
-      return criteriaBuilder.conjunction(); // Always true
+
+      // Filter by service type codes using JOIN with game_modifier_service_types table
+      Join<GameModifierEntity, String> serviceTypeCodesJoin = root.join("serviceTypeCodes", JoinType.LEFT);
+      return criteriaBuilder.equal(serviceTypeCodesJoin, serviceTypeCode);
     };
   }
 
@@ -51,7 +72,11 @@ public class GameModifierSpecification {
 
     return Specification.allOf(
         hasActive(active),
-        hasGameCode(gameCode),
+        // If gameCode is null/empty, show both game-specific and game-agnostic modifiers
+        // If gameCode is specified, show game-specific or game-agnostic modifiers
+        gameCode == null || gameCode.trim().isEmpty()
+            ? Specification.anyOf(hasGameCode(null), hasGameCode(""), hasGameCode("*"))
+            : Specification.anyOf(hasGameCode(gameCode), hasGameCode(null), hasGameCode(""), hasGameCode("*")),
         hasType(type),
         hasServiceTypeCode(serviceTypeCode),
         searchByNameOrCode(search),

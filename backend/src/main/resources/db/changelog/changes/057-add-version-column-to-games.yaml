@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-version-column-to-games-table
+      author: system
+      comment: Add missing version column to games table to match BaseEntity
+      runOnChange: false
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: games
+        - not:
+            - columnExists:
+                tableName: games
+                columnName: version
+
+      changes:
+        # Add version column to games table
+        - addColumn:
+            tableName: games
+            columns:
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false

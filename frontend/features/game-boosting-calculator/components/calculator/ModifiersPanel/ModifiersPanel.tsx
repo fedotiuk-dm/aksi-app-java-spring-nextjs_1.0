@@ -18,7 +18,7 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
-import { useGameBoostingStore } from '../../../store/game-boosting-store';
+import { useGameBoostingStore } from '@game-boosting-calculator/store';
 import { useModifiersPanel } from './useModifiersPanel.hook';
 import type { GameModifierInfo } from '@api/game';
 

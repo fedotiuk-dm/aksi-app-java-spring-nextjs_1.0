@@ -2,14 +2,22 @@ package com.aksi.service.game;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.openapitools.jackson.nullable.JsonNullable;
+
 import com.aksi.api.game.dto.CalculationBreakdown;
+import com.aksi.api.game.dto.CalculationFormula;
 import com.aksi.api.game.dto.CalculationMetadata;
+import com.aksi.api.game.dto.FormulaFormula;
 import com.aksi.api.game.dto.GameModifierOperation;
 import com.aksi.api.game.dto.ModifierAdjustment;
+import com.aksi.api.game.dto.UniversalCalculationContext;
 import com.aksi.api.game.dto.UniversalCalculationRequest;
 import com.aksi.api.game.dto.UniversalCalculationResponse;
 import com.aksi.api.game.dto.UniversalCalculationResponse.FormulaTypeEnum;
@@ -19,7 +27,7 @@ import com.aksi.domain.game.formula.FormulaFormulaEntity;
 import com.aksi.domain.game.formula.LinearFormulaEntity;
 import com.aksi.domain.game.formula.RangeFormulaEntity;
 import com.aksi.domain.game.formula.TimeBasedFormulaEntity;
-import com.aksi.mapper.PriceConfigurationMapper;
+import com.aksi.mapper.FormulaConversionUtil;
 import com.aksi.repository.GameRepository;
 import com.aksi.repository.ServiceTypeRepository;
 
@@ -38,7 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CalculationQueryService {
 
   private final CalculationValidationService validationService;
-  private final PriceConfigurationMapper priceConfigurationMapper;
+  private final FormulaConversionUtil formulaConversionUtil;
   private final GameModifierService gameModifierService;
   private final GameRepository gameRepository;
   private final ServiceTypeRepository serviceTypeRepository;
@@ -123,19 +131,39 @@ public class CalculationQueryService {
    * @param request universal calculation request
    * @return universal calculation response
    */
-  public UniversalCalculationResponse calculateWithFormula(String formulaType, UniversalCalculationRequest request) {
+      public UniversalCalculationResponse calculateWithFormula(String formulaType, UniversalCalculationRequest request) {
+    log.info("🎬 calculateWithFormula called with formulaType={}, request not null: {}", formulaType, request != null);
+
     if (request == null) {
+      log.error("❌ Request is null!");
       throw new IllegalArgumentException("Calculation request cannot be null");
     }
 
-    var apiFormula = request.getFormula();
-    if (apiFormula == null) {
-      throw new IllegalArgumentException("Formula is required");
-    }
+    log.info("🎬 Request context: {}", request.getContext());
 
     var context = request.getContext();
     if (context == null) {
       throw new IllegalArgumentException("Calculation context is required");
+    }
+
+    var apiFormulaNullable = request.getFormula();
+    CalculationFormula apiFormula;
+
+    // Handle universal calculator case - when formula is null but we have context
+    if (apiFormulaNullable == null || !apiFormulaNullable.isPresent()) {
+      // Check if we have sufficient context for universal calculation
+      if (context.getAdditionalParameters() != null &&
+          context.getAdditionalParameters().containsKey("basePrice") &&
+          context.getAdditionalParameters().containsKey("levelDiff")) {
+
+        // Create a default formula for universal calculation
+        apiFormula = createDefaultFormulaForUniversalCalculation(context);
+      } else {
+        throw new IllegalArgumentException("Formula is required when additional parameters are insufficient");
+      }
+    } else {
+      // Use the provided formula
+      apiFormula = apiFormulaNullable.get();
     }
 
     Integer startLevel = context.getStartLevel();
@@ -149,31 +177,53 @@ public class CalculationQueryService {
     long startTime = System.nanoTime();
 
     // Convert API formula to domain entity
-    CalculationFormulaEntity domainFormula = priceConfigurationMapper.toDomainFormula(apiFormula);
+    log.info("🔧 Converting API formula to domain entity: {}", apiFormula);
+    CalculationFormulaEntity domainFormula = formulaConversionUtil.toDomainFormula(apiFormula);
+    log.info("✅ Formula converted successfully: {}", domainFormula);
 
     // Validate formula
+    log.info("🔍 Validating formula...");
     validationService.validateFormula(domainFormula);
+    log.info("✅ Formula validation passed");
 
-    // Perform calculation with default base price
+    // Determine base price for calculation
     Integer basePrice = 0;
+    if ("UNIVERSAL".equals(formulaType) && context.getAdditionalParameters() != null &&
+        context.getAdditionalParameters().containsKey("basePrice")) {
+        // For universal calculator, use basePrice from additionalParameters
+        basePrice = context.getAdditionalParameters().get("basePrice");
+    }
+
+    log.info("🧮 Calculating price with basePrice={}, startLevel={}, targetLevel={}", basePrice, startLevel, targetLevel);
     Integer calculatedPrice = calculatePrice(domainFormula, basePrice, startLevel, targetLevel);
+    log.info("💰 Price calculated: {}", calculatedPrice);
 
     // Apply modifiers if specified
     var modifierAdjustments = new ArrayList<ModifierAdjustment>();
     Integer totalModifierAdjustment = 0;
 
     var modifiers = context.getModifiers();
+    log.info("🎯 Processing modifiers: {}", modifiers);
     if (modifiers != null && !modifiers.isEmpty()) {
+      log.info("🔄 Starting modifier processing for {} modifiers", modifiers.size());
       try {
         // Get game and service type IDs
+        log.info("🔍 Looking for game with code: {}", context.getGameCode());
         var gameEntity = gameRepository.findByCode(context.getGameCode())
             .orElseThrow(() -> new IllegalArgumentException("Game not found: " + context.getGameCode()));
+        log.info("✅ Found game entity: id={}, code={}", gameEntity.getId(), gameEntity.getCode());
+
+        log.info("🔍 Looking for service type with code: {}", context.getServiceTypeCode());
         var serviceTypeEntity = serviceTypeRepository.findByCode(context.getServiceTypeCode())
             .orElseThrow(() -> new IllegalArgumentException("Service type not found: " + context.getServiceTypeCode()));
+        log.info("✅ Found service type entity: id={}, code={}", serviceTypeEntity.getId(), serviceTypeEntity.getCode());
 
         // Get active modifiers for calculation with validation
+        log.info("🚀 Getting modifiers for calculation: gameId={}, serviceTypeId={}, modifiers={}",
+            gameEntity.getId(), serviceTypeEntity.getId(), modifiers);
         var modifierEntities = gameModifierService.getActiveModifiersForCalculation(
             gameEntity.getId(), serviceTypeEntity.getId(), modifiers);
+        log.info("✅ Retrieved {} modifier entities", modifierEntities.size());
 
         // Validate modifier compatibility
         gameModifierService.validateModifierCompatibility(modifierEntities);
@@ -196,9 +246,27 @@ public class CalculationQueryService {
         // Add modifier adjustments to final price
         calculatedPrice += totalModifierAdjustment;
 
+      } catch (IncorrectResultSizeDataAccessException e) {
+        // Specific handling for database query returning multiple results
+        log.error("❌ Database query error for modifiers {}: {} (type: {})", modifiers, e.getMessage(), e.getClass().getName());
+        throw new IncorrectResultSizeDataAccessException("Multiple modifier records found for the same code", e.getActualSize(), e.getExpectedSize(), e);
       } catch (Exception e) {
-        log.warn("Failed to apply modifiers {}: {}", modifiers, e.getMessage());
-        // Continue with calculation without modifiers
+        // Provide more specific error messages for common issues
+        String userMessage;
+        if (e.getMessage() != null && e.getMessage().contains("No enum constant")) {
+          userMessage = "Configuration error: Invalid modifier type. Please contact support.";
+        } else if (e.getMessage() != null && e.getMessage().contains("Game not found")) {
+          userMessage = "Configuration error: Invalid game code. Please check game selection.";
+        } else if (e.getMessage() != null && e.getMessage().contains("Service type not found")) {
+          userMessage = "Configuration error: Invalid service type. Please check service selection.";
+        } else {
+          userMessage = "Failed to apply modifiers. Please try again or contact support.";
+        }
+
+        log.error("❌ Failed to apply modifiers {}: {} (type: {})", modifiers, e.getMessage(), e.getClass().getName(), e);
+
+        // Re-throw with more specific message for GlobalExceptionHandler
+        throw new RuntimeException(userMessage, e);
       }
     }
 
@@ -211,7 +279,13 @@ public class CalculationQueryService {
     response.setFinalPrice(calculatedPrice);
     response.setCurrency("USD");
     response.setStatus(UniversalCalculationResponse.StatusEnum.SUCCESS);
-    response.setFormulaType(FormulaTypeEnum.fromValue(formulaType));
+
+    // Handle formula type - for universal calculator, use FORMULA as default
+    if ("UNIVERSAL".equals(formulaType)) {
+        response.setFormulaType(FormulaTypeEnum.FORMULA);
+    } else {
+        response.setFormulaType(FormulaTypeEnum.fromValue(formulaType));
+    }
 
     // Add breakdown
     var breakdown = new CalculationBreakdown();
@@ -302,5 +376,30 @@ public class CalculationQueryService {
       case MULTIPLY -> ModifierAdjustment.TypeEnum.MULTIPLIER;
       case DIVIDE -> ModifierAdjustment.TypeEnum.PERCENTAGE;
     };
+  }
+
+  /**
+   * Creates a default formula for universal calculation based on context parameters.
+   * This is used when no explicit formula is provided but we have sufficient context.
+   */
+  private CalculationFormula createDefaultFormulaForUniversalCalculation(UniversalCalculationContext context) {
+    // Create a simple formula formula that uses basePrice + levelDiff
+    var formulaFormula = new FormulaFormula("basePrice + levelDiff", CalculationFormula.TypeEnum.FORMULA);
+
+    // Set variables if available
+    Map<String, Integer> variables = new HashMap<>();
+    var additionalParams = context.getAdditionalParameters();
+    if (additionalParams != null) {
+      // Extract basePrice and levelDiff as variables
+      if (additionalParams.containsKey("basePrice")) {
+        variables.put("basePrice", additionalParams.get("basePrice"));
+      }
+      if (additionalParams.containsKey("levelDiff")) {
+        variables.put("levelDiff", additionalParams.get("levelDiff"));
+      }
+    }
+    formulaFormula.setVariables(variables);
+
+    return formulaFormula;
   }
 }

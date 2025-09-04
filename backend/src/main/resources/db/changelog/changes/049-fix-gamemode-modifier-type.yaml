@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: fix-gamemode-modifier-type-to-mode
+      author: system
+      comment: Fix modifier types that use GAMEMODE to use MODE instead (since GAMEMODE is not in the enum)
+      runOnChange: false
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: game_modifiers
+
+      changes:
+        # Fix GAMEMODE to MODE
+        - update:
+            tableName: game_modifiers
+            columns:
+              - column:
+                  name: modifier_type
+                  value: MODE
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+            where: modifier_type = 'GAMEMODE'
+
+        # Fix any other potential invalid modifier types by setting them to SERVICE
+        - update:
+            tableName: game_modifiers
+            columns:
+              - column:
+                  name: modifier_type
+                  value: SERVICE
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+            where: modifier_type NOT IN ('TIMING', 'SUPPORT', 'MODE', 'QUALITY', 'EXTRA', 'PROMOTIONAL', 'SEASONAL', 'SPELLS', 'RANK', 'PROGRESSION', 'COSMETIC', 'SOCIAL', 'GUIDANCE', 'ACHIEVEMENT', 'SERVICE')

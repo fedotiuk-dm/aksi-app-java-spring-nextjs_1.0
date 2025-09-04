@@ -90,7 +90,6 @@ databaseChangeLog:
         - dropColumn:
             tableName: customers
             columnName: blacklist_reason
-
   - changeSet:
       id: 017-6
       author: aksi

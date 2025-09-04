@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: fix-calculation-formulas-format-liquibase
+      author: system
+      comment: Fix calculation formulas to be stored as proper JSON instead of plain strings using Liquibase native syntax
+      runOnChange: false
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: price_configurations
+
+      changes:
+        # ===== FIX FORMULAS WITH basePrice + (levelDifference * pricePerLevel) =====
+        # Fix standard linear formulas
+        - update:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: calculation_formula
+                  value: '{"type":"FORMULA","expression":"basePrice + (levelDifference * pricePerLevel)"}'
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+            where: calculation_formula = 'basePrice + (levelDifference * pricePerLevel)'
+
+        # ===== FIX FORMULAS WITH MULTIPLIERS =====
+        # Fix formulas with multipliers
+        - update:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: calculation_formula
+                  value: '{"type":"FORMULA","expression":"basePrice + (levelDifference * pricePerLevel * 1.5)"}'
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+            where: calculation_formula LIKE '%* 1.5%' AND calculation_formula NOT LIKE '{%'
+
+        # ===== FIX ANY REMAINING STRING FORMULAS =====
+        # Convert any other string formulas to JSON format
+        - update:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: calculation_formula
+                  value: '{"type":"FORMULA","expression":"basePrice + (levelDifference * pricePerLevel)"}'
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+            where: calculation_formula IS NOT NULL
+              AND calculation_formula != ''
+              AND calculation_formula NOT LIKE '{%'
+              AND calculation_formula LIKE '%basePrice%'
+              AND calculation_formula LIKE '%levelDifference%'
+              AND calculation_formula LIKE '%pricePerLevel%'
+
+        # ===== FIX COMPLETELY MALFORMED FORMULAS =====
+        # Replace empty or invalid formulas with default
+        - update:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: calculation_formula
+                  value: '{"type":"FORMULA","expression":"basePrice + (levelDifference * pricePerLevel)"}'
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+            where: calculation_formula IS NULL
+              OR calculation_formula = ''
+              OR calculation_formula = 'null'

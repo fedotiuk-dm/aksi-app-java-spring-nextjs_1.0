@@ -8,8 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aksi.api.game.dto.CalculationFormula;
 import com.aksi.api.game.dto.CreatePriceConfigurationRequest;
 import com.aksi.api.game.dto.UpdatePriceConfigurationRequest;
+import com.aksi.domain.game.formula.CalculationFormulaEntity;
 import com.aksi.exception.ConflictException;
-import com.aksi.mapper.PriceConfigurationMapper;
+import com.aksi.mapper.FormulaConversionUtil;
 import com.aksi.service.game.util.EntityValidationUtils;
 import com.aksi.service.game.util.PriceConfigurationQueryUtils;
 import com.aksi.service.game.util.PriceValidationUtils;
@@ -30,7 +31,7 @@ public class PriceConfigurationValidationService {
   private final EntityValidationUtils entityValidationUtils;
   private final PriceConfigurationQueryUtils priceConfigurationQueryUtils;
   private final CalculationValidationService calculationValidationService;
-  private final PriceConfigurationMapper priceConfigurationMapper;
+  private final FormulaConversionUtil formulaConversionUtil;
 
   /**
    * Validate price configuration creation request.
@@ -67,8 +68,8 @@ public class PriceConfigurationValidationService {
     // Validate calculation formula if present
     if (request.getCalculationFormula() != null && request.getCalculationFormula().isPresent()) {
       CalculationFormula calculationFormula = request.getCalculationFormula().get();
-      com.aksi.domain.game.formula.CalculationFormulaEntity domainFormula =
-          priceConfigurationMapper.toDomainFormula(calculationFormula);
+      CalculationFormulaEntity domainFormula =
+          formulaConversionUtil.toDomainFormula(calculationFormula);
       calculationValidationService.validateFormula(domainFormula);
       log.debug("Formula validation passed for: {}", calculationFormula.getType());
     }
@@ -110,8 +111,8 @@ public class PriceConfigurationValidationService {
     // Validate calculation formula if present
     if (request.getCalculationFormula() != null && request.getCalculationFormula().isPresent()) {
       CalculationFormula calculationFormula = request.getCalculationFormula().get();
-      com.aksi.domain.game.formula.CalculationFormulaEntity domainFormula =
-          priceConfigurationMapper.toDomainFormula(calculationFormula);
+      CalculationFormulaEntity domainFormula =
+          formulaConversionUtil.toDomainFormula(calculationFormula);
       calculationValidationService.validateFormula(domainFormula);
       log.debug("Formula validation passed for: {}", calculationFormula.getType());
     }

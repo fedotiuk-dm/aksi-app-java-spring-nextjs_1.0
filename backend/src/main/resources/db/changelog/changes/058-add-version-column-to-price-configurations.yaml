@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-version-column-to-price-configurations-table
+      author: system
+      comment: Add missing version column to price_configurations table to match BaseEntity
+      runOnChange: false
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: price_configurations
+        - not:
+            - columnExists:
+                tableName: price_configurations
+                columnName: version
+
+      changes:
+        # Add version column to price_configurations table
+        - addColumn:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false

@@ -7,7 +7,7 @@
 
 import React, { useState } from 'react';
 import { Autocomplete, TextField, CircularProgress, Box, Typography, Chip } from '@mui/material';
-import { useGameBoostingStore } from '../../store/game-boosting-store';
+import { useGameBoostingStore } from '@game-boosting-calculator/store';
 import { useGamesListGames } from '@api/game';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Game } from '@api/game';

@@ -1,9 +1,9 @@
 /**
  * Booster Operations Hook
- * Business logic for booster-related operations
+ * Business logic for booster-related operations using Orval API
  */
 
-import { useGameBoostingStore } from '../store/game-boosting-store';
+import { useGameBoostingStore } from '@game-boosting-calculator/store';
 import { useGamesListBoosters, useGamesGetBoosterById } from '@api/game';
 import type { Booster } from '@api/game';
 

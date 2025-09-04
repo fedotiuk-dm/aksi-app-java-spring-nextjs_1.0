@@ -30,7 +30,7 @@ public class BoosterValidationService {
    * @param request CreateBoosterRequest to validate
    */
   public void validateForCreate(CreateBoosterRequest request) {
-    ValidationUtils.validateDiscordUsername(request.getDisplayName(), "Display name");
+    ValidationUtils.validateDisplayName(request.getDisplayName(), "Display name");
     ValidationUtils.validateDiscordUsername(request.getDiscordUsername(), "Discord username");
     validateDiscordUsernameUniqueness(request.getDiscordUsername());
     validateContactEmailUniqueness(request.getContactEmail());
@@ -43,7 +43,7 @@ public class BoosterValidationService {
    * @param existingEntity Existing booster entity
    */
   public void validateForUpdate(UpdateBoosterRequest request, BoosterEntity existingEntity) {
-    ValidationUtils.validateDiscordUsername(request.getDisplayName(), "Display name");
+    ValidationUtils.validateDisplayName(request.getDisplayName(), "Display name");
     ValidationUtils.validateDiscordUsername(request.getDiscordUsername(), "Discord username");
     validateDiscordUsernameUniquenessForUpdate(
         request.getDiscordUsername(), existingEntity.getId());

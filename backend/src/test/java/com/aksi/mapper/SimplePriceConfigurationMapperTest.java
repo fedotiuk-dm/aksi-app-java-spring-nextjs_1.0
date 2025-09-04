@@ -15,7 +15,7 @@ import com.aksi.domain.game.PriceConfigurationEntity;
 /**
  * Unit tests for PriceConfigurationMapper - tests only MapStruct functionality
  */
-class PriceConfigurationMapperTest {
+class SimplePriceConfigurationMapperTest {
 
     private final PriceConfigurationMapper mapper = Mappers.getMapper(PriceConfigurationMapper.class);
 

@@ -134,6 +134,21 @@ public final class ValidationUtils {
     validateRequired(username, fieldName);
     validateLength(username, fieldName, 0, 100);
 
-    validatePattern(username, "^[a-zA-Z0-9._-]+$", fieldName + " contains invalid characters");
+    validatePattern(username, "^[a-zA-Z0-9._#]+$", fieldName + " contains invalid characters");
+  }
+
+  /**
+   * Validate display name format (more permissive than Discord username).
+   *
+   * @param displayName Display name to validate
+   * @param fieldName Field name for error message
+   * @throws BadRequestException if validation fails
+   */
+  public static void validateDisplayName(String displayName, String fieldName) {
+    validateRequired(displayName, fieldName);
+    validateLength(displayName, fieldName, 1, 50);
+
+    // Allow letters, numbers, spaces, and common special characters
+    validatePattern(displayName, "^[a-zA-Z0-9\\s._\\-#]+$", fieldName + " contains invalid characters");
   }
 }

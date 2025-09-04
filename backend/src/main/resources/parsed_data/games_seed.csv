@@ -1,0 +1,7 @@
+code;name;description;category;active;sort_order
+WOW;World of Warcraft;MMORPG game by Blizzard;MMORPG;true;1
+LOL;League of Legends;MOBA game by Riot Games;MOBA;true;2
+EFT;Escape from Tarkov;Realistic FPS game by Battlestate Games;FPS;true;3
+COD;Call of Duty;FPS game series by Activision;FPS;true;4
+FORTNITE;Fortnite;Battle Royale game by Epic Games;Battle Royale;true;5
+APEX;Apex Legends;Battle Royale FPS by Respawn;FPS;true;6

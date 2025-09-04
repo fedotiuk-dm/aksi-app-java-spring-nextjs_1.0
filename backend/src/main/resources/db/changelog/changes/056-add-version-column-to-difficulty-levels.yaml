@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-version-column-to-difficulty-levels-table
+      author: system
+      comment: Add missing version column to difficulty_levels table to match BaseEntity
+      runOnChange: false
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: difficulty_levels
+        - not:
+            - columnExists:
+                tableName: difficulty_levels
+                columnName: version
+
+      changes:
+        # Add version column to difficulty_levels table
+        - addColumn:
+            tableName: difficulty_levels
+            columns:
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false

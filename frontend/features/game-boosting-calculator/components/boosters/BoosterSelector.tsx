@@ -15,7 +15,7 @@ import {
   Avatar,
   Rating,
 } from '@mui/material';
-import { useGameBoostingStore } from '../../store/game-boosting-store';
+import { useGameBoostingStore } from '@game-boosting-calculator/store';
 import { useGamesListBoosters } from '@api/game';
 import type { Booster } from '@api/game';
 

@@ -28,7 +28,7 @@ import com.aksi.domain.game.GameEntity;
 import com.aksi.domain.game.GameModifierEntity;
 import com.aksi.domain.game.ServiceTypeEntity;
 import com.aksi.domain.game.formula.LinearFormulaEntity;
-import com.aksi.mapper.PriceConfigurationMapper;
+import com.aksi.mapper.FormulaConversionUtil;
 import com.aksi.repository.GameRepository;
 import com.aksi.repository.ServiceTypeRepository;
 
@@ -40,7 +40,7 @@ import com.aksi.repository.ServiceTypeRepository;
 class CalculationQueryServiceTest {
 
     @Mock private CalculationValidationService validationService;
-    @Mock private PriceConfigurationMapper priceConfigurationMapper;
+    @Mock private FormulaConversionUtil formulaConversionUtil;
     @Mock private GameModifierService gameModifierService;
     @Mock private GameRepository gameRepository;
     @Mock private ServiceTypeRepository serviceTypeRepository;
@@ -52,7 +52,7 @@ class CalculationQueryServiceTest {
     private void setupService() {
         calculationService = new CalculationQueryService(
             validationService,
-            priceConfigurationMapper,
+            formulaConversionUtil,
             gameModifierService,
             gameRepository,
             serviceTypeRepository
@@ -70,7 +70,7 @@ class CalculationQueryServiceTest {
         var linearEntity = new LinearFormulaEntity();
         linearEntity.setPricePerLevel(100);
 
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);
@@ -99,7 +99,7 @@ class CalculationQueryServiceTest {
         rangeEntity.getRanges().add(new com.aksi.domain.game.formula.PriceRangeEntity(5, 10, 500));
         rangeEntity.getRanges().add(new com.aksi.domain.game.formula.PriceRangeEntity(10, 15, 500));
 
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(rangeEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(rangeEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("RANGE", request);
@@ -125,7 +125,7 @@ class CalculationQueryServiceTest {
         timeEntity.setHoursPerLevel(1);
         timeEntity.setComplexityMultiplier(150); // 150% = 1.5x multiplier
 
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(timeEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(timeEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("TIME_BASED", request);
@@ -157,7 +157,7 @@ class CalculationQueryServiceTest {
         when(serviceTypeRepository.findByCode("LEVEL_BOOST")).thenReturn(java.util.Optional.of(serviceTypeEntity));
         when(gameModifierService.getActiveModifiersForCalculation(any(), any(), eq(java.util.List.of("RUSH_24H"))))
             .thenReturn(java.util.List.of(rushModifier));
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);
@@ -183,7 +183,7 @@ class CalculationQueryServiceTest {
         // When & Then
         var exception = assertThrows(IllegalArgumentException.class, () ->
             calculationService.calculateWithFormula("LINEAR", request));
-        assertEquals("Formula is required", exception.getMessage());
+        assertEquals("Formula is required when additional parameters are insufficient", exception.getMessage());
     }
 
     @Test
@@ -218,7 +218,7 @@ class CalculationQueryServiceTest {
         when(gameModifierService.getActiveModifiersForCalculation(any(), any(), eq(java.util.List.of(
             "APEX_RANKED_RP_ADD"))))
             .thenReturn(java.util.List.of(rpAddModifier));
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);
@@ -267,7 +267,7 @@ class CalculationQueryServiceTest {
         when(gameModifierService.getActiveModifiersForCalculation(any(), any(), eq(java.util.List.of(
             "COD_VANGUARD_MULTIPLY"))))
             .thenReturn(java.util.List.of(vanguardModifier));
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);
@@ -317,7 +317,7 @@ class CalculationQueryServiceTest {
         when(gameModifierService.getActiveModifiersForCalculation(any(), any(), eq(java.util.List.of(
             "FFXIV_PRIMARY_MULTIPLY"))))
             .thenReturn(java.util.List.of(primaryModifier));
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);
@@ -366,7 +366,7 @@ class CalculationQueryServiceTest {
         when(gameModifierService.getActiveModifiersForCalculation(any(), any(), eq(java.util.List.of(
             "NW_WEAPON_MULTIPLY"))))
             .thenReturn(java.util.List.of(weaponModifier));
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);
@@ -415,7 +415,7 @@ class CalculationQueryServiceTest {
         when(gameModifierService.getActiveModifiersForCalculation(any(), any(), eq(java.util.List.of(
             "GW2_PVP_ADD"))))
             .thenReturn(java.util.List.of(pvpModifier));
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);
@@ -465,7 +465,7 @@ class CalculationQueryServiceTest {
         when(gameModifierService.getActiveModifiersForCalculation(any(), any(), eq(java.util.List.of(
             "FFXIV_GATHERER_MULTIPLY"))))
             .thenReturn(java.util.List.of(gathererModifier));
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);
@@ -527,7 +527,7 @@ class CalculationQueryServiceTest {
 
         var linearEntity = new LinearFormulaEntity();
         linearEntity.setPricePerLevel(250);
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);
@@ -597,7 +597,7 @@ class CalculationQueryServiceTest {
 
         var linearEntity = new LinearFormulaEntity();
         linearEntity.setPricePerLevel(50);
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);
@@ -666,7 +666,7 @@ class CalculationQueryServiceTest {
 
         var linearEntity = new LinearFormulaEntity();
         linearEntity.setPricePerLevel(100);
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);
@@ -709,7 +709,7 @@ class CalculationQueryServiceTest {
 
         var linearEntity = new LinearFormulaEntity();
         linearEntity.setPricePerLevel(100);
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);
@@ -772,7 +772,7 @@ class CalculationQueryServiceTest {
 
         var linearEntity = new LinearFormulaEntity();
         linearEntity.setPricePerLevel(100);
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);
@@ -867,7 +867,7 @@ class CalculationQueryServiceTest {
 
         var linearEntity = new LinearFormulaEntity();
         linearEntity.setPricePerLevel(10);
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         long startTime = System.nanoTime();
@@ -922,7 +922,7 @@ class CalculationQueryServiceTest {
 
         var linearEntity = new LinearFormulaEntity();
         linearEntity.setPricePerLevel(1);
-        when(priceConfigurationMapper.toDomainFormula(any())).thenReturn(linearEntity);
+        when(formulaConversionUtil.toDomainFormula(any())).thenReturn(linearEntity);
 
         // When
         UniversalCalculationResponse response = calculationService.calculateWithFormula("LINEAR", request);

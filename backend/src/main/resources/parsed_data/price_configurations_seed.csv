@@ -1,0 +1,5 @@
+game_id;difficulty_level_id;service_type_id;base_price;price_per_level;calculation_formula;active;is_default;sort_order
+WOW;NORMAL;BOOSTING;50;10;basePrice + levelDiff * pricePerLevel;true;true;1
+WOW;HEROIC;BOOSTING;100;20;basePrice + levelDiff * pricePerLevel;true;false;2
+LOL;BRONZE;BOOSTING;30;5;basePrice + levelDiff * pricePerLevel;true;true;1
+EFT;STANDARD;BOOSTING;40;8;basePrice + levelDiff * pricePerLevel;true;true;1

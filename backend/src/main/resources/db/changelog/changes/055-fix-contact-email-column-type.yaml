@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: fix-contact-email-column-type-in-boosters
+      author: system
+      comment: Fix contact_email column type from email to varchar(255) in boosters table
+      runOnChange: false
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: boosters
+        - columnExists:
+            tableName: boosters
+            columnName: contact_email
+
+      changes:
+        # Change contact_email column type from email to varchar(255)
+        - modifyDataType:
+            tableName: boosters
+            columnName: contact_email
+            newDataType: varchar(255)

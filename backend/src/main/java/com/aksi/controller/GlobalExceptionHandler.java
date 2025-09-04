@@ -11,6 +11,7 @@ import org.apache.catalina.connector.ClientAbortException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -235,6 +236,26 @@ public class GlobalExceptionHandler {
     return createErrorResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE, message, null);
   }
 
+  @ExceptionHandler(IncorrectResultSizeDataAccessException.class)
+  public ResponseEntity<Map<String, Object>> handleIncorrectResultSize(
+      IncorrectResultSizeDataAccessException e) {
+    String message = e.getMessage();
+
+    log.warn("Database query returned unexpected number of results: {}", message);
+
+    // Extract more specific information about what was being queried
+    String userMessage = "Database query error: multiple results found when one was expected";
+    if (message != null) {
+      if (message.contains("findByCode")) {
+        userMessage = "Found multiple database records with the same identifier. Please contact support.";
+      } else if (message.contains("unique result")) {
+        userMessage = "Database integrity error: duplicate records found. Please contact support.";
+      }
+    }
+
+    return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, userMessage, null);
+  }
+
   @ExceptionHandler(InvalidDataAccessApiUsageException.class)
   public ResponseEntity<Map<String, Object>> handleInvalidDataAccess(
       InvalidDataAccessApiUsageException e) {
@@ -289,6 +310,29 @@ public class GlobalExceptionHandler {
     }
 
     return createErrorResponse(HttpStatus.BAD_REQUEST, message, null);
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<Map<String, Object>> handleRuntime(RuntimeException e) {
+    String message = e.getMessage();
+
+    // Handle calculation formula deserialization errors
+    if (message != null && message.contains("Failed to deserialize CalculationFormula")) {
+      log.warn("Formula deserialization error: {}", message);
+      return createErrorResponse(HttpStatus.BAD_REQUEST,
+          "Invalid calculation formula format. Please check formula syntax.", null);
+    }
+
+    // Handle transaction rollback errors
+    if (message != null && message.contains("Transaction silently rolled back")) {
+      log.warn("Transaction rollback: {}", message);
+      return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+          "Database operation failed due to concurrent modification", null);
+    }
+
+    log.error("Runtime error: {}", message);
+    return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+        "Internal server error occurred", null);
   }
 
   @ExceptionHandler(NullPointerException.class)

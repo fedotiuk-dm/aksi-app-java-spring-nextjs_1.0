@@ -1,0 +1,6 @@
+code;name;description;modifier_type;operation_type;modifier_value;game_code;sort_order;icon;color;active
+RUSH_24H;24 Hour Rush;Complete within 24 hours;TIMING;MULTIPLY;150;WOW;1;LIGHTNING;#FF6B35;true
+PREMIUM_SERVICE;Premium Service;High-quality boosting;QUALITY;MULTIPLY;125;WOW;2;CROWN;#FFD700;true
+VOICE_CHAT;Voice Chat Support;Real-time communication;SUPPORT;ADD;5000;WOW;3;MICROPHONE;#4CAF50;true
+FAST_DELIVERY;Fast Delivery;Expedited service;TIMING;MULTIPLY;120;LOL;1;CLOCK;#2196F3;true
+PROFESSIONAL;Professional Booster;Experienced player;QUALITY;MULTIPLY;130;EFT;1;STAR;#9C27B0;true

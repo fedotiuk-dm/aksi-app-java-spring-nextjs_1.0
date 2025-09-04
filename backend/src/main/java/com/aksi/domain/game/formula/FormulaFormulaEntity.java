@@ -47,17 +47,25 @@ public class FormulaFormulaEntity extends CalculationFormulaEntity {
 
         // For simplicity, return base price if expression is too complex
         // In production, you would implement a simple expression evaluator
-        if (expression.contains("*") || expression.contains("/") || expression.contains("(")) {
+        // Only consider truly complex expressions (with arithmetic operators other than + and -)
+        if (expression.contains("*") || expression.contains("/") ||
+            (expression.contains("(") && !expression.equals("basePrice + levelDiff"))) {
             return basePrice;
         }
 
         // Simple addition/subtraction support
         if (expression.startsWith("basePrice + ")) {
-            String numberStr = expression.substring("basePrice + ".length()).trim();
+            String variableStr = expression.substring("basePrice + ".length()).trim();
             try {
-                int number = Integer.parseInt(numberStr);
+                // Try to parse as number first
+                int number = Integer.parseInt(variableStr);
                 return basePrice + number;
             } catch (NumberFormatException e) {
+                // If not a number, try to find in variables
+                if (variables != null && variables.containsKey(variableStr)) {
+                    int variableValue = variables.get(variableStr);
+                    return basePrice + variableValue;
+                }
                 return basePrice;
             }
         }
@@ -80,6 +88,16 @@ public class FormulaFormulaEntity extends CalculationFormulaEntity {
      */
     public Map<String, Integer> getVariables() {
         return new HashMap<>(variables);
+    }
+
+    /**
+     * Set variables map
+     */
+    public void setVariables(Map<String, Integer> variables) {
+        if (variables != null) {
+            this.variables.clear();
+            this.variables.putAll(variables);
+        }
     }
 
 

@@ -169,11 +169,13 @@ components:
     UniversalCalculationRequest:
       type: object
       required:
-        - formula
         - context
       properties:
         formula:
-          $ref: "#/components/schemas/CalculationFormula"
+          oneOf:
+            - $ref: "#/components/schemas/CalculationFormula"
+            - type: "null"
+          description: Optional formula for custom calculations. If not provided, universal calculator will create a default formula based on context.
         context:
           $ref: "#/components/schemas/UniversalCalculationContext"
       description: Request schema for universal calculation endpoint
