@@ -106,9 +106,6 @@ databaseChangeLog:
   # Add operation_type column to price_modifiers table
   - include:
       file: db/changelog/changes/037-add-operation-type-to-price-modifiers.yaml
-  # Create game modifiers table for game boosting
-  - include:
-      file: db/changelog/changes/038-create-game-modifiers-table.yaml
   # Create diverse seed data for different calculator types
   # - include:
   #     file: db/changelog/changes/040-create-diverse-calculator-seed-data.yaml
@@ -164,4 +161,6 @@ databaseChangeLog:
   # Multiple game systems with unique approaches
   - include:
       file: db/changelog/changes/097-fix-modifier-types.yaml
-
+  # Create game modifiers table structure only (no seed data)
+  - include:
+      file: db/changelog/changes/098-create-game-modifiers-structure.yaml

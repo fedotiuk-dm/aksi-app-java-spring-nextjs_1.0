@@ -1,0 +1,179 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-game-modifiers-structure
+      author: system
+      comment: Create game_modifiers table and game_modifier_service_types collection table structure only (no seed data)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: game_modifiers
+
+      changes:
+        # Create main game_modifiers table
+        - createTable:
+            tableName: game_modifiers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_game_modifiers
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: modifier_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: operation_type
+                  type: varchar(20)
+                  defaultValue: ADD
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modifier_value
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: game_code
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_order
+                  type: integer
+                  defaultValueNumeric: "0"
+              - column:
+                  name: icon
+                  type: varchar(10)
+              - column:
+                  name: color
+                  type: varchar(7)
+              - column:
+                  name: priority
+                  type: integer
+                  defaultValueNumeric: "0"
+              - column:
+                  name: max_uses
+                  type: integer
+              - column:
+                  name: effective_date
+                  type: timestamp
+              - column:
+                  name: expiration_date
+                  type: timestamp
+              - column:
+                  name: conditions
+                  type: text
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: varchar(255)
+              - column:
+                  name: updated_by
+                  type: varchar(255)
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false
+
+        # Create collection table for service type codes
+        - createTable:
+            tableName: game_modifier_service_types
+            columns:
+              - column:
+                  name: game_modifier_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_game_modifier_service_types_modifier
+                    referencedTableName: game_modifiers
+                    referencedColumnNames: id
+              - column:
+                  name: service_type_code
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+        # Create composite primary key for collection table
+        - addPrimaryKey:
+            tableName: game_modifier_service_types
+            columnNames: game_modifier_id, service_type_code
+            constraintName: pk_game_modifier_service_types
+
+        # Create indexes for performance
+        - createIndex:
+            tableName: game_modifiers
+            indexName: idx_game_modifier_code
+            columns:
+              - column:
+                  name: code
+
+        - createIndex:
+            tableName: game_modifiers
+            indexName: idx_game_modifier_game_code
+            columns:
+              - column:
+                  name: game_code
+
+        - createIndex:
+            tableName: game_modifiers
+            indexName: idx_game_modifier_type
+            columns:
+              - column:
+                  name: modifier_type
+
+        - createIndex:
+            tableName: game_modifiers
+            indexName: idx_game_modifier_active
+            columns:
+              - column:
+                  name: active
+
+        - createIndex:
+            tableName: game_modifiers
+            indexName: idx_game_modifier_sort_order
+            columns:
+              - column:
+                  name: sort_order
+
+        # Add unique constraint
+        - addUniqueConstraint:
+            tableName: game_modifiers
+            columnNames: code, game_code
+            constraintName: uk_game_modifier_code_game_code
