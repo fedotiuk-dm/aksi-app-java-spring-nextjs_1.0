@@ -157,6 +157,7 @@ export const ServiceTypeManagement = () => {
               <TableCell>Game</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Base Price</TableCell>
+              <TableCell>Sort Order</TableCell>
               <TableCell>Description</TableCell>
               <TableCell>Created</TableCell>
               <TableCell align="right">Actions</TableCell>
@@ -165,13 +166,13 @@ export const ServiceTypeManagement = () => {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={9} align="center">
                   <Typography>Loading service types...</Typography>
                 </TableCell>
               </TableRow>
             ) : filteredServiceTypes.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={9} align="center">
                   <Typography>No service types found</Typography>
                 </TableCell>
               </TableRow>
@@ -202,6 +203,14 @@ export const ServiceTypeManagement = () => {
                     />
                   </TableCell>
                   <TableCell>${serviceType.baseMultiplier}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={serviceType.sortOrder ?? 0}
+                      size="small"
+                      variant="outlined"
+                      color="secondary"
+                    />
+                  </TableCell>
                   <TableCell>
                     <Typography
                       variant="body2"

@@ -51,9 +51,9 @@ class FormulaConversionUtilTest {
         var rangeEntity = (RangeFormulaEntity) result;
         assertEquals(CalculationFormula.TypeEnum.RANGE, rangeEntity.getType());
         assertEquals(1, rangeEntity.getRanges().size());
-        assertEquals(1, rangeEntity.getRanges().get(0).getFrom());
-        assertEquals(5, rangeEntity.getRanges().get(0).getTo());
-        assertEquals(100, rangeEntity.getRanges().get(0).getPrice());
+        assertEquals(1, rangeEntity.getRanges().getFirst().getFrom());
+        assertEquals(5, rangeEntity.getRanges().getFirst().getTo());
+        assertEquals(100, rangeEntity.getRanges().getFirst().getPrice());
     }
 
     @Test

@@ -36,6 +36,7 @@ interface ServiceTypeEditModalProps {
       baseMultiplier?: number;
       description?: string;
       active?: boolean;
+      sortOrder?: number;
     }
   ) => Promise<void>;
 }
@@ -54,6 +55,7 @@ export const ServiceTypeEditModal: React.FC<ServiceTypeEditModalProps> = ({
     baseMultiplier: 100,
     description: '',
     active: true,
+    sortOrder: 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -66,6 +68,7 @@ export const ServiceTypeEditModal: React.FC<ServiceTypeEditModalProps> = ({
         baseMultiplier: serviceType.baseMultiplier,
         description: serviceType.description || '',
         active: serviceType.active,
+        sortOrder: serviceType.sortOrder ?? 0,
       });
     }
   }, [serviceType]);
@@ -94,6 +97,7 @@ export const ServiceTypeEditModal: React.FC<ServiceTypeEditModalProps> = ({
         baseMultiplier: formData.baseMultiplier,
         description: formData.description.trim() || undefined,
         active: formData.active,
+        sortOrder: formData.sortOrder,
       });
       handleClose();
     } catch (error) {
@@ -110,7 +114,8 @@ export const ServiceTypeEditModal: React.FC<ServiceTypeEditModalProps> = ({
       formData.gameId !== serviceType.gameId ||
       formData.baseMultiplier !== serviceType.baseMultiplier ||
       formData.description !== (serviceType.description || '') ||
-      formData.active !== serviceType.active
+      formData.active !== serviceType.active ||
+      formData.sortOrder !== (serviceType.sortOrder ?? 0)
     );
   };
 
@@ -171,8 +176,32 @@ export const ServiceTypeEditModal: React.FC<ServiceTypeEditModalProps> = ({
               }
               fullWidth
               required
-              inputProps={{ min: 0, step: 0.01 }}
+              slotProps={{
+                htmlInput: {
+                  min: 0,
+                  step: 0.01,
+                },
+              }}
               helperText="Base price in USD for this service type"
+            />
+
+            <TextField
+              label="Sort Order"
+              type="number"
+              value={formData.sortOrder}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  sortOrder: parseInt(e.target.value) || 0,
+                }))
+              }
+              fullWidth
+              slotProps={{
+                htmlInput: {
+                  min: 0,
+                },
+              }}
+              helperText="Lower numbers appear first in the list"
             />
 
             <FormControlLabel

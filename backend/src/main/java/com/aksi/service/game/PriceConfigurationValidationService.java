@@ -50,16 +50,17 @@ public class PriceConfigurationValidationService {
     entityValidationUtils.validateEntitiesExist(
         request.getGameId(), request.getDifficultyLevelId(), request.getServiceTypeId());
 
-    // Validate combination uniqueness
-    if (priceConfigurationQueryUtils.combinationExists(
-        request.getGameId(), request.getDifficultyLevelId(), request.getServiceTypeId())) {
+    // Validate combination uniqueness only for active configurations
+    if (request.getActive() != null && request.getActive() &&
+        priceConfigurationQueryUtils.combinationExists(
+            request.getGameId(), request.getDifficultyLevelId(), request.getServiceTypeId())) {
       log.error(
-          "Price configuration already exists for combination: game={}, difficulty={}, service={}",
+          "Active price configuration already exists for combination: game={}, difficulty={}, service={}",
           request.getGameId(),
           request.getDifficultyLevelId(),
           request.getServiceTypeId());
       throw new ConflictException(
-          "Price configuration already exists for this game, difficulty level, and service type combination");
+          "Active price configuration already exists for this game, difficulty level, and service type combination. You can create an inactive configuration or update the existing one.");
     }
 
     // Validate price values

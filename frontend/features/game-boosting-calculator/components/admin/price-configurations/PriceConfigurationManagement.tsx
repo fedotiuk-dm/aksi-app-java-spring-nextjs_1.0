@@ -28,6 +28,7 @@ import {
   FormControlLabel,
   Collapse,
   Grid,
+  Chip,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -135,7 +136,7 @@ export const PriceConfigurationManagement = () => {
 
         <Collapse in={showFilters}>
           <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={3} container={false}>
               <FormControl size="small" fullWidth>
                 <InputLabel>Game</InputLabel>
                 <Select
@@ -157,7 +158,7 @@ export const PriceConfigurationManagement = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3} component="div">
+            <Grid item xs={12} sm={6} md={3}>
               <FormControl size="small" fullWidth>
                 <InputLabel>Service Type</InputLabel>
                 <Select
@@ -175,7 +176,7 @@ export const PriceConfigurationManagement = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3} component="div">
+            <Grid item xs={12} sm={6} md={3}>
               <FormControl size="small" fullWidth>
                 <InputLabel>Difficulty Level</InputLabel>
                 <Select
@@ -193,7 +194,7 @@ export const PriceConfigurationManagement = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3} component="div">
+            <Grid item xs={12} sm={6} md={3}>
               <FormControl size="small" fullWidth>
                 <InputLabel>Status</InputLabel>
                 <Select
@@ -204,8 +205,8 @@ export const PriceConfigurationManagement = () => {
                   }
                 >
                   <MenuItem value="">All</MenuItem>
-                  <MenuItem value={true}>Active</MenuItem>
-                  <MenuItem value={false}>Inactive</MenuItem>
+                  <MenuItem value="true">Active</MenuItem>
+                  <MenuItem value="false">Inactive</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -223,6 +224,9 @@ export const PriceConfigurationManagement = () => {
               <TableCell>Difficulty Level</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Base Price</TableCell>
+              <TableCell>Sort Order</TableCell>
+              <TableCell>Calculation Type</TableCell>
+              <TableCell>Currency</TableCell>
               <TableCell>Final Price</TableCell>
               <TableCell>Description</TableCell>
               <TableCell>Created</TableCell>
@@ -232,13 +236,13 @@ export const PriceConfigurationManagement = () => {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={9} align="center">
+                <TableCell colSpan={12} align="center">
                   <Typography>Loading price configurations...</Typography>
                 </TableCell>
               </TableRow>
             ) : filteredPriceConfigurations.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} align="center">
+                <TableCell colSpan={12} align="center">
                   <Typography>No price configurations found</Typography>
                 </TableCell>
               </TableRow>
@@ -277,11 +281,40 @@ export const PriceConfigurationManagement = () => {
                     />
                   </TableCell>
                   <TableCell>
-                    <PriceDisplay amount={config.basePrice} currency="USD" variant="body2" />
+                    <PriceDisplay
+                      amount={config.basePrice}
+                      currency={(config.currency || 'USD') as 'USD' | 'UAH'}
+                      variant="body2"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={config.sortOrder ?? 0}
+                      size="small"
+                      variant="outlined"
+                      color="secondary"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={config.calculationType}
+                      size="small"
+                      variant="outlined"
+                      color="primary"
+                    />
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" fontWeight="medium">
-                      <PriceDisplay amount={config.basePrice} currency="USD" inline={true} />
+                      {config.currency || 'USD'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" fontWeight="medium">
+                      <PriceDisplay
+                        amount={config.basePrice}
+                        currency={(config.currency || 'USD') as 'USD' | 'UAH'}
+                        inline={true}
+                      />
                     </Typography>
                   </TableCell>
                   <TableCell>

@@ -39,13 +39,14 @@ export const DifficultyLevelCreateModal: React.FC<DifficultyLevelCreateModalProp
     gameId: '',
     levelValue: 1,
     description: '',
+    sortOrder: 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setFormData({ name: '', code: '', gameId: '', levelValue: 1, description: '' });
+    setFormData({ name: '', code: '', gameId: '', levelValue: 1, description: '', sortOrder: 0 });
   };
 
   const handleSubmit = async () => {
@@ -61,6 +62,7 @@ export const DifficultyLevelCreateModal: React.FC<DifficultyLevelCreateModalProp
         gameId: formData.gameId,
         levelValue: formData.levelValue,
         description: formData.description.trim() || undefined,
+        sortOrder: formData.sortOrder,
       });
       handleClose();
     } catch (error) {
@@ -128,8 +130,32 @@ export const DifficultyLevelCreateModal: React.FC<DifficultyLevelCreateModalProp
               }
               fullWidth
               required
-              inputProps={{ min: 1, max: 1000 }}
-              helperText="Difficulty level value (1-1000, higher = more difficult)"
+              slotProps={{
+                htmlInput: {
+                  min: 1,
+                  max: 100,
+                },
+              }}
+              helperText="Difficulty level value (1-100, higher = more difficult)"
+            />
+
+            <TextField
+              label="Sort Order"
+              type="number"
+              value={formData.sortOrder}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  sortOrder: parseInt(e.target.value) || 0,
+                }))
+              }
+              fullWidth
+              slotProps={{
+                htmlInput: {
+                  min: 0,
+                },
+              }}
+              helperText="Lower numbers appear first in the list"
             />
 
             <TextField

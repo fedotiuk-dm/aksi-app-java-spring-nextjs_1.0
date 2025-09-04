@@ -70,16 +70,37 @@ public class GameModifierSpecification {
   public static Specification<GameModifierEntity> filterModifiers(
       Boolean active, String gameCode, String search, GameModifierType type, String serviceTypeCode) {
 
-    return Specification.allOf(
-        hasActive(active),
-        // If gameCode is null/empty, show both game-specific and game-agnostic modifiers
-        // If gameCode is specified, show game-specific or game-agnostic modifiers
-        gameCode == null || gameCode.trim().isEmpty()
-            ? Specification.anyOf(hasGameCode(null), hasGameCode(""), hasGameCode("*"))
-            : Specification.anyOf(hasGameCode(gameCode), hasGameCode(null), hasGameCode(""), hasGameCode("*")),
-        hasType(type),
-        hasServiceTypeCode(serviceTypeCode),
-        searchByNameOrCode(search),
-        orderBySortOrder());
+    var specs = new java.util.ArrayList<Specification<GameModifierEntity>>();
+
+    // Active filter - if null, show all; if true/false, filter accordingly
+    if (active != null) {
+      specs.add(hasActive(active));
+    }
+
+    // Game code filter - show all modifiers if gameCode is null/empty
+    // Otherwise, show modifiers for specific game OR game-agnostic modifiers
+    if (gameCode != null && !gameCode.trim().isEmpty()) {
+      specs.add(Specification.anyOf(hasGameCode(gameCode), hasGameCode(null), hasGameCode(""), hasGameCode("*")));
+    }
+
+    // Type filter
+    if (type != null) {
+      specs.add(hasType(type));
+    }
+
+    // Service type filter
+    if (serviceTypeCode != null && !serviceTypeCode.trim().isEmpty()) {
+      specs.add(hasServiceTypeCode(serviceTypeCode));
+    }
+
+    // Search filter
+    if (search != null && !search.trim().isEmpty()) {
+      specs.add(searchByNameOrCode(search));
+    }
+
+    // Always order by sort order
+    specs.add(orderBySortOrder());
+
+    return Specification.allOf(specs);
   }
 }

@@ -63,6 +63,7 @@ export const useBoosterManagement = () => {
     displayName: string;
     contactEmail: string;
     phoneNumber?: string;
+    verified?: boolean;
   }) => {
     try {
       await createBoosterMutation.mutateAsync({
@@ -83,6 +84,7 @@ export const useBoosterManagement = () => {
       contactEmail?: string;
       phoneNumber?: string;
       active?: boolean;
+      verified?: boolean;
     }
   ) => {
     try {

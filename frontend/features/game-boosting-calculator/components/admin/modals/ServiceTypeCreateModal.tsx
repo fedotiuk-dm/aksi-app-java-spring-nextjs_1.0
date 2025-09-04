@@ -39,13 +39,21 @@ export const ServiceTypeCreateModal: React.FC<ServiceTypeCreateModalProps> = ({
     gameId: '',
     baseMultiplier: 100,
     description: '',
+    sortOrder: 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setFormData({ name: '', code: '', gameId: '', baseMultiplier: 100, description: '' });
+    setFormData({
+      name: '',
+      code: '',
+      gameId: '',
+      baseMultiplier: 100,
+      description: '',
+      sortOrder: 0,
+    });
   };
 
   const handleSubmit = async () => {
@@ -66,6 +74,7 @@ export const ServiceTypeCreateModal: React.FC<ServiceTypeCreateModalProps> = ({
         gameId: formData.gameId,
         baseMultiplier: formData.baseMultiplier,
         description: formData.description.trim() || undefined,
+        sortOrder: formData.sortOrder,
       });
       handleClose();
     } catch (error) {
@@ -133,8 +142,32 @@ export const ServiceTypeCreateModal: React.FC<ServiceTypeCreateModalProps> = ({
               }
               fullWidth
               required
-              inputProps={{ min: 0, step: 0.01 }}
+              slotProps={{
+                htmlInput: {
+                  min: 0,
+                  step: 0.01,
+                },
+              }}
               helperText="Base price in USD for this service type"
+            />
+
+            <TextField
+              label="Sort Order"
+              type="number"
+              value={formData.sortOrder}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  sortOrder: parseInt(e.target.value) || 0,
+                }))
+              }
+              fullWidth
+              slotProps={{
+                htmlInput: {
+                  min: 0,
+                },
+              }}
+              helperText="Lower numbers appear first in the list"
             />
 
             <TextField

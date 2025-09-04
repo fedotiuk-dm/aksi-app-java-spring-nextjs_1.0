@@ -19,6 +19,8 @@ import {
   MenuItem,
   Box,
   Typography,
+  FormControlLabel,
+  Switch,
 } from '@mui/material';
 import type {
   Game,
@@ -27,6 +29,7 @@ import type {
   CreatePriceConfigurationRequest,
   CreatePriceConfigurationRequestCalculationType,
 } from '@api/game';
+import { CreatePriceConfigurationRequestCalculationType as CalculationTypes } from '@api/game';
 import { PriceDisplay } from '@/shared/ui/atoms/PriceDisplay';
 
 interface PriceConfigurationCreateModalProps {
@@ -45,10 +48,27 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
   onCreate,
 }) => {
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    gameId: string;
+    serviceTypeId: string;
+    difficultyLevelId: string;
+    basePrice: number;
+    pricePerLevel: number;
+    currency: string;
+    calculationType: CreatePriceConfigurationRequestCalculationType;
+    sortOrder: number;
+    active: boolean;
+    description: string;
+  }>({
     gameId: '',
     serviceTypeId: '',
     difficultyLevelId: '',
+    basePrice: 1000, // $10.00 in cents
+    pricePerLevel: 0,
+    currency: 'USD',
+    calculationType: CalculationTypes.LINEAR,
+    sortOrder: 0,
+    active: true,
     description: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,6 +80,12 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
         gameId: '',
         serviceTypeId: '',
         difficultyLevelId: '',
+        basePrice: 1000,
+        pricePerLevel: 0,
+        currency: 'USD',
+        calculationType: CalculationTypes.LINEAR,
+        sortOrder: 0,
+        active: true,
         description: '',
       });
     }
@@ -74,6 +100,8 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
     (dl) => !formData.gameId || dl.gameId === formData.gameId
   );
 
+  // Note: Backend allows creating inactive price configurations even if active ones exist
+
   // Reset dependent fields when game changes
   const handleGameChange = (gameId: string) => {
     setFormData((prev) => ({
@@ -87,7 +115,18 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setFormData({ gameId: '', serviceTypeId: '', difficultyLevelId: '', description: '' });
+    setFormData({
+      gameId: '',
+      serviceTypeId: '',
+      difficultyLevelId: '',
+      basePrice: 1000,
+      pricePerLevel: 0,
+      currency: 'USD',
+      calculationType: CalculationTypes.LINEAR,
+      sortOrder: 0,
+      active: true,
+      description: '',
+    });
   };
 
   const handleSubmit = async () => {
@@ -101,10 +140,13 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
         gameId: formData.gameId,
         serviceTypeId: formData.serviceTypeId,
         difficultyLevelId: formData.difficultyLevelId,
-        basePrice: Math.round(finalPrice * 100), // Convert to cents
-        calculationType: 'FIXED' as CreatePriceConfigurationRequestCalculationType,
-        pricePerLevel: 0,
-        sortOrder: 0,
+        basePrice: formData.basePrice,
+        pricePerLevel: formData.pricePerLevel,
+        currency: formData.currency,
+        calculationType: formData.calculationType,
+        // calculationFormula not provided - let backend use default
+        sortOrder: formData.sortOrder,
+        active: formData.active,
       });
       handleClose();
     } catch (error) {
@@ -185,6 +227,97 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
               </Select>
             </FormControl>
 
+            <TextField
+              label="Base Price (cents)"
+              type="number"
+              value={formData.basePrice}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  basePrice: parseInt(e.target.value) || 0,
+                }))
+              }
+              fullWidth
+              required
+              slotProps={{
+                htmlInput: {
+                  min: 0,
+                },
+              }}
+              helperText={`${formData.currency === 'USD' ? '$' : formData.currency === 'EUR' ? '€' : '£'}${(formData.basePrice / 100).toFixed(2)}`}
+            />
+
+            <TextField
+              label="Price per Level (cents)"
+              type="number"
+              value={formData.pricePerLevel}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  pricePerLevel: parseInt(e.target.value) || 0,
+                }))
+              }
+              fullWidth
+              slotProps={{
+                htmlInput: {
+                  min: 0,
+                },
+              }}
+              helperText={`${formData.currency === 'USD' ? '$' : formData.currency === 'EUR' ? '€' : '£'}${(formData.pricePerLevel / 100).toFixed(2)} per level`}
+            />
+
+            <FormControl fullWidth>
+              <InputLabel>Currency</InputLabel>
+              <Select
+                value={formData.currency}
+                label="Currency"
+                onChange={(e) => setFormData((prev) => ({ ...prev, currency: e.target.value }))}
+              >
+                <MenuItem value="USD">USD ($)</MenuItem>
+                <MenuItem value="EUR">EUR (€)</MenuItem>
+                <MenuItem value="GBP">GBP (£)</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth>
+              <InputLabel>Calculation Type</InputLabel>
+              <Select
+                value={formData.calculationType}
+                label="Calculation Type"
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    calculationType: e.target
+                      .value as CreatePriceConfigurationRequestCalculationType,
+                  }))
+                }
+              >
+                <MenuItem value={CalculationTypes.LINEAR}>Linear</MenuItem>
+                <MenuItem value={CalculationTypes.RANGE}>Range Based</MenuItem>
+                <MenuItem value={CalculationTypes.FORMULA}>Formula Based</MenuItem>
+                <MenuItem value={CalculationTypes.TIME_BASED}>Time Based</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
+              label="Sort Order"
+              type="number"
+              value={formData.sortOrder}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  sortOrder: parseInt(e.target.value) || 0,
+                }))
+              }
+              fullWidth
+              slotProps={{
+                htmlInput: {
+                  min: 0,
+                },
+              }}
+              helperText="Lower numbers appear first in the list"
+            />
+
             {/* Price Preview */}
             {selectedServiceType && selectedDifficultyLevel && (
               <Box
@@ -225,8 +358,23 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
               rows={3}
               placeholder="Optional description for this price configuration..."
             />
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={formData.active}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, active: e.target.checked }))}
+                />
+              }
+              label="Active"
+            />
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+              💡 You can create multiple inactive configurations for the same combination, but only
+              one can be active.
+            </Typography>
           </Box>
         </DialogContent>
+
         <DialogActions>
           <Button onClick={handleClose} disabled={isSubmitting}>
             Cancel

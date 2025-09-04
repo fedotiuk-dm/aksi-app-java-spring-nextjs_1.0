@@ -5,11 +5,12 @@
  * Handles booster selection and display
  */
 
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, useTheme } from '@mui/material';
 import { useGameBoostingStore } from '@game-boosting-calculator/store';
 import { BoosterSelector } from './BoosterSelector';
 
 export const BoosterSection = () => {
+  const theme = useTheme();
   const { selectedGame, selectedBooster, setCurrentStep } = useGameBoostingStore();
 
   const handleNext = () => {
@@ -33,7 +34,15 @@ export const BoosterSection = () => {
       </Typography>
 
       {/* Selected Game Info */}
-      <Box sx={{ mb: 3, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+      <Box
+        sx={{
+          mb: 3,
+          p: 2,
+          bgcolor: theme.palette.mode === 'dark' ? 'grey.800' : 'grey.50',
+          borderRadius: 1,
+          border: `1px solid ${theme.palette.divider}`,
+        }}
+      >
         <Typography variant="subtitle1" fontWeight="medium">
           Selected Game: {selectedGame?.name}
         </Typography>
@@ -50,7 +59,17 @@ export const BoosterSection = () => {
       {/* Selected Booster Display */}
       {selectedBooster && (
         <Box
-          sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'primary.main', borderRadius: 1 }}
+          sx={{
+            mb: 3,
+            p: 2,
+            border: '1px solid',
+            borderColor: 'primary.main',
+            borderRadius: 1,
+            bgcolor:
+              theme.palette.mode === 'dark'
+                ? 'rgba(25, 118, 210, 0.08)'
+                : 'rgba(25, 118, 210, 0.04)',
+          }}
         >
           <Typography variant="h6" gutterBottom>
             Selected Booster:

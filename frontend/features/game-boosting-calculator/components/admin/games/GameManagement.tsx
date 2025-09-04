@@ -100,6 +100,10 @@ export const GameManagement = () => {
           aValue = a.code || '';
           bValue = b.code || '';
           break;
+        case 'sortOrder':
+          aValue = a.sortOrder ?? 0;
+          bValue = b.sortOrder ?? 0;
+          break;
         default:
           return 0;
       }
@@ -209,6 +213,7 @@ export const GameManagement = () => {
               <MenuItem value="category">Category</MenuItem>
               <MenuItem value="createdAt">Created Date</MenuItem>
               <MenuItem value="code">Code</MenuItem>
+              <MenuItem value="sortOrder">Sort Order</MenuItem>
             </Select>
           </FormControl>
 
@@ -258,6 +263,20 @@ export const GameManagement = () => {
                 </Box>
               </TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  Sort Order
+                  <IconButton
+                    size="small"
+                    onClick={() => {
+                      setSortBy('sortOrder');
+                      setSortOrder(sortBy === 'sortOrder' && sortOrder === 'asc' ? 'desc' : 'asc');
+                    }}
+                  >
+                    <SortIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              </TableCell>
               <TableCell>Total Boosters</TableCell>
               <TableCell>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -279,13 +298,13 @@ export const GameManagement = () => {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell colSpan={8} align="center">
                   <Typography>Loading games...</Typography>
                 </TableCell>
               </TableRow>
             ) : filteredAndSortedGames.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={8} align="center">
                   <Typography>No games found</Typography>
                 </TableCell>
               </TableRow>
@@ -332,6 +351,14 @@ export const GameManagement = () => {
                         {game.active ? <PowerOffIcon /> : <PowerIcon />}
                       </IconButton>
                     </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={game.sortOrder ?? 0}
+                      size="small"
+                      variant="outlined"
+                      color="secondary"
+                    />
                   </TableCell>
                   <TableCell>{/* TODO: Add booster count when API provides it */}0</TableCell>
                   <TableCell>

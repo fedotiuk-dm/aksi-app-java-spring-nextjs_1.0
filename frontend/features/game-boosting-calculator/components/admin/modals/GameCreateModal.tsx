@@ -29,6 +29,7 @@ interface GameCreateModalProps {
     code: string;
     category: CreateGameRequestCategory;
     description?: string;
+    sortOrder?: number;
   }) => Promise<void>;
 }
 
@@ -43,13 +44,14 @@ export const GameCreateModal: React.FC<GameCreateModalProps> = ({
     code: '',
     category: '',
     description: '',
+    sortOrder: 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
-    setFormData({ name: '', code: '', category: '', description: '' });
+    setFormData({ name: '', code: '', category: '', description: '', sortOrder: 0 });
   };
 
   const handleSubmit = async () => {
@@ -64,6 +66,7 @@ export const GameCreateModal: React.FC<GameCreateModalProps> = ({
         code: formData.code.trim(),
         category: formData.category as CreateGameRequestCategory,
         description: formData.description?.trim() || undefined,
+        sortOrder: formData.sortOrder,
       });
       handleClose();
     } catch (error) {
@@ -127,6 +130,20 @@ export const GameCreateModal: React.FC<GameCreateModalProps> = ({
               multiline
               rows={3}
               placeholder="Brief description of the game..."
+            />
+
+            <TextField
+              label="Sort Order"
+              type="number"
+              value={formData.sortOrder}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, sortOrder: Number(e.target.value) || 0 }))
+              }
+              fullWidth
+              helperText="Lower numbers appear first in the list"
+              inputProps={{
+                min: 0,
+              }}
             />
           </Box>
         </DialogContent>

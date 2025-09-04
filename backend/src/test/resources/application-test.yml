@@ -1,12 +1,17 @@
 spring:
-  profiles:
-    active: test
-
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  session:
+    store-type: redis
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect

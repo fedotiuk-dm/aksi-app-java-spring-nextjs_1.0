@@ -17,14 +17,22 @@ import {
   CreateGameModifierRequest,
   UpdateGameModifierRequest,
 } from '@api/game';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const useModifiersManagement = () => {
+  const queryClient = useQueryClient();
+
   // Orval hooks for Game Modifiers
   const modifiersQuery = useListGameModifiers(
     undefined, // Get ALL modifiers without filters
     {
       query: {
-        select: (data) => data.modifiers || [],
+        select: (data) => {
+          console.log('🔍 Raw modifiers data:', data);
+          const modifiers = data?.modifiers || [];
+          console.log('🔍 Processed modifiers:', modifiers);
+          return modifiers;
+        },
       },
     }
   );
@@ -48,11 +56,76 @@ export const useModifiersManagement = () => {
     }
   );
 
-  const createMutation = useCreateGameModifier();
-  const updateMutation = useUpdateGameModifier();
-  const deleteMutation = useDeleteGameModifier();
-  const activateMutation = useActivateGameModifier();
-  const deactivateMutation = useDeactivateGameModifier();
+  // Mutations with cache invalidation
+  const createMutation = useCreateGameModifier({
+    mutation: {
+      onSuccess: () => {
+        // Invalidate all modifier-related queries
+        queryClient.invalidateQueries({ queryKey: ['listGameModifiers'] });
+        queryClient.invalidateQueries({ queryKey: ['getGameModifier'] });
+        console.log('✅ Modifier created successfully, cache invalidated');
+      },
+      onError: (error) => {
+        console.error('❌ Failed to create modifier:', error);
+      },
+    },
+  });
+
+  const updateMutation = useUpdateGameModifier({
+    mutation: {
+      onSuccess: () => {
+        // Invalidate all modifier-related queries
+        queryClient.invalidateQueries({ queryKey: ['listGameModifiers'] });
+        queryClient.invalidateQueries({ queryKey: ['getGameModifier'] });
+        console.log('✅ Modifier updated successfully, cache invalidated');
+      },
+      onError: (error) => {
+        console.error('❌ Failed to update modifier:', error);
+      },
+    },
+  });
+
+  const deleteMutation = useDeleteGameModifier({
+    mutation: {
+      onSuccess: () => {
+        // Invalidate all modifier-related queries
+        queryClient.invalidateQueries({ queryKey: ['listGameModifiers'] });
+        queryClient.invalidateQueries({ queryKey: ['getGameModifier'] });
+        console.log('✅ Modifier deleted successfully, cache invalidated');
+      },
+      onError: (error) => {
+        console.error('❌ Failed to delete modifier:', error);
+      },
+    },
+  });
+
+  const activateMutation = useActivateGameModifier({
+    mutation: {
+      onSuccess: () => {
+        // Invalidate all modifier-related queries
+        queryClient.invalidateQueries({ queryKey: ['listGameModifiers'] });
+        queryClient.invalidateQueries({ queryKey: ['getGameModifier'] });
+        console.log('✅ Modifier activated successfully, cache invalidated');
+      },
+      onError: (error) => {
+        console.error('❌ Failed to activate modifier:', error);
+      },
+    },
+  });
+
+  const deactivateMutation = useDeactivateGameModifier({
+    mutation: {
+      onSuccess: () => {
+        // Invalidate all modifier-related queries
+        queryClient.invalidateQueries({ queryKey: ['listGameModifiers'] });
+        queryClient.invalidateQueries({ queryKey: ['getGameModifier'] });
+        console.log('✅ Modifier deactivated successfully, cache invalidated');
+      },
+      onError: (error) => {
+        console.error('❌ Failed to deactivate modifier:', error);
+      },
+    },
+  });
 
   // Handler functions
   const handleCreateModifier = async (data: CreateGameModifierRequest) => {

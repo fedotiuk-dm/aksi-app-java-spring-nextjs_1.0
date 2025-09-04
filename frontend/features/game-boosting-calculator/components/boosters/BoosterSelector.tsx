@@ -14,12 +14,14 @@ import {
   Typography,
   Avatar,
   Rating,
+  useTheme,
 } from '@mui/material';
 import { useGameBoostingStore } from '@game-boosting-calculator/store';
 import { useGamesListBoosters } from '@api/game';
 import type { Booster } from '@api/game';
 
 export const BoosterSelector = () => {
+  const theme = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
   const { selectedGameId, selectedBoosterId, setSelectedBooster } = useGameBoostingStore();
 
@@ -126,6 +128,47 @@ export const BoosterSelector = () => {
           searchTerm ? 'No boosters found' : 'Start typing booster name or select from the list'
         }
         fullWidth
+        sx={{
+          '& .MuiAutocomplete-paper': {
+            bgcolor:
+              theme.palette.mode === 'dark'
+                ? theme.palette.background.paper
+                : theme.palette.background.paper,
+          },
+          '& .MuiAutocomplete-listbox': {
+            bgcolor:
+              theme.palette.mode === 'dark'
+                ? theme.palette.background.paper
+                : theme.palette.background.paper,
+            '& .MuiAutocomplete-option': {
+              bgcolor: theme.palette.mode === 'dark' ? 'transparent' : 'transparent',
+              '&:hover': {
+                bgcolor:
+                  theme.palette.mode === 'dark'
+                    ? theme.palette.action.hover
+                    : theme.palette.action.hover,
+              },
+              '&.Mui-focused': {
+                bgcolor:
+                  theme.palette.mode === 'dark'
+                    ? theme.palette.action.focus
+                    : theme.palette.action.focus,
+              },
+            },
+          },
+          '& .MuiAutocomplete-popupIndicator': {
+            color:
+              theme.palette.mode === 'dark'
+                ? theme.palette.common.white
+                : theme.palette.common.black,
+          },
+          '& .MuiAutocomplete-clearIndicator': {
+            color:
+              theme.palette.mode === 'dark'
+                ? theme.palette.common.white
+                : theme.palette.common.black,
+          },
+        }}
       />
 
       {error ? (

@@ -1,7 +1,5 @@
 package com.aksi.domain.game;
 
-import java.time.Instant;
-
 import org.hibernate.annotations.Type;
 
 import com.aksi.domain.common.BaseEntity;
@@ -70,10 +68,4 @@ public class PriceConfigurationEntity extends BaseEntity {
   @Column(name = "sort_order")
   @Builder.Default
   private Integer sortOrder = 0;
-
-  @Column(name = "created_at")
-  private Instant createdAt;
-
-  @Column(name = "updated_at")
-  private Instant updatedAt;
 }

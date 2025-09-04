@@ -5,11 +5,12 @@
  * Handles game selection and search functionality
  */
 
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, useTheme } from '@mui/material';
 import { useGameBoostingStore } from '@game-boosting-calculator/store';
 import { GameSearch } from './GameSearch';
 
 export const GameSection = () => {
+  const theme = useTheme();
   const { selectedGame, setCurrentStep } = useGameBoostingStore();
 
   const handleNext = () => {
@@ -36,7 +37,17 @@ export const GameSection = () => {
       {/* Selected Game Display */}
       {selectedGame && (
         <Box
-          sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'primary.main', borderRadius: 1 }}
+          sx={{
+            mb: 3,
+            p: 2,
+            border: '1px solid',
+            borderColor: 'primary.main',
+            borderRadius: 1,
+            bgcolor:
+              theme.palette.mode === 'dark'
+                ? 'rgba(25, 118, 210, 0.08)'
+                : 'rgba(25, 118, 210, 0.04)',
+          }}
         >
           <Typography variant="h6" gutterBottom>
             Selected Game:

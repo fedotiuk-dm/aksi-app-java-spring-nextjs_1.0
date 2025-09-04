@@ -75,7 +75,12 @@ export const CalculatorSection = () => {
           label="Base Price ($)"
           type="number"
           value={basePrice / 100} // Convert cents to dollars for display
-          onChange={(e) => setBasePrice(Math.round(Number(e.target.value) * 100))} // Convert dollars to cents
+          onChange={(e) => {
+            const dollars = Number(e.target.value);
+            const cents = Math.round(dollars * 100);
+            console.log(`💰 Input: ${dollars}$ → ${cents} cents`);
+            setBasePrice(cents);
+          }}
           fullWidth
           InputProps={{
             startAdornment: '$',
@@ -84,6 +89,7 @@ export const CalculatorSection = () => {
             min: 0,
             step: 0.01,
           }}
+          helperText={`Debug: ${basePrice / 100}$ = ${basePrice} cents`}
         />
       </Box>
 
@@ -189,6 +195,9 @@ export const CalculatorSection = () => {
           </Typography>
           <Typography variant="body2" color="success.contrastText" sx={{ opacity: 0.8 }}>
             Includes all selected modifiers and services
+          </Typography>
+          <Typography variant="caption" color="success.contrastText" sx={{ opacity: 0.6, mt: 1 }}>
+            Debug: {calculatedPrice} cents = ${(calculatedPrice / 100).toFixed(2)}
           </Typography>
         </Box>
       ) : null}

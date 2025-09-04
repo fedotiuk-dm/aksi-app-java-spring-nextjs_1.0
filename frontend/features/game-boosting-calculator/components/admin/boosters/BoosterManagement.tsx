@@ -143,6 +143,7 @@ export const BoosterManagement = () => {
               <TableCell>Orders</TableCell>
               <TableCell>Success Rate</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>Verified</TableCell>
               <TableCell>Joined</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
@@ -150,13 +151,13 @@ export const BoosterManagement = () => {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={8} align="center">
                   <Typography>Loading boosters...</Typography>
                 </TableCell>
               </TableRow>
             ) : filteredBoosters.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={8} align="center">
                   <Typography>No boosters found</Typography>
                 </TableCell>
               </TableRow>
@@ -200,6 +201,14 @@ export const BoosterManagement = () => {
                       label={booster.active ? 'Active' : 'Inactive'}
                       color={booster.active ? 'success' : 'default'}
                       size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={booster.verified ? 'Verified' : 'Unverified'}
+                      color={booster.verified ? 'primary' : 'warning'}
+                      size="small"
+                      variant="outlined"
                     />
                   </TableCell>
                   <TableCell>

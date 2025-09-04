@@ -30,6 +30,7 @@ interface BoosterEditModalProps {
       contactEmail?: string;
       phoneNumber?: string;
       active?: boolean;
+      verified?: boolean;
     }
   ) => Promise<void>;
 }
@@ -46,6 +47,7 @@ export const BoosterEditModal: React.FC<BoosterEditModalProps> = ({
     contactEmail: '',
     phoneNumber: '',
     active: true,
+    verified: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -57,6 +59,7 @@ export const BoosterEditModal: React.FC<BoosterEditModalProps> = ({
         contactEmail: booster.contactEmail || '',
         phoneNumber: booster.phoneNumber || '',
         active: booster.active ?? true,
+        verified: booster.verified ?? false,
       });
     }
   }, [open, booster]);
@@ -77,6 +80,7 @@ export const BoosterEditModal: React.FC<BoosterEditModalProps> = ({
         contactEmail: formData.contactEmail.trim() || undefined,
         phoneNumber: formData.phoneNumber.trim() || undefined,
         active: formData.active,
+        verified: formData.verified,
       });
       handleClose();
     } catch (error) {
@@ -142,6 +146,17 @@ export const BoosterEditModal: React.FC<BoosterEditModalProps> = ({
                 />
               }
               label="Active"
+            />
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={formData.verified}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, verified: e.target.checked }))}
+                />
+              }
+              label="Verified Booster"
+              sx={{ alignSelf: 'flex-start' }}
             />
           </Box>
         </DialogContent>

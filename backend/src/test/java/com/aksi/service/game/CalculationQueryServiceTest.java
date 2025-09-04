@@ -1,5 +1,7 @@
 package com.aksi.service.game;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,7 +14,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openapitools.jackson.nullable.JsonNullable;
 
 import com.aksi.api.game.dto.CalculationFormula;
 import com.aksi.api.game.dto.CalculationFormula.TypeEnum;
@@ -50,6 +54,9 @@ class CalculationQueryServiceTest {
 
 
     private void setupService() {
+        // Setup mocks for all games used in tests
+        setupGameMocks();
+
         calculationService = new CalculationQueryService(
             validationService,
             formulaConversionUtil,
@@ -57,6 +64,85 @@ class CalculationQueryServiceTest {
             gameRepository,
             serviceTypeRepository
         );
+    }
+
+    private void setupGameMocks() {
+        // WOW game
+        var wowGame = createGameEntity();
+        wowGame.setCode("WOW");
+        wowGame.setName("World of Warcraft");
+        Mockito.lenient().when(gameRepository.findByCode("WOW")).thenReturn(Optional.of(wowGame));
+
+        // NW game
+        var nwGame = createGameEntity();
+        nwGame.setCode("NW");
+        nwGame.setName("New World");
+        Mockito.lenient().when(gameRepository.findByCode("NW")).thenReturn(Optional.of(nwGame));
+
+        // APEX game
+        var apexGame = createGameEntity();
+        apexGame.setCode("APEX");
+        apexGame.setName("Apex Legends");
+        Mockito.lenient().when(gameRepository.findByCode("APEX")).thenReturn(Optional.of(apexGame));
+
+        // COD game
+        var codGame = createGameEntity();
+        codGame.setCode("COD");
+        codGame.setName("Call of Duty");
+        Mockito.lenient().when(gameRepository.findByCode("COD")).thenReturn(Optional.of(codGame));
+
+        // FFXIV game
+        var ffxivGame = createGameEntity();
+        ffxivGame.setCode("FFXIV");
+        ffxivGame.setName("Final Fantasy XIV");
+        Mockito.lenient().when(gameRepository.findByCode("FFXIV")).thenReturn(Optional.of(ffxivGame));
+
+        // GW2 game
+        var gw2Game = createGameEntity();
+        gw2Game.setCode("GW2");
+        gw2Game.setName("Guild Wars 2");
+        Mockito.lenient().when(gameRepository.findByCode("GW2")).thenReturn(Optional.of(gw2Game));
+
+        // Setup service type mocks
+        setupServiceTypeMocks();
+    }
+
+    private void setupServiceTypeMocks() {
+        // LEVEL_BOOST service type
+        var levelBoost = createServiceTypeEntity();
+        levelBoost.setCode("LEVEL_BOOST");
+        levelBoost.setName("Level Boosting");
+        Mockito.lenient().when(serviceTypeRepository.findByCode("LEVEL_BOOST")).thenReturn(Optional.of(levelBoost));
+
+        // WEAPON_BOOST service type
+        var weaponBoost = createServiceTypeEntity();
+        weaponBoost.setCode("WEAPON_BOOST");
+        weaponBoost.setName("Weapon Boosting");
+        Mockito.lenient().when(serviceTypeRepository.findByCode("WEAPON_BOOST")).thenReturn(Optional.of(weaponBoost));
+
+        // RANKED_BOOST service type
+        var rankedBoost = createServiceTypeEntity();
+        rankedBoost.setCode("RANKED_BOOST");
+        rankedBoost.setName("Ranked Boosting");
+        Mockito.lenient().when(serviceTypeRepository.findByCode("RANKED_BOOST")).thenReturn(Optional.of(rankedBoost));
+
+        // PROFESSION_BOOST service type
+        var professionBoost = createServiceTypeEntity();
+        professionBoost.setCode("PROFESSION_BOOST");
+        professionBoost.setName("Profession Boosting");
+        Mockito.lenient().when(serviceTypeRepository.findByCode("PROFESSION_BOOST")).thenReturn(Optional.of(professionBoost));
+
+        // PVP_BOOST service type
+        var pvpBoost = createServiceTypeEntity();
+        pvpBoost.setCode("PVP_BOOST");
+        pvpBoost.setName("PvP Boosting");
+        Mockito.lenient().when(serviceTypeRepository.findByCode("PVP_BOOST")).thenReturn(Optional.of(pvpBoost));
+
+        // GATHERER_BOOST service type
+        var gathererBoost = createServiceTypeEntity();
+        gathererBoost.setCode("GATHERER_BOOST");
+        gathererBoost.setName("Gatherer Boosting");
+        Mockito.lenient().when(serviceTypeRepository.findByCode("GATHERER_BOOST")).thenReturn(Optional.of(gathererBoost));
     }
 
     @Test
@@ -495,7 +581,7 @@ class CalculationQueryServiceTest {
         linearFormula.setPricePerLevel(250); // $2.50 per level
 
         var request = new UniversalCalculationRequest();
-        request.setFormula(linearFormula);
+        request.setFormula(JsonNullable.of(linearFormula));
 
         var context = new UniversalCalculationContext();
         context.setStartLevel(1);
@@ -565,7 +651,7 @@ class CalculationQueryServiceTest {
         linearFormula.setPricePerLevel(50); // $0.50 per level
 
         var request = new UniversalCalculationRequest();
-        request.setFormula(linearFormula);
+        request.setFormula(JsonNullable.of(linearFormula));
 
         var context = new UniversalCalculationContext();
         context.setStartLevel(1);
@@ -634,7 +720,7 @@ class CalculationQueryServiceTest {
         linearFormula.setPricePerLevel(100); // $1.00 per level
 
         var request = new UniversalCalculationRequest();
-        request.setFormula(linearFormula);
+        request.setFormula(JsonNullable.of(linearFormula));
 
         var context = new UniversalCalculationContext();
         context.setStartLevel(1);
@@ -825,7 +911,6 @@ class CalculationQueryServiceTest {
     @DisplayName("VALIDATION TEST: Should throw exception for invalid service type")
     void shouldThrowExceptionForInvalidServiceType() {
         // Given - Invalid service type
-        setupService();
         var linearFormula = createLinearFormula(100);
         var request = createCalculationRequest(linearFormula, 5);
 
@@ -836,11 +921,23 @@ class CalculationQueryServiceTest {
         context.setServiceTypeCode("INVALID_SERVICE");
         request.setContext(context);
 
+        // Override the default mock setup for this specific test
         var gameEntity = createGameEntity();
         gameEntity.setCode("WOW");
 
-        when(gameRepository.findByCode("WOW")).thenReturn(java.util.Optional.of(gameEntity));
-        when(serviceTypeRepository.findByCode("INVALID_SERVICE")).thenReturn(java.util.Optional.empty());
+        // Reset mocks and set specific behavior for this test
+        Mockito.reset(gameRepository, serviceTypeRepository);
+        Mockito.lenient().when(gameRepository.findByCode("WOW")).thenReturn(java.util.Optional.of(gameEntity));
+        Mockito.lenient().when(serviceTypeRepository.findByCode("INVALID_SERVICE")).thenReturn(java.util.Optional.empty());
+
+        // Create service without global mock setup
+        calculationService = new CalculationQueryService(
+            validationService,
+            formulaConversionUtil,
+            gameModifierService,
+            gameRepository,
+            serviceTypeRepository
+        );
 
         // When & Then
         var exception = assertThrows(RuntimeException.class, () ->
@@ -983,7 +1080,7 @@ class CalculationQueryServiceTest {
 
     private UniversalCalculationRequest createCalculationRequest(CalculationFormula formula, int levelDiff) {
         var request = new UniversalCalculationRequest();
-        request.setFormula(formula);
+        request.setFormula(formula != null ? JsonNullable.of(formula) : JsonNullable.undefined());
 
         var context = new UniversalCalculationContext();
         context.setGameCode("WOW");

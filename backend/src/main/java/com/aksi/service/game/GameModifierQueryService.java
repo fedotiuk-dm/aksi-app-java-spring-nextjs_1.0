@@ -49,28 +49,52 @@ public class GameModifierQueryService {
             int page,
             int size) {
 
-        log.info("Getting game modifiers - gameCode: {}, type: {}, serviceType: {}, active: {}, search: {}",
-                gameCode, type, serviceTypeCode, active, search);
+        log.info("🔍 Getting game modifiers - gameCode: {}, type: {}, serviceType: {}, active: {}, search: {}, page: {}, size: {}",
+                gameCode, type, serviceTypeCode, active, search, page, size);
 
         try {
             // Use specifications for efficient database-level filtering
             var specification = GameModifierSpecification.filterModifiers(
                 active, gameCode, search, type, serviceTypeCode);
+            log.debug("🔍 Using specification for filtering modifiers");
 
             // Apply pagination
             Pageable pageable = PageRequest.of(page, size);
             Page<GameModifierEntity> entitiesPage = gameModifierRepository.findAll(specification, pageable);
 
             List<GameModifierEntity> entities = entitiesPage.getContent();
+            log.info("🔍 Found {} modifiers (total: {}, active: {})",
+                    entities.size(), entitiesPage.getTotalElements(),
+                    entities.stream().filter(GameModifierEntity::getActive).count());
+
+            // Log first few modifiers for debugging
+            if (!entities.isEmpty()) {
+                log.debug("🔍 First modifier: code={}, name={}, gameCode={}, active={}",
+                         entities.get(0).getCode(), entities.get(0).getName(),
+                         entities.get(0).getGameCode(), entities.get(0).getActive());
+            }
 
             // Create response with statistics
             List<GameModifier> modifiers = gameModifierMapper.toGameModifierDtoList(entities);
             long activeCount = entities.stream().filter(GameModifierEntity::getActive).count();
 
+            log.debug("🔄 Mapped {} entities to {} DTOs", entities.size(), modifiers.size());
+
+            // Log sample DTO for debugging
+            if (!modifiers.isEmpty()) {
+                GameModifier first = modifiers.get(0);
+                log.debug("🔄 First DTO: code={}, name={}, type={}, operation={}, value={}, active={}",
+                         first.getCode(), first.getName(), first.getType(), first.getOperation(),
+                         first.getValue(), first.getActive());
+            }
+
             GameModifiersResponse response = new GameModifiersResponse();
             response.setModifiers(modifiers);
             response.setTotalCount((int) entitiesPage.getTotalElements());
             response.setActiveCount((int) activeCount);
+
+            log.info("✅ Returning {} modifiers to frontend (total: {}, active: {})",
+                    modifiers.size(), response.getTotalCount(), response.getActiveCount());
             return response;
         } catch (Exception e) {
             log.error("Error in getAllGameModifiers", e);
