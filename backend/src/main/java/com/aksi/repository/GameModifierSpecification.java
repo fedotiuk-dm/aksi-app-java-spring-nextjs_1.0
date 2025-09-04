@@ -5,9 +5,6 @@ import org.springframework.data.jpa.domain.Specification;
 import com.aksi.api.game.dto.GameModifierType;
 import com.aksi.domain.game.GameModifierEntity;
 
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-
 public class GameModifierSpecification {
 
   public static Specification<GameModifierEntity> hasActive(Boolean active) {
@@ -60,9 +57,12 @@ public class GameModifierSpecification {
         return null; // No filtering
       }
 
-      // Filter by service type codes using JOIN with game_modifier_service_types table
-      Join<GameModifierEntity, String> serviceTypeCodesJoin = root.join("serviceTypeCodes", JoinType.LEFT);
-      return criteriaBuilder.equal(serviceTypeCodesJoin, serviceTypeCode);
+      // Filter modifiers that have the specified service type code in their serviceTypeCodes collection
+      // OR modifiers that have no service type codes specified (apply to all)
+      return criteriaBuilder.or(
+          criteriaBuilder.isMember(serviceTypeCode, root.get("serviceTypeCodes")),
+          criteriaBuilder.isEmpty(root.get("serviceTypeCodes"))
+      );
     };
   }
 

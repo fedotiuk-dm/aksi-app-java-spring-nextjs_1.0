@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.catalina.connector.ClientAbortException;
+import org.hibernate.PropertyValueException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -297,7 +298,7 @@ public class GlobalExceptionHandler {
     return createErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), null);
   }
 
-  @ExceptionHandler(IllegalArgumentException.class)
+  @ExceptionHandler({IllegalArgumentException.class, PropertyValueException.class})
   public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException e) {
     log.warn("Illegal argument: {}", e.getMessage());
 
@@ -305,8 +306,22 @@ public class GlobalExceptionHandler {
     String message = e.getMessage();
     if (message != null && message.contains("No enum constant")) {
       // Extract the problematic value if possible
-      message =
-          "Invalid enum value. " + message + ". Please check valid values in API documentation.";
+      String fullMessage = "Invalid enum value. " + message + ". Please check valid values in API documentation.";
+
+      // For GameModifierType enum errors, provide specific guidance
+      if (message.contains("GameModifierType")) {
+        String enumValue = extractEnumValueFromError(message);
+        if (enumValue != null) {
+          fullMessage = String.format(
+              "Invalid game modifier type '%s'. Valid types are: TIMING, SUPPORT, MODE, QUALITY, EXTRA, PROMOTIONAL, SEASONAL, SPELLS, RANK, PROGRESSION, COSMETIC, SOCIAL, GUIDANCE, ACHIEVEMENT, SERVICE",
+              enumValue);
+
+          // Log database issue that needs to be fixed
+          log.error("CRITICAL: Database contains invalid modifier type '{}'. Run database migration to fix this.", enumValue);
+        }
+      }
+
+      return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, fullMessage, null);
     }
 
     return createErrorResponse(HttpStatus.BAD_REQUEST, message, null);
@@ -419,6 +434,25 @@ public class GlobalExceptionHandler {
       // No request context available
     }
     return "";
+  }
+
+  /**
+   * Extracts enum value from IllegalArgumentException error message.
+   *
+   * @param errorMessage The error message containing enum information
+   * @return The problematic enum value or null if cannot extract
+   */
+  private String extractEnumValueFromError(String errorMessage) {
+    try {
+      // Pattern: "No enum constant com.aksi.api.game.dto.GameModifierType.GAME_MODE"
+      int lastDotIndex = errorMessage.lastIndexOf('.');
+      if (lastDotIndex != -1 && lastDotIndex < errorMessage.length() - 1) {
+        return errorMessage.substring(lastDotIndex + 1);
+      }
+    } catch (Exception e) {
+      log.debug("Failed to extract enum value from error message: {}", e.getMessage());
+    }
+    return null;
   }
 
   /**

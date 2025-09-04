@@ -1,7 +1,0 @@
-game_id;code;name;level_value;active;sort_order
-WOW;NORMAL;Normal Difficulty;1;true;1
-WOW;HEROIC;Heroic Difficulty;2;true;2
-LOL;BRONZE;Bronze Division;1;true;1
-LOL;SILVER;Silver Division;2;true;2
-EFT;STANDARD;Standard Mode;1;true;1
-COD;REGULAR;Regular Matchmaking;1;true;1

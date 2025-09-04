@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: fix-game-categories-v1
+      author: system
+      comment: Fix existing games with invalid category enum values
+      runOnChange: false
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: games
+
+      changes:
+        # Fix MULTIPLAYER_FPS category - replace with FPS
+        - update:
+            tableName: games
+            columns:
+              - column:
+                  name: category
+                  value: FPS
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+            where: category = 'MULTIPLAYER_FPS'
+
+        # Fix TACTICAL_FPS category - replace with FPS
+        - update:
+            tableName: games
+            columns:
+              - column:
+                  name: category
+                  value: FPS
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+            where: category = 'TACTICAL_FPS'
+
+        # Fix any other invalid categories by setting to OTHER
+        - update:
+            tableName: games
+            columns:
+              - column:
+                  name: category
+                  value: OTHER
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+            where: category NOT IN ('MMORPG', 'FPS', 'MOBA', 'BATTLE_ROYALE', 'STRATEGY', 'ACTION', 'SIMULATION', 'SPORTS', 'RACING', 'PUZZLE', 'OTHER')
