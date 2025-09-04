@@ -34,6 +34,7 @@ interface GameEditModalProps {
       category?: UpdateGameRequestCategory;
       description?: string;
       active?: boolean;
+      sortOrder?: number;
     }
   ) => Promise<void>;
 }
@@ -50,6 +51,7 @@ export const GameEditModal: React.FC<GameEditModalProps> = ({
     category: '',
     description: '',
     active: true,
+    sortOrder: 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -60,6 +62,7 @@ export const GameEditModal: React.FC<GameEditModalProps> = ({
         category: game.category || '',
         description: game.description || '',
         active: game.active ?? true,
+        sortOrder: game.sortOrder ?? 0,
       });
     }
   }, [open, game]);
@@ -79,6 +82,7 @@ export const GameEditModal: React.FC<GameEditModalProps> = ({
         category: formData.category as UpdateGameRequestCategory,
         description: formData.description?.trim() || undefined,
         active: formData.active,
+        sortOrder: formData.sortOrder,
       });
       handleClose();
     } catch (error) {
@@ -130,6 +134,20 @@ export const GameEditModal: React.FC<GameEditModalProps> = ({
               multiline
               rows={3}
               placeholder="Brief description of the game..."
+            />
+
+            <TextField
+              label="Sort Order"
+              type="number"
+              value={formData.sortOrder}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, sortOrder: Number(e.target.value) || 0 }))
+              }
+              fullWidth
+              helperText="Lower numbers appear first in the list"
+              inputProps={{
+                min: 0,
+              }}
             />
 
             <FormControlLabel

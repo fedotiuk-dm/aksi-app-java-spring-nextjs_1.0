@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import com.aksi.api.game.dto.CreatePriceConfigurationRequest;
+import com.aksi.api.game.dto.CreatePriceConfigurationRequest.CalculationTypeEnum;
 import com.aksi.api.game.dto.PriceConfiguration;
 import com.aksi.domain.game.PriceConfigurationEntity;
 
@@ -28,6 +29,7 @@ class PriceConfigurationMapperTest {
         dto.setCurrency("USD");
         dto.setPricePerLevel(50);
         dto.setSortOrder(1);
+        dto.setCalculationType(CalculationTypeEnum.LINEAR);
 
         // When
         PriceConfigurationEntity result = mapper.toPriceConfigurationEntity(dto);
@@ -38,6 +40,9 @@ class PriceConfigurationMapperTest {
         assertEquals("USD", result.getCurrency());
         assertEquals(50, result.getPricePerLevel());
         assertEquals(1, result.getSortOrder());
+        assertEquals(CalculationTypeEnum.LINEAR.getValue(), result.getCalculationType());
+        // Note: calculationFormula should be null because MapStruct ignores it
+        assertNull(result.getCalculationFormula());
     }
 
     @Test

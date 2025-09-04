@@ -24,7 +24,7 @@ USER appuser
 
 # Set environment variables for development
 ENV SPRING_PROFILES_ACTIVE=dev
-ENV JAVA_OPTS="-Xms512m -Xmx2048m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.NoOpLog"
+ENV JAVA_OPTS="-Xms512m -Xmx2048m -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.NoOpLog"
 ENV MAVEN_OPTS="-Xmx1024m -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN -Dorg.slf4j.simpleLogger.log.org.openapitools=ERROR"
 
 # Copy Maven Wrapper files first

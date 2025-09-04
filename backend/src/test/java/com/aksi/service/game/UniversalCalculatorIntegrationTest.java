@@ -1,25 +1,27 @@
 package com.aksi.service.game;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.ArgumentMatchers.any;
+import org.mockito.Mock;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.aksi.api.game.dto.UniversalCalculationContext;
 import com.aksi.api.game.dto.UniversalCalculationRequest;
 import com.aksi.api.game.dto.UniversalCalculationResponse;
+import com.aksi.domain.game.GameEntity;
+import com.aksi.domain.game.ServiceTypeEntity;
 import com.aksi.mapper.FormulaConversionUtil;
 import com.aksi.repository.GameRepository;
 import com.aksi.repository.ServiceTypeRepository;
@@ -58,6 +60,27 @@ class UniversalCalculatorIntegrationTest {
     private void setupCommonMocks() {
         // Mock validation service - do nothing when validating
         doNothing().when(validationService).validateFormula(any());
+
+        // Setup game and service type mocks
+        setupGameAndServiceTypeMocks();
+    }
+
+    private void setupGameAndServiceTypeMocks() {
+        // Mock LOL game
+        var lolGame = new GameEntity();
+        lolGame.setId(java.util.UUID.randomUUID());
+        lolGame.setCode("LOL");
+        lolGame.setName("League of Legends");
+        lolGame.setCategory(com.aksi.api.game.dto.Game.CategoryEnum.MMORPG);
+        when(gameRepository.findByCode("LOL")).thenReturn(Optional.of(lolGame));
+
+        // Mock BOOSTING service type
+        var boostingServiceType = new ServiceTypeEntity();
+        boostingServiceType.setId(java.util.UUID.randomUUID());
+        boostingServiceType.setCode("BOOSTING");
+        boostingServiceType.setName("Level Boosting");
+        boostingServiceType.setGame(lolGame);
+        when(serviceTypeRepository.findByCode("BOOSTING")).thenReturn(Optional.of(boostingServiceType));
     }
 
     @Test

@@ -15,7 +15,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = LinearFormulaEntity.class, name = "LINEAR"),
     @JsonSubTypes.Type(value = RangeFormulaEntity.class, name = "RANGE"),

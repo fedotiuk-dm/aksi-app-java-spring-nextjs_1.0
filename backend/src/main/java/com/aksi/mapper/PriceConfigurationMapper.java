@@ -2,6 +2,7 @@ package com.aksi.mapper;
 
 import java.util.List;
 
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -37,5 +38,12 @@ public interface PriceConfigurationMapper {
   void updatePriceConfigurationFromDto(
       UpdatePriceConfigurationRequest dto,
       @MappingTarget PriceConfigurationEntity entity);
+
+  @AfterMapping
+  default void updateCalculationType(UpdatePriceConfigurationRequest dto, @MappingTarget PriceConfigurationEntity entity) {
+    if (dto.getCalculationType() != null) {
+      entity.setCalculationType(dto.getCalculationType().getValue());
+    }
+  }
 
 }

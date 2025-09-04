@@ -76,7 +76,7 @@ class CalculationValidationServiceTest {
         // When & Then
         var exception = assertThrows(IllegalArgumentException.class, () ->
             validationService.validateCalculationParameters(basePrice, fromLevel, toLevel));
-        assertTrue(exception.getMessage().contains("level"));
+        assertTrue(exception.getMessage().contains("Levels"));
     }
 
     @Test
@@ -90,7 +90,7 @@ class CalculationValidationServiceTest {
         // When & Then
         var exception = assertThrows(IllegalArgumentException.class, () ->
             validationService.validateCalculationParameters(basePrice, fromLevel, toLevel));
-        assertTrue(exception.getMessage().contains("level"));
+        assertTrue(exception.getMessage().contains("Levels"));
     }
 
     @Test

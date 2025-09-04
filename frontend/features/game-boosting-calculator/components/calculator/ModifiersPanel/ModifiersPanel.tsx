@@ -229,6 +229,10 @@ export const ModifiersPanel = () => {
                 </span>
               )}
             </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+              Debug: Selected modifiers: {selectedModifiers.join(', ')} | Total multiplier:{' '}
+              {calculateTotalModifier().toFixed(4)}
+            </Typography>
           </Paper>
         </>
       )}

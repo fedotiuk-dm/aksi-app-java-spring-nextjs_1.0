@@ -1,7 +1,6 @@
 package com.aksi.integration;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -10,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +17,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.game.dto.CalculationFormula.TypeEnum;
+import com.aksi.api.game.dto.Game.CategoryEnum;
 import com.aksi.api.game.dto.GameModifierOperation;
+import com.aksi.api.game.dto.GameModifierType;
 import com.aksi.api.game.dto.LinearFormula;
 import com.aksi.api.game.dto.UniversalCalculationContext;
 import com.aksi.api.game.dto.UniversalCalculationRequest;
@@ -33,7 +35,13 @@ import com.aksi.service.game.CalculationQueryService;
 /**
  * Full integration test with H2 database to verify end-to-end calculation flow
  */
-@SpringBootTest
+@SpringBootTest(
+    properties = {
+        "spring.data.redis.host=localhost",
+        "spring.data.redis.port=6379",
+        "spring.session.store-type=redis"
+    }
+)
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
@@ -56,21 +64,21 @@ class CalculationIntegrationTest {
     void shouldCalculateCompleteFlowFromApiToDatabase() {
         // Given - Setup test data in H2 database
         var game = new GameEntity();
-        game.setId(UUID.randomUUID());
         game.setCode("APEX_INTEGRATION");
         game.setName("Apex Legends Integration Test");
+        game.setCategory(CategoryEnum.BATTLE_ROYALE); // Set required category
         game = gameRepository.save(game);
 
         var serviceType = new ServiceTypeEntity();
-        serviceType.setId(UUID.randomUUID());
         serviceType.setCode("RANKED_BOOST_INTEGRATION");
         serviceType.setName("Ranked Boost Integration Test");
+        serviceType.setGame(game); // Set the game relationship
         serviceType = serviceTypeRepository.save(serviceType);
 
         var rpModifier = new GameModifierEntity();
-        rpModifier.setId(UUID.randomUUID());
         rpModifier.setCode("APEX_INTEGRATION_RP_ADD");
         rpModifier.setName("Apex RP Cost Integration");
+        rpModifier.setType(GameModifierType.RANK); // Set required modifier type for RP
         rpModifier.setOperation(GameModifierOperation.ADD);
         rpModifier.setValue(800); // RP cost from parsed_data
         rpModifier.setGameCode(game.getCode());
@@ -78,9 +86,9 @@ class CalculationIntegrationTest {
         gameModifierRepository.save(rpModifier);
 
         var rushModifier = new GameModifierEntity();
-        rushModifier.setId(UUID.randomUUID());
         rushModifier.setCode("INTEGRATION_RUSH_MULTIPLY");
         rushModifier.setName("Rush Order Integration");
+        rushModifier.setType(GameModifierType.TIMING); // Set required modifier type for rush
         rushModifier.setOperation(GameModifierOperation.MULTIPLY);
         rushModifier.setValue(50); // +50% rush
         rushModifier.setGameCode(game.getCode());
@@ -93,7 +101,7 @@ class CalculationIntegrationTest {
         linearFormula.setPricePerLevel(100); // $1.00 per level
 
         var request = new UniversalCalculationRequest();
-        request.setFormula(linearFormula);
+        request.setFormula(JsonNullable.of(linearFormula));
 
         var context = new UniversalCalculationContext();
         context.setStartLevel(1);
@@ -144,7 +152,7 @@ class CalculationIntegrationTest {
         linearFormula.setPricePerLevel(100);
 
         var request = new UniversalCalculationRequest();
-        request.setFormula(linearFormula);
+        request.setFormula(JsonNullable.of(linearFormula));
 
         var context = new UniversalCalculationContext();
         context.setStartLevel(1);
@@ -164,44 +172,21 @@ class CalculationIntegrationTest {
     void shouldHandleConcurrentCalculations() {
         // Given - Setup test data
         var game = new GameEntity();
-        game.setId(UUID.randomUUID());
         game.setCode("PERFORMANCE_GAME");
         game.setName("Performance Test Game");
-        game = gameRepository.save(game);
+        game.setCategory(CategoryEnum.BATTLE_ROYALE); // Set required category
+        gameRepository.save(game);
 
         var serviceType = new ServiceTypeEntity();
-        serviceType.setId(UUID.randomUUID());
         serviceType.setCode("PERFORMANCE_BOOST");
         serviceType.setName("Performance Test Boost");
-        serviceType = serviceTypeRepository.save(serviceType);
+        serviceType.setGame(game); // Set the game relationship
+        serviceTypeRepository.save(serviceType);
 
         // When - Execute multiple calculations concurrently
         long startTime = System.nanoTime();
 
-        List<Thread> threads = new java.util.ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            Thread thread = new Thread(() -> {
-                var linearFormula = new LinearFormula();
-                linearFormula.setType(TypeEnum.LINEAR);
-                linearFormula.setPricePerLevel(10);
-
-                var request = new UniversalCalculationRequest();
-                request.setFormula(linearFormula);
-
-                var context = new UniversalCalculationContext();
-                context.setStartLevel(1);
-                context.setTargetLevel(10);
-                context.setGameCode("PERFORMANCE_GAME");
-                context.setServiceTypeCode("PERFORMANCE_BOOST");
-                request.setContext(context);
-
-                var response = calculationService.calculateWithFormula("LINEAR", request);
-                assertNotNull(response);
-                assertEquals(UniversalCalculationResponse.StatusEnum.SUCCESS, response.getStatus());
-                assertEquals(90, response.getFinalPrice()); // 9 levels * $0.10 = $0.90
-            });
-            threads.add(thread);
-        }
+        List<Thread> threads = createPerformanceTestThreads();
 
         // Start all threads
         threads.forEach(Thread::start);
@@ -227,22 +212,22 @@ class CalculationIntegrationTest {
     void shouldCalculateWithRealNwWeaponData() {
         // Given - Setup NW game with weapon modifiers from parsed_data
         var game = new GameEntity();
-        game.setId(UUID.randomUUID());
         game.setCode("NW_REAL_DATA");
         game.setName("New World Real Data Test");
+        game.setCategory(CategoryEnum.MMORPG); // Set required category for New World
         game = gameRepository.save(game);
 
         var serviceType = new ServiceTypeEntity();
-        serviceType.setId(UUID.randomUUID());
         serviceType.setCode("WEAPON_REAL_DATA");
         serviceType.setName("Weapon Real Data Test");
+        serviceType.setGame(game); // Set the game relationship
         serviceType = serviceTypeRepository.save(serviceType);
 
         // NW Weapon modifier: +125% based on parsed_data (Weapon Per Level = 2.5 vs Level Per Level = 1)
         var weaponModifier = new GameModifierEntity();
-        weaponModifier.setId(UUID.randomUUID());
         weaponModifier.setCode("NW_REAL_WEAPON_MULTIPLY");
         weaponModifier.setName("NW Weapon Real Data Multiplier");
+        weaponModifier.setType(GameModifierType.SPELLS); // Set required modifier type
         weaponModifier.setOperation(GameModifierOperation.MULTIPLY);
         weaponModifier.setValue(125); // 2.5 / 1 = 2.5x total, so +125% additional
         weaponModifier.setGameCode(game.getCode());
@@ -255,7 +240,7 @@ class CalculationIntegrationTest {
         linearFormula.setPricePerLevel(100); // Base $1.00 per level
 
         var request = new UniversalCalculationRequest();
-        request.setFormula(linearFormula);
+        request.setFormula(JsonNullable.of(linearFormula));
 
         var context = new UniversalCalculationContext();
         context.setStartLevel(1);
@@ -282,5 +267,36 @@ class CalculationIntegrationTest {
         var adjustments = response.getBreakdown().getModifierAdjustments();
         assertEquals(1, adjustments.size());
         assertEquals(500, adjustments.getFirst().getAdjustment()); // 400 * 2.25 - 400 = 500
+    }
+
+    /**
+     * Creates 10 performance test threads for concurrent calculation testing
+     */
+    private List<Thread> createPerformanceTestThreads() {
+        List<Thread> threads = new java.util.ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Thread thread = new Thread(() -> {
+                var linearFormula = new LinearFormula();
+                linearFormula.setType(TypeEnum.LINEAR);
+                linearFormula.setPricePerLevel(10);
+
+                var request = new UniversalCalculationRequest();
+                request.setFormula(JsonNullable.of(linearFormula));
+
+                var context = new UniversalCalculationContext();
+                context.setStartLevel(1);
+                context.setTargetLevel(10);
+                context.setGameCode("PERFORMANCE_GAME");
+                context.setServiceTypeCode("PERFORMANCE_BOOST");
+                request.setContext(context);
+
+                var response = calculationService.calculateWithFormula("LINEAR", request);
+                assertNotNull(response);
+                assertEquals(UniversalCalculationResponse.StatusEnum.SUCCESS, response.getStatus());
+                assertEquals(90, response.getFinalPrice()); // 9 levels * $0.10 = $0.90
+            });
+            threads.add(thread);
+        }
+        return threads;
     }
 }

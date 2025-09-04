@@ -14,6 +14,8 @@ import {
   Button,
   TextField,
   Box,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
 
 interface BoosterCreateModalProps {
@@ -23,6 +25,7 @@ interface BoosterCreateModalProps {
     displayName: string;
     contactEmail: string;
     phoneNumber?: string;
+    verified?: boolean;
   }) => Promise<void>;
 }
 
@@ -33,6 +36,7 @@ export const BoosterCreateModal: React.FC<BoosterCreateModalProps> = ({ children
     displayName: '',
     contactEmail: '',
     phoneNumber: '',
+    verified: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,6 +48,7 @@ export const BoosterCreateModal: React.FC<BoosterCreateModalProps> = ({ children
       displayName: '',
       contactEmail: '',
       phoneNumber: '',
+      verified: false,
     });
   };
 
@@ -63,6 +68,7 @@ export const BoosterCreateModal: React.FC<BoosterCreateModalProps> = ({ children
         displayName: formData.displayName.trim(),
         contactEmail: formData.contactEmail.trim(),
         phoneNumber: formData.phoneNumber.trim() || undefined,
+        verified: formData.verified,
       });
       handleClose();
     } catch (error) {
@@ -119,6 +125,17 @@ export const BoosterCreateModal: React.FC<BoosterCreateModalProps> = ({ children
               onChange={(e) => setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))}
               fullWidth
               placeholder="+1234567890"
+            />
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={formData.verified}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, verified: e.target.checked }))}
+                />
+              }
+              label="Verified Booster"
+              sx={{ alignSelf: 'flex-start' }}
             />
           </Box>
         </DialogContent>

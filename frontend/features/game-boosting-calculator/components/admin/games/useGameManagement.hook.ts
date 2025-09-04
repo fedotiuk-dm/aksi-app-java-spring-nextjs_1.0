@@ -69,6 +69,7 @@ export const useGameManagement = () => {
     code: string;
     category: CreateGameRequestCategory;
     description?: string;
+    sortOrder?: number;
   }) => {
     try {
       await createGameMutation.mutateAsync({
@@ -88,6 +89,7 @@ export const useGameManagement = () => {
       category?: UpdateGameRequestCategory;
       description?: string;
       active?: boolean;
+      sortOrder?: number;
     }
   ) => {
     try {

@@ -157,6 +157,7 @@ export const DifficultyLevelManagement = () => {
               <TableCell>Game</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Multiplier</TableCell>
+              <TableCell>Sort Order</TableCell>
               <TableCell>Created</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
@@ -164,13 +165,13 @@ export const DifficultyLevelManagement = () => {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={8} align="center">
                   <Typography>Loading difficulty levels...</Typography>
                 </TableCell>
               </TableRow>
             ) : filteredDifficultyLevels.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={8} align="center">
                   <Typography>No difficulty levels found</Typography>
                 </TableCell>
               </TableRow>
@@ -199,6 +200,14 @@ export const DifficultyLevelManagement = () => {
                     />
                   </TableCell>
                   <TableCell>{level.levelValue}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={level.sortOrder ?? 0}
+                      size="small"
+                      variant="outlined"
+                      color="secondary"
+                    />
+                  </TableCell>
                   <TableCell>
                     {level.createdAt ? new Date(level.createdAt).toLocaleDateString() : 'N/A'}
                   </TableCell>

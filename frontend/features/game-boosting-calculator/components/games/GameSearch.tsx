@@ -6,13 +6,22 @@
  */
 
 import React, { useState } from 'react';
-import { Autocomplete, TextField, CircularProgress, Box, Typography, Chip } from '@mui/material';
+import {
+  Autocomplete,
+  TextField,
+  CircularProgress,
+  Box,
+  Typography,
+  Chip,
+  useTheme,
+} from '@mui/material';
 import { useGameBoostingStore } from '@game-boosting-calculator/store';
 import { useGamesListGames } from '@api/game';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Game } from '@api/game';
 
 export const GameSearch = () => {
+  const theme = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
   const { selectedGameId, setSelectedGame } = useGameBoostingStore();
   // TODO: Properly handle cache invalidation when clients are added to the system
@@ -104,6 +113,47 @@ export const GameSearch = () => {
         )}
         noOptionsText={searchTerm ? 'No games found' : 'Start typing game name'}
         fullWidth
+        sx={{
+          '& .MuiAutocomplete-paper': {
+            bgcolor:
+              theme.palette.mode === 'dark'
+                ? theme.palette.background.paper
+                : theme.palette.background.paper,
+          },
+          '& .MuiAutocomplete-listbox': {
+            bgcolor:
+              theme.palette.mode === 'dark'
+                ? theme.palette.background.paper
+                : theme.palette.background.paper,
+            '& .MuiAutocomplete-option': {
+              bgcolor: theme.palette.mode === 'dark' ? 'transparent' : 'transparent',
+              '&:hover': {
+                bgcolor:
+                  theme.palette.mode === 'dark'
+                    ? theme.palette.action.hover
+                    : theme.palette.action.hover,
+              },
+              '&.Mui-focused': {
+                bgcolor:
+                  theme.palette.mode === 'dark'
+                    ? theme.palette.action.focus
+                    : theme.palette.action.focus,
+              },
+            },
+          },
+          '& .MuiAutocomplete-popupIndicator': {
+            color:
+              theme.palette.mode === 'dark'
+                ? theme.palette.common.white
+                : theme.palette.common.black,
+          },
+          '& .MuiAutocomplete-clearIndicator': {
+            color:
+              theme.palette.mode === 'dark'
+                ? theme.palette.common.white
+                : theme.palette.common.black,
+          },
+        }}
       />
 
       {error ? (

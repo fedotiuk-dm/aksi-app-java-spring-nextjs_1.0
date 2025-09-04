@@ -32,22 +32,33 @@ public class GameModifierCommandService {
      */
     @Transactional
     public GameModifierInfo createGameModifier(CreateGameModifierRequest request) {
-        log.info("Creating game modifier: {} for game: {}", request.getCode(), request.getGameCode());
+        log.info("🎯 Creating game modifier: {} for game: {}", request.getCode(), request.getGameCode());
+        log.debug("🎯 Request details: name={}, type={}, operation={}, value={}",
+                 request.getName(), request.getType(), request.getOperation(),
+                 request.getValue());
 
         // Validate request
         gameModifierValidationService.validateCreateGameModifier(request);
 
         // Check if modifier code already exists for this game
         if (gameModifierRepository.existsByCodeAndGameCode(request.getCode(), request.getGameCode())) {
+            log.warn("🎯 Modifier code already exists: {} for game: {}", request.getCode(), request.getGameCode());
             throw new BadRequestException("Modifier code already exists for this game: " + request.getCode());
         }
 
         GameModifierEntity entity = gameModifierMapper.toGameModifierEntity(request);
+        log.debug("🎯 Mapped to entity: code={}, name={}, gameCode={}",
+                 entity.getCode(), entity.getName(), entity.getGameCode());
 
         GameModifierEntity saved = gameModifierRepository.save(entity);
-        log.info("Created game modifier with ID: {}", saved.getId());
+        log.info("✅ Created game modifier with ID: {} (code: {}, game: {})",
+                saved.getId(), saved.getCode(), saved.getGameCode());
 
-        return gameModifierMapper.toGameModifierInfoDto(saved);
+        GameModifierInfo response = gameModifierMapper.toGameModifierInfoDto(saved);
+        log.debug("🎯 Returning response: code={}, name={}, type={}",
+                 response.getCode(), response.getName(), response.getType());
+
+        return response;
     }
 
     /**

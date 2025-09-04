@@ -9,8 +9,6 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.openapitools.jackson.nullable.JsonNullable;
-
 import com.aksi.api.game.dto.CalculationBreakdown;
 import com.aksi.api.game.dto.CalculationFormula;
 import com.aksi.api.game.dto.CalculationMetadata;
@@ -144,6 +142,27 @@ public class CalculationQueryService {
     var context = request.getContext();
     if (context == null) {
       throw new IllegalArgumentException("Calculation context is required");
+    }
+
+    // Validate that the game exists
+    if (context.getGameCode() != null) {
+      log.info("🔍 Validating game exists: {}", context.getGameCode());
+      var gameExists = gameRepository.findByCode(context.getGameCode()).isPresent();
+      if (!gameExists) {
+        log.error("❌ Game not found: {}", context.getGameCode());
+        throw new IllegalArgumentException("Game not found: " + context.getGameCode());
+      }
+      log.info("✅ Game validation passed for: {}", context.getGameCode());
+    }
+
+    if (context.getServiceTypeCode() != null) {
+      log.info("🔍 Validating service type exists: {}", context.getServiceTypeCode());
+      var serviceTypeExists = serviceTypeRepository.findByCode(context.getServiceTypeCode()).isPresent();
+      if (!serviceTypeExists) {
+        log.error("❌ Service type not found: {}", context.getServiceTypeCode());
+        throw new IllegalArgumentException("Service type not found: " + context.getServiceTypeCode());
+      }
+      log.info("✅ Service type validation passed for: {}", context.getServiceTypeCode());
     }
 
     var apiFormulaNullable = request.getFormula();

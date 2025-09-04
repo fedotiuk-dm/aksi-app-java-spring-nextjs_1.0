@@ -36,6 +36,7 @@ interface DifficultyLevelEditModalProps {
       levelValue?: number;
       description?: string;
       active?: boolean;
+      sortOrder?: number;
     }
   ) => Promise<void>;
 }
@@ -54,6 +55,7 @@ export const DifficultyLevelEditModal: React.FC<DifficultyLevelEditModalProps> =
     levelValue: 1,
     description: '',
     active: true,
+    sortOrder: 0,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -66,6 +68,7 @@ export const DifficultyLevelEditModal: React.FC<DifficultyLevelEditModalProps> =
         levelValue: difficultyLevel.levelValue,
         description: difficultyLevel.description || '',
         active: difficultyLevel.active,
+        sortOrder: difficultyLevel.sortOrder ?? 0,
       });
     }
   }, [difficultyLevel]);
@@ -89,6 +92,7 @@ export const DifficultyLevelEditModal: React.FC<DifficultyLevelEditModalProps> =
         levelValue: formData.levelValue,
         description: formData.description.trim() || undefined,
         active: formData.active,
+        sortOrder: formData.sortOrder,
       });
       handleClose();
     } catch (error) {
@@ -105,7 +109,8 @@ export const DifficultyLevelEditModal: React.FC<DifficultyLevelEditModalProps> =
       formData.gameId !== difficultyLevel.gameId ||
       formData.levelValue !== difficultyLevel.levelValue ||
       formData.description !== (difficultyLevel.description || '') ||
-      formData.active !== difficultyLevel.active
+      formData.active !== difficultyLevel.active ||
+      formData.sortOrder !== (difficultyLevel.sortOrder ?? 0)
     );
   };
 
@@ -166,8 +171,32 @@ export const DifficultyLevelEditModal: React.FC<DifficultyLevelEditModalProps> =
               }
               fullWidth
               required
-              inputProps={{ min: 1, max: 1000 }}
-              helperText="Difficulty level value (1-1000, higher = more difficult)"
+              slotProps={{
+                htmlInput: {
+                  min: 1,
+                  max: 100,
+                },
+              }}
+              helperText="Difficulty level value (1-100, higher = more difficult)"
+            />
+
+            <TextField
+              label="Sort Order"
+              type="number"
+              value={formData.sortOrder}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  sortOrder: parseInt(e.target.value) || 0,
+                }))
+              }
+              fullWidth
+              slotProps={{
+                htmlInput: {
+                  min: 0,
+                },
+              }}
+              helperText="Lower numbers appear first in the list"
             />
 
             <FormControlLabel

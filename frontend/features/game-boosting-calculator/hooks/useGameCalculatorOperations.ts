@@ -134,7 +134,7 @@ export const useGameCalculatorOperations = () => {
           targetLevel: targetLevel,
           modifiers: selectedModifiers,
           additionalParameters: {
-            basePrice: Math.round(basePrice * 100),
+            basePrice: basePrice, // Already in cents from UI
             levelDiff: (targetLevel || 0) - (startLevel || 0),
           },
         },
@@ -144,6 +144,10 @@ export const useGameCalculatorOperations = () => {
         formulaType: 'UNIVERSAL',
         data: requestData,
       });
+
+      console.log('🧮 Calculation result:', result);
+      console.log('💰 Final price from backend (cents):', result.finalPrice);
+      console.log('💸 Final price display (dollars):', result.finalPrice / 100);
 
       setCalculatedPrice(result.finalPrice);
       return result;

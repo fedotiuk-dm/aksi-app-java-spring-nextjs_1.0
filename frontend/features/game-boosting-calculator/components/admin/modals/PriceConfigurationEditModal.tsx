@@ -12,6 +12,7 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  TextField,
   FormControl,
   InputLabel,
   Select,
@@ -27,7 +28,9 @@ import type {
   ServiceType,
   DifficultyLevel,
   UpdatePriceConfigurationRequest,
+  PriceConfigurationCalculationType,
 } from '@api/game';
+import { PriceConfigurationCalculationType as CalculationTypes } from '@api/game';
 import { PriceDisplay } from '@/shared/ui/atoms/PriceDisplay';
 
 interface PriceConfigurationEditModalProps {
@@ -55,6 +58,11 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
     gameId: '',
     serviceTypeId: '',
     difficultyLevelId: '',
+    basePrice: 1000,
+    pricePerLevel: 0,
+    currency: 'USD',
+    calculationType: 'LINEAR' as typeof priceConfiguration.calculationType,
+    sortOrder: 0,
     active: true,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -65,6 +73,11 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
         gameId: priceConfiguration.gameId,
         serviceTypeId: priceConfiguration.serviceTypeId,
         difficultyLevelId: priceConfiguration.difficultyLevelId,
+        basePrice: priceConfiguration.basePrice,
+        pricePerLevel: priceConfiguration.pricePerLevel ?? 0,
+        currency: priceConfiguration.currency ?? 'USD',
+        calculationType: priceConfiguration.calculationType,
+        sortOrder: priceConfiguration.sortOrder ?? 0,
         active: priceConfiguration.active,
       });
     }
@@ -105,7 +118,12 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
         gameId: formData.gameId,
         serviceTypeId: formData.serviceTypeId,
         difficultyLevelId: formData.difficultyLevelId,
-        basePrice: priceConfiguration.basePrice, // Keep existing basePrice
+        basePrice: formData.basePrice,
+        pricePerLevel: formData.pricePerLevel,
+        currency: formData.currency,
+        calculationType: formData.calculationType,
+        // calculationFormula not provided - let backend use default
+        sortOrder: formData.sortOrder,
         active: formData.active,
       });
       handleClose();
@@ -121,7 +139,13 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
       formData.gameId !== priceConfiguration.gameId ||
       formData.serviceTypeId !== priceConfiguration.serviceTypeId ||
       formData.difficultyLevelId !== priceConfiguration.difficultyLevelId ||
-      formData.active !== priceConfiguration.active
+      formData.basePrice !== priceConfiguration.basePrice ||
+      formData.pricePerLevel !== (priceConfiguration.pricePerLevel ?? 0) ||
+      formData.currency !== (priceConfiguration.currency ?? 'USD') ||
+      formData.calculationType !== priceConfiguration.calculationType ||
+      formData.sortOrder !== (priceConfiguration.sortOrder ?? 0) ||
+      formData.active !== priceConfiguration.active ||
+      false // calculationFormula not sent, so no change to track
     );
   };
 
@@ -195,6 +219,96 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
                 ))}
               </Select>
             </FormControl>
+
+            <TextField
+              label="Base Price (cents)"
+              type="number"
+              value={formData.basePrice}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  basePrice: parseInt(e.target.value) || 0,
+                }))
+              }
+              fullWidth
+              required
+              slotProps={{
+                htmlInput: {
+                  min: 0,
+                },
+              }}
+              helperText={`$${formData.basePrice / 100}`}
+            />
+
+            <TextField
+              label="Price per Level (cents)"
+              type="number"
+              value={formData.pricePerLevel}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  pricePerLevel: parseInt(e.target.value) || 0,
+                }))
+              }
+              fullWidth
+              slotProps={{
+                htmlInput: {
+                  min: 0,
+                },
+              }}
+              helperText={`$${formData.pricePerLevel / 100} per level`}
+            />
+
+            <FormControl fullWidth>
+              <InputLabel>Currency</InputLabel>
+              <Select
+                value={formData.currency}
+                label="Currency"
+                onChange={(e) => setFormData((prev) => ({ ...prev, currency: e.target.value }))}
+              >
+                <MenuItem value="USD">USD ($)</MenuItem>
+                <MenuItem value="EUR">EUR (€)</MenuItem>
+                <MenuItem value="GBP">GBP (£)</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth>
+              <InputLabel>Calculation Type</InputLabel>
+              <Select
+                value={formData.calculationType}
+                label="Calculation Type"
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    calculationType: e.target.value as PriceConfigurationCalculationType,
+                  }))
+                }
+              >
+                <MenuItem value={CalculationTypes.LINEAR}>Linear</MenuItem>
+                <MenuItem value={CalculationTypes.RANGE}>Range Based</MenuItem>
+                <MenuItem value={CalculationTypes.FORMULA}>Formula Based</MenuItem>
+                <MenuItem value={CalculationTypes.TIME_BASED}>Time Based</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
+              label="Sort Order"
+              type="number"
+              value={formData.sortOrder}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  sortOrder: parseInt(e.target.value) || 0,
+                }))
+              }
+              fullWidth
+              slotProps={{
+                htmlInput: {
+                  min: 0,
+                },
+              }}
+              helperText="Lower numbers appear first in the list"
+            />
 
             {/* Price Preview */}
             {selectedServiceType && selectedDifficultyLevel && (

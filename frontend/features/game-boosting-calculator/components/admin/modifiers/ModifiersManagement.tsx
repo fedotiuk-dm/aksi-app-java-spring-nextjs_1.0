@@ -64,6 +64,11 @@ export const ModifiersManagement = () => {
     isDeleting,
   } = useModifiersManagement();
 
+  // Debug logging
+  console.log('🔍 ModifiersManagement - modifiers:', modifiers);
+  console.log('🔍 ModifiersManagement - isLoading:', isLoading);
+  console.log('🔍 ModifiersManagement - error:', error);
+
   const filteredModifiers = modifiers.filter((modifier) => {
     const matchesSearch =
       modifier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
