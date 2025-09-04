@@ -1,46 +1,192 @@
 components:
   schemas:
-    CalculationRequest:
+    # Polymorphic Calculation Formula schemas with proper allOf
+    CalculationFormula:
       type: object
+      discriminator:
+        propertyName: type
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: [LINEAR, RANGE, FORMULA, TIME_BASED]
+          description: Type of calculation formula
+      description: Base schema for all calculation formulas with polymorphism support
+
+    LinearFormula:
+      allOf:
+        - $ref: "#/components/schemas/CalculationFormula"
+        - type: object
+          properties:
+            pricePerLevel:
+              type: integer
+              minimum: 0
+              description: Price per level in cents
+              example: 100
+          description: Simple linear calculation - uses basePrice + (levelDiff × pricePerLevel)
+
+    RangeFormula:
+      allOf:
+        - $ref: "#/components/schemas/CalculationFormula"
+        - type: object
+          required:
+            - ranges
+          properties:
+            ranges:
+              type: array
+              items:
+                $ref: "#/components/schemas/PriceRange"
+              description: Array of price ranges for different level intervals
+              minItems: 1
+          description: Range-based calculation with different prices for level intervals
+
+    FormulaFormula:
+      allOf:
+        - $ref: "#/components/schemas/CalculationFormula"
+        - type: object
+          required:
+            - expression
+          properties:
+            expression:
+              type: string
+              description: Mathematical expression for price calculation
+              example: "basePrice + (levelDiff * pricePerLevel * multiplier)"
+            variables:
+              type: object
+              description: Custom variables for the formula (values as integers)
+              additionalProperties:
+                type: integer
+              example:
+                multiplier: 150
+                discount: 10
+          description: Custom mathematical formula with variables
+
+    TimeBasedFormula:
+      allOf:
+        - $ref: "#/components/schemas/CalculationFormula"
+        - type: object
+          required:
+            - hourlyRate
+            - baseHours
+          properties:
+            hourlyRate:
+              type: integer
+              minimum: 1
+              description: Hourly rate in cents
+              example: 2000
+            baseHours:
+              type: integer
+              minimum: 1
+              description: Base time estimate in hours
+              example: 8
+            hoursPerLevel:
+              type: integer
+              minimum: 0
+              default: 1
+              description: Additional hours per level
+              example: 1
+            complexityMultiplier:
+              type: integer
+              minimum: 100
+              maximum: 1000
+              default: 100
+              description: Complexity adjustment multiplier (percentage, 100 = 1.0x, 150 = 1.5x)
+              example: 150
+            minimumHours:
+              type: integer
+              minimum: 1
+              default: 1
+              description: Minimum billable time in hours
+              example: 1
+            roundToHours:
+              type: boolean
+              default: true
+              description: Whether to round up to full hours
+              example: true
+          description: Time-based calculation with hourly rates and complexity adjustments
+
+    PriceRange:
+      type: object
+      required:
+        - from
+        - to
+        - price
+      properties:
+        from:
+          type: integer
+          minimum: 1
+          description: Starting level of the range (inclusive)
+          example: 1
+        to:
+          type: integer
+          minimum: 1
+          description: Ending level of the range (inclusive)
+          example: 5
+        price:
+          type: integer
+          minimum: 0
+          description: Price per level in this range (in cents)
+          example: 1000
+      description: Price range definition for range-based calculations
+
+    # Universal calculation schemas
+    UniversalCalculationContext:
+      type: object
+      description: Complete calculation context
       properties:
         gameCode:
           type: string
-          description: Game code
           example: "WOW"
         serviceTypeCode:
           type: string
-          description: Service type code
           example: "LEVEL_BOOST"
         difficultyLevelCode:
           type: string
-          description: Difficulty level code
           example: "01-60"
-        targetLevel:
-          type: integer
-          minimum: 1
-          description: Target level (must be >= 1)
-          example: 60
         startLevel:
           type: integer
           minimum: 1
-          description: Starting level (must be >= 1)
-          default: 1
           example: 1
+        targetLevel:
+          type: integer
+          minimum: 1
+          example: 60
         modifiers:
           type: array
           items:
             type: string
-          description: List of modifier codes to apply
+          description: Modifier codes
           example: ["RUSH", "PREMIUM"]
-      required:
-        - gameCode
-        - serviceTypeCode
-        - difficultyLevelCode
-        - targetLevel
-        - startLevel
+        additionalParameters:
+          type: object
+          description: Any additional calculation parameters (values as integers)
+          additionalProperties:
+            type: integer
+          example:
+            customMultiplier: 120
 
-    CalculationResult:
+    UniversalCalculationRequest:
       type: object
+      required:
+        - context
+      properties:
+        formula:
+          oneOf:
+            - $ref: "#/components/schemas/CalculationFormula"
+            - type: "null"
+          description: Optional formula for custom calculations. If not provided, universal calculator will create a default formula based on context.
+        context:
+          $ref: "#/components/schemas/UniversalCalculationContext"
+      description: Request schema for universal calculation endpoint
+
+    UniversalCalculationResponse:
+      type: object
+      required:
+        - finalPrice
+        - status
+        - breakdown
+        - formulaType
       properties:
         finalPrice:
           type: integer
@@ -51,46 +197,71 @@ components:
           default: "USD"
           example: "USD"
         status:
-          allOf:
-            - $ref: "../../common.yaml#/components/schemas/CalculationStatus"
-          description: Calculation result status
+          type: string
+          enum: [SUCCESS, FAILED, FALLBACK]
           default: SUCCESS
         breakdown:
-          $ref: "#/components/schemas/CalculationBreakdown"
-      required:
-        - finalPrice
-        - status
-        - breakdown
-
-    CalculationBreakdown:
-      type: object
-      properties:
-        basePrice:
-          type: integer
-          description: Base price in cents
-          example: 10000
-        difficultyMultiplier:
-          type: integer
-          minimum: 1
-          maximum: 1000
-          description: Difficulty multiplier in basis points (100 = 1.0x)
-          example: 100
-        serviceMultiplier:
-          type: integer
-          minimum: 1
-          maximum: 1000
-          description: Service multiplier in basis points (100 = 1.0x)
-          example: 100
-        levelAdjustment:
-          type: integer
-          description: Level-based adjustment in cents
-          example: 2500
-        totalAdjustment:
-          type: integer
-          description: Total adjustment in cents
-          example: 2500
-      required:
-        - basePrice
-        - difficultyMultiplier
-        - serviceMultiplier
-        - totalAdjustment
+          type: object
+          title: CalculationBreakdown
+          description: Complete calculation breakdown
+          properties:
+            baseCalculation:
+              type: integer
+              description: Base formula calculation in cents
+              example: 10000
+            modifierAdjustments:
+              type: array
+              items:
+                type: object
+                title: ModifierAdjustment
+                properties:
+                  modifierCode:
+                    type: string
+                    example: "RUSH"
+                  adjustment:
+                    type: integer
+                    description: Price adjustment in cents
+                    example: 2000
+                  type:
+                    type: string
+                    enum: [PERCENTAGE, FIXED, MULTIPLIER]
+                    example: "PERCENTAGE"
+            totalAdjustment:
+              type: integer
+              description: Total adjustment in cents
+              example: 5000
+            finalPrice:
+              type: integer
+              description: Final calculated price in cents
+              example: 15000
+          required:
+            - baseCalculation
+            - modifierAdjustments
+            - totalAdjustment
+            - finalPrice
+        formulaType:
+          type: string
+          enum: [LINEAR, RANGE, FORMULA, TIME_BASED]
+          example: LINEAR
+        metadata:
+          type: object
+          title: CalculationMetadata
+          description: Calculation metadata
+          properties:
+            calculationTimeMs:
+              type: integer
+              description: Time taken for calculation
+              example: 15
+            formulaVersion:
+              type: string
+              description: Version of formula used
+              example: "1.0"
+            appliedModifiersCount:
+              type: integer
+              description: Number of modifiers applied
+              example: 2
+            levelDifference:
+              type: integer
+              description: Difference between target and start level
+              example: 59
+      description: Response schema for universal calculation endpoint

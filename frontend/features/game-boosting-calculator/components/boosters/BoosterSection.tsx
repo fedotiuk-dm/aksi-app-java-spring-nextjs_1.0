@@ -6,7 +6,7 @@
  */
 
 import { Box, Button, Typography } from '@mui/material';
-import { useGameBoostingStore } from '../../store/game-boosting-store';
+import { useGameBoostingStore } from '@game-boosting-calculator/store';
 import { BoosterSelector } from './BoosterSelector';
 
 export const BoosterSection = () => {

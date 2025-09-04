@@ -1,0 +1,114 @@
+databaseChangeLog:
+  - changeSet:
+      id: 041-migrate-calculation-formulas-to-json
+      author: system
+      comment: Migrate String calculation formulas to JSON polymorphic objects
+      preConditions:
+        - onFail: MARK_RAN
+        - columnExists:
+            tableName: price_configurations
+            columnName: calculation_formula
+        - columnExists:
+            tableName: price_configurations
+            columnName: calculation_type
+
+  # Step 1: Migrate LINEAR formulas to JSON
+  - changeSet:
+      id: 041-1-migrate-linear-formulas
+      author: system
+      comment: Migrate LINEAR type formulas to JSON format
+      changes:
+        - update:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: calculation_formula
+                  value: '{"type":"LINEAR","pricePerLevel":100}'
+            where: calculation_type = 'LINEAR' AND (calculation_formula IS NULL OR calculation_formula = '' OR calculation_formula NOT LIKE '{%}')
+
+  # Step 2: Migrate RANGE formulas to JSON
+  - changeSet:
+      id: 041-2-migrate-range-formulas
+      author: system
+      comment: Migrate RANGE type formulas to JSON format
+      changes:
+        - update:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: calculation_formula
+                  value: '{"type":"RANGE","ranges":[{"from":1,"to":10,"price":100}]}'
+            where: calculation_type = 'RANGE' AND (calculation_formula IS NULL OR calculation_formula = '' OR calculation_formula NOT LIKE '{%}')
+
+  # Step 3: Migrate TIME_BASED formulas to JSON
+  - changeSet:
+      id: 041-3-migrate-time-based-formulas
+      author: system
+      comment: Migrate TIME_BASED type formulas to JSON format
+      changes:
+        - update:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: calculation_formula
+                  value: '{"type":"TIME_BASED","hourlyRate":2000,"baseHours":8,"hoursPerLevel":1,"complexityMultiplier":1.0,"roundToHours":true}'
+            where: calculation_type = 'TIME_BASED' AND (calculation_formula IS NULL OR calculation_formula = '' OR calculation_formula NOT LIKE '{%}')
+
+  # Step 4: Migrate FORMULA formulas to JSON
+  - changeSet:
+      id: 041-4-migrate-formula-formulas
+      author: system
+      comment: Migrate FORMULA type formulas to JSON format
+      changes:
+        - update:
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: calculation_formula
+                  value: '{"type":"FORMULA","expression":"basePrice + (levelDiff * pricePerLevel)","variables":{}}'
+            where: calculation_type = 'FORMULA' AND (calculation_formula IS NULL OR calculation_formula = '' OR calculation_formula NOT LIKE '{%}')
+
+  # Step 5: Add index on calculation_formula column
+  - changeSet:
+      id: 041-5-add-calculation-formula-index
+      author: system
+      comment: Add index on calculation_formula column for performance
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM pg_indexes WHERE tablename = 'price_configurations' AND indexname LIKE '%calculation_formula%'
+      changes:
+        - createIndex:
+            indexName: idx_price_config_calculation_formula
+            tableName: price_configurations
+            columns:
+              - column:
+                  name: calculation_formula
+
+  # Step 6: Make calculation_formula column NOT NULL
+  - changeSet:
+      id: 041-6-make-calculation-formula-not-null
+      author: system
+      comment: Make calculation_formula column NOT NULL after migration
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 1
+            sql: SELECT COUNT(*) FROM information_schema.columns WHERE table_name = 'price_configurations' AND column_name = 'calculation_formula' AND is_nullable = 'YES'
+      changes:
+        - addNotNullConstraint:
+            tableName: price_configurations
+            columnName: calculation_formula
+            columnDataType: text
+
+  # Step 7: Add comment to calculation_formula column
+  - changeSet:
+      id: 041-7-add-column-comment
+      author: system
+      comment: Add descriptive comment to calculation_formula column
+      changes:
+        - setColumnRemarks:
+            tableName: price_configurations
+            columnName: calculation_formula
+            remarks: JSON representation of polymorphic CalculationFormula (LINEAR, RANGE, TIME_BASED, FORMULA)

@@ -76,8 +76,8 @@ export const GameEditModal: React.FC<GameEditModalProps> = ({
     try {
       await onUpdate(game.id, {
         name: formData.name.trim(),
-        category: formData.category.trim(),
-        description: formData.description.trim() || undefined,
+        category: formData.category as UpdateGameRequestCategory,
+        description: formData.description?.trim() || undefined,
         active: formData.active,
       });
       handleClose();

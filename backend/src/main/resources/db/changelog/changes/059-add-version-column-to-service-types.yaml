@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-version-column-to-service-types-table
+      author: system
+      comment: Add missing version column to service_types table to match BaseEntity
+      runOnChange: false
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: service_types
+        - not:
+            - columnExists:
+                tableName: service_types
+                columnName: version
+
+      changes:
+        # Add version column to service_types table
+        - addColumn:
+            tableName: service_types
+            columns:
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false

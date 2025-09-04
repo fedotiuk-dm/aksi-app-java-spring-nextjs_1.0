@@ -6,9 +6,10 @@
  */
 
 import { Box, Button, Typography, TextField, Alert } from '@mui/material';
-import { useGameBoostingStore } from '../../store/game-boosting-store';
-import { useCalculatorOperations } from '../../hooks/useCalculatorOperations';
-import { ModifiersPanel } from './ModifiersPanel/';
+import { useGameBoostingStore } from '@game-boosting-calculator/store';
+import { useGameCalculatorOperations } from '@game-boosting-calculator/hooks';
+import { ModifiersPanel } from './ModifiersPanel/ModifiersPanel';
+import { PriceDisplay } from '@/shared/ui/atoms/PriceDisplay';
 
 export const CalculatorSection = () => {
   const {
@@ -18,10 +19,17 @@ export const CalculatorSection = () => {
     calculatedPrice,
     setBasePrice,
     setCurrentStep,
+    serviceTypeCode,
+    startLevel,
+    targetLevel,
+    setStartLevel,
+    setTargetLevel,
+    difficultyLevelCode,
   } = useGameBoostingStore();
 
-  // Our calculator operations hook with dynamic data
-  const { calculatePrice, isCalculating, error, canCalculate } = useCalculatorOperations();
+  // Our calculator operations hook with Orval API integration
+  const { calculatePrice, isCalculating, error, canCalculate, calculatorConfig, validationErrors } =
+    useGameCalculatorOperations();
 
   const handleCalculate = async () => {
     if (!canCalculate) return;
@@ -66,14 +74,73 @@ export const CalculatorSection = () => {
         <TextField
           label="Base Price ($)"
           type="number"
-          value={basePrice}
-          onChange={(e) => setBasePrice(Number(e.target.value))}
+          value={basePrice / 100} // Convert cents to dollars for display
+          onChange={(e) => setBasePrice(Math.round(Number(e.target.value) * 100))} // Convert dollars to cents
           fullWidth
           InputProps={{
             startAdornment: '$',
           }}
+          inputProps={{
+            min: 0,
+            step: 0.01,
+          }}
         />
       </Box>
+
+      {/* Dynamic Level Inputs */}
+      {calculatorConfig.showStartLevel && calculatorConfig.showTargetLevel && (
+        <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
+          <TextField
+            label="Start Level"
+            type="number"
+            value={startLevel}
+            onChange={(e) => setStartLevel(Number(e.target.value))}
+            fullWidth
+            inputProps={{
+              min: calculatorConfig.levelRange.min,
+              max: calculatorConfig.levelRange.max,
+            }}
+          />
+          <TextField
+            label="Target Level"
+            type="number"
+            value={targetLevel}
+            onChange={(e) => setTargetLevel(Number(e.target.value))}
+            fullWidth
+            inputProps={{ min: startLevel + 1, max: calculatorConfig.levelRange.max }}
+          />
+        </Box>
+      )}
+
+      {/* Service Type Selection */}
+      {calculatorConfig.showServiceType && (
+        <Box sx={{ mb: 3 }}>
+          <TextField
+            label="Service Type"
+            value={serviceTypeCode}
+            fullWidth
+            InputProps={{
+              readOnly: true,
+            }}
+            helperText="Service type is automatically selected based on your booster choice"
+          />
+        </Box>
+      )}
+
+      {/* Difficulty Level Selection */}
+      {calculatorConfig.showDifficultyLevel && (
+        <Box sx={{ mb: 3 }}>
+          <TextField
+            label="Difficulty Level"
+            value={difficultyLevelCode}
+            fullWidth
+            InputProps={{
+              readOnly: true,
+            }}
+            helperText="Difficulty level is automatically determined"
+          />
+        </Box>
+      )}
 
       {/* Modifiers Section */}
       <Box sx={{ mb: 3 }}>
@@ -97,18 +164,49 @@ export const CalculatorSection = () => {
         >
           {isCalculating ? 'Calculating...' : 'Calculate Price'}
         </Button>
+        {!canCalculate && !isCalculating && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ mt: 1, display: 'block', textAlign: 'center' }}
+          >
+            {!basePrice || basePrice <= 0 ? 'Enter a valid base price • ' : ''}
+            {!serviceTypeCode ? 'Select a service type • ' : ''}
+            {!difficultyLevelCode ? 'Select a difficulty level • ' : ''}
+            {calculatorConfig.showStartLevel && startLevel <= 0 ? 'Enter start level • ' : ''}
+            {calculatorConfig.showTargetLevel && targetLevel <= startLevel
+              ? 'Enter valid target level'
+              : ''}
+          </Typography>
+        )}
       </Box>
 
       {/* Calculation Result */}
       {calculatedPrice ? (
         <Box sx={{ mb: 3, p: 2, bgcolor: 'success.light', borderRadius: 1 }}>
           <Typography variant="h6" color="success.contrastText">
-            Final Price: ${calculatedPrice.toFixed(2)}
+            Final Price: ${(calculatedPrice / 100).toFixed(2)}
           </Typography>
           <Typography variant="body2" color="success.contrastText" sx={{ opacity: 0.8 }}>
             Includes all selected modifiers and services
           </Typography>
         </Box>
+      ) : null}
+
+      {/* Validation Errors */}
+      {validationErrors && validationErrors.length > 0 ? (
+        <Alert severity="warning" sx={{ mb: 3 }}>
+          <Typography variant="body2" fontWeight="medium" gutterBottom>
+            Please fix the following issues:
+          </Typography>
+          <ul style={{ margin: 0, paddingLeft: '20px' }}>
+            {validationErrors.map((error, index) => (
+              <li key={index}>
+                <Typography variant="body2">{error}</Typography>
+              </li>
+            ))}
+          </ul>
+        </Alert>
       ) : null}
 
       {/* Error Display */}

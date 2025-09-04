@@ -1,0 +1,287 @@
+{
+  "source_file": "OGEdge All Services test.xlsx",
+  "total_original_sheets": 24,
+  "total_cleaned_sheets": 21,
+  "junk_sheets_removed": 3,
+  "cleaning_stats": {
+    "total_rows_before": 5358,
+    "total_rows_after": 1409,
+    "removed_rows": 3949,
+    "data_reduction_percent": 73.7
+  },
+  "sheets": {
+    "A-Boosters": {
+      "original_rows": 73,
+      "cleaned_rows": 72,
+      "removed_rows": 1,
+      "original_columns": 11,
+      "cleaned_columns": 9,
+      "removed_columns": 2,
+      "files": {
+        "json": "A-Boosters.json",
+        "csv": "A-Boosters.csv",
+        "structured_json": "A-Boosters_structured.json"
+      }
+    },
+    "Apex": {
+      "original_rows": 251,
+      "cleaned_rows": 72,
+      "removed_rows": 179,
+      "original_columns": 14,
+      "cleaned_columns": 12,
+      "removed_columns": 2,
+      "files": {
+        "json": "Apex.json",
+        "csv": "Apex.csv",
+        "structured_json": "Apex_structured.json"
+      }
+    },
+    "COD": {
+      "original_rows": 250,
+      "cleaned_rows": 28,
+      "removed_rows": 222,
+      "original_columns": 15,
+      "cleaned_columns": 13,
+      "removed_columns": 2,
+      "files": {
+        "json": "COD.json",
+        "csv": "COD.csv",
+        "structured_json": "COD_structured.json"
+      }
+    },
+    "EFT": {
+      "original_rows": 249,
+      "cleaned_rows": 165,
+      "removed_rows": 84,
+      "original_columns": 15,
+      "cleaned_columns": 13,
+      "removed_columns": 2,
+      "files": {
+        "json": "EFT.json",
+        "csv": "EFT.csv",
+        "structured_json": "EFT_structured.json"
+      }
+    },
+    "EQ": {
+      "original_rows": 251,
+      "cleaned_rows": 48,
+      "removed_rows": 203,
+      "original_columns": 14,
+      "cleaned_columns": 12,
+      "removed_columns": 2,
+      "files": {
+        "json": "EQ.json",
+        "csv": "EQ.csv",
+        "structured_json": "EQ_structured.json"
+      }
+    },
+    "FFXIV": {
+      "original_rows": 250,
+      "cleaned_rows": 142,
+      "removed_rows": 108,
+      "original_columns": 15,
+      "cleaned_columns": 13,
+      "removed_columns": 2,
+      "files": {
+        "json": "FFXIV.json",
+        "csv": "FFXIV.csv",
+        "structured_json": "FFXIV_structured.json"
+      }
+    },
+    "EAFC25": {
+      "original_rows": 251,
+      "cleaned_rows": 40,
+      "removed_rows": 211,
+      "original_columns": 11,
+      "cleaned_columns": 9,
+      "removed_columns": 2,
+      "files": {
+        "json": "EAFC25.json",
+        "csv": "EAFC25.csv",
+        "structured_json": "EAFC25_structured.json"
+      }
+    },
+    "GW2": {
+      "original_rows": 248,
+      "cleaned_rows": 20,
+      "removed_rows": 228,
+      "original_columns": 14,
+      "cleaned_columns": 13,
+      "removed_columns": 1,
+      "files": {
+        "json": "GW2.json",
+        "csv": "GW2.csv",
+        "structured_json": "GW2_structured.json"
+      }
+    },
+    "Lost Ark": {
+      "original_rows": 251,
+      "cleaned_rows": 62,
+      "removed_rows": 189,
+      "original_columns": 15,
+      "cleaned_columns": 13,
+      "removed_columns": 2,
+      "files": {
+        "json": "Lost Ark.json",
+        "csv": "Lost Ark.csv",
+        "structured_json": "Lost Ark_structured.json"
+      }
+    },
+    "LOL": {
+      "original_rows": 250,
+      "cleaned_rows": 148,
+      "removed_rows": 102,
+      "original_columns": 14,
+      "cleaned_columns": 12,
+      "removed_columns": 2,
+      "files": {
+        "json": "LOL.json",
+        "csv": "LOL.csv",
+        "structured_json": "LOL_structured.json"
+      }
+    },
+    "TFT": {
+      "original_rows": 248,
+      "cleaned_rows": 13,
+      "removed_rows": 235,
+      "original_columns": 14,
+      "cleaned_columns": 12,
+      "removed_columns": 2,
+      "files": {
+        "json": "TFT.json",
+        "csv": "TFT.csv",
+        "structured_json": "TFT_structured.json"
+      }
+    },
+    "LOL - Combined": {
+      "original_rows": 250,
+      "cleaned_rows": 51,
+      "removed_rows": 199,
+      "original_columns": 15,
+      "cleaned_columns": 13,
+      "removed_columns": 2,
+      "files": {
+        "json": "LOL - Combined.json",
+        "csv": "LOL - Combined.csv",
+        "structured_json": "LOL - Combined_structured.json"
+      }
+    },
+    "NW": {
+      "original_rows": 251,
+      "cleaned_rows": 29,
+      "removed_rows": 222,
+      "original_columns": 15,
+      "cleaned_columns": 14,
+      "removed_columns": 1,
+      "files": {
+        "json": "NW.json",
+        "csv": "NW.csv",
+        "structured_json": "NW_structured.json"
+      }
+    },
+    "OW": {
+      "original_rows": 251,
+      "cleaned_rows": 57,
+      "removed_rows": 194,
+      "original_columns": 14,
+      "cleaned_columns": 12,
+      "removed_columns": 2,
+      "files": {
+        "json": "OW.json",
+        "csv": "OW.csv",
+        "structured_json": "OW_structured.json"
+      }
+    },
+    "Valorant": {
+      "original_rows": 251,
+      "cleaned_rows": 69,
+      "removed_rows": 182,
+      "original_columns": 13,
+      "cleaned_columns": 10,
+      "removed_columns": 3,
+      "files": {
+        "json": "Valorant.json",
+        "csv": "Valorant.csv",
+        "structured_json": "Valorant_structured.json"
+      }
+    },
+    "WOW C (OLD)": {
+      "original_rows": 250,
+      "cleaned_rows": 96,
+      "removed_rows": 154,
+      "original_columns": 15,
+      "cleaned_columns": 13,
+      "removed_columns": 2,
+      "files": {
+        "json": "WOW C (OLD).json",
+        "csv": "WOW C (OLD).csv",
+        "structured_json": "WOW C (OLD)_structured.json"
+      }
+    },
+    "WOW Classic VAN": {
+      "original_rows": 250,
+      "cleaned_rows": 40,
+      "removed_rows": 210,
+      "original_columns": 15,
+      "cleaned_columns": 13,
+      "removed_columns": 2,
+      "files": {
+        "json": "WOW Classic VAN.json",
+        "csv": "WOW Classic VAN.csv",
+        "structured_json": "WOW Classic VAN_structured.json"
+      }
+    },
+    "WOW Classic TBC": {
+      "original_rows": 250,
+      "cleaned_rows": 47,
+      "removed_rows": 203,
+      "original_columns": 15,
+      "cleaned_columns": 13,
+      "removed_columns": 2,
+      "files": {
+        "json": "WOW Classic TBC.json",
+        "csv": "WOW Classic TBC.csv",
+        "structured_json": "WOW Classic TBC_structured.json"
+      }
+    },
+    "WOW Classic WOTLK": {
+      "original_rows": 250,
+      "cleaned_rows": 50,
+      "removed_rows": 200,
+      "original_columns": 15,
+      "cleaned_columns": 13,
+      "removed_columns": 2,
+      "files": {
+        "json": "WOW Classic WOTLK.json",
+        "csv": "WOW Classic WOTLK.csv",
+        "structured_json": "WOW Classic WOTLK_structured.json"
+      }
+    },
+    "WOW SOM": {
+      "original_rows": 251,
+      "cleaned_rows": 80,
+      "removed_rows": 171,
+      "original_columns": 15,
+      "cleaned_columns": 13,
+      "removed_columns": 2,
+      "files": {
+        "json": "WOW SOM.json",
+        "csv": "WOW SOM.csv",
+        "structured_json": "WOW SOM_structured.json"
+      }
+    },
+    "WOW DF": {
+      "original_rows": 251,
+      "cleaned_rows": 80,
+      "removed_rows": 171,
+      "original_columns": 15,
+      "cleaned_columns": 13,
+      "removed_columns": 2,
+      "files": {
+        "json": "WOW DF.json",
+        "csv": "WOW DF.csv",
+        "structured_json": "WOW DF_structured.json"
+      }
+    }
+  }
+}

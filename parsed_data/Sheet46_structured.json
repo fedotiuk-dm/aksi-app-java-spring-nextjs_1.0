@@ -1,0 +1,57 @@
+{
+  "sheet_name": "Sheet46",
+  "total_rows": 9,
+  "total_columns": 3,
+  "columns": [
+    "Unnamed: 0",
+    "Unnamed: 2",
+    "Unnamed: 4"
+  ],
+  "data": [
+    {
+      "Unnamed: 0": "Seals",
+      "Unnamed: 2": "",
+      "Unnamed: 4": ""
+    },
+    {
+      "Unnamed: 0": "Allied Seals 1k",
+      "Unnamed: 2": 15.0,
+      "Unnamed: 4": 1.0
+    },
+    {
+      "Unnamed: 0": "Required: L60, iLvl 270, Quest Let the Hunt Begin",
+      "Unnamed: 2": "",
+      "Unnamed: 4": ""
+    },
+    {
+      "Unnamed: 0": "Centurio Seals 1k",
+      "Unnamed: 2": 15.0,
+      "Unnamed: 4": 1.0
+    },
+    {
+      "Unnamed: 0": "Required: L60 iLvl 270 or L70, Let the Clant Hunt Begin, Heavensward areas & aethers",
+      "Unnamed: 2": "",
+      "Unnamed: 4": ""
+    },
+    {
+      "Unnamed: 0": "Grand Company Seals 20k",
+      "Unnamed: 2": 20.0,
+      "Unnamed: 4": 1.0
+    },
+    {
+      "Unnamed: 0": "Required: L60+",
+      "Unnamed: 2": "",
+      "Unnamed: 4": ""
+    },
+    {
+      "Unnamed: 0": "Sack of Nuts 1k ",
+      "Unnamed: 2": 15.0,
+      "Unnamed: 4": 1.0
+    },
+    {
+      "Unnamed: 0": "Required: L80+",
+      "Unnamed: 2": "",
+      "Unnamed: 4": ""
+    }
+  ]
+}

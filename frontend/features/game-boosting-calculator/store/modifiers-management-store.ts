@@ -1,50 +1,94 @@
 /**
- * Modifiers Management Store
- * Zustand store for managing UI state of modifiers management
+ * Game Modifiers Management Store
+ * Zustand store for managing UI state of game modifiers management
+ *
+ * NOTE: This store is currently not used since we switched to React Query pattern.
+ * It can be used for complex UI state management if needed in the future.
  */
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { PriceModifier } from '@api/pricing';
+import type { GameModifierInfo } from '@api/game';
 
-export interface ModifiersManagementStore {
-  // Data state
-  modifiers: PriceModifier[];
+export interface GameModifiersManagementStore {
+  // Data state (managed by React Query, but kept for potential future use)
+  modifiers: GameModifierInfo[];
 
-  // UI state
-  isLoading: boolean;
-  error: string | null;
+  // UI state for complex interactions
+  selectedModifierId: string | null;
+  isModalOpen: boolean;
+  modalType: 'create' | 'edit' | 'delete' | null;
+
+  // Filter state
+  searchTerm: string;
+  typeFilter: string;
+  operationFilter: string;
+  activeFilter: boolean | null;
 
   // Actions
-  setModifiers: (modifiers: PriceModifier[]) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  clearError: () => void;
+  setModifiers: (modifiers: GameModifierInfo[]) => void;
+  setSelectedModifierId: (id: string | null) => void;
+  setModalOpen: (open: boolean, type?: 'create' | 'edit' | 'delete' | null) => void;
+  setSearchTerm: (term: string) => void;
+  setTypeFilter: (type: string) => void;
+  setOperationFilter: (operation: string) => void;
+  setActiveFilter: (active: boolean | null) => void;
+
+  // Utility actions
+  resetFilters: () => void;
+  resetModal: () => void;
 }
 
-export const useModifiersManagementStore = create<ModifiersManagementStore>()(
+export const useGameModifiersManagementStore = create<GameModifiersManagementStore>()(
   devtools(
     (set) => ({
       // Initial state
       modifiers: [],
-      isLoading: false,
-      error: null,
+      selectedModifierId: null,
+      isModalOpen: false,
+      modalType: null,
+      searchTerm: '',
+      typeFilter: '',
+      operationFilter: '',
+      activeFilter: null,
 
       // Actions
       setModifiers: (modifiers) => set({ modifiers }),
 
-      setLoading: (loading) => set({ isLoading: loading }),
+      setSelectedModifierId: (selectedModifierId) => set({ selectedModifierId }),
 
-      setError: (error) =>
+      setModalOpen: (isModalOpen, modalType = null) =>
         set({
-          error,
-          isLoading: false,
+          isModalOpen,
+          modalType,
+          selectedModifierId: isModalOpen ? null : undefined,
         }),
 
-      clearError: () => set({ error: null }),
+      setSearchTerm: (searchTerm) => set({ searchTerm }),
+
+      setTypeFilter: (typeFilter) => set({ typeFilter }),
+
+      setOperationFilter: (operationFilter) => set({ operationFilter }),
+
+      setActiveFilter: (activeFilter) => set({ activeFilter }),
+
+      resetFilters: () =>
+        set({
+          searchTerm: '',
+          typeFilter: '',
+          operationFilter: '',
+          activeFilter: null,
+        }),
+
+      resetModal: () =>
+        set({
+          isModalOpen: false,
+          modalType: null,
+          selectedModifierId: null,
+        }),
     }),
     {
-      name: 'modifiers-management-store',
+      name: 'game-modifiers-management-store',
     }
   )
 );

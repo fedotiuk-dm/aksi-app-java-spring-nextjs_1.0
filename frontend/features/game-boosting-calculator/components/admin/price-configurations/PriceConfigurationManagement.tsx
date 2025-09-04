@@ -42,6 +42,7 @@ import { usePriceConfigurationManagement } from './usePriceConfigurationManageme
 import { PriceConfigurationCreateModal } from '../modals/PriceConfigurationCreateModal';
 import { PriceConfigurationEditModal } from '../modals/PriceConfigurationEditModal';
 import { PriceConfigurationDeleteModal } from '../modals/PriceConfigurationDeleteModal';
+import { PriceDisplay } from '@/shared/ui/atoms/PriceDisplay';
 
 export const PriceConfigurationManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -67,9 +68,9 @@ export const PriceConfigurationManagement = () => {
   const filteredPriceConfigurations = priceConfigurations.filter((config) => {
     const matchesSearch =
       config.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      config.game?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      config.serviceType?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      config.difficultyLevel?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+      config.gameId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      config.serviceTypeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      config.difficultyLevelId.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesGame = !gameFilter || config.gameId === gameFilter;
     const matchesServiceType = !serviceTypeFilter || config.serviceTypeId === serviceTypeFilter;
     const matchesDifficultyLevel =
@@ -156,7 +157,7 @@ export const PriceConfigurationManagement = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={3} component="div">
               <FormControl size="small" fullWidth>
                 <InputLabel>Service Type</InputLabel>
                 <Select
@@ -174,7 +175,7 @@ export const PriceConfigurationManagement = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={3} component="div">
               <FormControl size="small" fullWidth>
                 <InputLabel>Difficulty Level</InputLabel>
                 <Select
@@ -192,7 +193,7 @@ export const PriceConfigurationManagement = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={3} component="div">
               <FormControl size="small" fullWidth>
                 <InputLabel>Status</InputLabel>
                 <Select
@@ -246,19 +247,21 @@ export const PriceConfigurationManagement = () => {
                 <TableRow key={config.id}>
                   <TableCell>
                     <Typography variant="body2" fontWeight="medium">
-                      {config.game?.name || 'N/A'}
+                      Game ID: {config.gameId}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2">{config.serviceType?.name || 'N/A'}</Typography>
+                    <Typography variant="body2">Service Type ID: {config.serviceTypeId}</Typography>
                     <Typography variant="caption" color="text.secondary">
-                      {config.serviceType?.code}
+                      {config.serviceTypeId}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2">{config.difficultyLevel?.name || 'N/A'}</Typography>
+                    <Typography variant="body2">
+                      Difficulty Level ID: {config.difficultyLevelId}
+                    </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      {config.difficultyLevel ? `${config.difficultyLevel.priceMultiplier}x` : ''}
+                      {config.difficultyLevelId}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -273,10 +276,12 @@ export const PriceConfigurationManagement = () => {
                       label={config.active ? 'Active' : 'Inactive'}
                     />
                   </TableCell>
-                  <TableCell>${config.basePrice}</TableCell>
+                  <TableCell>
+                    <PriceDisplay amount={config.basePrice} currency="USD" variant="body2" />
+                  </TableCell>
                   <TableCell>
                     <Typography variant="body2" fontWeight="medium">
-                      ${config.finalPrice}
+                      <PriceDisplay amount={config.basePrice} currency="USD" inline={true} />
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -290,7 +295,7 @@ export const PriceConfigurationManagement = () => {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      {config.description || 'No description'}
+                      No description available
                     </Typography>
                   </TableCell>
                   <TableCell>

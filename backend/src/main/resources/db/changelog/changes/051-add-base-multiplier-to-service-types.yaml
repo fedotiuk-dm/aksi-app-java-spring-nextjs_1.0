@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-base-multiplier-to-service-types
+      author: system
+      comment: Add base_multiplier column to service_types table for game boosting calculations
+      runOnChange: false
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: service_types
+        - columnExists:
+            tableName: service_types
+            columnName: base_multiplier
+            expectedResult: false
+
+      changes:
+        - addColumn:
+            tableName: service_types
+            columns:
+              - column:
+                  name: base_multiplier
+                  type: integer
+                  constraints:
+                    nullable: true
+
+        - update:
+            tableName: service_types
+            columns:
+              - column:
+                  name: base_multiplier
+                  valueNumeric: 100
+            where: base_multiplier IS NULL
+
+        - addNotNullConstraint:
+            tableName: service_types
+            columnName: base_multiplier
+            defaultNullValue: 100

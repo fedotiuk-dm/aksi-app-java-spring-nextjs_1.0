@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: cleanup-game-modifier-duplicates-liquibase
+      author: system
+      comment: Remove duplicate game modifier records, keeping only one record per unique code
+      runOnChange: true
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: game_modifiers
+
+      changes:
+        # Step 1: Create temporary table for processing duplicates
+        - createTable:
+            tableName: duplicate_ids_to_keep
+            temporary: true
+            columns:
+              - column:
+                  name: id_to_keep
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+        # Step 2: Populate temp table with IDs to keep (first occurrence per code group)
+        # Note: Using minimal SQL only where Liquibase tags cannot handle PostgreSQL-specific syntax
+        - sql:
+            comment: Populate temporary table with IDs to keep using PostgreSQL DISTINCT ON
+            sql: |
+              INSERT INTO duplicate_ids_to_keep (id_to_keep)
+              SELECT DISTINCT ON (code) id
+              FROM game_modifiers
+              ORDER BY code, id
+
+        # Step 3: Delete dependent records from service types table
+        - delete:
+            tableName: game_modifier_service_types
+            where: game_modifier_id NOT IN (SELECT id_to_keep FROM duplicate_ids_to_keep)
+
+        # Step 4: Delete duplicate records from main table
+        - delete:
+            tableName: game_modifiers
+            where: id NOT IN (SELECT id_to_keep FROM duplicate_ids_to_keep)
+
+        # Step 5: Clean up temporary resources
+        - dropTable:
+            tableName: duplicate_ids_to_keep
+            cascadeConstraints: false
+
+        # Step 6: Update timestamps for remaining records
+        - update:
+            tableName: game_modifiers
+            columns:
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+            where: updated_at IS NOT NULL

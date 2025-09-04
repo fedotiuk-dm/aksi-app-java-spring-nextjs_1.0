@@ -22,4 +22,7 @@ public interface GameModifierRepository
   /** Find modifiers by game code and service type. */
   List<GameModifierEntity> findByGameCodeAndServiceTypeCodesContainingAndActiveTrue(
       String gameCode, String serviceTypeCode);
+
+  /** Find active modifiers by list of codes. */
+  List<GameModifierEntity> findByCodeInAndActive(List<String> codes, Boolean active);
 }

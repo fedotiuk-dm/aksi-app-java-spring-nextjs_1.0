@@ -87,15 +87,15 @@ public class ResponseBuilderUtil {
     T response = responseFactory.get();
 
     // Use reflection for generated classes
-    invokeSetterSafely(response, "setData", List.class, data);
-    invokeSetterSafely(response, "setTotalElements", long.class, page.getTotalElements());
-    invokeSetterSafely(response, "setTotalPages", int.class, page.getTotalPages());
-    invokeSetterSafely(response, "setSize", int.class, page.getSize());
-    invokeSetterSafely(response, "setNumber", int.class, page.getNumber());
-    invokeSetterSafely(response, "setNumberOfElements", int.class, page.getNumberOfElements());
-    invokeSetterSafely(response, "setFirst", boolean.class, page.isFirst());
-    invokeSetterSafely(response, "setLast", boolean.class, page.isLast());
-    invokeSetterSafely(response, "setEmpty", boolean.class, page.isEmpty());
+    invokeSetterSafely(response, "setData", data);
+    invokeSetterSafely(response, "setTotalElements", page.getTotalElements());
+    invokeSetterSafely(response, "setTotalPages", page.getTotalPages());
+    invokeSetterSafely(response, "setSize", page.getSize());
+    invokeSetterSafely(response, "setNumber", page.getNumber());
+    invokeSetterSafely(response, "setNumberOfElements", page.getNumberOfElements());
+    invokeSetterSafely(response, "setFirst", page.isFirst());
+    invokeSetterSafely(response, "setLast", page.isLast());
+    invokeSetterSafely(response, "setEmpty", page.isEmpty());
 
     return response;
   }
@@ -103,17 +103,29 @@ public class ResponseBuilderUtil {
   /**
    * Safely invoke setter method with proper error handling.
    */
-  private static void invokeSetterSafely(Object target, String methodName, Class<?> paramType, Object value) {
+  private static void invokeSetterSafely(Object target, String methodName, Object value) {
     try {
-      var method = target.getClass().getDeclaredMethod(methodName, paramType);
-      method.invoke(target, value);
+      // Find all methods with the given name
+      var methods = target.getClass().getMethods();
+      for (var method : methods) {
+        if (method.getName().equals(methodName) && method.getParameterCount() == 1) {
+          try {
+            method.invoke(target, value);
+            return; // Success
+          } catch (IllegalArgumentException e) {
+            // Try next method - execution continues to next iteration automatically
+          }
+        }
+      }
+      // If we get here, no suitable method was found
+      throw new NoSuchMethodException("No suitable method found for " + methodName);
     } catch (NoSuchMethodException e) {
       throw new IllegalArgumentException(
         "Generated response class " + target.getClass().getSimpleName() +
         " does not have required method: " + methodName, e);
-    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+    } catch (IllegalAccessException | InvocationTargetException e) {
       throw new RuntimeException(
-        "Failed to invoke " + methodName + " on " + target.getClass().getSimpleName(), e);
+        "Failed to invoke " + methodName + " on " + target.getClass().getSimpleName() + ": " + e.getMessage(), e);
     }
   }
 }

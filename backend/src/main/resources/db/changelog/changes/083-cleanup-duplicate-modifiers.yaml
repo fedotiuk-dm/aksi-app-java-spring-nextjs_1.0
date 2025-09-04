@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: cleanup-duplicate-game-modifiers-v2
+      author: system
+      comment: Remove duplicate game modifiers keeping only the most recent ones (version 2)
+      runOnChange: true
+
+      changes:
+        # Clean up duplicate modifiers by keeping only the most recent ones
+        - sql:
+            comment: Remove duplicate game modifiers, keeping only the most recent
+            sql: |
+              -- First, delete from junction table
+              DELETE FROM game_modifier_service_types
+              WHERE game_modifier_id IN (
+                SELECT gm.id
+                FROM game_modifiers gm
+                WHERE gm.id NOT IN (
+                  SELECT DISTINCT ON (code, COALESCE(game_code, ''))
+                         id
+                  FROM game_modifiers
+                  ORDER BY code, COALESCE(game_code, ''), created_at DESC
+                )
+              );
+
+              -- Then delete duplicate modifiers themselves
+              DELETE FROM game_modifiers
+              WHERE id NOT IN (
+                SELECT DISTINCT ON (code, COALESCE(game_code, ''))
+                       id
+                FROM game_modifiers
+                ORDER BY code, COALESCE(game_code, ''), created_at DESC
+              );

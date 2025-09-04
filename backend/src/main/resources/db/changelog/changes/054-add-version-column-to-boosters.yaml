@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-version-column-to-boosters-table
+      author: system
+      comment: Add missing version column to boosters table to match BaseEntity
+      runOnChange: false
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: boosters
+        - not:
+            - columnExists:
+                tableName: boosters
+                columnName: version
+
+      changes:
+        # Add version column to boosters table
+        - addColumn:
+            tableName: boosters
+            columns:
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false

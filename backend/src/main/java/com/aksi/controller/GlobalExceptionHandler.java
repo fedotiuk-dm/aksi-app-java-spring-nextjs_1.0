@@ -8,9 +8,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.catalina.connector.ClientAbortException;
+import org.hibernate.PropertyValueException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -235,6 +237,26 @@ public class GlobalExceptionHandler {
     return createErrorResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE, message, null);
   }
 
+  @ExceptionHandler(IncorrectResultSizeDataAccessException.class)
+  public ResponseEntity<Map<String, Object>> handleIncorrectResultSize(
+      IncorrectResultSizeDataAccessException e) {
+    String message = e.getMessage();
+
+    log.warn("Database query returned unexpected number of results: {}", message);
+
+    // Extract more specific information about what was being queried
+    String userMessage = "Database query error: multiple results found when one was expected";
+    if (message != null) {
+      if (message.contains("findByCode")) {
+        userMessage = "Found multiple database records with the same identifier. Please contact support.";
+      } else if (message.contains("unique result")) {
+        userMessage = "Database integrity error: duplicate records found. Please contact support.";
+      }
+    }
+
+    return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, userMessage, null);
+  }
+
   @ExceptionHandler(InvalidDataAccessApiUsageException.class)
   public ResponseEntity<Map<String, Object>> handleInvalidDataAccess(
       InvalidDataAccessApiUsageException e) {
@@ -276,7 +298,7 @@ public class GlobalExceptionHandler {
     return createErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), null);
   }
 
-  @ExceptionHandler(IllegalArgumentException.class)
+  @ExceptionHandler({IllegalArgumentException.class, PropertyValueException.class})
   public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException e) {
     log.warn("Illegal argument: {}", e.getMessage());
 
@@ -284,11 +306,48 @@ public class GlobalExceptionHandler {
     String message = e.getMessage();
     if (message != null && message.contains("No enum constant")) {
       // Extract the problematic value if possible
-      message =
-          "Invalid enum value. " + message + ". Please check valid values in API documentation.";
+      String fullMessage = "Invalid enum value. " + message + ". Please check valid values in API documentation.";
+
+      // For GameModifierType enum errors, provide specific guidance
+      if (message.contains("GameModifierType")) {
+        String enumValue = extractEnumValueFromError(message);
+        if (enumValue != null) {
+          fullMessage = String.format(
+              "Invalid game modifier type '%s'. Valid types are: TIMING, SUPPORT, MODE, QUALITY, EXTRA, PROMOTIONAL, SEASONAL, SPELLS, RANK, PROGRESSION, COSMETIC, SOCIAL, GUIDANCE, ACHIEVEMENT, SERVICE",
+              enumValue);
+
+          // Log database issue that needs to be fixed
+          log.error("CRITICAL: Database contains invalid modifier type '{}'. Run database migration to fix this.", enumValue);
+        }
+      }
+
+      return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, fullMessage, null);
     }
 
     return createErrorResponse(HttpStatus.BAD_REQUEST, message, null);
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<Map<String, Object>> handleRuntime(RuntimeException e) {
+    String message = e.getMessage();
+
+    // Handle calculation formula deserialization errors
+    if (message != null && message.contains("Failed to deserialize CalculationFormula")) {
+      log.warn("Formula deserialization error: {}", message);
+      return createErrorResponse(HttpStatus.BAD_REQUEST,
+          "Invalid calculation formula format. Please check formula syntax.", null);
+    }
+
+    // Handle transaction rollback errors
+    if (message != null && message.contains("Transaction silently rolled back")) {
+      log.warn("Transaction rollback: {}", message);
+      return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+          "Database operation failed due to concurrent modification", null);
+    }
+
+    log.error("Runtime error: {}", message);
+    return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+        "Internal server error occurred", null);
   }
 
   @ExceptionHandler(NullPointerException.class)
@@ -310,11 +369,21 @@ public class GlobalExceptionHandler {
       return null;
     }
 
-    // Log full stack trace only in development
+    // Log error details based on profile
     if (productionProfile()) {
       log.error("Unexpected error: {}", getShortErrorMessage(e));
     } else {
-      log.error("Unexpected error: {}", e.getMessage());
+      String causeMessage = "N/A";
+      try {
+        Throwable cause = e.getCause();
+        if (cause != null) {
+          causeMessage = cause.getMessage() != null ? cause.getMessage() : cause.getClass().getSimpleName();
+        }
+      } catch (Exception causeException) {
+        causeMessage = "Unable to get cause";
+      }
+
+      log.error("Unexpected error: {} | Cause: {}", e.getMessage(), causeMessage);
     }
 
     return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", null);
@@ -368,6 +437,25 @@ public class GlobalExceptionHandler {
   }
 
   /**
+   * Extracts enum value from IllegalArgumentException error message.
+   *
+   * @param errorMessage The error message containing enum information
+   * @return The problematic enum value or null if cannot extract
+   */
+  private String extractEnumValueFromError(String errorMessage) {
+    try {
+      // Pattern: "No enum constant com.aksi.api.game.dto.GameModifierType.GAME_MODE"
+      int lastDotIndex = errorMessage.lastIndexOf('.');
+      if (lastDotIndex != -1 && lastDotIndex < errorMessage.length() - 1) {
+        return errorMessage.substring(lastDotIndex + 1);
+      }
+    } catch (Exception e) {
+      log.debug("Failed to extract enum value from error message: {}", e.getMessage());
+    }
+    return null;
+  }
+
+  /**
    * Extracts a short, meaningful error message from exceptions to reduce log verbosity. Removes
    * stack traces and keeps only the essential error information.
    *
@@ -386,7 +474,7 @@ public class GlobalExceptionHandler {
 
     // Extract meaningful parts from common error messages
     if (message.contains("detached entity passed to persist")) {
-      return "Entity relationship error: detached entity passed to persist";
+      return "Database entity error";
     }
 
     if (message.contains("ConstraintViolationException")) {
@@ -399,6 +487,18 @@ public class GlobalExceptionHandler {
 
     if (message.contains("JpaSystemException")) {
       return "Database system error";
+    }
+
+    if (message.contains("UnsupportedOperationException")) {
+      return "Database operation error";
+    }
+
+    if (message.contains("array_to_string")) {
+      return "Database query error";
+    }
+
+    if (message.contains("PluralValuedSimplePathInterpretation")) {
+      return "Database field access error";
     }
 
     // For other errors, take first 200 characters to avoid overly long logs

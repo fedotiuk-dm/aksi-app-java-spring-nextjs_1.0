@@ -42,7 +42,6 @@ public class GameCommandService {
         gameValidationService.validateCreateGame(request);
 
         GameEntity entity = gameMapper.toGameEntity(request);
-        entity.setId(UUID.randomUUID());
         entity.setActive(true);
 
         GameEntity saved = gameRepository.save(entity);

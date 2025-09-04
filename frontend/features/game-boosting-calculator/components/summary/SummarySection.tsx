@@ -4,7 +4,7 @@
  */
 
 import { Box, Button, Typography, Card, CardContent, Divider, Alert } from '@mui/material';
-import { useGameBoostingStore } from '../../store/game-boosting-store';
+import { useGameBoostingStore } from '@game-boosting-calculator/store';
 
 export const SummarySection = () => {
   const {

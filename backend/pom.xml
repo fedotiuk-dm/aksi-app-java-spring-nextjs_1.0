@@ -471,6 +471,9 @@
                                 <resolveFully>true</resolveFully>
                                 <generateExamples>false</generateExamples>
                                 <generateModelDocumentation>false</generateModelDocumentation>
+                                <!-- Polymorphism support -->
+                                <useOneOfDiscriminatorLookup>true</useOneOfDiscriminatorLookup>
+                                <legacyDiscriminatorBehavior>false</legacyDiscriminatorBehavior>
                             </configOptions>
                         </configuration>
                     </execution>

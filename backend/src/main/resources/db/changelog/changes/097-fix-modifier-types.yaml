@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: fix-modifier-types-v2
+      author: system
+      comment: Fix existing game modifiers with invalid enum values (GAME_MODE -> MODE)
+      runOnChange: false
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: game_modifiers
+
+      changes:
+        # Fix invalid modifier types - replace GAME_MODE with MODE
+        - update:
+            tableName: game_modifiers
+            columns:
+              - column:
+                  name: modifier_type
+                  value: MODE
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+            where: modifier_type = 'GAME_MODE'
+
+        # Verify the fix by counting remaining invalid types
+        - sql:
+            comment: Verify that all GAME_MODE types have been fixed
+            sql: SELECT COUNT(*) as invalid_count FROM game_modifiers WHERE modifier_type = 'GAME_MODE'

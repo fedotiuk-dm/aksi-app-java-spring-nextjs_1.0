@@ -31,8 +31,9 @@ components:
           type: string
           enum: [LINEAR, RANGE, FORMULA, TIME_BASED]
         calculationFormula:
-          type: string
-          description: JSON formula configuration
+          oneOf:
+            - $ref: "./calculator-schemas.yaml#/components/schemas/CalculationFormula"
+            - type: "null"
         active:
           type: boolean
           default: true
@@ -55,6 +56,9 @@ components:
         - calculationType
         - active
         - sortOrder
+
+    PriceConfigurationListResponseDataInner:
+      $ref: "#/components/schemas/PriceConfiguration"
 
     CreatePriceConfigurationRequest:
       type: object
@@ -84,8 +88,9 @@ components:
           type: string
           enum: [LINEAR, RANGE, FORMULA, TIME_BASED]
         calculationFormula:
-          type: string
-          description: JSON formula configuration
+          oneOf:
+            - $ref: "./calculator-schemas.yaml#/components/schemas/CalculationFormula"
+            - type: "null"
         sortOrder:
           type: integer
           minimum: 0
@@ -126,7 +131,9 @@ components:
           type: string
           enum: [LINEAR, RANGE, FORMULA, TIME_BASED]
         calculationFormula:
-          type: string
+          oneOf:
+            - $ref: "./calculator-schemas.yaml#/components/schemas/CalculationFormula"
+            - type: "null"
         sortOrder:
           type: integer
           minimum: 0

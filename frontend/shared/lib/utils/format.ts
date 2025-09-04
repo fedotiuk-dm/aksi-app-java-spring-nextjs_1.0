@@ -1,11 +1,21 @@
-export const formatPrice = (kopiykas: number): string => {
-  const hryvnias = kopiykas / 100;
-  return new Intl.NumberFormat('uk-UA', {
+export const formatPrice = (kopiykas: number, currency: 'UAH' | 'USD' = 'UAH'): string => {
+  const amount = kopiykas / 100;
+  const locale = currency === 'USD' ? 'en-US' : 'uk-UA';
+
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: 'UAH',
+    currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(hryvnias);
+  }).format(amount);
+};
+
+export const formatPriceUAH = (kopiykas: number): string => {
+  return formatPrice(kopiykas, 'UAH');
+};
+
+export const formatPriceUSD = (kopiykas: number): string => {
+  return formatPrice(kopiykas, 'USD');
 };
 
 export const formatNumber = (value: number): string => {

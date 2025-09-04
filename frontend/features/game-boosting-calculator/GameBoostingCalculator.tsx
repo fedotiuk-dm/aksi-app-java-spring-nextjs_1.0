@@ -6,7 +6,7 @@
  */
 
 import { Box, Container, Paper, Step, StepLabel, Stepper, Typography } from '@mui/material';
-import { useGameBoostingStore } from './store/game-boosting-store';
+import { useGameBoostingStore } from '@game-boosting-calculator/store';
 
 // Import sections
 import { GameSection } from './components/games/GameSection';

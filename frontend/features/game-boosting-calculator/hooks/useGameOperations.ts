@@ -1,9 +1,9 @@
 /**
  * Game Operations Hook
- * Business logic for game-related operations
+ * Business logic for game-related operations using Orval API
  */
 
-import { useGameBoostingStore } from '../store/game-boosting-store';
+import { useGameBoostingStore } from '@game-boosting-calculator/store';
 import { useGamesListGames, useGamesGetGameById } from '@api/game';
 import type { Game } from '@api/game';
 

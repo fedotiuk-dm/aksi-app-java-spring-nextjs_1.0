@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import com.aksi.api.game.dto.CreatePriceConfigurationRequest;
 import com.aksi.api.game.dto.PriceConfiguration;
@@ -16,32 +17,25 @@ public interface PriceConfigurationMapper {
 
   // Entity to DTO mappings
 
-  @Mapping(target = "gameId", source = "game.id")
-  @Mapping(target = "difficultyLevelId", source = "difficultyLevel.id")
-  @Mapping(target = "serviceTypeId", source = "serviceType.id")
+  @Mapping(target = "calculationFormula", ignore = true) // Polymorphic object handled separately
   PriceConfiguration toPriceConfigurationDto(PriceConfigurationEntity entity);
 
-  @Mapping(target = "gameId", source = "game.id")
-  @Mapping(target = "difficultyLevelId", source = "difficultyLevel.id")
-  @Mapping(target = "serviceTypeId", source = "serviceType.id")
+  @Mapping(target = "calculationFormula", ignore = true) // Polymorphic object handled separately
   List<PriceConfiguration> toPriceConfigurationDtoList(List<PriceConfigurationEntity> entities);
 
   // DTO to Entity mappings
 
-  @Mapping(target = "game", ignore = true)
-  @Mapping(target = "difficultyLevel", ignore = true)
-  @Mapping(target = "serviceType", ignore = true)
   @Mapping(target = "active", ignore = true)
+  @Mapping(target = "calculationFormula", ignore = true) // Polymorphic object handled separately
   PriceConfigurationEntity toPriceConfigurationEntity(CreatePriceConfigurationRequest dto);
 
   // Update entity from DTO (only non-null fields)
-  @Mapping(target = "game", ignore = true)
-  @Mapping(target = "difficultyLevel", ignore = true)
-  @Mapping(target = "serviceType", ignore = true)
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "calculationFormula", ignore = true) // Polymorphic object handled separately
   void updatePriceConfigurationFromDto(
       UpdatePriceConfigurationRequest dto,
-      @org.mapstruct.MappingTarget PriceConfigurationEntity entity);
+      @MappingTarget PriceConfigurationEntity entity);
+
 }

@@ -9,7 +9,10 @@ import com.aksi.api.game.dto.CreatePriceConfigurationRequest;
 import com.aksi.api.game.dto.PriceConfiguration;
 import com.aksi.api.game.dto.PriceConfigurationListResponse;
 import com.aksi.api.game.dto.UpdatePriceConfigurationRequest;
+import com.aksi.domain.game.DifficultyLevelEntity;
+import com.aksi.domain.game.GameEntity;
 import com.aksi.domain.game.PriceConfigurationEntity;
+import com.aksi.domain.game.ServiceTypeEntity;
 import com.aksi.mapper.PriceConfigurationMapper;
 import com.aksi.service.game.util.EntityQueryUtils;
 import com.aksi.service.game.util.EntityValidationUtils;
@@ -39,17 +42,17 @@ public class PriceConfigurationFactory {
   public PriceConfigurationEntity createEntity(CreatePriceConfigurationRequest request) {
     log.debug("Creating PriceConfiguration entity from request");
 
-    // Validate entities exist
-    entityValidationUtils.validateEntitiesExist(
-        request.getGameId(), request.getDifficultyLevelId(), request.getServiceTypeId());
+    // Validate entities exist and get them
+    GameEntity game = entityQueryUtils.findGameEntity(request.getGameId());
+    DifficultyLevelEntity difficultyLevel = entityQueryUtils.findDifficultyLevelEntity(request.getDifficultyLevelId());
+    ServiceTypeEntity serviceType = entityQueryUtils.findServiceTypeEntity(request.getServiceTypeId());
 
     PriceConfigurationEntity entity = priceConfigurationMapper.toPriceConfigurationEntity(request);
 
-    // Set relationships
-    entity.setGame(entityQueryUtils.findGameEntity(request.getGameId()));
-    entity.setDifficultyLevel(
-        entityQueryUtils.findDifficultyLevelEntity(request.getDifficultyLevelId()));
-    entity.setServiceType(entityQueryUtils.findServiceTypeEntity(request.getServiceTypeId()));
+    // Set JPA relationship fields
+    entity.setGame(game);
+    entity.setDifficultyLevel(difficultyLevel);
+    entity.setServiceType(serviceType);
 
     return entity;
   }
@@ -73,11 +76,14 @@ public class PriceConfigurationFactory {
     // Update fields using MapStruct
     priceConfigurationMapper.updatePriceConfigurationFromDto(request, entity);
 
-    // Update relationships (all IDs are required)
-    entity.setGame(entityQueryUtils.findGameEntity(request.getGameId()));
-    entity.setDifficultyLevel(
-        entityQueryUtils.findDifficultyLevelEntity(request.getDifficultyLevelId()));
-    entity.setServiceType(entityQueryUtils.findServiceTypeEntity(request.getServiceTypeId()));
+    // Update JPA relationship fields (all IDs are required)
+    GameEntity game = entityQueryUtils.findGameEntity(request.getGameId());
+    DifficultyLevelEntity difficultyLevel = entityQueryUtils.findDifficultyLevelEntity(request.getDifficultyLevelId());
+    ServiceTypeEntity serviceType = entityQueryUtils.findServiceTypeEntity(request.getServiceTypeId());
+
+    entity.setGame(game);
+    entity.setDifficultyLevel(difficultyLevel);
+    entity.setServiceType(serviceType);
 
     return entity;
   }

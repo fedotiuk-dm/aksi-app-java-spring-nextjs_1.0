@@ -43,7 +43,6 @@ public class GameModifierCommandService {
         }
 
         GameModifierEntity entity = gameModifierMapper.toGameModifierEntity(request);
-        entity.setId(java.util.UUID.randomUUID());
 
         GameModifierEntity saved = gameModifierRepository.save(entity);
         log.info("Created game modifier with ID: {}", saved.getId());

@@ -68,8 +68,6 @@ databaseChangeLog:
       file: db/changelog/changes/020-create-pricing-tables.yaml
   - include:
       file: db/changelog/changes/021-create-order-tables.yaml
-  - include:
-      file: db/changelog/changes/022-add-price-modifiers-data.yaml
   # Commented out - has same syntax issue as 010-7
   # - include:
   #     file: db/changelog/changes/023-fix-items-columns.yaml
@@ -79,17 +77,12 @@ databaseChangeLog:
       file: db/changelog/changes/025-migrate-wear-level-to-enum.yaml
   - include:
       file: db/changelog/changes/026-fix-child-items-modifier.yaml
-  - include:
-      file: db/changelog/changes/027-reset-price-modifiers.yaml
   # Game services tables
   - include:
       file: db/changelog/changes/028-create-game-services-tables.yaml
   # Add missing columns for game services - columns already exist in database
   # - include:
   #     file: db/changelog/changes/029-add-missing-game-services-columns.yaml
-  # Add price modifiers table for universal calculator
-  - include:
-      file: db/changelog/changes/030-add-price-modifiers-table.yaml
   # Add surrogate primary key to booster_game_specializations table
   - include:
       file: db/changelog/changes/031-add-id-to-booster-game-specializations.yaml
@@ -110,12 +103,65 @@ databaseChangeLog:
   #     file: db/changelog/changes/008-create-payment-tables.yaml
   # - include:
   #     file: db/changelog/changes/009-create-notification-tables.yaml
-  # Add test data for game services
-  - include:
-      file: db/changelog/changes/036-add-game-test-data.yaml
   # Add operation_type column to price_modifiers table
   - include:
       file: db/changelog/changes/037-add-operation-type-to-price-modifiers.yaml
   # Create game modifiers table for game boosting
   - include:
       file: db/changelog/changes/038-create-game-modifiers-table.yaml
+  # Create diverse seed data for different calculator types
+  # - include:
+  #     file: db/changelog/changes/040-create-diverse-calculator-seed-data.yaml
+  # Migrate calculation formulas from String to JSON polymorphic objects
+  - include:
+      file: db/changelog/changes/041-migrate-calculation-formulas-to-json.yaml
+  # Add currency column to price_configurations table
+  - include:
+      file: db/changelog/changes/042-add-currency-column-to-price-configurations.yaml
+  # Add base_multiplier column to service_types table (must run before 044)
+  - include:
+      file: db/changelog/changes/051-add-base-multiplier-to-service-types.yaml
+  # Fix game categories and calculation formulas
+  - include:
+      file: db/changelog/changes/045-fix-game-categories-and-formulas.yaml
+  # Fix calculation formulas format using Liquibase native syntax
+  - include:
+      file: db/changelog/changes/048-fix-calculation-formulas-format.yaml
+  # Fix invalid modifier types (GAMEMODE -> MODE)
+  - include:
+      file: db/changelog/changes/049-fix-gamemode-modifier-type.yaml
+  # Fix version column type in booster_game_specializations table
+  - include:
+      file: db/changelog/changes/053-fix-booster-game-specializations-version-column.yaml
+  # Add missing version column to boosters table
+  - include:
+      file: db/changelog/changes/054-add-version-column-to-boosters.yaml
+  # Fix contact_email column type in boosters table
+  - include:
+      file: db/changelog/changes/055-fix-contact-email-column-type.yaml
+  # Add missing version column to difficulty_levels table
+  - include:
+      file: db/changelog/changes/056-add-version-column-to-difficulty-levels.yaml
+  # Add missing version column to games table
+  - include:
+      file: db/changelog/changes/057-add-version-column-to-games.yaml
+  # Add missing version column to price_configurations table
+  - include:
+      file: db/changelog/changes/058-add-version-column-to-price-configurations.yaml
+  # Add missing version column to service_types table
+  - include:
+      file: db/changelog/changes/059-add-version-column-to-service-types.yaml
+  # Additional version columns will be added as needed
+  # - include:
+  #     file: db/changelog/changes/061-add-version-to-game-modifiers.yaml
+  # - include:
+  #     file: db/changelog/changes/062-add-version-to-price-list-items.yaml
+
+  # Fix existing games with invalid categories
+  - include:
+      file: db/changelog/changes/096-fix-game-categories.yaml
+
+  # Multiple game systems with unique approaches
+  - include:
+      file: db/changelog/changes/097-fix-modifier-types.yaml
+

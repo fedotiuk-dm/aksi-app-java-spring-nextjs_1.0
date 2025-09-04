@@ -10,7 +10,9 @@ import com.aksi.api.game.dto.GameModifierInfo;
 import com.aksi.api.game.dto.GameModifierType;
 import com.aksi.api.game.dto.GameModifiersResponse;
 import com.aksi.api.game.dto.UpdateGameModifierRequest;
+import com.aksi.domain.game.GameEntity;
 import com.aksi.domain.game.GameModifierEntity;
+import com.aksi.repository.GameRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ public class GameModifierServiceImpl implements GameModifierService {
 
     private final GameModifierCommandService gameModifierCommandService;
     private final GameModifierQueryService gameModifierQueryService;
+    private final GameRepository gameRepository;
 
     @Override
     public GameModifierInfo createGameModifier(CreateGameModifierRequest request) {
@@ -72,12 +75,16 @@ public class GameModifierServiceImpl implements GameModifierService {
     public List<GameModifierEntity> getActiveModifiersForCalculation(
             UUID gameId, UUID serviceTypeId, List<String> modifierCodes) {
 
-        // Delegate to entity service logic (we'll implement this in query service)
+        log.info("🎯 getActiveModifiersForCalculation called with gameId={}, serviceTypeId={}, modifierCodes={}",
+            gameId, serviceTypeId, modifierCodes);
+
+        // Log the decision path
         if (modifierCodes == null || modifierCodes.isEmpty()) {
+            log.info("🎯 No modifier codes provided, getting active modifiers for game");
             return getActiveModifiersForGameEntity(gameId);
         }
 
-        // Get modifiers by codes
+        log.info("🎯 Getting modifiers by codes: {}", modifierCodes);
         return getModifiersByCodes(modifierCodes);
     }
 
@@ -111,6 +118,11 @@ public class GameModifierServiceImpl implements GameModifierService {
     }
 
     private List<GameModifierEntity> getActiveModifiersForGameEntity(UUID gameId) {
-        return gameModifierQueryService.getActiveModifiersForGameEntity(gameId.toString());
+        // Get game code from gameId first
+        String gameCode = gameRepository.findById(gameId)
+            .map(GameEntity::getCode)
+            .orElseThrow(() -> new RuntimeException("Game not found with id: " + gameId));
+
+        return gameModifierQueryService.getActiveModifiersForGameEntity(gameCode);
     }
 }

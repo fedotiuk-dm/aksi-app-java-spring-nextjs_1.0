@@ -155,7 +155,7 @@ export const usePriceConfigurationManagement = () => {
   ) => {
     try {
       await updatePriceConfigurationMutation.mutateAsync({
-        priceConfigurationId,
+        configId: priceConfigurationId,
         data: priceConfigurationData,
       });
       // List will automatically refresh due to React Query
@@ -167,7 +167,7 @@ export const usePriceConfigurationManagement = () => {
 
   const handleDeletePriceConfiguration = async (priceConfigurationId: string) => {
     try {
-      await deletePriceConfigurationMutation.mutateAsync({ priceConfigurationId });
+      await deletePriceConfigurationMutation.mutateAsync({ configId: priceConfigurationId });
       // List will automatically refresh due to React Query
     } catch (error) {
       console.error('Failed to delete price configuration:', error);
@@ -179,7 +179,16 @@ export const usePriceConfigurationManagement = () => {
     try {
       // Note: Price configurations don't have separate active toggle endpoints
       // We'll need to update the active field through the update endpoint
-      await handleUpdatePriceConfiguration(priceConfigurationId, { active });
+      // Get current configuration to preserve other fields
+      const currentConfig = priceConfigurations.find((pc) => pc.id === priceConfigurationId);
+      if (currentConfig) {
+        await handleUpdatePriceConfiguration(priceConfigurationId, {
+          gameId: currentConfig.gameId,
+          serviceTypeId: currentConfig.serviceTypeId,
+          difficultyLevelId: currentConfig.difficultyLevelId,
+          active: active,
+        });
+      }
     } catch (error) {
       console.error('Failed to toggle price configuration active status:', error);
       throw error;

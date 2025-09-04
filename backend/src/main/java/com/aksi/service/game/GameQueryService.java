@@ -85,8 +85,12 @@ public class GameQueryService {
         // Use repository method with specifications for filtering
         Page<GameEntity> entitiesPage = gameRepository.findGamesWithSearchAndPagination(active, search, pageable);
 
+        log.info("Found {} games in database", entitiesPage.getTotalElements());
+
         // Convert to DTOs
         List<Game> games = gameMapper.toGameDtoList(entitiesPage.getContent());
+
+        log.info("Converted {} games to DTOs", games.size());
 
         // Create response with pagination data using reflection for generated classes
         return ResponseBuilderUtil.buildGeneratedPaginatedResponse(

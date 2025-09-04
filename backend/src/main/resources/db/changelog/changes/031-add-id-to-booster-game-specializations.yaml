@@ -49,7 +49,7 @@ databaseChangeLog:
               - column:
                   name: version
                   type: integer
-                  defaultValueNumeric: '0'
+                  defaultValueNumeric: "0"
                   constraints:
                     nullable: false
               - column:

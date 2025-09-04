@@ -62,8 +62,8 @@ export const GameCreateModal: React.FC<GameCreateModalProps> = ({
       await onCreate({
         name: formData.name.trim(),
         code: formData.code.trim(),
-        category: formData.category.trim(),
-        description: formData.description.trim() || undefined,
+        category: formData.category as CreateGameRequestCategory,
+        description: formData.description?.trim() || undefined,
       });
       handleClose();
     } catch (error) {

@@ -75,10 +75,10 @@ export const DifficultyLevelDeleteModal: React.FC<DifficultyLevelDeleteModalProp
             </Alert>
 
             <Typography variant="body2" color="text.secondary">
-              Game: {difficultyLevel.game?.name || 'N/A'}
+              Game ID: {difficultyLevel.gameId}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Price Multiplier: {difficultyLevel.priceMultiplier}x
+              Level Value: {difficultyLevel.levelValue}
             </Typography>
           </Box>
         </DialogContent>

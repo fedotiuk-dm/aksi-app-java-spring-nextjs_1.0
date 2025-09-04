@@ -12,7 +12,6 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TextField,
   FormControl,
   InputLabel,
   Select,
@@ -22,7 +21,14 @@ import {
   FormControlLabel,
   Switch,
 } from '@mui/material';
-import type { PriceConfiguration, Game, ServiceType, DifficultyLevel } from '@api/game';
+import type {
+  PriceConfiguration,
+  Game,
+  ServiceType,
+  DifficultyLevel,
+  UpdatePriceConfigurationRequest,
+} from '@api/game';
+import { PriceDisplay } from '@/shared/ui/atoms/PriceDisplay';
 
 interface PriceConfigurationEditModalProps {
   children: React.ReactNode;
@@ -32,13 +38,7 @@ interface PriceConfigurationEditModalProps {
   difficultyLevels: DifficultyLevel[];
   onUpdate: (
     priceConfigurationId: string,
-    priceConfigurationData: {
-      gameId?: string;
-      serviceTypeId?: string;
-      difficultyLevelId?: string;
-      description?: string;
-      active?: boolean;
-    }
+    priceConfigurationData: UpdatePriceConfigurationRequest
   ) => Promise<void>;
 }
 
@@ -55,7 +55,6 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
     gameId: '',
     serviceTypeId: '',
     difficultyLevelId: '',
-    description: '',
     active: true,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,7 +65,6 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
         gameId: priceConfiguration.gameId,
         serviceTypeId: priceConfiguration.serviceTypeId,
         difficultyLevelId: priceConfiguration.difficultyLevelId,
-        description: priceConfiguration.description || '',
         active: priceConfiguration.active,
       });
     }
@@ -107,7 +105,7 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
         gameId: formData.gameId,
         serviceTypeId: formData.serviceTypeId,
         difficultyLevelId: formData.difficultyLevelId,
-        description: formData.description.trim() || undefined,
+        basePrice: priceConfiguration.basePrice, // Keep existing basePrice
         active: formData.active,
       });
       handleClose();
@@ -123,7 +121,6 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
       formData.gameId !== priceConfiguration.gameId ||
       formData.serviceTypeId !== priceConfiguration.serviceTypeId ||
       formData.difficultyLevelId !== priceConfiguration.difficultyLevelId ||
-      formData.description !== (priceConfiguration.description || '') ||
       formData.active !== priceConfiguration.active
     );
   };
@@ -135,9 +132,9 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
   );
 
   // Calculate final price preview
-  const basePrice = selectedServiceType?.basePrice || 0;
-  const multiplier = selectedDifficultyLevel?.priceMultiplier || 1;
-  const finalPrice = basePrice * multiplier;
+  const baseMultiplier = selectedServiceType?.baseMultiplier || 100;
+  const levelValue = selectedDifficultyLevel?.levelValue || 1;
+  const finalPrice = (baseMultiplier / 100) * levelValue;
 
   return (
     <>
@@ -176,7 +173,7 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
               >
                 {availableServiceTypes.map((serviceType) => (
                   <MenuItem key={serviceType.id} value={serviceType.id}>
-                    {serviceType.name} - ${serviceType.basePrice}
+                    {serviceType.name} - {serviceType.baseMultiplier / 100}x
                   </MenuItem>
                 ))}
               </Select>
@@ -193,7 +190,7 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
               >
                 {availableDifficultyLevels.map((difficultyLevel) => (
                   <MenuItem key={difficultyLevel.id} value={difficultyLevel.id}>
-                    {difficultyLevel.name} - {difficultyLevel.priceMultiplier}x
+                    {difficultyLevel.name} - Level {difficultyLevel.levelValue}
                   </MenuItem>
                 ))}
               </Select>
@@ -216,11 +213,16 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
                 <Box
                   sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
-                  <Typography variant="body2">Base Price: ${basePrice}</Typography>
-                  <Typography variant="body2">Multiplier: {multiplier}x</Typography>
+                  <Typography variant="body2">
+                    Calculated Price:{' '}
+                    <PriceDisplay amount={finalPrice} currency="USD" inline={true} />
+                  </Typography>
+                  <Typography variant="body2">
+                    Base Multiplier: {(baseMultiplier / 100).toFixed(1)}x
+                  </Typography>
                 </Box>
                 <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
-                  Final Price: ${finalPrice.toFixed(2)}
+                  Final Price: <PriceDisplay amount={finalPrice} currency="USD" inline={true} />
                 </Typography>
               </Box>
             )}
@@ -233,16 +235,6 @@ export const PriceConfigurationEditModal: React.FC<PriceConfigurationEditModalPr
                 />
               }
               label="Active"
-            />
-
-            <TextField
-              label="Description (Optional)"
-              value={formData.description}
-              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-              fullWidth
-              multiline
-              rows={3}
-              placeholder="Optional description for this price configuration..."
             />
           </Box>
         </DialogContent>

@@ -1,6 +1,5 @@
 package com.aksi.repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,37 +15,6 @@ import com.aksi.domain.game.PriceConfigurationEntity;
 public interface PriceConfigurationRepository
     extends JpaRepository<PriceConfigurationEntity, UUID>,
         JpaSpecificationExecutor<PriceConfigurationEntity> {
-
-  /**
-   * Find active price configurations by game ID using specifications. Used in
-   * PriceConfigurationCommandService.
-   */
-  default List<PriceConfigurationEntity> findByGameIdAndActiveTrue(UUID gameId) {
-    return findAll(PriceConfigurationSpecification.findActiveByGameId(gameId));
-  }
-
-  /**
-   * Find all active price configurations ordered by sort order using specifications. Used in
-   * PriceConfigurationQueryService.
-   */
-  default List<PriceConfigurationEntity> findAllActiveOrderBySortOrder() {
-    return findAll(PriceConfigurationSpecification.findAllActiveOrderedBySortOrder());
-  }
-
-  /**
-   * Find default price configurations using specifications. Used in PriceConfigurationQueryService.
-   */
-  default List<PriceConfigurationEntity> findDefaultConfigurations() {
-    return findAll(PriceConfigurationSpecification.findDefaultConfigurations());
-  }
-
-  /**
-   * Find default price configurations by game ID using specifications. Used in
-   * PriceConfigurationQueryService.
-   */
-  default List<PriceConfigurationEntity> findDefaultByGameId(UUID gameId) {
-    return findAll(PriceConfigurationSpecification.findDefaultByGameId(gameId));
-  }
 
   /**
    * Find active price configurations by game ID with pagination using specifications. Used in
@@ -65,14 +33,6 @@ public interface PriceConfigurationRepository
    */
   default Page<PriceConfigurationEntity> findAllActiveOrderBySortOrder(Pageable pageable) {
     return findAll(PriceConfigurationSpecification.findAllActiveOrderedBySortOrder(), pageable);
-  }
-
-  /**
-   * Count active price configurations by game ID using specifications. Used in
-   * PriceConfigurationQueryService.
-   */
-  default long countActiveByGameId(UUID gameId) {
-    return count(PriceConfigurationSpecification.countActiveByGameId(gameId));
   }
 
   /**
@@ -101,8 +61,4 @@ public interface PriceConfigurationRepository
         .findFirst();
   }
 
-  /** Find all price configurations by game ID using specifications. Used in bulk operations. */
-  default List<PriceConfigurationEntity> findByGameId(UUID gameId) {
-    return findAll(PriceConfigurationSpecification.findByGameId(gameId));
-  }
 }

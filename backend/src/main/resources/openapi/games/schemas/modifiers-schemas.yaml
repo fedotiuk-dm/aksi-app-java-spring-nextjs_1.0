@@ -2,7 +2,24 @@ components:
   schemas:
     GameModifierType:
       type: string
-      enum: [TIMING, SUPPORT, MODE, QUALITY, EXTRA, PROMOTIONAL, SEASONAL]
+      enum:
+        [
+          TIMING,
+          SUPPORT,
+          MODE,
+          QUALITY,
+          EXTRA,
+          PROMOTIONAL,
+          SEASONAL,
+          SPELLS,
+          RANK,
+          PROGRESSION,
+          COSMETIC,
+          SOCIAL,
+          GUIDANCE,
+          ACHIEVEMENT,
+          SERVICE,
+        ]
       description: Type of game boosting modifier
       x-enum-descriptions:
         - Timing-related modifiers (rush, express, etc.)
@@ -12,6 +29,14 @@ components:
         - Extra service modifiers (screenshot, replay, etc.)
         - Promotional modifiers (discounts, bonuses, etc.)
         - Seasonal modifiers (holiday specials, events, etc.)
+        - Spell/item modifiers (spells, items, etc.)
+        - Rank-related modifiers (rank boost, etc.)
+        - Progression modifiers (level up, achievements, etc.)
+        - Cosmetic modifiers (skins, effects, etc.)
+        - Social modifiers (duo, party, etc.)
+        - Guidance modifiers (coaching, tips, etc.)
+        - Achievement modifiers (trophies, badges, etc.)
+        - Service modifiers (premium service, etc.)
 
     GameModifierOperation:
       type: string

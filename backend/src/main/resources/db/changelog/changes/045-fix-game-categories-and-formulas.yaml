@@ -1,0 +1,128 @@
+databaseChangeLog:
+  - changeSet:
+      id: fix-game-categories-and-formulas
+      author: system
+      comment: Fix incorrect game categories and calculation formulas from previous migrations
+      runOnChange: false
+
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: games
+        - tableExists:
+            tableName: price_configurations
+
+      changes:
+        # ===== FIX GAME CATEGORIES =====
+        # Fix Overwatch category from SHOOTER to FPS
+        - update:
+            tableName: games
+            where: code = 'OW'
+            columns:
+              - column:
+                  name: category
+                  value: FPS
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+
+        # ===== FIX CALCULATION FORMULAS =====
+        # Fix malformed calculation formulas in price_configurations
+        - update:
+            tableName: price_configurations
+            where: calculation_formula LIKE '%basePrice + (levelDifference * pricePerLevel)%'
+            columns:
+              - column:
+                  name: calculation_formula
+                  value: basePrice + (levelDifference * pricePerLevel)
+              - column:
+                  name: updated_at
+                  valueComputed: now()
+
+        - update:
+            tableName: games
+            where: code = 'LOL'
+            columns:
+            - column:
+                name: category
+                value: MOBA
+            - column:
+                name: updated_at
+                valueComputed: now()
+
+        - update:
+            tableName: games
+            where: code = 'VALORANT'
+            columns:
+            - column:
+                name: category
+                value: FPS
+            - column:
+                name: updated_at
+                valueComputed: now()
+
+        - update:
+            tableName: games
+            where: code = 'APEX'
+            columns:
+            - column:
+                name: category
+                value: BATTLE_ROYALE
+            - column:
+                name: updated_at
+                valueComputed: now()
+
+        - update:
+            tableName: games
+            where: code = 'WOW'
+            columns:
+            - column:
+                name: category
+                value: MMORPG
+            - column:
+                name: updated_at
+                valueComputed: now()
+
+        - update:
+            tableName: games
+            where: code = 'TFT'
+            columns:
+            - column:
+                name: category
+                value: STRATEGY
+            - column:
+                name: updated_at
+                valueComputed: now()
+
+        - update:
+            tableName: games
+            where: code = 'EFT'
+            columns:
+            - column:
+                name: category
+                value: FPS
+            - column:
+                name: updated_at
+                valueComputed: now()
+
+        - update:
+            tableName: games
+            where: code = 'GW2'
+            columns:
+            - column:
+                name: category
+                value: MMORPG
+            - column:
+                name: updated_at
+                valueComputed: now()
+
+        - update:
+            tableName: price_configurations
+            where: calculation_formula NOT LIKE '%basePrice%' OR calculation_formula IS NULL
+            columns:
+            - column:
+                name: calculation_formula
+                value: basePrice + (levelDifference * pricePerLevel)
+            - column:
+                name: updated_at
+                valueComputed: now()

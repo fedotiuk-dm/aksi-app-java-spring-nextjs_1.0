@@ -1,0 +1,591 @@
+{
+  "source_file": "OGEdge All Services test.xlsx",
+  "total_sheets": 24,
+  "sheets": {
+    "A-Boosters": {
+      "rows": 73,
+      "columns": 11,
+      "column_names": [
+        "Unnamed: 0",
+        "Discord",
+        "Contact Email",
+        "Game 1",
+        "Game 2",
+        "PayPal",
+        "Skrill",
+        "Zelle",
+        "Coinbase",
+        "BTC",
+        "Unnamed: 12"
+      ],
+      "files": {
+        "json": "A-Boosters.json",
+        "csv": "A-Boosters.csv",
+        "structured_json": "A-Boosters_structured.json"
+      }
+    },
+    "-Template-": {
+      "rows": 248,
+      "columns": 15,
+      "column_names": [
+        "Unnamed: 0",
+        "Site$",
+        "PA$",
+        "Time",
+        "Required",
+        "Game Name",
+        "Level",
+        "Per Level",
+        "Per Range",
+        "xxx",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx.1",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "-Template-.json",
+        "csv": "-Template-.csv",
+        "structured_json": "-Template-_structured.json"
+      }
+    },
+    "Apex": {
+      "rows": 251,
+      "columns": 14,
+      "column_names": [
+        "Unnamed: 0",
+        "Site$",
+        "Time",
+        "Required",
+        "PA$",
+        "Game Name",
+        "xxx",
+        "Per Level",
+        "Per Range",
+        "Ranked",
+        "perDiv",
+        "perPoint",
+        "RPMin",
+        "RPDiff"
+      ],
+      "files": {
+        "json": "Apex.json",
+        "csv": "Apex.csv",
+        "structured_json": "Apex_structured.json"
+      }
+    },
+    "COD": {
+      "rows": 250,
+      "columns": 15,
+      "column_names": [
+        "a",
+        "Site & PA$",
+        "Time",
+        "Required",
+        "PA$",
+        "Game Name",
+        "Vanguard",
+        "Per Level",
+        "Per Range",
+        "CW",
+        "Per Level.1",
+        "Per Range.1",
+        "MW",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "COD.json",
+        "csv": "COD.csv",
+        "structured_json": "COD_structured.json"
+      }
+    },
+    "EFT": {
+      "rows": 249,
+      "columns": 15,
+      "column_names": [
+        "Unnamed: 0",
+        "Site & PA",
+        "Time",
+        "Required",
+        "PA$",
+        "Game Name",
+        "Level",
+        "Per Level",
+        "Per Range",
+        "xxx",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx.1",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "EFT.json",
+        "csv": "EFT.csv",
+        "structured_json": "EFT_structured.json"
+      }
+    },
+    "EQ": {
+      "rows": 251,
+      "columns": 14,
+      "column_names": [
+        "Unnamed: 0",
+        "Site$",
+        "Time",
+        "PA$",
+        "Game Name",
+        "Level",
+        "Per Level",
+        "Per Range",
+        "xxx",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx.1",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "EQ.json",
+        "csv": "EQ.csv",
+        "structured_json": "EQ_structured.json"
+      }
+    },
+    "FFXIV": {
+      "rows": 250,
+      "columns": 15,
+      "column_names": [
+        "Unnamed: 0",
+        "Site$",
+        "Time",
+        "Required",
+        "PA$",
+        "Game Name",
+        "Primary",
+        "Per Level",
+        "Per Range",
+        "Secondary",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "FFXIV.json",
+        "csv": "FFXIV.csv",
+        "structured_json": "FFXIV_structured.json"
+      }
+    },
+    "Sheet46": {
+      "rows": 9,
+      "columns": 3,
+      "column_names": [
+        "Unnamed: 0",
+        "Unnamed: 2",
+        "Unnamed: 4"
+      ],
+      "files": {
+        "json": "Sheet46.json",
+        "csv": "Sheet46.csv",
+        "structured_json": "Sheet46_structured.json"
+      }
+    },
+    "Sheet45": {
+      "rows": 24,
+      "columns": 4,
+      "column_names": [
+        "A",
+        ":",
+        "A:",
+        "A:.1"
+      ],
+      "files": {
+        "json": "Sheet45.json",
+        "csv": "Sheet45.csv",
+        "structured_json": "Sheet45_structured.json"
+      }
+    },
+    "EAFC25": {
+      "rows": 251,
+      "columns": 11,
+      "column_names": [
+        "Unnamed: 0",
+        "Site$",
+        "Time",
+        "PA$",
+        "Game Name",
+        "xxx",
+        "Per Level",
+        "Per Range",
+        "xxx.1",
+        "Per Level.1",
+        "Per Range.1"
+      ],
+      "files": {
+        "json": "EAFC25.json",
+        "csv": "EAFC25.csv",
+        "structured_json": "EAFC25_structured.json"
+      }
+    },
+    "GW2": {
+      "rows": 248,
+      "columns": 14,
+      "column_names": [
+        "Unnamed: 0",
+        "Site & PA$",
+        "Time",
+        "PA$",
+        "Game Name",
+        "Level",
+        "Per Level",
+        "Per Range",
+        "PVP",
+        "Per Level.1",
+        "Per Range.1",
+        "Map",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "GW2.json",
+        "csv": "GW2.csv",
+        "structured_json": "GW2_structured.json"
+      }
+    },
+    "Lost Ark": {
+      "rows": 251,
+      "columns": 15,
+      "column_names": [
+        "Unnamed: 0",
+        "Site$",
+        "Time",
+        "Required",
+        "PA$",
+        "Game Name",
+        "Level",
+        "Per Level",
+        "Per Range",
+        "xxx",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx.1",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "Lost Ark.json",
+        "csv": "Lost Ark.csv",
+        "structured_json": "Lost Ark_structured.json"
+      }
+    },
+    "LOL": {
+      "rows": 250,
+      "columns": 14,
+      "column_names": [
+        "Unnamed: 0",
+        "Site & PA$",
+        "Time",
+        "PA$",
+        "Game Name",
+        "xxx",
+        "Per Level",
+        "Per Range",
+        "xxx.1",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx.2",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "LOL.json",
+        "csv": "LOL.csv",
+        "structured_json": "LOL_structured.json"
+      }
+    },
+    "TFT": {
+      "rows": 248,
+      "columns": 14,
+      "column_names": [
+        "Unnamed: 0",
+        "Site$",
+        "Time",
+        "PA$",
+        "Game Name",
+        "xxx",
+        "Per Level",
+        "Per Range",
+        "xxx.1",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx.2",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "TFT.json",
+        "csv": "TFT.csv",
+        "structured_json": "TFT_structured.json"
+      }
+    },
+    "LOL - Combined": {
+      "rows": 250,
+      "columns": 15,
+      "column_names": [
+        "Unnamed: 0",
+        "Site$",
+        "PA$",
+        "Unnamed: 5",
+        "Unnamed: 7",
+        "Game Name",
+        "xxx",
+        "Per Level",
+        "Per Range",
+        "xxx.1",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx.2",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "LOL - Combined.json",
+        "csv": "LOL - Combined.csv",
+        "structured_json": "LOL - Combined_structured.json"
+      }
+    },
+    "NW": {
+      "rows": 251,
+      "columns": 15,
+      "column_names": [
+        "Unnamed: 0",
+        "Site$",
+        "Time",
+        "Required",
+        "PA$",
+        "Game Name",
+        "Level",
+        "Per Level",
+        "Per Range",
+        "Weapon",
+        "Per Level.1",
+        "Per Range.1",
+        "Profession",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "NW.json",
+        "csv": "NW.csv",
+        "structured_json": "NW_structured.json"
+      }
+    },
+    "OW": {
+      "rows": 251,
+      "columns": 14,
+      "column_names": [
+        "Unnamed: 0",
+        "Site$",
+        "Time",
+        "Required",
+        "PA$",
+        "Game Name",
+        "xxx",
+        "Per Level",
+        "Per Range",
+        "Ranked Boosting",
+        "Per Div",
+        "Per Point",
+        "RP",
+        "Unnamed: 21"
+      ],
+      "files": {
+        "json": "OW.json",
+        "csv": "OW.csv",
+        "structured_json": "OW_structured.json"
+      }
+    },
+    "Valorant": {
+      "rows": 251,
+      "columns": 13,
+      "column_names": [
+        "Unnamed: 0",
+        "Site$",
+        "Time",
+        "Required",
+        "PA$",
+        "Game Name",
+        "Level",
+        "Per Level",
+        "Per Range",
+        "Unnamed: 17",
+        "Rank",
+        "Division",
+        "Win"
+      ],
+      "files": {
+        "json": "Valorant.json",
+        "csv": "Valorant.csv",
+        "structured_json": "Valorant_structured.json"
+      }
+    },
+    "WOW C (OLD)": {
+      "rows": 250,
+      "columns": 15,
+      "column_names": [
+        "Unnamed: 0",
+        "PA$",
+        "Time",
+        "Required",
+        "Site$",
+        "Game Name",
+        "Level",
+        "Per Level",
+        "Per Range",
+        "xxx",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx.1",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "WOW C (OLD).json",
+        "csv": "WOW C (OLD).csv",
+        "structured_json": "WOW C (OLD)_structured.json"
+      }
+    },
+    "WOW Classic VAN": {
+      "rows": 250,
+      "columns": 15,
+      "column_names": [
+        "Unnamed: 0",
+        "PA$",
+        "Time",
+        "Required",
+        "Site$",
+        "Game Name",
+        "Level",
+        "Per Level",
+        "Per Range",
+        "xxx",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx.1",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "WOW Classic VAN.json",
+        "csv": "WOW Classic VAN.csv",
+        "structured_json": "WOW Classic VAN_structured.json"
+      }
+    },
+    "WOW Classic TBC": {
+      "rows": 250,
+      "columns": 15,
+      "column_names": [
+        "Unnamed: 0",
+        "PA$",
+        "Time",
+        "Required",
+        "Site$",
+        "Game Name",
+        "Level",
+        "Per Level",
+        "Per Range",
+        "xxx",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx.1",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "WOW Classic TBC.json",
+        "csv": "WOW Classic TBC.csv",
+        "structured_json": "WOW Classic TBC_structured.json"
+      }
+    },
+    "WOW Classic WOTLK": {
+      "rows": 250,
+      "columns": 15,
+      "column_names": [
+        "Unnamed: 0",
+        "PA$",
+        "Time",
+        "Required",
+        "Site$",
+        "Game Name",
+        "Level",
+        "Per Level",
+        "Per Range",
+        "xxx",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx.1",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "WOW Classic WOTLK.json",
+        "csv": "WOW Classic WOTLK.csv",
+        "structured_json": "WOW Classic WOTLK_structured.json"
+      }
+    },
+    "WOW SOM": {
+      "rows": 251,
+      "columns": 15,
+      "column_names": [
+        "Unnamed: 0",
+        "Site$",
+        "Time",
+        "Required",
+        "PA$",
+        "Game Name",
+        "Level",
+        "Per Level",
+        "Per Range",
+        "xxx",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx.1",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "WOW SOM.json",
+        "csv": "WOW SOM.csv",
+        "structured_json": "WOW SOM_structured.json"
+      }
+    },
+    "WOW DF": {
+      "rows": 251,
+      "columns": 15,
+      "column_names": [
+        "Unnamed: 0",
+        "Site$",
+        "Time",
+        "Required",
+        "PA$",
+        "Game Name",
+        "Level",
+        "Per Level",
+        "Per Range",
+        "xxx",
+        "Per Level.1",
+        "Per Range.1",
+        "xxx.1",
+        "Per Level.2",
+        "Per Range.2"
+      ],
+      "files": {
+        "json": "WOW DF.json",
+        "csv": "WOW DF.csv",
+        "structured_json": "WOW DF_structured.json"
+      }
+    }
+  }
+}
