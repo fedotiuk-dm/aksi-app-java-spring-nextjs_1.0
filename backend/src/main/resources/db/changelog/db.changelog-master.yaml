@@ -164,3 +164,7 @@ databaseChangeLog:
   # Create game modifiers table structure only (no seed data)
   - include:
       file: db/changelog/changes/098-create-game-modifiers-structure.yaml
+
+  # Refactor initial schema using Liquibase native syntax (replacement for 001)
+  - include:
+      file: db/changelog/changes/099-refactor-initial-schema.yaml

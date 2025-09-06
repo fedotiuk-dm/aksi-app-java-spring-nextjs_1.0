@@ -49,7 +49,5 @@ RUN mkdir -p logs uploads/orders/items/photos
 
 # Development command using Maven Wrapper with dev-fast profile
 # This skips tests, checkstyle, spotless, and OpenAPI generation for faster startup
-CMD ["./mvnw", "spring-boot:run", "-q", \
-     "-Pdev-fast", \
-     "-Dspring-boot.run.profiles=dev", \
-     "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.NoOpLog"]
+# Tests are compiled separately for IDE integration
+CMD ["/bin/bash", "-c", "./mvnw compile test-compile -q -Pdev-fast && ./mvnw spring-boot:run -q -Pdev-fast -Dspring-boot.run.profiles=dev -Dspring-boot.run.jvmArguments='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.NoOpLog'"]

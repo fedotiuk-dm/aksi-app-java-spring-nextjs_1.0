@@ -25,6 +25,13 @@ spring:
   liquibase:
     enabled: false
 
+# Application configuration for tests
+app:
+  file-storage:
+    upload-dir: ${FILE_UPLOAD_DIR:./test-uploads}
+    base-url: ${FILE_BASE_URL:http://localhost:8080}
+    api-path: ${FILE_API_PATH:/api/files}
+
 logging:
   level:
     com.aksi: DEBUG

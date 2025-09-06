@@ -18,6 +18,8 @@ public interface GameRepository
 
   Optional<GameEntity> findByCode(String code);
 
+  List<GameEntity> findByCategory(com.aksi.api.game.dto.Game.CategoryEnum category);
+
   /** Find active games ordered by sort order using specifications. */
   default List<GameEntity> findByActiveTrueOrderBySortOrderAsc() {
     return findAll(GameSpecification.findActiveOrderedBySortOrder());

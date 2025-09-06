@@ -31,9 +31,8 @@ public class GameModifierController implements ModifiersApi {
       Integer page, Integer size, @Nullable String sortBy, SortOrder sortOrder, @Nullable String search,
       @Nullable String gameCode, @Nullable GameModifierType type, @Nullable GameModifierOperation operation,
       @Nullable Boolean active, @Nullable String serviceTypeCode) {
-    // Note: sortBy, sortOrder, operation parameters are not yet supported by service
     GameModifiersResponse response = gameModifierService.getAllGameModifiers(
-        gameCode, type, serviceTypeCode, active, search, page, size);
+        gameCode, type, serviceTypeCode, active, search, page, size, sortBy, sortOrder, operation);
     return ResponseEntity.ok(response);
   }
 
@@ -45,32 +44,32 @@ public class GameModifierController implements ModifiersApi {
 
   @Override
   public ResponseEntity<GameModifierInfo> getGameModifier(UUID modifierId) {
-    GameModifierInfo response = gameModifierService.getGameModifierById(modifierId.toString());
+    GameModifierInfo response = gameModifierService.getGameModifierById(modifierId);
     return ResponseEntity.ok(response);
   }
 
   @Override
   public ResponseEntity<GameModifierInfo> updateGameModifier(
       UUID modifierId, UpdateGameModifierRequest request) {
-    GameModifierInfo response = gameModifierService.updateGameModifier(modifierId.toString(), request);
+    GameModifierInfo response = gameModifierService.updateGameModifier(modifierId, request);
     return ResponseEntity.ok(response);
   }
 
   @Override
   public ResponseEntity<Void> deleteGameModifier(UUID modifierId) {
-    gameModifierService.deleteGameModifier(modifierId.toString());
+    gameModifierService.deleteGameModifier(modifierId);
     return ResponseEntity.noContent().build();
   }
 
   @Override
   public ResponseEntity<GameModifierInfo> activateGameModifier(UUID modifierId) {
-    GameModifierInfo response = gameModifierService.activateGameModifier(modifierId.toString());
+    GameModifierInfo response = gameModifierService.activateGameModifier(modifierId);
     return ResponseEntity.ok(response);
   }
 
   @Override
   public ResponseEntity<GameModifierInfo> deactivateGameModifier(UUID modifierId) {
-    GameModifierInfo response = gameModifierService.deactivateGameModifier(modifierId.toString());
+    GameModifierInfo response = gameModifierService.deactivateGameModifier(modifierId);
     return ResponseEntity.ok(response);
   }
 }

@@ -34,6 +34,11 @@ public class ServiceTypeSpecification {
     return Specification.allOf(hasActive(true), hasGameId(gameId), orderBySortOrder());
   }
 
+  /** Creates a specification for finding all service types by game ID. */
+  public static Specification<ServiceTypeEntity> findByGameId(UUID gameId) {
+    return Specification.allOf(hasGameId(gameId), orderBySortOrder());
+  }
+
   /** Creates a specification for filtering service types with search. */
   public static Specification<ServiceTypeEntity> filterServiceTypes(
       Boolean active, UUID gameId, String searchTerm) {

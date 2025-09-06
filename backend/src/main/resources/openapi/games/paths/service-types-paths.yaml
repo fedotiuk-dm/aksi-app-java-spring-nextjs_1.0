@@ -116,8 +116,8 @@ paths:
     delete:
       tags: [service-types]
       operationId: gamesDeleteServiceType
-      summary: Delete service type
-      description: Permanently delete a service type from the system
+      summary: Soft delete service type
+      description: Mark service type as inactive (soft delete)
       parameters:
         - name: serviceTypeId
           in: path
@@ -127,7 +127,7 @@ paths:
             format: uuid
       responses:
         "204":
-          description: Service type deleted
+          description: Service type marked as inactive
         "401":
           $ref: "../../common.yaml#/components/responses/Unauthorized"
         "403":
@@ -135,6 +135,30 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
+  /api/games/service-types/{serviceTypeId}/force-delete:
+    delete:
+      tags: [service-types]
+      operationId: gamesForceDeleteServiceType
+      summary: Force delete service type
+      description: Permanently delete a service type from the database (admin operation)
+      parameters:
+        - name: serviceTypeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Service type permanently deleted
+        "401":
+          $ref: "../../common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "../../common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "../../common.yaml#/components/responses/NotFound"
+
+  /api/games/service-types/{serviceTypeId}/set-active:
     patch:
       tags: [service-types]
       operationId: gamesSetServiceTypeActive

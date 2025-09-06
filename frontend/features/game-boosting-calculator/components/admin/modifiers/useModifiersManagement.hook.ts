@@ -5,6 +5,7 @@
  * Handles CRUD operations for game modifiers using Orval Game API hooks
  */
 
+import { useEffect } from 'react';
 import {
   useListGameModifiers,
   useCreateGameModifier,
@@ -17,161 +18,152 @@ import {
   CreateGameModifierRequest,
   UpdateGameModifierRequest,
 } from '@api/game';
-import { useQueryClient } from '@tanstack/react-query';
+import { useGameModifiersManagementStore } from '../../../store/modifiers-management-store';
 
 export const useModifiersManagement = () => {
-  const queryClient = useQueryClient();
+  // Orval API hooks with proper parameters
+  const listModifiersQuery = useListGameModifiers({
+    page: 0,
+    size: 100,
+    active: undefined, // Get all for management
+  });
 
-  // Orval hooks for Game Modifiers
-  const modifiersQuery = useListGameModifiers(
-    undefined, // Get ALL modifiers without filters
-    {
-      query: {
-        select: (data) => {
-          console.log('🔍 Raw modifiers data:', data);
-          const modifiers = data?.modifiers || [];
-          console.log('🔍 Processed modifiers:', modifiers);
-          return modifiers;
-        },
-      },
+  const listGamesQuery = useGamesListGames({
+    page: 0,
+    size: 100,
+    active: true,
+  });
+
+  const listServiceTypesQuery = useGamesListServiceTypes({
+    page: 0,
+    size: 100,
+    active: true,
+  });
+
+  const createModifierMutation = useCreateGameModifier();
+  const updateModifierMutation = useUpdateGameModifier();
+  const deleteModifierMutation = useDeleteGameModifier();
+  const activateModifierMutation = useActivateGameModifier();
+  const deactivateModifierMutation = useDeactivateGameModifier();
+
+  // UI state from store
+  const { setModifiers, setGames, setServiceTypes, setLoading, setError, clearError } =
+    useGameModifiersManagementStore();
+
+  // Sync API data with store
+  useEffect(() => {
+    if (listModifiersQuery.data) {
+      setModifiers(listModifiersQuery.data.modifiers || []);
     }
-  );
-
-  // Additional data for forms
-  const gamesQuery = useGamesListGames(
-    {}, // Get all games
-    {
-      query: {
-        select: (data) => data.data || [],
-      },
+    if (listGamesQuery.data) {
+      setGames(listGamesQuery.data.data || []);
     }
-  );
-
-  const serviceTypesQuery = useGamesListServiceTypes(
-    {}, // Get all service types
-    {
-      query: {
-        select: (data) => data.data || [],
-      },
+    if (listServiceTypesQuery.data) {
+      setServiceTypes(listServiceTypesQuery.data.data || []);
     }
-  );
 
-  // Mutations with cache invalidation
-  const createMutation = useCreateGameModifier({
-    mutation: {
-      onSuccess: () => {
-        // Invalidate all modifier-related queries
-        queryClient.invalidateQueries({ queryKey: ['listGameModifiers'] });
-        queryClient.invalidateQueries({ queryKey: ['getGameModifier'] });
-        console.log('✅ Modifier created successfully, cache invalidated');
-      },
-      onError: (error) => {
-        console.error('❌ Failed to create modifier:', error);
-      },
-    },
-  });
+    const isLoading =
+      listModifiersQuery.isLoading || listGamesQuery.isLoading || listServiceTypesQuery.isLoading;
 
-  const updateMutation = useUpdateGameModifier({
-    mutation: {
-      onSuccess: () => {
-        // Invalidate all modifier-related queries
-        queryClient.invalidateQueries({ queryKey: ['listGameModifiers'] });
-        queryClient.invalidateQueries({ queryKey: ['getGameModifier'] });
-        console.log('✅ Modifier updated successfully, cache invalidated');
-      },
-      onError: (error) => {
-        console.error('❌ Failed to update modifier:', error);
-      },
-    },
-  });
-
-  const deleteMutation = useDeleteGameModifier({
-    mutation: {
-      onSuccess: () => {
-        // Invalidate all modifier-related queries
-        queryClient.invalidateQueries({ queryKey: ['listGameModifiers'] });
-        queryClient.invalidateQueries({ queryKey: ['getGameModifier'] });
-        console.log('✅ Modifier deleted successfully, cache invalidated');
-      },
-      onError: (error) => {
-        console.error('❌ Failed to delete modifier:', error);
-      },
-    },
-  });
-
-  const activateMutation = useActivateGameModifier({
-    mutation: {
-      onSuccess: () => {
-        // Invalidate all modifier-related queries
-        queryClient.invalidateQueries({ queryKey: ['listGameModifiers'] });
-        queryClient.invalidateQueries({ queryKey: ['getGameModifier'] });
-        console.log('✅ Modifier activated successfully, cache invalidated');
-      },
-      onError: (error) => {
-        console.error('❌ Failed to activate modifier:', error);
-      },
-    },
-  });
-
-  const deactivateMutation = useDeactivateGameModifier({
-    mutation: {
-      onSuccess: () => {
-        // Invalidate all modifier-related queries
-        queryClient.invalidateQueries({ queryKey: ['listGameModifiers'] });
-        queryClient.invalidateQueries({ queryKey: ['getGameModifier'] });
-        console.log('✅ Modifier deactivated successfully, cache invalidated');
-      },
-      onError: (error) => {
-        console.error('❌ Failed to deactivate modifier:', error);
-      },
-    },
-  });
-
-  // Handler functions
-  const handleCreateModifier = async (data: CreateGameModifierRequest) => {
-    await createMutation.mutateAsync({
-      data,
-    });
-  };
-
-  const handleUpdateModifier = async (code: string, data: UpdateGameModifierRequest) => {
-    await updateMutation.mutateAsync({
-      modifierId: code, // API uses code as identifier
-      data,
-    });
-  };
-
-  const handleDeleteModifier = async (code: string) => {
-    await deleteMutation.mutateAsync({ modifierId: code }); // API uses code as identifier
-  };
-
-  const handleToggleActive = async (code: string, active: boolean) => {
-    if (active) {
-      await activateMutation.mutateAsync({ modifierId: code }); // API uses code as identifier
+    if (isLoading) {
+      setLoading(true);
     } else {
-      await deactivateMutation.mutateAsync({ modifierId: code }); // API uses code as identifier
+      setLoading(false);
+    }
+
+    const error = listModifiersQuery.error || listGamesQuery.error || listServiceTypesQuery.error;
+
+    if (error) {
+      setError(String(error));
+    } else {
+      clearError();
+    }
+  }, [
+    listModifiersQuery.data,
+    listModifiersQuery.isLoading,
+    listModifiersQuery.error,
+    listGamesQuery.data,
+    listGamesQuery.isLoading,
+    listGamesQuery.error,
+    listServiceTypesQuery.data,
+    listServiceTypesQuery.isLoading,
+    listServiceTypesQuery.error,
+    setModifiers,
+    setGames,
+    setServiceTypes,
+    setLoading,
+    setError,
+    clearError,
+  ]);
+
+  const modifiers = listModifiersQuery.data?.modifiers || [];
+  const games = listGamesQuery.data?.data || [];
+  const serviceTypes = listServiceTypesQuery.data?.data || [];
+  const isLoading =
+    listModifiersQuery.isLoading || listGamesQuery.isLoading || listServiceTypesQuery.isLoading;
+  const error = listModifiersQuery.error || listGamesQuery.error || listServiceTypesQuery.error;
+
+  const handleCreateModifier = async (modifierData: CreateGameModifierRequest) => {
+    try {
+      await createModifierMutation.mutateAsync({
+        data: modifierData,
+      });
+      // List will automatically refresh due to React Query
+    } catch (error) {
+      console.error('Failed to create modifier:', error);
+      throw error;
+    }
+  };
+
+  const handleUpdateModifier = async (
+    modifierId: string,
+    modifierData: UpdateGameModifierRequest
+  ) => {
+    try {
+      await updateModifierMutation.mutateAsync({
+        modifierId,
+        data: modifierData,
+      });
+      // List will automatically refresh due to React Query
+    } catch (error) {
+      console.error('Failed to update modifier:', error);
+      throw error;
+    }
+  };
+
+  const handleDeleteModifier = async (modifierId: string) => {
+    try {
+      await deleteModifierMutation.mutateAsync({ modifierId });
+      // List will automatically refresh due to React Query
+    } catch (error) {
+      console.error('Failed to delete modifier:', error);
+      throw error;
+    }
+  };
+
+  const handleToggleActive = async (modifierId: string, active: boolean) => {
+    try {
+      if (active) {
+        await activateModifierMutation.mutateAsync({ modifierId });
+      } else {
+        await deactivateModifierMutation.mutateAsync({ modifierId });
+      }
+      // List will automatically refresh due to React Query
+    } catch (error) {
+      console.error('Failed to toggle modifier active status:', error);
+      throw error;
     }
   };
 
   return {
-    // Data
-    modifiers: modifiersQuery.data || [],
-    games: gamesQuery.data || [],
-    serviceTypes: serviceTypesQuery.data || [],
-    isLoading: modifiersQuery.isLoading || gamesQuery.isLoading || serviceTypesQuery.isLoading,
-    error: modifiersQuery.error || gamesQuery.error || serviceTypesQuery.error,
-
-    // Operations
+    modifiers,
+    games,
+    serviceTypes,
+    isLoading,
+    error,
     handleCreateModifier,
     handleUpdateModifier,
     handleDeleteModifier,
     handleToggleActive,
-
-    // Loading states
-    isCreating: createMutation.isPending,
-    isUpdating: updateMutation.isPending,
-    isDeleting: deleteMutation.isPending,
-    isActivating: activateMutation.isPending,
-    isDeactivating: deactivateMutation.isPending,
   };
 };

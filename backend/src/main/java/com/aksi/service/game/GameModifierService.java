@@ -5,8 +5,10 @@ import java.util.UUID;
 
 import com.aksi.api.game.dto.CreateGameModifierRequest;
 import com.aksi.api.game.dto.GameModifierInfo;
+import com.aksi.api.game.dto.GameModifierOperation;
 import com.aksi.api.game.dto.GameModifierType;
 import com.aksi.api.game.dto.GameModifiersResponse;
+import com.aksi.api.game.dto.SortOrder;
 import com.aksi.api.game.dto.UpdateGameModifierRequest;
 import com.aksi.domain.game.GameModifierEntity;
 
@@ -18,10 +20,10 @@ public interface GameModifierService {
 
   // Command operations (write)
   GameModifierInfo createGameModifier(CreateGameModifierRequest request);
-  GameModifierInfo updateGameModifier(String modifierId, UpdateGameModifierRequest request);
-  void deleteGameModifier(String modifierId);
-  GameModifierInfo activateGameModifier(String modifierId);
-  GameModifierInfo deactivateGameModifier(String modifierId);
+  GameModifierInfo updateGameModifier(UUID modifierId, UpdateGameModifierRequest request);
+  void deleteGameModifier(UUID modifierId);
+  GameModifierInfo activateGameModifier(UUID modifierId);
+  GameModifierInfo deactivateGameModifier(UUID modifierId);
 
   // Query operations (read)
   GameModifiersResponse getAllGameModifiers(
@@ -31,9 +33,12 @@ public interface GameModifierService {
       Boolean active,
       String search,
       int page,
-      int size);
+      int size,
+      String sortBy,
+      SortOrder sortOrder,
+      GameModifierOperation operation);
 
-  GameModifierInfo getGameModifierById(String modifierId);
+  GameModifierInfo getGameModifierById(UUID modifierId);
 
   /**
    * Get active modifiers for calculation (returns Entity objects for internal calculations)

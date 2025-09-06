@@ -1,6 +1,7 @@
 package com.aksi.repository;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -10,7 +11,11 @@ import com.aksi.domain.game.GameModifierEntity;
 
 @Repository
 public interface GameModifierRepository
-    extends JpaRepository<GameModifierEntity, String>, JpaSpecificationExecutor<GameModifierEntity> {
+    extends JpaRepository<GameModifierEntity, UUID>, JpaSpecificationExecutor<GameModifierEntity> {
+
+  List<GameModifierEntity> findByCode(String code);
+
+  List<GameModifierEntity> findByGameCode(String gameCode);
 
   boolean existsByCodeAndGameCode(String code, String gameCode);
 

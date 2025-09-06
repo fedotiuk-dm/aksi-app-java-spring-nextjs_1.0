@@ -22,6 +22,8 @@ export interface ServiceTypeManagementStore {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   clearError: () => void;
+  updateServiceType: (updatedServiceType: ServiceType) => void;
+  removeServiceType: (serviceTypeId: string) => void;
 }
 
 export const useServiceTypeManagementStore = create<ServiceTypeManagementStore>()(
@@ -47,6 +49,20 @@ export const useServiceTypeManagementStore = create<ServiceTypeManagementStore>(
         }),
 
       clearError: () => set({ error: null }),
+
+      updateServiceType: (updatedServiceType) =>
+        set((state) => ({
+          serviceTypes: state.serviceTypes.map((serviceType) =>
+            serviceType.id === updatedServiceType.id ? updatedServiceType : serviceType
+          ),
+        })),
+
+      removeServiceType: (serviceTypeId) =>
+        set((state) => ({
+          serviceTypes: state.serviceTypes.filter(
+            (serviceType) => serviceType.id !== serviceTypeId
+          ),
+        })),
     }),
     {
       name: 'service-type-management-store',

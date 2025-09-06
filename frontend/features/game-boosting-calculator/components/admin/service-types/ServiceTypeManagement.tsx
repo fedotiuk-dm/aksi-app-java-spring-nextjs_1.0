@@ -54,6 +54,7 @@ export const ServiceTypeManagement = () => {
     handleCreateServiceType,
     handleUpdateServiceType,
     handleDeleteServiceType,
+    handleForceDeleteServiceType,
     handleToggleActive,
     refreshServiceTypes,
   } = useServiceTypeManagement();
@@ -244,6 +245,7 @@ export const ServiceTypeManagement = () => {
                     <ServiceTypeDeleteModal
                       serviceType={serviceType}
                       onDelete={handleDeleteServiceType}
+                      onForceDelete={handleForceDeleteServiceType}
                     >
                       <IconButton size="small" color="error">
                         <DeleteIcon />

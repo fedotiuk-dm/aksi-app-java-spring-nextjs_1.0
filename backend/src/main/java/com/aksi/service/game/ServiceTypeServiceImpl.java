@@ -71,4 +71,27 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
     log.info("Deleting service type: {}", serviceTypeId);
     commandService.deleteServiceType(serviceTypeId);
   }
+
+  @Override
+  public ServiceType setServiceTypeActive(UUID serviceTypeId, Boolean active) {
+    return active
+        ? commandService.activateServiceType(serviceTypeId)
+        : commandService.deactivateServiceType(serviceTypeId);
+  }
+
+  @Override
+  public ServiceType activateServiceType(UUID serviceTypeId) {
+    return commandService.activateServiceType(serviceTypeId);
+  }
+
+  @Override
+  public ServiceType deactivateServiceType(UUID serviceTypeId) {
+    return commandService.deactivateServiceType(serviceTypeId);
+  }
+
+  @Override
+  public void forceDeleteServiceType(UUID serviceTypeId) {
+    log.warn("⚠️ Force deleting service type: {}", serviceTypeId);
+    commandService.forceDeleteServiceType(serviceTypeId);
+  }
 }
