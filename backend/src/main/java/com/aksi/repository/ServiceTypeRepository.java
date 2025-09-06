@@ -46,6 +46,11 @@ public interface ServiceTypeRepository
     return findAll(ServiceTypeSpecification.findActiveByGameId(gameId));
   }
 
+  /** Find all service types by game ID. */
+  default List<ServiceTypeEntity> findByGameId(UUID gameId) {
+    return findAll(ServiceTypeSpecification.findByGameId(gameId));
+  }
+
   /** Check if service type exists by code and ID not equal. */
   boolean existsByCodeAndIdNot(String code, UUID id);
 

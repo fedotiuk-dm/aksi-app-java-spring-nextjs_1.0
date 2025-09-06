@@ -8,11 +8,17 @@
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { GameModifierInfo } from '@api/game';
+import type { GameModifierInfo, Game, ServiceType } from '@api/game';
 
 export interface GameModifiersManagementStore {
-  // Data state (managed by React Query, but kept for potential future use)
+  // Data state (managed by React Query)
   modifiers: GameModifierInfo[];
+  games: Game[];
+  serviceTypes: ServiceType[];
+
+  // UI state
+  isLoading: boolean;
+  error: string | null;
 
   // UI state for complex interactions
   selectedModifierId: string | null;
@@ -27,6 +33,11 @@ export interface GameModifiersManagementStore {
 
   // Actions
   setModifiers: (modifiers: GameModifierInfo[]) => void;
+  setGames: (games: Game[]) => void;
+  setServiceTypes: (serviceTypes: ServiceType[]) => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
+  clearError: () => void;
   setSelectedModifierId: (id: string | null) => void;
   setModalOpen: (open: boolean, type?: 'create' | 'edit' | 'delete' | null) => void;
   setSearchTerm: (term: string) => void;
@@ -44,6 +55,10 @@ export const useGameModifiersManagementStore = create<GameModifiersManagementSto
     (set) => ({
       // Initial state
       modifiers: [],
+      games: [],
+      serviceTypes: [],
+      isLoading: false,
+      error: null,
       selectedModifierId: null,
       isModalOpen: false,
       modalType: null,
@@ -54,6 +69,11 @@ export const useGameModifiersManagementStore = create<GameModifiersManagementSto
 
       // Actions
       setModifiers: (modifiers) => set({ modifiers }),
+      setGames: (games) => set({ games }),
+      setServiceTypes: (serviceTypes) => set({ serviceTypes }),
+      setLoading: (isLoading) => set({ isLoading }),
+      setError: (error) => set({ error }),
+      clearError: () => set({ error: null }),
 
       setSelectedModifierId: (selectedModifierId) => set({ selectedModifierId }),
 

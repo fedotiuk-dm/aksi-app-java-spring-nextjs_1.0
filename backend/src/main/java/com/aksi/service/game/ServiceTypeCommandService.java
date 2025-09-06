@@ -86,24 +86,90 @@ public class ServiceTypeCommandService {
     return serviceTypeFactory.toDto(savedEntity);
   }
 
-  /**
-   * Delete a service type by setting it as inactive.
-   *
-   * @param serviceTypeId Service type ID
-   * @throws NotFoundException if service type not found
-   */
-  public void deleteServiceType(UUID serviceTypeId) {
-    log.info("Deleting service type with id: {}", serviceTypeId);
+      /**
+     * Delete a service type by setting it as inactive.
+     *
+     * @param serviceTypeId Service type ID
+     * @throws NotFoundException if service type not found
+     */
+    public void deleteServiceType(UUID serviceTypeId) {
+        log.info("Soft deleting service type with id: {}", serviceTypeId);
 
-    ServiceTypeEntity entity =
-        serviceTypeRepository
-            .findById(serviceTypeId)
-            .orElseThrow(
-                () -> new NotFoundException("Service type not found with id: " + serviceTypeId));
+        ServiceTypeEntity entity =
+            serviceTypeRepository
+                .findById(serviceTypeId)
+                .orElseThrow(
+                    () -> new NotFoundException("Service type not found with id: " + serviceTypeId));
 
-    entity.setActive(false);
-    serviceTypeRepository.save(entity);
+        entity.setActive(false);
+        serviceTypeRepository.save(entity);
 
-    log.info("Deleted service type with id: {}", serviceTypeId);
-  }
+        log.info("Soft deleted service type with id: {}", serviceTypeId);
+    }
+
+    /**
+     * Activate a service type (set active = true).
+     *
+     * @param serviceTypeId Service type ID
+     * @return Updated ServiceType
+     * @throws NotFoundException if service type not found
+     */
+    public ServiceType activateServiceType(UUID serviceTypeId) {
+        log.info("Activating service type with id: {}", serviceTypeId);
+
+        ServiceTypeEntity entity =
+            serviceTypeRepository
+                .findById(serviceTypeId)
+                .orElseThrow(
+                    () -> new NotFoundException("Service type not found with id: " + serviceTypeId));
+
+        entity.setActive(true);
+        ServiceTypeEntity savedEntity = serviceTypeRepository.save(entity);
+
+        log.info("Activated service type with id: {}", serviceTypeId);
+        return serviceTypeFactory.toDto(savedEntity);
+    }
+
+    /**
+     * Deactivate a service type (set active = false).
+     *
+     * @param serviceTypeId Service type ID
+     * @return Updated ServiceType
+     * @throws NotFoundException if service type not found
+     */
+    public ServiceType deactivateServiceType(UUID serviceTypeId) {
+        log.info("Deactivating service type with id: {}", serviceTypeId);
+
+        ServiceTypeEntity entity =
+            serviceTypeRepository
+                .findById(serviceTypeId)
+                .orElseThrow(
+                    () -> new NotFoundException("Service type not found with id: " + serviceTypeId));
+
+        entity.setActive(false);
+        ServiceTypeEntity savedEntity = serviceTypeRepository.save(entity);
+
+        log.info("Deactivated service type with id: {}", serviceTypeId);
+        return serviceTypeFactory.toDto(savedEntity);
+    }
+
+    /**
+     * Force delete a service type completely from database.
+     * WARNING: This permanently removes the service type and may break references!
+     * Use only when absolutely necessary (admin operations, data cleanup).
+     *
+     * @param serviceTypeId Service type ID
+     * @throws NotFoundException if service type not found
+     */
+    public void forceDeleteServiceType(UUID serviceTypeId) {
+        log.warn("⚠️ FORCE DELETING service type with id: {} - This action cannot be undone!", serviceTypeId);
+
+        if (!serviceTypeRepository.existsById(serviceTypeId)) {
+            throw new NotFoundException("Service type not found with id: " + serviceTypeId);
+        }
+
+        serviceTypeRepository.deleteById(serviceTypeId);
+
+        log.warn("✅ FORCE DELETED service type with id: {} permanently", serviceTypeId);
+    }
 }

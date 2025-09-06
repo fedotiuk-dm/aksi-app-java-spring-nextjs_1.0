@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 
 import com.aksi.api.game.dto.CreateGameModifierRequest;
 import com.aksi.api.game.dto.GameModifierInfo;
+import com.aksi.api.game.dto.GameModifierOperation;
 import com.aksi.api.game.dto.GameModifierType;
 import com.aksi.api.game.dto.GameModifiersResponse;
+import com.aksi.api.game.dto.SortOrder;
 import com.aksi.api.game.dto.UpdateGameModifierRequest;
 import com.aksi.domain.game.GameEntity;
 import com.aksi.domain.game.GameModifierEntity;
@@ -35,22 +37,22 @@ public class GameModifierServiceImpl implements GameModifierService {
     }
 
     @Override
-    public GameModifierInfo updateGameModifier(String modifierId, UpdateGameModifierRequest request) {
+    public GameModifierInfo updateGameModifier(UUID modifierId, UpdateGameModifierRequest request) {
         return gameModifierCommandService.updateGameModifier(modifierId, request);
     }
 
     @Override
-    public void deleteGameModifier(String modifierId) {
+    public void deleteGameModifier(UUID modifierId) {
         gameModifierCommandService.deleteGameModifier(modifierId);
     }
 
     @Override
-    public GameModifierInfo activateGameModifier(String modifierId) {
+    public GameModifierInfo activateGameModifier(UUID modifierId) {
         return gameModifierCommandService.activateGameModifier(modifierId);
     }
 
     @Override
-    public GameModifierInfo deactivateGameModifier(String modifierId) {
+    public GameModifierInfo deactivateGameModifier(UUID modifierId) {
         return gameModifierCommandService.deactivateGameModifier(modifierId);
     }
 
@@ -62,12 +64,23 @@ public class GameModifierServiceImpl implements GameModifierService {
             Boolean active,
             String search,
             int page,
-            int size) {
-        return gameModifierQueryService.getAllGameModifiers(gameCode, type, serviceTypeCode, active, search, page, size);
+            int size,
+            String sortBy,
+            SortOrder sortOrder,
+            GameModifierOperation operation) {
+        log.info("🔍 getAllGameModifiers called with filters: gameCode={}, type={}, serviceTypeCode={}, active={}, search={}, page={}, size={}, sortBy={}, sortOrder={}, operation={}",
+                gameCode, type, serviceTypeCode, active, search, page, size, sortBy, sortOrder, operation);
+
+        GameModifiersResponse response = gameModifierQueryService.getAllGameModifiers(gameCode, type, serviceTypeCode, active, search, page, size, sortBy, sortOrder, operation);
+
+        log.info("✅ getAllGameModifiers returned {} modifiers (total: {}, active: {})",
+                response.getModifiers().size(), response.getTotalCount(), response.getActiveCount());
+
+        return response;
     }
 
     @Override
-    public GameModifierInfo getGameModifierById(String modifierId) {
+    public GameModifierInfo getGameModifierById(UUID modifierId) {
         return gameModifierQueryService.getGameModifierById(modifierId);
     }
 

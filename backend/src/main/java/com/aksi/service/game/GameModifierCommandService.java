@@ -1,5 +1,7 @@
 package com.aksi.service.game;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,11 +67,11 @@ public class GameModifierCommandService {
      * Update an existing game modifier.
      */
     @Transactional
-    public GameModifierInfo updateGameModifier(String modifierId, UpdateGameModifierRequest request) {
+    public GameModifierInfo updateGameModifier(UUID modifierId, UpdateGameModifierRequest request) {
         log.info("Updating game modifier: {}", modifierId);
 
         // Validate request
-        gameModifierValidationService.validateUpdateGameModifier(modifierId, request);
+        gameModifierValidationService.validateUpdateGameModifier(modifierId.toString(), request);
 
         GameModifierEntity entity = gameModifierRepository.findById(modifierId)
             .orElseThrow(() -> new NotFoundException("Game modifier not found: " + modifierId));
@@ -86,7 +88,7 @@ public class GameModifierCommandService {
      * Delete a game modifier.
      */
     @Transactional
-    public void deleteGameModifier(String modifierId) {
+    public void deleteGameModifier(UUID modifierId) {
         log.info("Deleting game modifier: {}", modifierId);
 
         if (!gameModifierRepository.existsById(modifierId)) {
@@ -101,7 +103,7 @@ public class GameModifierCommandService {
      * Activate a game modifier.
      */
     @Transactional
-    public GameModifierInfo activateGameModifier(String modifierId) {
+    public GameModifierInfo activateGameModifier(UUID modifierId) {
         log.info("Activating game modifier: {}", modifierId);
 
         GameModifierEntity entity = gameModifierRepository.findById(modifierId)
@@ -118,7 +120,7 @@ public class GameModifierCommandService {
      * Deactivate a game modifier.
      */
     @Transactional
-    public GameModifierInfo deactivateGameModifier(String modifierId) {
+    public GameModifierInfo deactivateGameModifier(UUID modifierId) {
         log.info("Deactivating game modifier: {}", modifierId);
 
         GameModifierEntity entity = gameModifierRepository.findById(modifierId)

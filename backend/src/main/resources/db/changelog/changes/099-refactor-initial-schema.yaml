@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: 099-1
+      author: aksi
+      comment: Enable PostgreSQL extensions (replacement for 001-1)
+      dbms: postgresql
+      changes:
+        - sql:
+            sql: CREATE EXTENSION IF NOT EXISTS "uuid-ossp"
+        - sql:
+            sql: CREATE EXTENSION IF NOT EXISTS "pgcrypto"
+
+  - changeSet:
+      id: 099-4
+      author: aksi
+      comment: Create audit trigger function (replacement for 001-2)
+      dbms: postgresql
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE OR REPLACE FUNCTION update_updated_at_column()
+              RETURNS TRIGGER AS $$
+              BEGIN
+                  NEW.updated_at = CURRENT_TIMESTAMP;
+                  RETURN NEW;
+              END;
+              $$ LANGUAGE plpgsql
+
+  - changeSet:
+      id: 099-3
+      author: aksi
+      comment: Recreate custom domains for data validation (replacement for 001-3)
+      dbms: postgresql
+      changes:
+        - sql:
+            sql: |
+              DROP DOMAIN IF EXISTS phone_number;
+              CREATE DOMAIN phone_number AS VARCHAR(20) CHECK (VALUE ~ '^\+?[0-9\s\-\(\)]+$')
+        - sql:
+            sql: |
+              DROP DOMAIN IF EXISTS email;
+              CREATE DOMAIN email AS VARCHAR(255) CHECK (VALUE ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+        - sql:
+            sql: |
+              DROP DOMAIN IF EXISTS positive_decimal;
+              CREATE DOMAIN positive_decimal AS DECIMAL(10,2) CHECK (VALUE >= 0)
+        - sql:
+            sql: |
+              DROP DOMAIN IF EXISTS percentage;
+              CREATE DOMAIN percentage AS DECIMAL(5,2) CHECK (VALUE >= 0 AND VALUE <= 100)

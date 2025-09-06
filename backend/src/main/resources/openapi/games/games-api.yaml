@@ -41,6 +41,10 @@ paths:
     $ref: "./paths/service-types-paths.yaml#/paths/~1api~1games~1service-types"
   /api/games/service-types/{serviceTypeId}:
     $ref: "./paths/service-types-paths.yaml#/paths/~1api~1games~1service-types~1{serviceTypeId}"
+  /api/games/service-types/{serviceTypeId}/force-delete:
+    $ref: "./paths/service-types-paths.yaml#/paths/~1api~1games~1service-types~1{serviceTypeId}~1force-delete"
+  /api/games/service-types/{serviceTypeId}/set-active:
+    $ref: "./paths/service-types-paths.yaml#/paths/~1api~1games~1service-types~1{serviceTypeId}~1set-active"
 
   # Difficulty Levels endpoints
   /api/games/difficulty-levels:

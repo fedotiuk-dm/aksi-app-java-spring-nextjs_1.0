@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -14,13 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.game.dto.GameModifier;
 import com.aksi.api.game.dto.GameModifierInfo;
+import com.aksi.api.game.dto.GameModifierOperation;
 import com.aksi.api.game.dto.GameModifierType;
 import com.aksi.api.game.dto.GameModifiersResponse;
+import com.aksi.api.game.dto.SortOrder;
 import com.aksi.domain.game.GameModifierEntity;
 import com.aksi.exception.NotFoundException;
 import com.aksi.mapper.GameModifierMapper;
 import com.aksi.repository.GameModifierRepository;
 import com.aksi.repository.GameModifierSpecification;
+import com.aksi.repository.SpecificationUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,16 +51,29 @@ public class GameModifierQueryService {
             Boolean active,
             String search,
             int page,
-            int size) {
+            int size,
+            String sortBy,
+            SortOrder sortOrder,
+            GameModifierOperation operation) {
 
-        log.info("🔍 Getting game modifiers - gameCode: {}, type: {}, serviceType: {}, active: {}, search: {}, page: {}, size: {}",
-                gameCode, type, serviceTypeCode, active, search, page, size);
+        log.info("🔍 Getting game modifiers - gameCode: {}, type: {}, serviceType: {}, active: {}, search: {}, page: {}, size: {}, sortBy: {}, sortOrder: {}, operation: {}",
+                gameCode, type, serviceTypeCode, active, search, page, size, sortBy, sortOrder, operation);
 
         try {
             // Use specifications for efficient database-level filtering
             var specification = GameModifierSpecification.filterModifiers(
-                active, gameCode, search, type, serviceTypeCode);
+                active, gameCode, search, type, serviceTypeCode, operation);
             log.debug("🔍 Using specification for filtering modifiers");
+
+            // Apply dynamic sorting if specified, otherwise use default sort order
+            if (sortBy != null && !sortBy.trim().isEmpty()) {
+                boolean ascending = sortOrder == null || sortOrder == SortOrder.ASC;
+                specification = specification.and(SpecificationUtils.orderBy(sortBy, ascending));
+                log.debug("🔍 Applying dynamic sorting: {} {}", sortBy, ascending ? "ASC" : "DESC");
+            } else {
+                specification = specification.and(SpecificationUtils.orderBySortOrder());
+                log.debug("🔍 Using default sort order");
+            }
 
             // Apply pagination
             Pageable pageable = PageRequest.of(page, size);
@@ -111,7 +128,7 @@ public class GameModifierQueryService {
     /**
      * Get game modifier by ID.
      */
-    public GameModifierInfo getGameModifierById(String modifierId) {
+    public GameModifierInfo getGameModifierById(UUID modifierId) {
         log.info("Getting game modifier by ID: {}", modifierId);
 
         GameModifierEntity entity = gameModifierRepository.findById(modifierId)

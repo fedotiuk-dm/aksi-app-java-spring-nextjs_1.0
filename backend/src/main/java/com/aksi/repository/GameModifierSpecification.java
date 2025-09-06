@@ -2,6 +2,7 @@ package com.aksi.repository;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.aksi.api.game.dto.GameModifierOperation;
 import com.aksi.api.game.dto.GameModifierType;
 import com.aksi.domain.game.GameModifierEntity;
 
@@ -50,6 +51,16 @@ public class GameModifierSpecification {
     return SpecificationUtils.hasType(type);
   }
 
+  /** Creates a specification for modifiers by operation. */
+  public static Specification<GameModifierEntity> hasOperation(GameModifierOperation operation) {
+    return (root, query, criteriaBuilder) -> {
+      if (operation == null) {
+        return criteriaBuilder.conjunction();
+      }
+      return criteriaBuilder.equal(root.get("operation"), operation);
+    };
+  }
+
   /** Creates a specification for modifiers by service type codes. */
   public static Specification<GameModifierEntity> hasServiceTypeCode(String serviceTypeCode) {
     return (root, query, criteriaBuilder) -> {
@@ -68,7 +79,8 @@ public class GameModifierSpecification {
 
   /** Creates a specification for filtering modifiers with all parameters. */
   public static Specification<GameModifierEntity> filterModifiers(
-      Boolean active, String gameCode, String search, GameModifierType type, String serviceTypeCode) {
+      Boolean active, String gameCode, String search, GameModifierType type,
+      String serviceTypeCode, GameModifierOperation operation) {
 
     var specs = new java.util.ArrayList<Specification<GameModifierEntity>>();
 
@@ -86,6 +98,11 @@ public class GameModifierSpecification {
     // Type filter
     if (type != null) {
       specs.add(hasType(type));
+    }
+
+    // Operation filter
+    if (operation != null) {
+      specs.add(hasOperation(operation));
     }
 
     // Service type filter
