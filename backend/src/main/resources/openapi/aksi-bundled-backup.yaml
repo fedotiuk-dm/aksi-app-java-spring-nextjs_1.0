@@ -6157,6 +6157,14 @@ components:
         - EXTRA
         - PROMOTIONAL
         - SEASONAL
+        - SPELLS
+        - RANK
+        - PROGRESSION
+        - COSMETIC
+        - SOCIAL
+        - GUIDANCE
+        - ACHIEVEMENT
+        - SERVICE
       description: Type of game boosting modifier
       x-enum-descriptions:
         - Timing-related modifiers (rush, express, etc.)
@@ -6166,6 +6174,14 @@ components:
         - Extra service modifiers (screenshot, replay, etc.)
         - Promotional modifiers (discounts, bonuses, etc.)
         - Seasonal modifiers (holiday specials, events, etc.)
+        - Spell/item modifiers (spells, items, etc.)
+        - Rank-related modifiers (rank boost, etc.)
+        - Progression modifiers (level up, achievements, etc.)
+        - Cosmetic modifiers (skins, effects, etc.)
+        - Social modifiers (duo, party, etc.)
+        - Guidance modifiers (coaching, tips, etc.)
+        - Achievement modifiers (trophies, badges, etc.)
+        - Service modifiers (premium service, etc.)
     GameModifierOperation:
       type: string
       enum:
@@ -6414,11 +6430,15 @@ components:
     UniversalCalculationRequest:
       type: object
       required:
-        - formula
         - context
       properties:
         formula:
-          $ref: '#/components/schemas/CalculationFormula'
+          oneOf:
+            - $ref: '#/components/schemas/CalculationFormula'
+            - type: 'null'
+          description: >-
+            Optional formula for custom calculations. If not provided, universal
+            calculator will create a default formula based on context.
         context:
           $ref: '#/components/schemas/UniversalCalculationContext'
       description: Request schema for universal calculation endpoint

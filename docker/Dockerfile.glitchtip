@@ -1,0 +1,16 @@
+# Custom GlitchTip Dockerfile with curl installed
+FROM glitchtip/glitchtip:latest
+
+USER root
+
+# Install curl for health checks and debugging
+RUN apt-get update && apt-get install -y curl wget net-tools && rm -rf /var/lib/apt/lists/*
+
+# Create health check script
+RUN echo '#!/bin/bash\ncurl -f http://localhost:8000/ || exit 1' > /usr/local/bin/healthcheck.sh && \
+    chmod +x /usr/local/bin/healthcheck.sh
+
+USER app
+
+# Set the command to run
+CMD ["./bin/start.sh"]

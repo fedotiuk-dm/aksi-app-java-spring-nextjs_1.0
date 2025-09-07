@@ -40,6 +40,17 @@ app:
     base-url: ${FILE_BASE_URL:http://localhost:8080}
     api-path: ${FILE_API_PATH:/api/files}
 
+  # GlitchTip error monitoring configuration
+  glitchtip:
+    dsn: ${GLITCHTIP_DSN:}
+    environment: ${SPRING_PROFILES_ACTIVE:default}
+    release: ${GIT_COMMIT:unknown}
+    server-name: ${HOSTNAME:localhost}
+    # Performance monitoring
+    traces-sample-rate: ${GLITCHTIP_TRACES_SAMPLE_RATE:1.0}
+    # Debug mode
+    debug: ${GLITCHTIP_DEBUG:false}
+
   # Security configuration (default values - override in profiles)
   security:
     # Rate limiting settings
