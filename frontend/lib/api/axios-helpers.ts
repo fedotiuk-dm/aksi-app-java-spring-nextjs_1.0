@@ -11,6 +11,16 @@ import {
 } from './axios-config';
 import { ApiError } from './api-error';
 
+// GlitchTip/Sentry import - тільки на клієнті
+let Sentry: any = null;
+if (typeof window !== 'undefined') {
+  try {
+    Sentry = require('@sentry/nextjs');
+  } catch (error) {
+    console.warn('Sentry/GlitchTip не ініціалізований:', error);
+  }
+}
+
 export function isUsersMe(url?: string): boolean {
   return !!url && url.includes(USERS_ME_PATH);
 }
@@ -53,14 +63,49 @@ export function maybeHandleUsersMe500(url?: string): ApiError | null {
 
 function isAuthError(apiError: ApiError): boolean {
   const message = apiError.message?.toLowerCase() || '';
-  return message.includes('unauthorized') || 
-         message.includes('access denied') || 
-         message.includes('authentication') ||
-         message.includes('no session') ||
-         message.includes('session expired');
+  return (
+    message.includes('unauthorized') ||
+    message.includes('access denied') ||
+    message.includes('authentication') ||
+    message.includes('no session') ||
+    message.includes('session expired')
+  );
 }
 
 export type StatusHandler = (url: string | undefined, apiError: ApiError) => ApiError;
+
+/**
+ * Відправляє помилку до GlitchTip/Sentry
+ */
+function reportToGlitchTip(error: unknown, context?: Record<string, any>): void {
+  if (!Sentry || typeof window === 'undefined') return;
+
+  try {
+    // Створюємо контекст для помилки
+    const errorContext = {
+      source: 'axios_error_handler',
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      url: window.location.href,
+      ...context,
+    };
+
+    // Додаємо контекст до Sentry
+    Sentry.setContext('api_error', errorContext);
+
+    // Відправляємо помилку
+    if (error instanceof Error) {
+      Sentry.captureException(error);
+    } else {
+      Sentry.captureMessage(`API Error: ${String(error)}`, 'error');
+    }
+
+    // Очищаємо контекст після відправки
+    Sentry.setContext('api_error', undefined);
+  } catch (sentryError) {
+    console.warn('Помилка при відправці до GlitchTip:', sentryError);
+  }
+}
 
 export const statusHandlers: Record<number, StatusHandler> = {
   400: (_, apiError) => {
@@ -73,12 +118,12 @@ export const statusHandlers: Record<number, StatusHandler> = {
   500: (url, apiError) => {
     const usersMeError = maybeHandleUsersMe500(url);
     if (usersMeError) return usersMeError;
-    
+
     // Log Access Denied for debugging
     if (apiError.message?.includes('Access Denied')) {
       console.error(`🔒 Access Denied on: ${url || 'unknown URL'}`);
     }
-    
+
     return apiError;
   },
   401: (url, apiError) => {
@@ -106,6 +151,11 @@ export async function onAxiosResponseError(error: unknown): Promise<never> {
   }
 
   if (!axios.isAxiosError(error)) {
+    // Відправляємо не-Axios помилки до GlitchTip
+    reportToGlitchTip(error, {
+      type: 'non_axios_error',
+      error_message: String(error),
+    });
     return Promise.reject(error);
   }
 
@@ -117,6 +167,20 @@ export async function onAxiosResponseError(error: unknown): Promise<never> {
   }
 
   const url = axiosError.config?.url;
+
+  // Відправляємо помилку до GlitchTip, якщо це не silent path та не мережева помилка
+  if (!isSilentPath(url) && axiosError.message !== NETWORK_ERROR) {
+    reportToGlitchTip(axiosError, {
+      type: 'api_error',
+      url: url,
+      method: axiosError.config?.method?.toUpperCase(),
+      status: axiosError.response?.status,
+      statusText: axiosError.response?.statusText,
+      responseData: axiosError.response?.data,
+      requestData: axiosError.config?.data,
+    });
+  }
+
   if (shouldLogDevError(axiosError.message, url)) {
     apiError.logToConsole();
   }

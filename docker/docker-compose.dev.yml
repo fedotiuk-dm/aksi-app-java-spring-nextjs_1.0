@@ -22,7 +22,7 @@ services:
   #   networks:
   #     - aksi-network-dev
   #   restart: unless-stopped
-  # PostgreSQL - зберігаємо однаковий з основним compose файлом
+  # PostgreSQL - main database for the application
   postgres:
     image: postgres:17
     container_name: postgres-dev
@@ -44,6 +44,28 @@ services:
     networks:
       - aksi-network-dev
 
+  # PostgreSQL - separate database for GlitchTip
+  postgres-glitchtip:
+    image: postgres:17
+    container_name: postgres-glitchtip-dev
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_USER: glitchtip
+      POSTGRES_PASSWORD: glitchtip_pass
+      POSTGRES_DB: glitchtip
+      POSTGRES_SCHEMA: public
+    volumes:
+      - postgres_glitchtip_data_dev:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U glitchtip -d glitchtip"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aksi-network-dev
+
   # Redis for session management
   redis:
     image: redis:8-alpine
@@ -54,7 +76,7 @@ services:
     networks:
       - aksi-network-dev
 
-  # PgAdmin - зберігаємо однаковий з основним compose файлом
+  # PgAdmin - keeping consistent with main compose file
   pgadmin:
     image: dpage/pgadmin4:9.5
     container_name: aksi-pgadmin-dev
@@ -92,7 +114,7 @@ services:
   #       max-size: "10m"
   #       max-file: "3"
 
-  # Backend (Spring Boot) - розробка
+  # Backend (Spring Boot) - development
   backend:
     build:
       context: ../backend
@@ -130,6 +152,10 @@ services:
       # File storage configuration
       FILE_UPLOAD_DIR: /app/uploads
       FILE_BASE_URL: http://localhost:8080
+      # GlitchTip configuration
+      GLITCHTIP_DSN: http://b1abf81086f84a71bc66b1659e647402@glitchtip:8000/1
+      GLITCHTIP_DEBUG: "true"
+      GLITCHTIP_TRACES_SAMPLE_RATE: "1.0"
     volumes:
       - ../backend/src:/app/src # Монтуємо тільки src для hot reload
       - ../backend/target:/app/target # Монтуємо target для збереження compiled класів
@@ -158,17 +184,97 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s # Даємо більше часу на запуск Spring Boot
-    # labels:
-    #   # Налаштування Traefik
-    #   - "traefik.enable=true"
-    #   # Правило маршрутизації - запити на /api/* спрямовуються на бекенд
-    #   - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
-    #   # Вказуємо на якому порті працює сервіс
-    #   - "traefik.http.services.backend.loadbalancer.server.port=8080"
-    #   # Високий пріоритет для /api маршрутів
-    #   - "traefik.http.routers.backend.priority=100"
 
-  # Frontend (Next.js) - розробка
+  # GlitchTip - Error Monitoring (Development)
+  glitchtip:
+    build:
+      context: .
+      dockerfile: Dockerfile.glitchtip
+    container_name: glitchtip-dev
+    ports:
+      - "8001:8000"
+    environment:
+      # Database settings (як в офіційному прикладі)
+      DATABASE_URL: postgres://glitchtip:glitchtip_pass@postgres-glitchtip:5432/glitchtip
+      SECRET_KEY: "change_me_to_something_random_please_generate_new_key"
+      PORT: 8000
+      EMAIL_URL: consolemail://
+      GLITCHTIP_DOMAIN: http://localhost:8001
+      DEFAULT_FROM_EMAIL: admin@glitchtip.local
+      CELERY_WORKER_AUTOSCALE: "1,3"
+      REDIS_URL: redis://redis:6379/1
+      DEBUG: "true"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,glitchtip"
+    volumes:
+      - glitchtip_uploads_dev:/code/uploads
+    depends_on:
+      postgres-glitchtip:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - aksi-network-dev
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # GlitchTip Worker (for Celery tasks)
+  glitchtip-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.glitchtip
+    container_name: glitchtip-worker-dev
+    command: ./bin/run-celery-with-beat.sh
+    environment:
+      DATABASE_URL: postgres://glitchtip:glitchtip_pass@postgres-glitchtip:5432/glitchtip
+      SECRET_KEY: "change_me_to_something_random_please_generate_new_key"
+      PORT: 8000
+      EMAIL_URL: consolemail://
+      GLITCHTIP_DOMAIN: http://localhost:8001
+      DEFAULT_FROM_EMAIL: admin@glitchtip.local
+      CELERY_WORKER_AUTOSCALE: "1,3"
+      REDIS_URL: redis://redis:6379/1
+      DEBUG: "true"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,glitchtip"
+    volumes:
+      - glitchtip_uploads_dev:/code/uploads
+    depends_on:
+      - postgres-glitchtip
+      - redis
+    restart: unless-stopped
+    networks:
+      - aksi-network-dev
+
+  # GlitchTip Migrate (for database migrations)
+  glitchtip-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.glitchtip
+    container_name: glitchtip-migrate-dev
+    command: ./bin/run-migrate.sh
+    environment:
+      DATABASE_URL: postgres://glitchtip:glitchtip_pass@postgres-glitchtip:5432/glitchtip
+      SECRET_KEY: "change_me_to_something_random_please_generate_new_key"
+      PORT: 8000
+      EMAIL_URL: consolemail://
+      GLITCHTIP_DOMAIN: http://localhost:8001
+      DEFAULT_FROM_EMAIL: admin@glitchtip.local
+      CELERY_WORKER_AUTOSCALE: "1,3"
+      REDIS_URL: redis://redis:6379/1
+      DEBUG: "true"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,glitchtip"
+    depends_on:
+      - postgres-glitchtip
+      - redis
+    restart: "no"
+    networks:
+      - aksi-network-dev
+
+  # Frontend (Next.js) - development
   frontend:
     build:
       context: ../frontend
@@ -187,6 +293,9 @@ services:
       NEXT_TELEMETRY_DISABLED: 1
       # Orval конфігурація для генерації API
       ORVAL_API_URL: http://backend:8080/v3/api-docs
+      # GlitchTip error monitoring
+      NEXT_PUBLIC_GLITCHTIP_DSN: http://b1abf81086f84a71bc66b1659e647402@glitchtip:8000/1
+      GLITCHTIP_ENABLED: "true"
       # 🚀 NPM ОПТИМІЗАЦІЯ для прискорення
       npm_config_audit: "false"
       npm_config_fund: "false"
@@ -230,10 +339,12 @@ networks:
 
 volumes:
   postgres_data_dev:
+  postgres_glitchtip_data_dev: # Volume for GlitchTip PostgreSQL
   pgadmin_data_dev:
   frontend_node_modules:
   frontend_next_cache:
   frontend_npm_cache:
   backend_m2_cache:
-  backend_uploads: # Volume для завантажених файлів
+  backend_uploads: # Volume for uploaded files
+  glitchtip_uploads_dev: # Volume for GlitchTip uploads
   portainer_data:

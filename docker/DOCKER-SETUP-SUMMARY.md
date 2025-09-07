@@ -1,36 +1,36 @@
-# 🐳 Docker Dev Environment - Налаштування завершено
+# 🐳 Docker Dev Environment - Setup Complete
 
-## ✅ Що було зроблено
+## ✅ What was done
 
-### 1. **Оновлено Backend конфігурацію**
+### 1. **Backend Configuration Updated**
 
-- ✅ Додано `spring-boot-devtools` до `pom.xml` для hot reload
-- ✅ Оновлено `application.yml` з environment змінними та dev профілем
-- ✅ Створено новий `Dockerfile.dev` з покращеною підтримкою hot reload
-- ✅ Додано `.dockerignore` для оптимізації Docker context
+- ✅ Added `spring-boot-devtools` to `pom.xml` for hot reload
+- ✅ Updated `application.yml` with environment variables and dev profile
+- ✅ Created new `Dockerfile.dev` with improved hot reload support
+- ✅ Added `.dockerignore` for Docker context optimization
 
-### 2. **Оновлено Docker Compose**
+### 2. **Docker Compose Updated**
 
-- ✅ Синхронізовано параметри БД (`aksi_cleaners_db_v5`, password: `1911`)
-- ✅ Додано debug порт 5005 для backend
-- ✅ Налаштовано volume mounting для hot reload
-- ✅ Додано DevTools environment змінні
+- ✅ Synchronized DB parameters (`aksi_cleaners_db_v5`, password: `1911`)
+- ✅ Added debug port 5005 for backend
+- ✅ Configured volume mounting for hot reload
+- ✅ Added DevTools environment variables
 
-### 3. **Створено допоміжні скрипти**
+### 3. **Helper Scripts Created**
 
-- ✅ `start-dev-updated.sh` - автоматичний запуск dev середовища
-- ✅ `reset-dev.sh` - очистка та скидання середовища
-- ✅ `README-DEV-UPDATED.md` - повна документація
+- ✅ `start-dev-updated.sh` - automatic dev environment startup
+- ✅ `reset-dev.sh` - cleanup and reset environment
+- ✅ `README-DEV-UPDATED.md` - complete documentation
 
-### 4. **Налаштовано Liquibase міграції**
+### 4. **Liquibase Migrations Configured**
 
-- ✅ Створено `001-create-client-tables.yaml` - структура БД для Client domain
-- ✅ Створено `002-insert-client-seed-data.yaml` - тестові дані
-- ✅ Налаштовано автоматичний запуск міграцій при старті
+- ✅ Created `001-create-client-tables.yaml` - DB structure for Client domain
+- ✅ Created `002-insert-client-seed-data.yaml` - test data
+- ✅ Configured automatic migration execution on startup
 
-## 🚀 Як запустити
+## 🚀 How to start
 
-### Швидкий старт
+### Quick start
 
 ```bash
 cd docker
@@ -38,39 +38,55 @@ chmod +x start-dev-updated.sh reset-dev.sh
 ./start-dev-updated.sh
 ```
 
-### Або вручну
+### Or manually
 
 ```bash
 cd docker
 docker-compose -f docker-compose.dev.yml up --build
 ```
 
-## 🔥 Hot Reload працює для:
+## 🔥 Hot Reload works for:
 
 ### Backend (Spring Boot)
 
-- ☕ Автоматичний перезапуск при змінах Java файлів
-- 🔧 LiveReload для ресурсів
-- 🐛 Debug на порту 5005
-- ⚡ DevTools включені
+- ☕ Automatic restart on Java file changes
+- 🔧 LiveReload for resources
+- 🐛 Debug on port 5005
+- ⚡ DevTools enabled
 
 ### Frontend (Next.js)
 
-- ⚛️ Fast Refresh для компонентів React
+- ⚛️ Fast Refresh for React components
 - 🔄 Hot Module Replacement (HMR)
-- 💨 Швидкі зміни без перезавантаження
+- 💨 Quick changes without reloading
 
-## 🗄️ База даних
+## 🗄️ Database
 
-### Параметри підключення
+### Connection parameters
 
 ```yaml
-Host: localhost (або postgres для контейнерів)
+Host: localhost (or postgres for containers)
 Port: 5432
 Database: aksi_cleaners_db_v5
 Username: aksi_user
 Password: 1911
 ```
+
+### GlitchTip Error Monitoring
+
+```
+URL: http://localhost:8001
+Username: admin
+Password: admin123
+Email: admin@glitchtip.local
+```
+
+**What it monitors:**
+
+- ✅ Backend (Spring Boot) errors and performance
+- ✅ Frontend (Next.js) errors and performance
+- ✅ Automatic grouping of similar errors
+- ✅ Real-time alerts and notifications
 
 ### PgAdmin
 
@@ -80,61 +96,70 @@ Email: admin@aksi.com
 Password: admin
 ```
 
-## 🌐 Доступні сервіси
+## 🌐 Available services
 
-| Сервіс      | URL                                       | Призначення             |
-| ----------- | ----------------------------------------- | ----------------------- |
-| Frontend    | http://localhost:3000                     | Next.js UI              |
-| Backend API | http://localhost:8080/api                 | Spring Boot REST API    |
-| Swagger UI  | http://localhost:8080/api/swagger-ui.html | API документація        |
-| PgAdmin     | http://localhost:5050                     | Веб-інтерфейс БД        |
-| Debug       | localhost:5005                            | Java Remote Debug       |
-| Traefik     | http://localhost:9090                     | Load Balancer Dashboard |
+| Service       | URL                                       | Purpose                 |
+| ------------- | ----------------------------------------- | ----------------------- |
+| Frontend      | http://localhost:3000                     | Next.js UI              |
+| Backend API   | http://localhost:8080/api                 | Spring Boot REST API    |
+| Swagger UI    | http://localhost:8080/api/swagger-ui.html | API documentation       |
+| **GlitchTip** | **http://localhost:8001**                 | **Error Monitoring**    |
+| PgAdmin       | http://localhost:5050                     | Database web interface  |
+| Debug         | localhost:5005                            | Java Remote Debug       |
+| Traefik       | http://localhost:9090                     | Load Balancer Dashboard |
 
-## 🔧 Корисні команди
+## 🔧 Useful commands
 
-### Логи
+### Logs
 
 ```bash
-# Всі сервіси
+# All services
 docker-compose -f docker-compose.dev.yml logs -f
 
-# Тільки backend
+# Backend only
 docker-compose -f docker-compose.dev.yml logs -f backend
 
-# Тільки frontend
+# Frontend only
 docker-compose -f docker-compose.dev.yml logs -f frontend
 ```
 
-### Управління
+### Management
 
 ```bash
-# Перезапуск backend
+# Restart backend
 docker-compose -f docker-compose.dev.yml restart backend
 
-# Зупинка всього
+# Restart GlitchTip
+docker-compose -f docker-compose.dev.yml restart glitchtip
+
+# Quick GlitchTip management
+docker-compose -f docker-compose.dev.yml stop glitchtip   # Stop
+docker-compose -f docker-compose.dev.yml start glitchtip  # Start
+docker-compose -f docker-compose.dev.yml logs -f glitchtip # Follow logs
+
+# Stop everything
 docker-compose -f docker-compose.dev.yml down
 
-# Повна очистка
+# Full cleanup
 ./reset-dev.sh
 
-# 🔧 Корисні скрипти для target директорії:
-./clean-target.sh     # Швидка очистка target для регенерації OpenAPI
-./rebuild-backend.sh  # Повна перебудова backend контейнера
+# 🔧 Useful scripts for target directory:
+./clean-target.sh     # Quick target cleanup for OpenAPI regeneration
+./rebuild-backend.sh  # Full backend container rebuild
 ```
 
 ### Liquibase
 
 ```bash
-# Запуск міграцій
+# Run migrations
 cd ../backend
 mvn liquibase:update -Dliquibase.contexts=dev
 
-# Статус міграцій
+# Migration status
 mvn liquibase:status
 ```
 
-## 🐛 Debug налаштування
+## 🐛 Debug settings
 
 ### IntelliJ IDEA
 
@@ -156,7 +181,7 @@ mvn liquibase:status
 }
 ```
 
-## 📁 Структура volumes
+## 📁 Volume structure
 
 ```
 backend_m2_cache        → Maven dependencies cache
@@ -166,64 +191,120 @@ frontend_node_modules   → Node.js modules
 frontend_next_cache     → Next.js build cache
 ```
 
-## 🧪 Тестування
+## 🧪 Testing
 
-### Backend тести
+### Backend tests
 
 ```bash
-# В контейнері
+# In container
 docker exec backend-dev ./mvnw test
 
-# Локально
+# Locally
 cd backend && ./mvnw test
 ```
 
-### Client Domain тести
+### Client Domain tests
 
 ```bash
-# Тести для Client domain (після створення міграцій)
+# Tests for Client domain (after migrations are created)
 cd backend && ./mvnw test -Dtest="*Client*"
+```
+
+### GlitchTip Error Monitoring tests
+
+```bash
+# Test API endpoints for GlitchTip verification
+curl http://localhost:8080/api/test/error      # Generate backend error
+curl http://localhost:8080/api/test/success    # Test successful request
+curl http://localhost:8080/api/test/performance # Test performance
+
+# Frontend error testing
+open http://localhost:3000/test-glitchtip      # Test page with error buttons
+
+# Check errors in GlitchTip dashboard
+open http://localhost:8001
+
+# Test envelope endpoint directly
+curl -X POST http://localhost:8001/api/1/envelope/ \
+  -H "Content-Type: application/json" \
+  -d '{"test": "manual_test"}'
 ```
 
 ## 🔍 Troubleshooting
 
-### Backend не запускається
+### Backend won't start
 
 ```bash
-# Перевірити логи
+# Check logs
 docker-compose -f docker-compose.dev.yml logs backend
 
-# Перевірити підключення до БД
+# Check database connection
 docker exec backend-dev nc -zv postgres 5432
 ```
 
-### Hot reload не працює
+### Hot reload doesn't work
 
 ```bash
-# Перевірити DevTools
+# Check DevTools
 docker exec backend-dev grep -r "devtools" /app/target/classes/
 
-# Перевірити volume mounting
+# Check volume mounting
 docker inspect backend-dev | grep -A 20 "Mounts"
 ```
 
-### База даних недоступна
+### GlitchTip doesn't work
 
 ```bash
-# Статус PostgreSQL
+# Check GlitchTip status
+docker-compose -f docker-compose.dev.yml ps glitchtip
+
+# View GlitchTip logs
+docker-compose -f docker-compose.dev.yml logs glitchtip
+
+# Check if database is created and accessible
+docker exec postgres-glitchtip-dev psql -U glitchtip -d glitchtip -c "SELECT version();"
+
+# Test GlitchTip web interface
+curl -s http://localhost:8001/ | grep -o "GlitchTip"
+
+# Test envelope endpoint
+curl -s -w "%{http_code}" -X POST http://localhost:8001/api/1/envelope/ \
+  -H "Content-Type: application/json" -d '{"test": "health_check"}'
+
+# Check GlitchTip container health
+docker inspect glitchtip-dev | grep -A 5 "Health"
+
+# Restart GlitchTip
+docker-compose -f docker-compose.dev.yml restart glitchtip
+
+# Full rebuild if needed
+docker-compose -f docker-compose.dev.yml up --build -d glitchtip
+```
+
+### Database unavailable
+
+```bash
+# PostgreSQL status
 docker exec postgres-dev pg_isready -U aksi_user
 
-# Підключення до БД
+# Connect to database
 docker exec -it postgres-dev psql -U aksi_user -d aksi_cleaners_db_v5
 ```
 
-## 📊 Моніторинг
+## 📊 Monitoring
 
 ### Spring Boot Actuator
 
 - Health check: http://localhost:8080/api/actuator/health
 - Metrics: http://localhost:8080/api/actuator/metrics
-- Всі endpoints: http://localhost:8080/api/actuator
+- All endpoints: http://localhost:8080/api/actuator
+
+### GlitchTip Error Monitoring
+
+- Dashboard: http://localhost:8001
+- Projects: `backend`, `frontend`
+- Error tracking: Real-time errors with stack traces
+- Performance: Transaction tracing and metrics
 
 ### Docker Stats
 
@@ -234,12 +315,12 @@ docker-compose -f docker-compose.dev.yml top
 
 ---
 
-## 🎯 Наступні кроки
+## 🎯 Next steps
 
-1. **Запустіть** dev середовище: `./start-dev-updated.sh`
-2. **Перевірте** що всі сервіси працюють
-3. **Протестуйте** hot reload змінивши Java клас
-4. **Підключіться** до debug на порту 5005
-5. **Перевірте** Client API через Swagger UI
+1. **Start** dev environment: `./start-dev-updated.sh`
+2. **Check** that all services are running
+3. **Test** hot reload by changing a Java class
+4. **Connect** to debug on port 5005
+5. **Check** Client API via Swagger UI
 
-**Готово для розробки! 🚀**
+**Ready for development! 🚀**

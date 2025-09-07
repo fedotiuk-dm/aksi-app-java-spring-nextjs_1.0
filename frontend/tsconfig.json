@@ -76,9 +76,14 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
     ".next/types/**/*.ts",
     "types/**/*.ts",
-    "types/**/*.d.ts"
+    "types/**/*.d.ts",
+    "sentry.d.ts",
+    "sentry.client.config.js",
+    "sentry.server.config.ts"
   ],
   "exclude": ["node_modules", ".next/**/*"]
 }

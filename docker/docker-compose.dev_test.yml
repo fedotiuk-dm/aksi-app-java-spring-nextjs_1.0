@@ -31,6 +31,39 @@ services:
     networks:
       - aksi-network-dev
 
+  # GlitchTip - Error Monitoring (Test)
+  glitchtip:
+    image: glitchtip/glitchtip:latest
+    container_name: glitchtip-test
+    ports:
+      - "8001:8000" # Використовуємо порт 8001 для тестів
+    environment:
+      DATABASE_URL: postgresql://glitchtip:glitchtip_pass@postgres:5432/glitchtip
+      SECRET_KEY: test-secret-key-for-glitchtip
+      EMAIL_HOST: localhost
+      EMAIL_PORT: 3025
+      EMAIL_HOST_USER: ""
+      EMAIL_HOST_PASSWORD: ""
+      EMAIL_USE_TLS: "false"
+      EMAIL_USE_SSL: "false"
+      REDIS_URL: redis://redis:6379/1
+      DJANGO_SETTINGS_MODULE: glitchtip.settings
+      DEBUG: "true"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,glitchtip"
+      GLITCHTIP_ADMIN_USERNAME: admin
+      GLITCHTIP_ADMIN_PASSWORD: admin123
+      GLITCHTIP_ADMIN_EMAIL: admin@glitchtip.local
+    volumes:
+      - glitchtip_data_test:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - aksi-network-dev
+
   # PgAdmin
   pgadmin:
     image: dpage/pgadmin4:9.5
@@ -97,7 +130,14 @@ services:
     networks:
       - aksi-network-dev
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/management/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "--spider",
+          "http://localhost:8080/management/health",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -153,4 +193,5 @@ volumes:
   frontend_npm_cache:
   backend_m2_cache:
   backend_uploads:
+  glitchtip_data_test:
   portainer_data:

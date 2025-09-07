@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // Маршрути, які потребують авторизації
 const protectedRoutes = [
   '/dashboard',
-  '/clients', 
+  '/clients',
   '/orders',
   '/order-wizard',
   '/price-list',
@@ -18,6 +18,7 @@ const publicApiRoutes = [
   '/api/auth/login',
   '/api/auth/refresh-token',
   '/api/auth/logout',
+  '/api/sentry-tunnel',
 ] as const;
 
 // Перевірка, чи шлях є публічним
@@ -73,6 +74,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|sentry-tunnel).*)',
   ],
 };

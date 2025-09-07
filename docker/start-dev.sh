@@ -144,7 +144,7 @@ stop_containers() {
 show_logs() {
     local service="${2:-}"
     local tail_lines="${3:-1000}"
-    
+
     # Якщо передано "all" як кількість рядків, показуємо всі логи
     if [ "$tail_lines" = "all" ]; then
         if [ -n "$service" ]; then
@@ -343,6 +343,7 @@ show_usage_info() {
     echo "   Frontend (Next.js):     http://localhost:3000"
     echo "   Backend API (Spring):   http://localhost:8080/api"
     echo "   Swagger UI:             http://localhost:8080/api/swagger-ui.html"
+    echo "   GlitchTip Monitoring:   http://localhost:8000 (admin / admin123)"
     echo "   PgAdmin:                http://localhost:5050 (admin@aksi.com / admin)"
     echo "   Traefik Dashboard:      http://localhost:9090"
     echo ""
