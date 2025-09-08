@@ -1,3 +1,4 @@
+---
 components:
   schemas:
     LoginRequest:
@@ -8,17 +9,14 @@ components:
       properties:
         username:
           type: string
-          minLength: 3
-          maxLength: 50
-          pattern: "^[a-zA-Z0-9_]+$"
+          pattern: "^[a-zA-Z0-9_]{3,50}$"
           description: Operator username
           example: operator1
         password:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           minLength: 6
           maxLength: 100
-          # Pattern removed for dev mode - production should use strict pattern
-          # pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$'
           description: Password (min 6 chars for dev, 12 for prod)
           example: Admin123!
         rememberMe:
@@ -28,9 +26,11 @@ components:
         branchId:
           type: string
           format: uuid
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
           nullable: true
           description: Branch ID for login (optional, can be selected later)
           example: "550e8400-e29b-41d4-a716-446655440000"
+      additionalProperties: false
 
     LoginResponse:
       type: object
@@ -45,42 +45,52 @@ components:
         userId:
           type: string
           format: uuid
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
           description: User ID
           example: "660e8400-e29b-41d4-a716-446655440001"
         username:
           type: string
+          pattern: "^[a-zA-Z0-9_]{3,50}$"
           description: Username
           example: operator1
         firstName:
           type: string
+          pattern: "^[a-zA-Zs]{1,50}$"
           description: First name
           example: Ivan
         lastName:
           type: string
+          pattern: "^[a-zA-Zs]{1,50}$"
           description: Last name
           example: Petrenko
         roles:
           type: array
           minItems: 1
+          maxItems: 10
           items:
             $ref: "../../common.yaml#/components/schemas/UserRole"
           description: User roles
         permissions:
           type: array
+          maxItems: 50
           items:
             type: string
+            maxLength: 50
+            pattern: "^[A-Z][A-Z_]*$"
           description: User permissions
           example: ["CREATE_ORDER", "VIEW_CUSTOMERS", "EDIT_ORDER"]
         branchId:
           type: string
           format: uuid
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
           nullable: true
           description: Current branch ID
         branchName:
           type: string
+          pattern: "^[a-zA-Z0-9s\\-_]{1,100}$"
           nullable: true
           description: Current branch name
-          example: Main Street Branch
+          example: "Main Street Branch"
         requiresBranchSelection:
           type: boolean
           description: Whether branch selection is required
@@ -95,9 +105,11 @@ components:
           example: 5
         lockoutExpiresAt:
           type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(.\\d{3})?Z$"
           nullable: true
           format: date-time
           description: When account lockout expires (if blocked)
+      additionalProperties: false
 
     SessionInfo:
       type: object
@@ -110,47 +122,59 @@ components:
       properties:
         sessionId:
           type: string
+          pattern: "^[a-zA-Z0-9]{20,64}$"
           description: Session ID
           example: "KJ3h4k2j3h4k23j4h23k4j"
         userId:
           type: string
           format: uuid
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
           description: User ID
         username:
           type: string
+          pattern: "^[a-zA-Z0-9_]{3,50}$"
           description: Username
         roles:
           type: array
+          maxItems: 10
           items:
             $ref: "../../common.yaml#/components/schemas/UserRole"
         branchId:
           type: string
           format: uuid
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
           nullable: true
           description: Current branch ID
         branchName:
           type: string
+          pattern: "^[a-zA-Z0-9s\\-_]{1,100}$"
           nullable: true
           description: Current branch name
         createdAt:
           type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(.\\d{3})?Z$"
           format: date-time
           description: Session creation time
         lastAccessedAt:
           type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(.\\d{3})?Z$"
           format: date-time
           description: Last access time
         expiresAt:
           type: string
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(.\\d{3})?Z$"
           format: date-time
           description: Session expiration time
         ipAddress:
           type: string
+          pattern: "^\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}$"
           description: IP address
           example: "192.168.1.1"
         userAgent:
           type: string
+          pattern: "^[a-zA-Z0-9s/().;-]{1,500}$"
           description: Browser user agent
+      additionalProperties: false
 
     # Error schemas
 
@@ -164,6 +188,7 @@ components:
       properties:
         sessions:
           type: array
+          maxItems: 50
           items:
             $ref: "#/components/schemas/SessionDetail"
           description: List of user sessions
@@ -173,8 +198,10 @@ components:
           example: 3
         currentSessionId:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           description: Current session ID
           example: "KJ3h4k2j3h4k23j4h23k4j"
+      additionalProperties: false
 
     SessionDetail:
       type: object
@@ -188,6 +215,7 @@ components:
       properties:
         sessionId:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           description: Session ID
           example: "KJ3h4k2j3h4k23j4h23k4j"
         createdAt:
@@ -204,19 +232,23 @@ components:
           description: Session expiration time
         ipAddress:
           type: string
+          pattern: "^\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}$"
           description: IP address
           example: "192.168.1.1"
         userAgent:
           type: string
+          pattern: "^[a-zA-Z0-9s/().;-]{1,500}$"
           description: Browser user agent
           example: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         location:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           nullable: true
           description: Approximate location based on IP
-          example: "Kiev, Ukraine"
+          example: "Kyiv Ukraine"
         deviceType:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           nullable: true
           description: Device type (mobile, tablet, desktop)
           example: "desktop"
@@ -224,6 +256,7 @@ components:
           type: boolean
           description: Is this the current session
           example: true
+      additionalProperties: false
 
     SessionTerminationResponse:
       type: object
@@ -237,265 +270,10 @@ components:
           example: 2
         message:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           description: Success message
           example: "Successfully terminated 2 other sessions"
-
-    # Security Management schemas
-    SecurityAttemptsResponse:
-      type: object
-      required:
-        - overview
-        - recentAttempts
-        - blockedUsers
-        - blockedIps
-      properties:
-        overview:
-          $ref: "#/components/schemas/SecurityOverview"
-        recentAttempts:
-          type: array
-          items:
-            $ref: "#/components/schemas/LoginAttempt"
-          maxItems: 50
-          description: Recent login attempts (last 50)
-        blockedUsers:
-          type: array
-          items:
-            $ref: "#/components/schemas/BlockedUser"
-          description: Currently blocked users
-        blockedIps:
-          type: array
-          items:
-            $ref: "#/components/schemas/BlockedIp"
-          description: Currently blocked IP addresses
-
-    SecurityOverview:
-      type: object
-      required:
-        - totalFailedAttemptsToday
-        - totalBlockedUsers
-        - totalBlockedIps
-        - peakAttemptTime
-      properties:
-        totalFailedAttemptsToday:
-          type: integer
-          description: Total failed attempts today
-          example: 147
-        totalBlockedUsers:
-          type: integer
-          description: Currently blocked users count
-          example: 3
-        totalBlockedIps:
-          type: integer
-          description: Currently blocked IPs count
-          example: 8
-        peakAttemptTime:
-          type: string
-          format: date-time
-          description: Time of highest attempt rate today
-        averageAttemptsPerHour:
-          type: number
-          format: double
-          description: Average failed attempts per hour
-          example: 6.2
-
-    LoginAttempt:
-      type: object
-      required:
-        - timestamp
-        - username
-        - ipAddress
-        - success
-      properties:
-        timestamp:
-          type: string
-          format: date-time
-          description: Attempt timestamp
-        username:
-          type: string
-          description: Username attempted
-          example: "operator1"
-        ipAddress:
-          type: string
-          description: IP address
-          example: "192.168.1.1"
-        userAgent:
-          type: string
-          nullable: true
-          description: User agent
-        location:
-          type: string
-          nullable: true
-          description: Approximate location
-          example: "Kiev, Ukraine"
-        success:
-          type: boolean
-          description: Whether attempt was successful
-        failureReason:
-          type: string
-          nullable: true
-          description: Reason for failure
-          example: "Invalid password"
-
-    BlockedUser:
-      type: object
-      required:
-        - username
-        - failedAttempts
-        - lastAttemptAt
-        - blockedUntil
-      properties:
-        username:
-          type: string
-          description: Blocked username
-          example: "operator1"
-        failedAttempts:
-          type: integer
-          description: Number of failed attempts
-          example: 5
-        lastAttemptAt:
-          type: string
-          format: date-time
-          description: Last failed attempt time
-        blockedUntil:
-          type: string
-          format: date-time
-          description: When block expires
-        lastAttemptIp:
-          type: string
-          description: IP of last attempt
-          example: "192.168.1.1"
-
-    BlockedIp:
-      type: object
-      required:
-        - ipAddress
-        - failedAttempts
-        - lastAttemptAt
-        - blockedUntil
-      properties:
-        ipAddress:
-          type: string
-          description: Blocked IP address
-          example: "192.168.1.1"
-        failedAttempts:
-          type: integer
-          description: Number of failed attempts
-          example: 12
-        lastAttemptAt:
-          type: string
-          format: date-time
-          description: Last failed attempt time
-        blockedUntil:
-          type: string
-          format: date-time
-          description: When block expires
-        location:
-          type: string
-          nullable: true
-          description: Approximate location
-          example: "Kiev, Ukraine"
-        lastUsername:
-          type: string
-          nullable: true
-          description: Last username attempted from this IP
-          example: "operator1"
-
-    SecurityPolicyResponse:
-      type: object
-      required:
-        - rateLimiting
-        - passwordPolicy
-        - sessionPolicy
-      properties:
-        rateLimiting:
-          $ref: "#/components/schemas/RateLimitingPolicy"
-        passwordPolicy:
-          $ref: "#/components/schemas/PasswordPolicyInfo"
-        sessionPolicy:
-          $ref: "#/components/schemas/SessionPolicyInfo"
-
-    RateLimitingPolicy:
-      type: object
-      required:
-        - maxAttemptsPerUser
-        - maxAttemptsPerIp
-        - lockoutDurationMinutes
-        - enabled
-      properties:
-        maxAttemptsPerUser:
-          type: integer
-          description: Max failed attempts per user
-          example: 5
-        maxAttemptsPerIp:
-          type: integer
-          description: Max failed attempts per IP
-          example: 10
-        lockoutDurationMinutes:
-          type: integer
-          description: Lockout duration in minutes
-          example: 15
-        enabled:
-          type: boolean
-          description: Is rate limiting enabled
-          example: true
-
-    PasswordPolicyInfo:
-      type: object
-      required:
-        - minLength
-        - requireUppercase
-        - requireLowercase
-        - requireNumbers
-        - requireSpecialChars
-      properties:
-        minLength:
-          type: integer
-          description: Minimum password length
-          example: 12
-        requireUppercase:
-          type: boolean
-          description: Require uppercase letters
-          example: true
-        requireLowercase:
-          type: boolean
-          description: Require lowercase letters
-          example: true
-        requireNumbers:
-          type: boolean
-          description: Require numbers
-          example: true
-        requireSpecialChars:
-          type: boolean
-          description: Require special characters
-          example: true
-        allowedSpecialChars:
-          type: string
-          description: Allowed special characters
-          example: "@$!%*?&"
-
-    SessionPolicyInfo:
-      type: object
-      required:
-        - defaultTimeoutMinutes
-        - maxConcurrentSessions
-        - rememberMeTimeoutDays
-      properties:
-        defaultTimeoutMinutes:
-          type: integer
-          description: Default session timeout in minutes
-          example: 60
-        maxConcurrentSessions:
-          type: integer
-          description: Max concurrent sessions per user
-          example: 3
-        rememberMeTimeoutDays:
-          type: integer
-          description: Remember me timeout in days
-          example: 30
-        sessionFixationProtection:
-          type: boolean
-          description: Is session fixation protection enabled
-          example: true
+      additionalProperties: false
 
     ServerTimeResponse:
       type: object
@@ -517,10 +295,12 @@ components:
           example: 1705327845123
         timezone:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           description: Server timezone identifier
-          example: "Europe/Kiev"
+          example: "Europe/Kyiv"
         utcOffset:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           description: UTC offset for server timezone
           example: "+02:00"
         date:
@@ -530,8 +310,202 @@ components:
           example: "2024-01-15"
         time:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           description: Current server time (HH:mm:ss)
           example: "14:30:45"
+      additionalProperties: false
 
-security:
-  - cookieAuth: []
+    # JWK schemas for service-to-service communication
+    JWK:
+      type: object
+      required:
+        - kty
+        - use
+        - kid
+        - n
+        - e
+        - alg
+      properties:
+        kty:
+          type: string
+          enum: [RSA, EC]
+          description: Key type (RSA for asymmetric encryption, EC for elliptic curve)
+          example: "RSA"
+        use:
+          type: string
+          enum: [sig, enc]
+          description: Public key use (signature verification or encryption)
+          example: "sig"
+        kid:
+          type: string
+          pattern: "^[a-zA-Z0-9_-]{1,64}$"
+          description: Key ID for key identification
+          example: "auth-service-key-2024-01-15"
+        n:
+          type: string
+          pattern: "^[a-zA-Z0-9_-]{342,1024}$"
+          description: RSA modulus (base64url encoded)
+        e:
+          type: string
+          pattern: "^[a-zA-Z0-9_-]{2,6}$"
+          description: RSA public exponent (base64url encoded)
+          example: "AQAB"
+        alg:
+          type: string
+          enum: [RS256, RS384, RS512, ES256, ES384, ES512]
+          description: Algorithm used for signing/encryption
+          example: "RS256"
+        x5c:
+          type: array
+          maxItems: 5
+          items:
+            type: string
+            pattern: "^[a-zA-Z0-9+/=]{100,2000}$"
+          description: X.509 certificate chain (base64 encoded). Allows verification of key ownership and trust chain validation
+          minItems: 1
+          example: ["MIICiTCCAg+gAwIBAgIJAJ8l4HN7..."]
+        x5t:
+          type: string
+          pattern: "^[a-zA-Z0-9_-]{40,88}$"
+          description: X.509 certificate thumbprint (SHA-1 hash, base64url encoded)
+          example: "abc123def456789abcdef123456789abcdef123456789"
+        x5t#S256:
+          type: string
+          pattern: "^[a-zA-Z0-9_-]{43,88}$"
+          description: X.509 certificate thumbprint with SHA-256 (more secure than x5t)
+          example: "def456ghi789..."
+        iat:
+          type: integer
+          format: int64
+          description: Issued at time (Unix timestamp) - when key was created
+          example: 1705327845
+        exp:
+          type: integer
+          format: int64
+          description: Expiration time (Unix timestamp) - when key expires
+          example: 1736863845
+        revoked:
+          type: boolean
+          description: Whether this key has been revoked
+          example: false
+      additionalProperties: false
+
+    JWKSet:
+      type: object
+      required:
+        - keys
+      properties:
+        keys:
+          type: array
+          maxItems: 10
+          items:
+            $ref: "#/components/schemas/JWK"
+          description: Array of JSON Web Keys
+          minItems: 1
+      additionalProperties: false
+
+    # JWT Token schemas
+    AccessToken:
+      type: string
+      pattern: "^[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]*$"
+      description: JWT access token (header.payload.signature)
+      example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+
+    RefreshToken:
+      type: string
+      pattern: "^[a-zA-Z0-9_-]{64,512}$"
+      description: JWT refresh token (longer-lived, used to get new access tokens)
+      example: "refresh_token_abcdef123456789_abcdef123456789_abcdef123456789"
+
+    TokenPair:
+      type: object
+      required:
+        - accessToken
+        - refreshToken
+        - tokenType
+        - expiresIn
+      properties:
+        accessToken:
+          $ref: "#/components/schemas/AccessToken"
+        refreshToken:
+          $ref: "#/components/schemas/RefreshToken"
+        tokenType:
+          type: string
+          enum: [Bearer]
+          description: Token type
+          example: "Bearer"
+        expiresIn:
+          type: integer
+          description: Access token expiration time in seconds
+          example: 3600
+        scope:
+          type: string
+          description: Token scope (optional)
+          example: "read write"
+      additionalProperties: false
+
+    TokenValidationRequest:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          $ref: "#/components/schemas/AccessToken"
+        requiredScopes:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            pattern: "^[a-zA-Z0-9:_-]{1,50}$"
+          description: Required scopes for token validation
+          example: ["read", "write:orders"]
+      additionalProperties: false
+
+    TokenValidationResponse:
+      type: object
+      required:
+        - valid
+        - userId
+        - username
+      properties:
+        valid:
+          type: boolean
+          description: Whether token is valid
+          example: true
+        userId:
+          type: string
+          format: uuid
+          description: User ID from token
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        username:
+          type: string
+          pattern: "^[a-zA-Z0-9_-]{3,50}$"
+          description: Username from token
+          example: "john_doe"
+        roles:
+          type: array
+          maxItems: 10
+          items:
+            type: string
+            pattern: "^[A-Z][A-Z_]*$"
+          description: User roles from token
+          example: ["USER", "ADMIN"]
+        scopes:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            pattern: "^[a-zA-Z0-9:_-]{1,50}$"
+          description: Token scopes
+          example: ["read", "write:orders"]
+        expiresAt:
+          type: integer
+          format: int64
+          description: Token expiration time (Unix timestamp)
+          example: 1705327845
+        issuedAt:
+          type: integer
+          format: int64
+          description: Token issued time (Unix timestamp)
+          example: 1705324245
+      additionalProperties: false

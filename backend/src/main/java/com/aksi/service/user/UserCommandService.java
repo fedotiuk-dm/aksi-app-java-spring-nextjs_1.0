@@ -25,7 +25,7 @@ import com.aksi.mapper.UserMapper;
 import com.aksi.repository.BranchRepository;
 import com.aksi.repository.UserRepository;
 import com.aksi.service.auth.AuthValidationService;
-import com.aksi.service.auth.SecurityEventAuditService;
+import com.aksi.service.security.SecurityEventAuditService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

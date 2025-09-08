@@ -67,7 +67,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/orders/{orderId}:
+  /api/orders/[orderId]:
     parameters:
       - name: orderId
         in: path
@@ -125,7 +125,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/orders/{orderId}/items/{itemId}/characteristics:
+  /api/orders/[orderId]/items/[itemId]/characteristics:
     parameters:
       - name: orderId
         in: path
@@ -170,7 +170,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/orders/{orderId}/items/{itemId}/photos:
+  /api/orders/[orderId]/items/[itemId]/photos:
     parameters:
       - name: orderId
         in: path
@@ -230,7 +230,7 @@ paths:
         "413":
           $ref: "../../common.yaml#/components/responses/PayloadTooLarge"
 
-  /api/orders/{orderId}/items/{itemId}/photos/{photoId}:
+  /api/orders/[orderId]/items/[itemId]/photos/[photoId]:
     parameters:
       - name: orderId
         in: path
@@ -267,7 +267,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/orders/{orderId}/receipt:
+  /api/orders/[orderId]/receipt:
     parameters:
       - name: orderId
         in: path
@@ -298,7 +298,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/orders/{orderId}/signature:
+  /api/orders/[orderId]/signature:
     parameters:
       - name: orderId
         in: path
@@ -336,7 +336,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/orders/customer/{customerId}/history:
+  /api/orders/customer/[customerId]/history:
     get:
       operationId: getCustomerOrderHistory
       summary: Get customer order history
@@ -367,7 +367,7 @@ paths:
         "401":
           $ref: "../../common.yaml#/components/responses/Unauthorized"
 
-  /api/orders/customer/{customerId}/recent:
+  /api/orders/customer/[customerId]/recent:
     get:
       operationId: getCustomerRecentOrders
       summary: Get customer recent orders
@@ -497,7 +497,7 @@ paths:
         "401":
           $ref: "../../common.yaml#/components/responses/Unauthorized"
 
-  /api/orders/{orderId}/items:
+  /api/orders/[orderId]/items:
     get:
       operationId: getOrderItems
       summary: Get order items
@@ -528,7 +528,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/orders/{orderId}/payments:
+  /api/orders/[orderId]/payments:
     get:
       operationId: getOrderPayments
       summary: Get order payments
@@ -559,7 +559,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/orders/{orderId}/payment:
+  /api/orders/[orderId]/payment:
     parameters:
       - name: orderId
         in: path

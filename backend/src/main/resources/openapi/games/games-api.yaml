@@ -40,66 +40,59 @@ paths:
   /api/games/service-types:
     $ref: "./paths/service-types-paths.yaml#/paths/~1api~1games~1service-types"
   /api/games/service-types/{serviceTypeId}:
-    $ref: "./paths/service-types-paths.yaml#/paths/~1api~1games~1service-types~1{serviceTypeId}"
+    $ref: "./paths/service-types-paths.yaml#/paths/~1api~1games~1service-types~1[serviceTypeId]"
   /api/games/service-types/{serviceTypeId}/force-delete:
-    $ref: "./paths/service-types-paths.yaml#/paths/~1api~1games~1service-types~1{serviceTypeId}~1force-delete"
+    $ref: "./paths/service-types-paths.yaml#/paths/~1api~1games~1service-types~1[serviceTypeId]~1force-delete"
   /api/games/service-types/{serviceTypeId}/set-active:
-    $ref: "./paths/service-types-paths.yaml#/paths/~1api~1games~1service-types~1{serviceTypeId}~1set-active"
+    $ref: "./paths/service-types-paths.yaml#/paths/~1api~1games~1service-types~1[serviceTypeId]~1set-active"
 
   # Difficulty Levels endpoints
   /api/games/difficulty-levels:
     $ref: "./paths/difficulty-levels-paths.yaml#/paths/~1api~1games~1difficulty-levels"
   /api/games/difficulty-levels/{difficultyLevelId}:
-    $ref: "./paths/difficulty-levels-paths.yaml#/paths/~1api~1games~1difficulty-levels~1{difficultyLevelId}"
+    $ref: "./paths/difficulty-levels-paths.yaml#/paths/~1api~1games~1difficulty-levels~1[difficultyLevelId]"
   /api/games/difficulty-levels/{difficultyLevelId}/activate:
-    $ref: "./paths/difficulty-levels-paths.yaml#/paths/~1api~1games~1difficulty-levels~1{difficultyLevelId}~1activate"
+    $ref: "./paths/difficulty-levels-paths.yaml#/paths/~1api~1games~1difficulty-levels~1[difficultyLevelId]~1activate"
   /api/games/difficulty-levels/{difficultyLevelId}/deactivate:
-    $ref: "./paths/difficulty-levels-paths.yaml#/paths/~1api~1games~1difficulty-levels~1{difficultyLevelId}~1deactivate"
+    $ref: "./paths/difficulty-levels-paths.yaml#/paths/~1api~1games~1difficulty-levels~1[difficultyLevelId]~1deactivate"
 
   # Boosters endpoints
   /api/games/boosters:
     $ref: "./paths/boosters-paths.yaml#/paths/~1api~1games~1boosters"
   /api/games/boosters/{boosterId}:
-    $ref: "./paths/boosters-paths.yaml#/paths/~1api~1games~1boosters~1{boosterId}"
+    $ref: "./paths/boosters-paths.yaml#/paths/~1api~1games~1boosters~1[boosterId]"
 
   # Price Configurations endpoints
   /api/games/price-configurations:
     $ref: "./paths/price-configurations-paths.yaml#/paths/~1api~1games~1price-configurations"
   /api/games/price-configurations/{configId}:
-    $ref: "./paths/price-configurations-paths.yaml#/paths/~1api~1games~1price-configurations~1{configId}"
+    $ref: "./paths/price-configurations-paths.yaml#/paths/~1api~1games~1price-configurations~1[configId]"
 
   # Modifiers endpoints
   /api/games/modifiers:
     $ref: "./paths/modifiers-paths.yaml#/paths/~1api~1games~1modifiers"
   /api/games/modifiers/{modifierId}:
-    $ref: "./paths/modifiers-paths.yaml#/paths/~1api~1games~1modifiers~1{modifierId}"
+    $ref: "./paths/modifiers-paths.yaml#/paths/~1api~1games~1modifiers~1[modifierId]"
   /api/games/modifiers/{modifierId}/activate:
-    $ref: "./paths/modifiers-paths.yaml#/paths/~1api~1games~1modifiers~1{modifierId}~1activate"
+    $ref: "./paths/modifiers-paths.yaml#/paths/~1api~1games~1modifiers~1[modifierId]~1activate"
   /api/games/modifiers/{modifierId}/deactivate:
-    $ref: "./paths/modifiers-paths.yaml#/paths/~1api~1games~1modifiers~1{modifierId}~1deactivate"
+    $ref: "./paths/modifiers-paths.yaml#/paths/~1api~1games~1modifiers~1[modifierId]~1deactivate"
 
   # Calculator endpoints
   /api/games/calculator/formulas/{formulaType}/calculate:
-    $ref: "./paths/calculator-paths.yaml#/paths/~1api~1games~1calculator~1formulas~1{formulaType}~1calculate"
+    $ref: "./paths/calculator-paths.yaml#/paths/~1api~1games~1calculator~1formulas~1[formulaType]~1calculate"
 
   # Games with parameters (must be last to avoid conflicts)
   /api/games/by-code/{code}:
-    $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1by-code~1{code}"
+    $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1by-code~1[code]"
   /api/games/by-id/{gameId}:
-    $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1by-id~1{gameId}"
+    $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1by-id~1[gameId]"
   /api/games/by-id/{gameId}/enable:
-    $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1by-id~1{gameId}~1enable"
+    $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1by-id~1[gameId]~1enable"
   /api/games/by-id/{gameId}/disable:
-    $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1by-id~1{gameId}~1disable"
+    $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1by-id~1[gameId]~1disable"
 
 components:
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session cookie authentication
-
   responses:
     BadRequest:
       $ref: "../common.yaml#/components/responses/BadRequest"

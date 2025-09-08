@@ -54,7 +54,7 @@ paths:
         "403":
           $ref: "../../common.yaml#/components/responses/Forbidden"
 
-  /api/games/difficulty-levels/{difficultyLevelId}:
+  /api/games/difficulty-levels/[difficultyLevelId]:
     get:
       tags: [difficulty-levels]
       operationId: gamesGetDifficultyLevelById
@@ -135,7 +135,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/games/difficulty-levels/{difficultyLevelId}/activate:
+  /api/games/difficulty-levels/[difficultyLevelId]/activate:
     patch:
       tags: [difficulty-levels]
       operationId: gamesActivateDifficultyLevel
@@ -162,7 +162,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/games/difficulty-levels/{difficultyLevelId}/deactivate:
+  /api/games/difficulty-levels/[difficultyLevelId]/deactivate:
     patch:
       tags: [difficulty-levels]
       operationId: gamesDeactivateDifficultyLevel

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aksi.api.auth.dto.LoginRequest;
 import com.aksi.domain.user.UserEntity;
+import com.aksi.service.security.LoginAttemptService;
 import com.aksi.service.user.UserService;
 import com.aksi.util.IpAddressUtil;
 

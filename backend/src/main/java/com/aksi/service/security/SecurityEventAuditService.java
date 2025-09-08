@@ -1,4 +1,4 @@
-package com.aksi.service.auth;
+package com.aksi.service.security;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -15,11 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.aksi.api.auth.dto.BlockedIp;
-import com.aksi.api.auth.dto.BlockedUser;
-import com.aksi.api.auth.dto.LoginAttempt;
-import com.aksi.api.auth.dto.SecurityAttemptsResponse;
-import com.aksi.api.auth.dto.SecurityOverview;
+import com.aksi.api.security.dto.BlockedIp;
+import com.aksi.api.security.dto.BlockedUser;
+import com.aksi.api.security.dto.LoginAttempt;
+import com.aksi.api.security.dto.SecurityAttemptsResponse;
+import com.aksi.api.security.dto.SecurityOverview;
 
 /**
  * Service for logging and retrieving security events and audit information. Provides comprehensive

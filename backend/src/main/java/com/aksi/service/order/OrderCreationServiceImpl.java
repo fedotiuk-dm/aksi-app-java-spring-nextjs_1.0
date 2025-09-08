@@ -12,7 +12,7 @@ import com.aksi.domain.user.UserEntity;
 import com.aksi.mapper.OrderMapper;
 import com.aksi.repository.CartRepository;
 import com.aksi.repository.OrderRepository;
-import com.aksi.service.auth.UserContextService;
+import com.aksi.service.auth.AuthQueryService;
 import com.aksi.service.order.factory.OrderFactory;
 import com.aksi.service.order.guard.OrderGuard;
 import com.aksi.service.order.validator.OrderValidator;
@@ -36,7 +36,7 @@ public class OrderCreationServiceImpl implements OrderCreationService {
   private final OrderValidator orderValidator;
   private final OrderFactory orderFactory;
   private final OrderPricingCalculator pricingCalculator;
-  private final UserContextService userContextService;
+  private final AuthQueryService authQueryService;
   private final OrderMapper orderMapper;
 
   @Override
@@ -46,7 +46,7 @@ public class OrderCreationServiceImpl implements OrderCreationService {
     // Step 1: Load entities
     CartEntity cart = orderGuard.ensureCartExists(request.getCartId());
     BranchEntity branch = orderGuard.ensureBranchExists(request.getBranchId());
-    UserEntity currentUser = userContextService.getCurrentUser();
+    UserEntity currentUser = authQueryService.getCurrentUser();
 
     // Step 2: Validate
     orderValidator.validateCartForOrder(cart);

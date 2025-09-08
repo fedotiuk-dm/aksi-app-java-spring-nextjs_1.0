@@ -61,7 +61,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/cart/items/{itemId}:
+  /api/cart/items/[itemId]:
     parameters:
       - name: itemId
         in: path

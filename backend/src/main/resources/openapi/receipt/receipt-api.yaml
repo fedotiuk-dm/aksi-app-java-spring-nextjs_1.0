@@ -1,3 +1,4 @@
+---
 openapi: 3.0.4
 info:
   title: Receipt API
@@ -18,24 +19,17 @@ tags:
     description: Receipt management operations
 
 paths:
-  # Receipt endpoints
   /api/receipts/order/{orderId}:
-    $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1order~1{orderId}"
+    $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1order~1:orderId"
+
   /api/receipts/preview:
     $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1preview"
   /api/receipts/order/{orderId}/email:
-    $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1order~1{orderId}~1email"
+    $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1order~1:orderId~1email"
   /api/receipts/templates:
     $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1templates"
 
 components:
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session cookie authentication
-
   responses:
     BadRequest:
       $ref: "../common.yaml#/components/responses/BadRequest"
@@ -63,7 +57,6 @@ components:
       $ref: "../common.yaml#/components/parameters/SortOrder"
 
   schemas:
-    # Import all schemas from receipt-schemas.yaml
     ReceiptPreviewRequest:
       $ref: "./schemas/receipt-schemas.yaml#/components/schemas/ReceiptPreviewRequest"
     ReceiptOrderData:
@@ -76,8 +69,6 @@ components:
       $ref: "./schemas/receipt-schemas.yaml#/components/schemas/EmailReceiptResponse"
     ReceiptTemplate:
       $ref: "./schemas/receipt-schemas.yaml#/components/schemas/ReceiptTemplate"
-
-    # Common schemas (if needed locally)
     OrderStatus:
       $ref: "../common.yaml#/components/schemas/OrderStatus"
     PaymentMethod:
@@ -85,3 +76,4 @@ components:
 
 security:
   - cookieAuth: []
+  - bearerAuth: []

@@ -1,0 +1,70 @@
+---
+openapi: 3.0.4
+info:
+  title: Security API
+  description: Security management API for monitoring and administration
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@dryclean.example.com
+
+servers:
+  - url: https://localhost:8443
+    description: Local development (HTTPS required for security)
+  - url: https://api.dryclean.example.com
+    description: Production
+
+tags:
+  - name: security
+    description: Security monitoring and administration
+
+security:
+  - cookieAuth: []
+  - bearerAuth: []
+
+paths:
+  # Security endpoints
+  /api/auth/security/attempts:
+    $ref: "./paths/security-paths.yaml#/paths/~1api~1auth~1security~1attempts"
+  /api/auth/security/unlock/[username]:
+    $ref: "./paths/security-paths.yaml#/paths/~1api~1auth~1security~1unlock~1[username]"
+  /api/auth/security/unlock-ip/[ipAddress]:
+    $ref: "./paths/security-paths.yaml#/paths/~1api~1auth~1security~1unlock-ip~1[ipAddress]"
+  /api/auth/security/policy:
+    $ref: "./paths/security-paths.yaml#/paths/~1api~1auth~1security~1policy"
+
+components:
+  responses:
+    BadRequest:
+      $ref: "../common.yaml#/components/responses/BadRequest"
+    Unauthorized:
+      $ref: "../common.yaml#/components/responses/Unauthorized"
+    Forbidden:
+      $ref: "../common.yaml#/components/responses/Forbidden"
+    NotFound:
+      $ref: "../common.yaml#/components/responses/NotFound"
+    Conflict:
+      $ref: "../common.yaml#/components/responses/Conflict"
+    TooManyRequests:
+      $ref: "../common.yaml#/components/responses/TooManyRequests"
+
+  schemas:
+    # Security schemas
+    SecurityAttemptsResponse:
+      $ref: "./schemas/security-schemas.yaml#/components/schemas/SecurityAttemptsResponse"
+    SecurityOverview:
+      $ref: "./schemas/security-schemas.yaml#/components/schemas/SecurityOverview"
+    LoginAttempt:
+      $ref: "./schemas/security-schemas.yaml#/components/schemas/LoginAttempt"
+    BlockedUser:
+      $ref: "./schemas/security-schemas.yaml#/components/schemas/BlockedUser"
+    BlockedIp:
+      $ref: "./schemas/security-schemas.yaml#/components/schemas/BlockedIp"
+    SecurityPolicyResponse:
+      $ref: "./schemas/security-schemas.yaml#/components/schemas/SecurityPolicyResponse"
+    RateLimitingPolicy:
+      $ref: "./schemas/security-schemas.yaml#/components/schemas/RateLimitingPolicy"
+    PasswordPolicyInfo:
+      $ref: "./schemas/security-schemas.yaml#/components/schemas/PasswordPolicyInfo"
+    SessionPolicyInfo:
+      $ref: "./schemas/security-schemas.yaml#/components/schemas/SessionPolicyInfo"

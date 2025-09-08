@@ -49,7 +49,7 @@ paths:
         "403":
           $ref: "../../common.yaml#/components/responses/Forbidden"
 
-  /api/games/boosters/{boosterId}:
+  /api/games/boosters/[boosterId]:
     get:
       tags: [boosters]
       operationId: gamesGetBoosterById

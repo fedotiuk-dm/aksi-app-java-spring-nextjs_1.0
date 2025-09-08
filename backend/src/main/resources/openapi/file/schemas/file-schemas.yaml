@@ -1,7 +1,4 @@
 components:
-  securitySchemes:
-    cookieAuth:
-      $ref: "../../common.yaml#/components/securitySchemes/cookieAuth"
   schemas:
     # ErrorResponse centralized in common.yaml
 

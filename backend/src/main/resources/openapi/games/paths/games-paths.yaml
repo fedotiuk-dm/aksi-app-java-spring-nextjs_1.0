@@ -49,7 +49,7 @@ paths:
         "403":
           $ref: "../../common.yaml#/components/responses/Forbidden"
 
-  /api/games/by-id/{gameId}:
+  /api/games/by-id/[gameId]:
     get:
       tags: [games]
       operationId: gamesGetGameById
@@ -130,7 +130,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/games/by-code/{code}:
+  /api/games/by-code/[code]:
     get:
       tags: [games]
       operationId: gamesGetGameByCode
@@ -172,7 +172,7 @@ paths:
         "401":
           $ref: "../../common.yaml#/components/responses/Unauthorized"
 
-  /api/games/by-id/{gameId}/enable:
+  /api/games/by-id/[gameId]/enable:
     patch:
       tags: [games]
       operationId: gamesActivateGame
@@ -199,7 +199,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/games/by-id/{gameId}/disable:
+  /api/games/by-id/[gameId]/disable:
     patch:
       tags: [games]
       operationId: gamesDeactivateGame

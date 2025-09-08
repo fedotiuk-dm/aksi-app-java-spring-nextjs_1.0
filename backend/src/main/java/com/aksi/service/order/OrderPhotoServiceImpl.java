@@ -16,7 +16,7 @@ import com.aksi.domain.order.OrderItemEntity;
 import com.aksi.exception.BadRequestException;
 import com.aksi.mapper.OrderMapper;
 import com.aksi.repository.OrderRepository;
-import com.aksi.service.auth.UserContextService;
+import com.aksi.service.auth.AuthQueryService;
 import com.aksi.service.order.factory.OrderFactory;
 import com.aksi.service.order.guard.OrderGuard;
 import com.aksi.service.storage.FilePathResolver;
@@ -40,7 +40,7 @@ public class OrderPhotoServiceImpl implements OrderPhotoService {
   private final OrderItemService orderItemService;
   private final FileStorageService fileStorageService;
   private final FilePathResolver filePathResolver;
-  private final UserContextService userContextService;
+  private final AuthQueryService authQueryService;
 
   private static final long MAX_FILE_SIZE_BYTES = 10L * 1024 * 1024;
   private static final String ORDER_ITEM_PHOTOS_DIR = "orders/%s/items/%s/photos";
@@ -64,7 +64,7 @@ public class OrderPhotoServiceImpl implements OrderPhotoService {
     FileUploadResponse uploadResponse = storePhotoFile(orderItem, file);
 
     // Step 4: Create photo entity
-    var currentUser = userContextService.getCurrentUser();
+    var currentUser = authQueryService.getCurrentUser();
     ItemPhotoEntity photo =
         orderFactory.createPhoto(
             orderItem, file, uploadResponse, photoType, photoDescription, currentUser);

@@ -1,3 +1,4 @@
+---
 openapi: 3.0.4
 info:
   title: Pricing API
@@ -18,7 +19,6 @@ tags:
     description: Pricing management operations
 
 paths:
-  # Pricing endpoints
   /api/pricing/calculate:
     $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1calculate"
   /api/pricing/modifiers:
@@ -28,20 +28,13 @@ paths:
   /api/pricing/admin/modifiers:
     $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1admin~1modifiers"
   /api/pricing/admin/modifiers/{code}:
-    $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1admin~1modifiers~1{code}"
+    $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1admin~1modifiers~1[code]"
   /api/pricing/admin/discounts:
     $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1admin~1discounts"
   /api/pricing/admin/discounts/{code}:
-    $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1admin~1discounts~1{code}"
+    $ref: "./paths/pricing-paths.yaml#/paths/~1api~1pricing~1admin~1discounts~1[code]"
 
 components:
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session cookie authentication
-
   responses:
     BadRequest:
       $ref: "../common.yaml#/components/responses/BadRequest"
@@ -63,7 +56,6 @@ components:
       $ref: "../common.yaml#/components/parameters/SortOrder"
 
   schemas:
-    # Import all schemas from pricing-schemas.yaml
     PriceCalculationRequest:
       $ref: "./schemas/pricing-schemas.yaml#/components/schemas/PriceCalculationRequest"
     PriceCalculationItem:
@@ -94,8 +86,6 @@ components:
       $ref: "./schemas/pricing-schemas.yaml#/components/schemas/PriceModifiersResponse"
     DiscountsResponse:
       $ref: "./schemas/pricing-schemas.yaml#/components/schemas/DiscountsResponse"
-
-    # Common schemas (if needed locally)
     ServiceCategoryType:
       $ref: "../common.yaml#/components/schemas/ServiceCategoryType"
     UnitOfMeasure:
@@ -109,3 +99,4 @@ components:
 
 security:
   - cookieAuth: []
+  - bearerAuth: []

@@ -1,5 +1,5 @@
 paths:
-  /api/files/{filePath}:
+  /api/files/[filePath]:
     parameters:
       - name: filePath
         in: path
@@ -133,7 +133,7 @@ paths:
         "400":
           $ref: "../../common.yaml#/components/responses/BadRequest"
 
-  /api/files/{filePath}/info:
+  /api/files/[filePath]/info:
     parameters:
       - name: filePath
         in: path
@@ -159,7 +159,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/files/{filePath}/base64:
+  /api/files/[filePath]/base64:
     parameters:
       - name: filePath
         in: path

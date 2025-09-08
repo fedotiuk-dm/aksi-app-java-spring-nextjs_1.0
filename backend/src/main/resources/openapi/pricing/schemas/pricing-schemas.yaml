@@ -397,7 +397,3 @@ components:
           description: List of available discounts
 
     # ErrorResponse removed; use common.yaml
-
-  securitySchemes:
-    cookieAuth:
-      $ref: "../../common.yaml#/components/securitySchemes/cookieAuth"

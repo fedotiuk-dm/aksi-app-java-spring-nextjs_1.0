@@ -87,7 +87,7 @@ paths:
         "401":
           $ref: "../../common.yaml#/components/responses/Unauthorized"
 
-  /api/branches/{branchId}:
+  /api/branches/[branchId]:
     parameters:
       - name: branchId
         in: path
@@ -167,7 +167,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/branches/{branchId}/activate:
+  /api/branches/[branchId]/activate:
     parameters:
       - name: branchId
         in: path
@@ -201,7 +201,7 @@ paths:
         "409":
           $ref: "../../common.yaml#/components/responses/Conflict"
 
-  /api/branches/{branchId}/deactivate:
+  /api/branches/[branchId]/deactivate:
     parameters:
       - name: branchId
         in: path

@@ -1,3 +1,4 @@
+---
 openapi: 3.0.4
 info:
   title: Cart API
@@ -18,13 +19,12 @@ tags:
     description: Cart management operations
 
 paths:
-  # Cart endpoints
   /api/cart:
     $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart"
   /api/cart/items:
     $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1items"
   /api/cart/items/{itemId}:
-    $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1items~1{itemId}"
+    $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1items~1[itemId]"
   /api/cart/modifiers:
     $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1modifiers"
   /api/cart/calculate:
@@ -33,13 +33,6 @@ paths:
     $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1activate-customer"
 
 components:
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session cookie authentication
-
   responses:
     BadRequest:
       $ref: "../common.yaml#/components/responses/BadRequest"
@@ -49,9 +42,7 @@ components:
       $ref: "../common.yaml#/components/responses/Forbidden"
     NotFound:
       $ref: "../common.yaml#/components/responses/NotFound"
-
   schemas:
-    # Import all schemas from cart-schemas.yaml
     ActivateCustomerRequest:
       $ref: "./schemas/cart-schemas.yaml#/components/schemas/ActivateCustomerRequest"
     CartInfo:
@@ -78,8 +69,6 @@ components:
       $ref: "./schemas/cart-schemas.yaml#/components/schemas/UpdateCartItemRequest"
     UpdateCartModifiersRequest:
       $ref: "./schemas/cart-schemas.yaml#/components/schemas/UpdateCartModifiersRequest"
-
-    # Common schemas (if needed locally)
     ServiceCategoryType:
       $ref: "../common.yaml#/components/schemas/ServiceCategoryType"
     UnitOfMeasure:
@@ -97,3 +86,4 @@ components:
 
 security:
   - cookieAuth: []
+  - bearerAuth: []

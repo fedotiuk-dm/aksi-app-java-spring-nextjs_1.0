@@ -120,7 +120,7 @@ paths:
         "403":
           $ref: "../../common.yaml#/components/responses/Forbidden"
 
-  /api/pricing/admin/modifiers/{code}:
+  /api/pricing/admin/modifiers/[code]:
     put:
       operationId: updatePriceModifier
       summary: Update price modifier
@@ -213,7 +213,7 @@ paths:
         "403":
           $ref: "../../common.yaml#/components/responses/Forbidden"
 
-  /api/pricing/admin/discounts/{code}:
+  /api/pricing/admin/discounts/[code]:
     put:
       operationId: updateDiscount
       summary: Update discount

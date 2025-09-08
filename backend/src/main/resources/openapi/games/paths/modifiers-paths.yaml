@@ -83,7 +83,7 @@ paths:
               schema:
                 $ref: "../../common.yaml#/components/schemas/ErrorResponse"
 
-  /api/games/modifiers/{modifierId}:
+  /api/games/modifiers/[modifierId]:
     get:
       tags:
         - modifiers
@@ -176,7 +176,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/games/modifiers/{modifierId}/activate:
+  /api/games/modifiers/[modifierId]/activate:
     post:
       tags:
         - modifiers
@@ -207,7 +207,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/games/modifiers/{modifierId}/deactivate:
+  /api/games/modifiers/[modifierId]/deactivate:
     post:
       tags:
         - modifiers

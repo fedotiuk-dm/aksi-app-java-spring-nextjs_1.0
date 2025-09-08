@@ -1,3 +1,4 @@
+---
 openapi: 3.0.4
 info:
   title: Customer API
@@ -18,22 +19,14 @@ tags:
     description: Customer management operations
 
 paths:
-  # Customer endpoints
   /api/customers:
     $ref: "./paths/customer-paths.yaml#/paths/~1api~1customers"
   /api/customers/{customerId}:
-    $ref: "./paths/customer-paths.yaml#/paths/~1api~1customers~1{customerId}"
+    $ref: "./paths/customer-paths.yaml#/paths/~1api~1customers~1[customerId]"
   /api/customers/{customerId}/exists:
-    $ref: "./paths/customer-paths.yaml#/paths/~1api~1customers~1{customerId}~1exists"
+    $ref: "./paths/customer-paths.yaml#/paths/~1api~1customers~1[customerId]~1exists"
 
 components:
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session cookie authentication
-
   responses:
     BadRequest:
       $ref: "../common.yaml#/components/responses/BadRequest"
@@ -51,7 +44,6 @@ components:
       $ref: "../common.yaml#/components/parameters/Search"
 
   schemas:
-    # Import all schemas from customer-schemas.yaml
     CustomerInfo:
       $ref: "./schemas/customer-schemas.yaml#/components/schemas/CustomerInfo"
     CreateCustomerRequest:
@@ -60,8 +52,6 @@ components:
       $ref: "./schemas/customer-schemas.yaml#/components/schemas/UpdateCustomerRequest"
     CustomerListResponse:
       $ref: "./schemas/customer-schemas.yaml#/components/schemas/CustomerListResponse"
-
-    # Common schemas (if needed locally)
     PhoneNumber:
       $ref: "../common.yaml#/components/schemas/PhoneNumber"
     Email:
@@ -75,3 +65,4 @@ components:
 
 security:
   - cookieAuth: []
+  - bearerAuth: []

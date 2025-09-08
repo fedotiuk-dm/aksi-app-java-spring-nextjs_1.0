@@ -1,3 +1,4 @@
+---
 openapi: 3.0.4
 info:
   title: Price List API
@@ -18,20 +19,12 @@ tags:
     description: Price list management operations
 
 paths:
-  # Price-list endpoints
   /api/price-list:
     $ref: "./paths/price-list-paths.yaml#/paths/~1api~1price-list"
   /api/price-list/{priceListItemId}:
-    $ref: "./paths/price-list-paths.yaml#/paths/~1api~1price-list~1{priceListItemId}"
+    $ref: "./paths/price-list-paths.yaml#/paths/~1api~1price-list~1[priceListItemId]"
 
 components:
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session cookie authentication
-
   responses:
     BadRequest:
       $ref: "../common.yaml#/components/responses/BadRequest"
@@ -53,7 +46,6 @@ components:
       $ref: "../common.yaml#/components/parameters/SortOrder"
 
   schemas:
-    # Import all schemas from price-list-schemas.yaml
     PriceListItemInfo:
       $ref: "./schemas/price-list-schemas.yaml#/components/schemas/PriceListItemInfo"
     CreatePriceListItemRequest:
@@ -62,8 +54,6 @@ components:
       $ref: "./schemas/price-list-schemas.yaml#/components/schemas/UpdatePriceListItemRequest"
     PriceListItemsResponse:
       $ref: "./schemas/price-list-schemas.yaml#/components/schemas/PriceListItemsResponse"
-
-    # Common schemas (if needed locally)
     ServiceCategoryType:
       $ref: "../common.yaml#/components/schemas/ServiceCategoryType"
     UnitOfMeasure:
@@ -71,3 +61,4 @@ components:
 
 security:
   - cookieAuth: []
+  - bearerAuth: []

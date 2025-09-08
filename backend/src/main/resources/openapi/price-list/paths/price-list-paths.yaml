@@ -77,7 +77,7 @@ paths:
         "403":
           $ref: "../../common.yaml#/components/responses/Forbidden"
 
-  /api/price-list/{priceListItemId}:
+  /api/price-list/[priceListItemId]:
     parameters:
       - name: priceListItemId
         in: path
