@@ -283,7 +283,3 @@ components:
           description: Expected completion date
 
     # ErrorResponse centralized in common.yaml
-
-  securitySchemes:
-    cookieAuth:
-      $ref: "../../common.yaml#/components/securitySchemes/cookieAuth"

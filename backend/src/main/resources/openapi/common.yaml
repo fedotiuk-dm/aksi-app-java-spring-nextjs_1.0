@@ -1,3 +1,4 @@
+---
 openapi: 3.0.4
 info:
   title: Common Components
@@ -11,7 +12,12 @@ components:
       type: apiKey
       in: cookie
       name: SESSION
-      description: Session cookie for authentication
+      description: Session cookie for authentication (secure, HttpOnly, SameSite=Strict)
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Bearer token for authentication (recommended for API clients)
 
   # Common Parameters
   parameters:
@@ -43,9 +49,11 @@ components:
     SortBy:
       name: sortBy
       in: query
-      description: Field to sort by (domain-specific). If not provided, server default is used
+      description: Field to sort by (domain-specific). If not provided,
+        server default is used
       schema:
         type: string
+        pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
     CustomerId:
       name: customerId
       in: query
@@ -80,6 +88,7 @@ components:
       description: Free text search
       schema:
         type: string
+        pattern: "^[\\w\\s\\p{L}\\p{M}\\p{N}\\p{P}\\p{S}]{0,255}$"
     IdParam:
       name: id
       in: path
@@ -134,10 +143,25 @@ components:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
 
+    NotAcceptable:
+      description: Not Acceptable
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
   schemas:
     # Common validation patterns and types
     UniqueName:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       minLength: 1
       maxLength: 255
       description: Unique name field (must be unique within entity type)
@@ -146,7 +170,7 @@ components:
 
     PhoneNumber:
       type: string
-      pattern: '^\+?[0-9\s\-\(\)]+$'
+      pattern: "^.+?[0-9s\\-()]+$"
       minLength: 10
       maxLength: 20
       description: Phone number in international format
@@ -166,14 +190,17 @@ components:
       properties:
         material:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           description: Material type (cotton, silk, wool, etc.)
           example: "cotton"
         color:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           description: Item color (affects processing and pricing)
           example: "blue"
         filler:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           description: Filler type for items with filling
           example: "down"
         fillerCondition:
@@ -184,10 +211,12 @@ components:
           allOf:
             - $ref: "#/components/schemas/WearLevel"
           description: Item wear level assessment
+      additionalProperties: false
 
     # Centralized domain enums shared across APIs
     ServiceCategoryType:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum:
         - CLOTHING
         - LAUNDRY
@@ -204,6 +233,7 @@ components:
 
     UnitOfMeasure:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum:
         - PIECE
         - KILOGRAM
@@ -214,11 +244,13 @@ components:
 
     PricingModifierType:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum: [PERCENTAGE, FIXED, FORMULA, MULTIPLIER, DISCOUNT]
       description: Type of price modifier
 
     PricingOperationType:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum: [ADD, SUBTRACT, MULTIPLY, DIVIDE]
       description: Operation type for applying modifiers
       x-enum-descriptions:
@@ -229,6 +261,7 @@ components:
 
     CalculationStatus:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum: [SUCCESS, FAILED, FALLBACK]
       description: Calculation result status
       x-enum-descriptions:
@@ -238,16 +271,19 @@ components:
 
     DiscountType:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum: [NONE, EVERCARD, SOCIAL_MEDIA, MILITARY, OTHER]
 
     UrgencyType:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum: [NORMAL, EXPRESS_48H, EXPRESS_24H]
       description: Order urgency levels
 
     # Order Management
     OrderStatus:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum:
         - PENDING
         - ACCEPTED
@@ -259,6 +295,7 @@ components:
 
     PaymentMethod:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum:
         - CASH
         - TERMINAL
@@ -268,6 +305,7 @@ components:
     # Item Characteristics
     FillerCondition:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum:
         - NORMAL
         - COMPRESSED
@@ -281,6 +319,7 @@ components:
     # Item Issues
     StainType:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum:
         - GREASE
         - BLOOD
@@ -295,6 +334,7 @@ components:
 
     DefectType:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum:
         - WORN
         - TORN
@@ -305,6 +345,7 @@ components:
 
     RiskType:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum:
         - COLOR_CHANGE
         - DEFORMATION
@@ -314,6 +355,7 @@ components:
     # Photo Management
     PhotoType:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum:
         - GENERAL
         - DEFECT
@@ -335,6 +377,7 @@ components:
     # Customer Management
     ContactPreference:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum:
         - PHONE
         - SMS
@@ -343,6 +386,7 @@ components:
 
     InfoSource:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum:
         - INSTAGRAM
         - GOOGLE
@@ -353,6 +397,7 @@ components:
     # Sorting
     SortOrder:
       type: string
+      pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
       enum: [ASC, DESC]
       default: ASC
       description: Sort direction
@@ -373,6 +418,7 @@ components:
       properties:
         data:
           type: array
+          maxItems: 100
           items: {}
           description: Page content
         totalElements:
@@ -400,18 +446,23 @@ components:
         empty:
           type: boolean
           description: Is empty
+      additionalProperties: false
     ErrorDetail:
       type: object
       required: [field, message]
       properties:
         field:
           type: string
+          maxLength: 100
+          pattern: "^[a-zA-Z_][a-zA-Z0-9_]*$"
           description: Field with error
           example: username
         message:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,500}$"
           description: Field error message
-          example: Invalid username format
+          example: "Invalid username format"
+      additionalProperties: false
 
     ErrorResponse:
       type: object
@@ -424,15 +475,22 @@ components:
           type: integer
         error:
           type: string
+          maxLength: 100
+          pattern: "^[A-Z][a-zA-Z0-9s]*$"
         message:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,1000}$"
         path:
           type: string
+          maxLength: 500
+          pattern: "^/[a-zA-Z0-9/_-]*$"
         errors:
           type: array
+          maxItems: 20
           items:
             $ref: "#/components/schemas/ErrorDetail"
           nullable: true
+      additionalProperties: false
 
     SuccessResponse:
       type: object
@@ -443,7 +501,9 @@ components:
           default: true
         message:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           description: Success message
+      additionalProperties: false
 
     ProblemDetails:
       type: object
@@ -451,11 +511,16 @@ components:
       properties:
         type:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
         title:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
         status:
           type: integer
         detail:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
         instance:
           type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
+      additionalProperties: false

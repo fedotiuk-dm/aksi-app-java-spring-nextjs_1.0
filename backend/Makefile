@@ -156,6 +156,7 @@ bundle-api: ## Generate API bundle from all domain specs
 	@echo '🔄 Generating API bundle...'
 	@cd src/main/resources/openapi && \
 	npx @redocly/cli bundle \
+	  common.yaml \
 	  auth/auth-api.yaml \
 	  branch/branch-api.yaml \
 	  cart/cart-api.yaml \
@@ -167,7 +168,7 @@ bundle-api: ## Generate API bundle from all domain specs
 	  pricing/pricing-api.yaml \
 	  receipt/receipt-api.yaml \
 	  user/user-api.yaml \
-	  --output temp-bundle
+	  --output temp-bundle --force
 	@cd src/main/resources/openapi && \
 	npx @redocly/cli join temp-bundle/*.yaml --output aksi-bundled-new.yaml
 	@cd src/main/resources/openapi && \

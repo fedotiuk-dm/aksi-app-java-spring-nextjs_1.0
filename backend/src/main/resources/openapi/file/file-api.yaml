@@ -1,3 +1,4 @@
+---
 openapi: 3.0.4
 info:
   title: File API
@@ -18,7 +19,6 @@ tags:
     description: File management operations
 
 paths:
-  # File endpoints
   /api/files/{filePath}:
     $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1{filePath}"
   /api/files/upload:
@@ -31,13 +31,6 @@ paths:
     $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1{filePath}~1base64"
 
 components:
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session cookie authentication
-
   responses:
     BadRequest:
       $ref: "../common.yaml#/components/responses/BadRequest"
@@ -51,7 +44,6 @@ components:
       $ref: "../common.yaml#/components/responses/PayloadTooLarge"
 
   schemas:
-    # Import all schemas from file-schemas.yaml
     Base64FileUploadRequest:
       $ref: "./schemas/file-schemas.yaml#/components/schemas/Base64FileUploadRequest"
     FileUploadResponse:
@@ -61,4 +53,6 @@ components:
     Base64FileResponse:
       $ref: "./schemas/file-schemas.yaml#/components/schemas/Base64FileResponse"
 
-security: [] # No authentication required for file serving
+security:
+  - cookieAuth: []
+  - bearerAuth: []

@@ -93,13 +93,6 @@ paths:
     $ref: "./paths/games-paths.yaml#/paths/~1api~1games~1by-id~1{gameId}~1disable"
 
 components:
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session cookie authentication
-
   responses:
     BadRequest:
       $ref: "../common.yaml#/components/responses/BadRequest"

@@ -212,7 +212,3 @@ components:
           description: Whether there are more items to load
 
     # ErrorResponse centralized in common.yaml
-
-  securitySchemes:
-    cookieAuth:
-      $ref: "../../common.yaml#/components/securitySchemes/cookieAuth"

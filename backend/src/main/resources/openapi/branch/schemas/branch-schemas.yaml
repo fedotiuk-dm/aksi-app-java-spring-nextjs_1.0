@@ -139,7 +139,3 @@ components:
                 $ref: "#/components/schemas/BranchInfo"
 
     # ErrorResponse moved to common.yaml
-
-  securitySchemes:
-    cookieAuth:
-      $ref: "../../common.yaml#/components/securitySchemes/cookieAuth"

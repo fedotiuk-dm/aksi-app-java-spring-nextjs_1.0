@@ -455,7 +455,3 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/OrderInfo"
-
-  securitySchemes:
-    cookieAuth:
-      $ref: "../../common.yaml#/components/securitySchemes/cookieAuth"

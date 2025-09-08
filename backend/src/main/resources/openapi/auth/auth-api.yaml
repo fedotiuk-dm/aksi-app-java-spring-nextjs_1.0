@@ -1,3 +1,4 @@
+---
 openapi: 3.0.4
 info:
   title: Auth API
@@ -8,14 +9,18 @@ info:
     email: support@dryclean.example.com
 
 servers:
-  - url: http://localhost:8080
-    description: Local development
+  - url: https://localhost:8443
+    description: Local development (HTTPS required for security)
   - url: https://api.dryclean.example.com
     description: Production
 
 tags:
   - name: auth
     description: Authentication and session management
+
+security:
+  - cookieAuth: []
+  - bearerAuth: []
 
 paths:
   # Auth endpoints
@@ -39,15 +44,10 @@ paths:
     $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1policy"
   /api/auth/server-time:
     $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1server-time"
+  /api/auth/jwks:
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1jwks"
 
 components:
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: SESSION
-      description: Session cookie authentication
-
   responses:
     BadRequest:
       $ref: "../common.yaml#/components/responses/BadRequest"
@@ -96,6 +96,17 @@ components:
       $ref: "./schemas/auth-schemas.yaml#/components/schemas/SessionPolicyInfo"
     ServerTimeResponse:
       $ref: "./schemas/auth-schemas.yaml#/components/schemas/ServerTimeResponse"
-
-security:
-  - cookieAuth: []
+    JWK:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/JWK"
+    JWKSet:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/JWKSet"
+    AccessToken:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/AccessToken"
+    RefreshToken:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/RefreshToken"
+    TokenPair:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/TokenPair"
+    TokenValidationRequest:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/TokenValidationRequest"
+    TokenValidationResponse:
+      $ref: "./schemas/auth-schemas.yaml#/components/schemas/TokenValidationResponse"
