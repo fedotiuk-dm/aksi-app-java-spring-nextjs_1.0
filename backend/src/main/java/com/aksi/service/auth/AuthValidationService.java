@@ -3,11 +3,16 @@ package com.aksi.service.auth;
 import java.util.regex.Pattern;
 
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.aksi.domain.user.UserEntity;
 import com.aksi.exception.BadRequestException;
 import com.aksi.exception.UnauthorizedException;
+import com.aksi.repository.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +27,56 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthValidationService {
 
-  private final SecurityContextService securityContextService;
+  private final UserRepository userRepository;
 
   // Enhanced password validation pattern: at least 12 characters, uppercase, lowercase, digit,
   // special char
   private static final Pattern PASSWORD_PATTERN =
       Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$");
+
+  /**
+   * Check if current security context is authenticated.
+   *
+   * @return true if authenticated
+   */
+  public boolean isAuthenticated() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return authentication != null && authentication.isAuthenticated();
+  }
+
+  /**
+   * Get current authenticated username from security context.
+   *
+   * @return username or null if not authenticated
+   */
+  public String getCurrentUsername() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+      return ((UserDetails) authentication.getPrincipal()).getUsername();
+    }
+    return authentication != null ? authentication.getName() : null;
+  }
+
+  /**
+   * Get current authenticated user entity.
+   *
+   * @return current user entity or null if not authenticated or user not found
+   */
+  public UserEntity getCurrentUser() {
+    try {
+      String username = getCurrentUsername();
+      if (username == null) {
+        return null;
+      }
+      return userRepository.findByUsername(username).orElse(null);
+    } catch (Exception e) {
+      log.debug("Could not get current user: {}", e.getMessage());
+      return null;
+    }
+  }
+
+  // Spring Security context session attribute key
+  private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 
   /**
    * Validate if user is allowed to login.
@@ -54,31 +103,6 @@ public class AuthValidationService {
   }
 
   /**
-   * Validate session for current request.
-   *
-   * @param session HTTP session
-   * @throws UnauthorizedException if session is invalid
-   */
-  public void validateSession(HttpSession session) {
-    if (session == null) {
-      throw new UnauthorizedException("No session provided");
-    }
-
-    // Check if session has required attributes
-    Object userId = session.getAttribute("USER_ID");
-    if (userId == null) {
-      throw new UnauthorizedException("Invalid session: no user ID");
-    }
-
-    Object username = session.getAttribute("USERNAME");
-    if (username == null) {
-      throw new UnauthorizedException("Invalid session: no username");
-    }
-
-    log.debug("Session validation passed for session: {}", session.getId());
-  }
-
-  /**
    * Validate consistency between session and security context.
    *
    * @param session HTTP session
@@ -98,16 +122,23 @@ public class AuthValidationService {
 
     if (requireContextAuth) {
       // Validate security context
-      if (!securityContextService.isAuthenticated()) {
+      if (!isAuthenticated()) {
         throw new UnauthorizedException("Security context not authenticated");
       }
 
-      if (!securityContextService.isSecurityContextValid(session)) {
+      // Check if security context matches session
+      SecurityContext sessionContext =
+          (SecurityContext) session.getAttribute(SPRING_SECURITY_CONTEXT);
+      SecurityContext currentContext = SecurityContextHolder.getContext();
+
+      if (sessionContext == null || currentContext == null ||
+          sessionContext.getAuthentication() == null || currentContext.getAuthentication() == null ||
+          !sessionContext.getAuthentication().getName().equals(currentContext.getAuthentication().getName())) {
         throw new UnauthorizedException("Security context does not match session");
       }
 
       // Check username consistency
-      String contextUsername = securityContextService.getCurrentUsername();
+      String contextUsername = getCurrentUsername();
       if (sessionUsername != null
           && contextUsername != null
           && !sessionUsername.equals(contextUsername)) {
@@ -190,27 +221,44 @@ public class AuthValidationService {
   }
 
   /**
-   * Validate session timeout and activity.
+   * Validate session for getting session info. Performs comprehensive validation.
+   *
+   * @param session HTTP session to validate
+   * @throws UnauthorizedException if validation fails
+   */
+  public void validateSessionForInfoRetrieval(HttpSession session) {
+    // Step 1: Validate session context consistency
+    validateSessionContextConsistency(session, true);
+
+    // Step 2: Check if session is authenticated
+    if (!isAuthenticated(session)) {
+      throw new UnauthorizedException("No valid session");
+    }
+
+    // Step 3: Check if current user exists
+    UserEntity userEntity = getCurrentUser();
+    if (userEntity == null) {
+      throw new UnauthorizedException("User not found in session");
+    }
+  }
+
+  /**
+   * Check if session is authenticated.
    *
    * @param session HTTP session
-   * @throws UnauthorizedException if session is expired or inactive
+   * @return true if authenticated
    */
-  public void validateSessionActivity(HttpSession session) {
-    if (session == null) {
-      throw new UnauthorizedException("No session provided");
+  private boolean isAuthenticated(HttpSession session) {
+    // Check session attributes
+    Object userId = session.getAttribute("USER_ID");
+    Object username = session.getAttribute("USERNAME");
+    if (userId == null || username == null) {
+      return false;
     }
 
-    long now = System.currentTimeMillis();
-    long lastAccessed = session.getLastAccessedTime();
-    int maxInactiveInterval = session.getMaxInactiveInterval();
-
-    // Check if session has expired
-    if (maxInactiveInterval > 0 && (now - lastAccessed) > (maxInactiveInterval * 1000L)) {
-      log.warn("Session expired for session: {}", session.getId());
-      throw new UnauthorizedException("Session has expired");
-    }
-
-    log.debug("Session activity validation passed for session: {}", session.getId());
+    // Check Spring Security context
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return authentication != null && authentication.isAuthenticated();
   }
 
   /**

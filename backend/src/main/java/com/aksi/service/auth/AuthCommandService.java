@@ -1,9 +1,16 @@
 package com.aksi.service.auth;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.stereotype.Service;
@@ -14,6 +21,8 @@ import com.aksi.api.auth.dto.LoginResponse;
 import com.aksi.domain.user.UserEntity;
 import com.aksi.exception.UnauthorizedException;
 import com.aksi.mapper.AuthMapper;
+import com.aksi.service.security.LoginAttemptService;
+import com.aksi.service.security.SecurityEventAuditService;
 import com.aksi.service.user.UserService;
 import com.aksi.util.IpAddressUtil;
 
@@ -32,7 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthCommandService {
 
   private final AuthenticationService authenticationService;
-  private final SecurityContextService securityContextService;
   private final UserService userService;
   private final AuthMapper authMapper;
   private final FindByIndexNameSessionRepository<? extends Session> sessionRepository;
@@ -44,6 +52,7 @@ public class AuthCommandService {
   private static final String SESSION_USER_ID = "USER_ID";
   private static final String SESSION_USERNAME = "USERNAME";
   private static final String SESSION_ROLES = "USER_ROLES";
+  private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 
   /**
    * Authenticate user and create session.
@@ -60,7 +69,7 @@ public class AuthCommandService {
 
       // Create session and security context
       createSession(userEntity, session);
-      securityContextService.createSecurityContext(userEntity, session);
+      createSecurityContext(userEntity, session);
 
       // Create response with security info
       LoginResponse response = authMapper.toLoginResponse(userEntity);
@@ -84,13 +93,13 @@ public class AuthCommandService {
    */
   public void logout(HttpSession session) {
     // Log current user for audit purposes
-    String currentUsername = securityContextService.getCurrentUsername();
+    String currentUsername = getCurrentUsername();
     if (currentUsername != null) {
       log.info("User {} logging out", currentUsername);
     }
 
     // Clear security context
-    securityContextService.clearSecurityContext();
+    clearSecurityContext();
 
     // Invalidate session (service handles null session)
     invalidateSession(session);
@@ -186,5 +195,57 @@ public class AuthCommandService {
     int count = userSessionsMap.size();
     log.warn("SECURITY: Force invalidated {} sessions for user: {}", count, username);
     return count;
+  }
+
+  /**
+   * Create and set security context for authenticated user.
+   *
+   * @param userEntity authenticated user
+   * @param session HTTP session
+   */
+  public void createSecurityContext(UserEntity userEntity, HttpSession session) {
+    // Create authorities from user roles
+    var authorities =
+        userEntity.getRoles().stream()
+            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
+            .collect(Collectors.toList());
+
+    // Create authentication token
+    var authentication =
+        new UsernamePasswordAuthenticationToken(userEntity.getUsername(), null, authorities);
+
+    // Create and set security context
+    SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+    securityContext.setAuthentication(authentication);
+    SecurityContextHolder.setContext(securityContext);
+
+    // Store security context in session
+    session.setAttribute(SPRING_SECURITY_CONTEXT, securityContext);
+
+    log.debug(
+        "Created security context for user: {} with roles: {}",
+        userEntity.getUsername(),
+        userEntity.getRoles());
+  }
+
+  /** Clear security context. */
+  public void clearSecurityContext() {
+    SecurityContextHolder.clearContext();
+    log.debug("Cleared security context");
+  }
+
+  /**
+   * Get current authenticated username from security context.
+   *
+   * @return username or null if not authenticated
+   */
+  public String getCurrentUsername() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+      return ((UserDetails) authentication.getPrincipal()).getUsername();
+    }
+
+    return authentication != null ? authentication.getName() : null;
   }
 }

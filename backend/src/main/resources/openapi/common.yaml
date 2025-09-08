@@ -190,17 +190,14 @@ components:
       properties:
         material:
           type: string
-          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           description: Material type (cotton, silk, wool, etc.)
           example: "cotton"
         color:
           type: string
-          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           description: Item color (affects processing and pricing)
           example: "blue"
         filler:
           type: string
-          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
           description: Filler type for items with filling
           example: "down"
         fillerCondition:

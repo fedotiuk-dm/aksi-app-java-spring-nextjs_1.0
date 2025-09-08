@@ -11,7 +11,7 @@ import com.aksi.domain.order.OrderEntity;
 import com.aksi.domain.order.OrderPaymentEntity;
 import com.aksi.mapper.OrderMapper;
 import com.aksi.repository.OrderRepository;
-import com.aksi.service.auth.UserContextService;
+import com.aksi.service.auth.AuthQueryService;
 import com.aksi.service.order.factory.OrderFactory;
 import com.aksi.service.order.guard.OrderGuard;
 import com.aksi.service.order.util.OrderQueryUtils;
@@ -34,7 +34,7 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
   private final OrderFactory orderFactory;
   private final OrderMapper orderMapper;
   private final OrderQueryUtils orderQueryUtils;
-  private final UserContextService userContextService;
+  private final AuthQueryService authQueryService;
 
   @Override
   public PaymentInfo addPayment(UUID orderId, AddPaymentRequest request) {
@@ -51,7 +51,7 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
     orderValidator.validatePaymentAmount(request.getAmount(), remainingBalance);
 
     // Step 4: Create payment
-    var currentUser = userContextService.getCurrentUser();
+    var currentUser = authQueryService.getCurrentUser();
     OrderPaymentEntity payment = orderFactory.createPayment(order, request, currentUser);
 
     // Step 5: Add to order (payment.setOrderEntity already set in factory)

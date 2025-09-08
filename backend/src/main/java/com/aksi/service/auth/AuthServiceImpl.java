@@ -8,16 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aksi.api.auth.dto.LoginRequest;
 import com.aksi.api.auth.dto.LoginResponse;
 import com.aksi.api.auth.dto.SessionInfo;
-import com.aksi.domain.user.UserEntity;
-import com.aksi.exception.UnauthorizedException;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Facade implementation of AuthService. Provides a unified API while delegating to specialized
- * Query and Command services for better separation of concerns.
+ * Implementation of AuthService that delegates to command and query services.
  */
 @Service
 @Transactional
@@ -27,7 +24,6 @@ public class AuthServiceImpl implements AuthService {
 
   private final AuthQueryService queryService;
   private final AuthCommandService commandService;
-  private final AuthValidationService validationService;
 
   // Command methods - delegate to AuthCommandService
   @Override
@@ -50,20 +46,6 @@ public class AuthServiceImpl implements AuthService {
   @Override
   @Transactional(readOnly = true)
   public SessionInfo getSessionInfo(HttpSession session) {
-    // Validate session first
-    validationService.validateSessionContextConsistency(session, true);
-
-    // Check if session is authenticated
-    if (!queryService.isAuthenticated(session)) {
-      throw new UnauthorizedException("No valid session");
-    }
-
-    // Get current user
-    UserEntity userEntity = queryService.getCurrentUser(session);
-    if (userEntity == null) {
-      throw new UnauthorizedException("User not found in session");
-    }
-
-    return queryService.getSessionInfo(session, userEntity);
+    return queryService.getSessionInfo(session);
   }
 }

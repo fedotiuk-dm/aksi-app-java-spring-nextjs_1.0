@@ -1,10 +1,8 @@
-package com.aksi.service.auth;
+package com.aksi.service.security;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.TimeUnit;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -22,24 +20,15 @@ public class LoginAttemptService {
 
   private final RedisTemplate<String, Object> redisTemplate;
   private final SecurityEventAuditService securityEventAuditService;
-
-  @Value("${app.security.max-attempts-per-user:5}")
-  private int maxAttemptsPerUser;
-
-  @Value("${app.security.max-attempts-per-ip:10}")
-  private int maxAttemptsPerIp;
-
-  @Value("${app.security.lockout-duration-minutes:15}")
-  private int lockoutDurationMinutes;
-
-  @Value("${app.security.attempt-window-minutes:60}")
-  private int attemptWindowMinutes;
+  private final SecurityConfiguration securityConfig;
 
   public LoginAttemptService(
       RedisTemplate<String, Object> redisTemplate,
-      SecurityEventAuditService securityEventAuditService) {
+      SecurityEventAuditService securityEventAuditService,
+      SecurityConfiguration securityConfig) {
     this.redisTemplate = redisTemplate;
     this.securityEventAuditService = securityEventAuditService;
+    this.securityConfig = securityConfig;
   }
 
   /** Record a successful login attempt. */
@@ -65,12 +54,12 @@ public class LoginAttemptService {
     boolean userBlocked = false;
     boolean ipBlocked = false;
 
-    if (userAttempts >= maxAttemptsPerUser) {
+    if (userAttempts >= securityConfig.getMaxAttemptsPerUser()) {
       blockUser(username);
       userBlocked = true;
     }
 
-    if (ipAttempts >= maxAttemptsPerIp) {
+    if (ipAttempts >= securityConfig.getMaxAttemptsPerIp()) {
       blockIp(ipAddress);
       ipBlocked = true;
     }
@@ -102,39 +91,7 @@ public class LoginAttemptService {
     Object attempts = redisTemplate.opsForValue().get(key);
     int currentAttempts = attempts != null ? ((Number) attempts).intValue() : 0;
 
-    return Math.max(0, maxAttemptsPerUser - currentAttempts);
-  }
-
-  /** Get the lockout expiration time for a user. */
-  public Instant getUserLockoutExpiration(String username) {
-    if (!isUserBlocked(username)) {
-      return null;
-    }
-
-    String key = USER_BLOCKED_PREFIX + username;
-    long ttl = redisTemplate.getExpire(key, TimeUnit.SECONDS);
-
-    if (ttl > 0) {
-      return Instant.now().plusSeconds(ttl);
-    }
-
-    return null;
-  }
-
-  /** Get the lockout expiration time for an IP. */
-  public Instant getIpLockoutExpiration(String ipAddress) {
-    if (!isIpBlocked(ipAddress)) {
-      return null;
-    }
-
-    String key = IP_BLOCKED_PREFIX + ipAddress;
-    long ttl = redisTemplate.getExpire(key, TimeUnit.SECONDS);
-
-    if (ttl > 0) {
-      return Instant.now().plusSeconds(ttl);
-    }
-
-    return null;
+    return Math.max(0, securityConfig.getMaxAttemptsPerUser() - currentAttempts);
   }
 
   /** Manually unlock a user (admin operation). */
@@ -159,26 +116,12 @@ public class LoginAttemptService {
     securityEventAuditService.logIpUnlocked(ipAddress);
   }
 
-  /** Get current failed attempt count for a user. */
-  public int getUserFailedAttempts(String username) {
-    String key = USER_ATTEMPT_PREFIX + username;
-    Object attempts = redisTemplate.opsForValue().get(key);
-    return attempts != null ? ((Number) attempts).intValue() : 0;
-  }
-
-  /** Get current failed attempt count for an IP. */
-  public int getIpFailedAttempts(String ipAddress) {
-    String key = IP_ATTEMPT_PREFIX + ipAddress;
-    Object attempts = redisTemplate.opsForValue().get(key);
-    return attempts != null ? ((Number) attempts).intValue() : 0;
-  }
-
   private Long incrementAttempts(String key) {
     Long attempts = redisTemplate.opsForValue().increment(key, 1);
 
     // Set expiration on first attempt
     if (attempts != null && attempts == 1) {
-      redisTemplate.expire(key, Duration.ofMinutes(attemptWindowMinutes));
+      redisTemplate.expire(key, Duration.ofMinutes(securityConfig.getAttemptWindowMinutes()));
     }
 
     return attempts != null ? attempts : 0L;
@@ -188,14 +131,14 @@ public class LoginAttemptService {
     String key = USER_BLOCKED_PREFIX + username;
     redisTemplate
         .opsForValue()
-        .set(key, Instant.now().toString(), Duration.ofMinutes(lockoutDurationMinutes));
+        .set(key, Instant.now().toString(), Duration.ofMinutes(securityConfig.getLockoutDurationMinutes()));
   }
 
   private void blockIp(String ipAddress) {
     String key = IP_BLOCKED_PREFIX + ipAddress;
     redisTemplate
         .opsForValue()
-        .set(key, Instant.now().toString(), Duration.ofMinutes(lockoutDurationMinutes));
+        .set(key, Instant.now().toString(), Duration.ofMinutes(securityConfig.getLockoutDurationMinutes()));
   }
 
   private void clearFailedAttempts(String username, String ipAddress) {

@@ -25,6 +25,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.aksi.service.security.SecurityConfiguration;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -41,11 +43,13 @@ public class SecurityConfig {
   private String allowedOrigins;
 
   private final UserDetailsService userDetailsService;
+  private final SecurityConfiguration securityConfig;
 
-  public SecurityConfig(UserDetailsService userDetailsService) {
+  public SecurityConfig(UserDetailsService userDetailsService, SecurityConfiguration securityConfig) {
     this.userDetailsService = userDetailsService;
+    this.securityConfig = securityConfig;
     log.info(
-        "🔐 Configuring SecurityConfig with UserDetailsService: {}",
+        "🔐 Configuring SecurityConfig with UserDetailsService: {} and SecurityConfiguration",
         userDetailsService.getClass().getSimpleName());
   }
 
@@ -59,6 +63,7 @@ public class SecurityConfig {
       AuthenticationConfiguration authenticationConfiguration) throws Exception {
     return authenticationConfiguration.getAuthenticationManager();
   }
+
 
   @Bean
   @Profile("dev")
@@ -92,7 +97,7 @@ public class SecurityConfig {
             session ->
                 session
                     .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                    .maximumSessions(1)
+                    .maximumSessions(securityConfig.getSessionMaxConcurrentSessions())
                     .maxSessionsPreventsLogin(false))
 
         // CSRF protection with cookie repository

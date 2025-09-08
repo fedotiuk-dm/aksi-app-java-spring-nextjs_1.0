@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import com.aksi.api.auth.dto.SessionInfo;
 import com.aksi.domain.user.UserEntity;
 import com.aksi.exception.UnauthorizedException;
 import com.aksi.mapper.AuthMapper;
-import com.aksi.service.user.UserService;
+import com.aksi.repository.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -30,30 +31,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthQueryService {
 
-  private final UserService userService;
+  private final UserRepository userRepository;
   private final FindByIndexNameSessionRepository<? extends Session> sessionRepository;
   private final AuthMapper authMapper;
-  private final SecurityContextService securityContextService;
+  private final AuthValidationService authValidationService;
 
   /** Session attribute key for user ID. */
   public static final String SESSION_USER_ID = "USER_ID";
-
-  /** Session attribute key for username. */
-  public static final String SESSION_USERNAME = "USERNAME";
-
-  /**
-   * Get current user from session.
-   *
-   * @param session HTTP session
-   * @return user entity or null if not found
-   */
-  public UserEntity getCurrentUser(HttpSession session) {
-    UUID userId = getUserIdFromSession(session);
-    if (userId == null) {
-      return null;
-    }
-    return userService.findById(userId).orElse(null);
-  }
 
   /**
    * Get current session information.
@@ -70,69 +54,6 @@ public class AuthQueryService {
         Instant.ofEpochMilli(session.getLastAccessedTime()),
         Instant.ofEpochMilli(
             session.getLastAccessedTime() + (session.getMaxInactiveInterval() * 1000L)));
-  }
-
-  /**
-   * Get user ID from session.
-   *
-   * @param session HTTP session
-   * @return user ID or null
-   */
-  public UUID getUserIdFromSession(HttpSession session) {
-    if (session == null) {
-      return null;
-    }
-    return (UUID) session.getAttribute(SESSION_USER_ID);
-  }
-
-  /**
-   * Get username from session.
-   *
-   * @param session HTTP session
-   * @return username or null
-   */
-  public String getUsernameFromSession(HttpSession session) {
-    if (session == null) {
-      return null;
-    }
-    return (String) session.getAttribute(SESSION_USERNAME);
-  }
-
-  /**
-   * Check if session has valid authentication.
-   *
-   * @param session HTTP session
-   * @return true if authenticated
-   */
-  public boolean isSessionAuthenticated(HttpSession session) {
-    return session != null && session.getAttribute(SESSION_USER_ID) != null;
-  }
-
-  /**
-   * Comprehensive authentication check combining session and security context validation.
-   *
-   * @param session HTTP session
-   * @return true if fully authenticated
-   */
-  public boolean isAuthenticated(HttpSession session) {
-    boolean sessionAuth = isSessionAuthenticated(session);
-    boolean contextAuth = securityContextService.isAuthenticated();
-    boolean contextValid = securityContextService.isSecurityContextValid(session);
-
-    // Additional validation: check username consistency between session and context
-    if (sessionAuth && contextAuth && contextValid && session != null) {
-      String sessionUsername = getUsernameFromSession(session);
-      String contextUsername = securityContextService.getCurrentUsername();
-
-      if (sessionUsername != null
-          && contextUsername != null
-          && !sessionUsername.equals(contextUsername)) {
-        log.warn("Username mismatch: session={}, context={}", sessionUsername, contextUsername);
-        return false;
-      }
-    }
-
-    return sessionAuth && contextAuth && contextValid;
   }
 
   /**
@@ -174,12 +95,58 @@ public class AuthQueryService {
   }
 
   /**
-   * Check if user exists by ID.
+   * Get current authenticated user entity.
    *
-   * @param userId user ID
-   * @return true if user exists
+   * @return current user entity or null if not authenticated
    */
-  public boolean existsById(UUID userId) {
-    return userService.findById(userId).isPresent();
+  public UserEntity getCurrentUser() {
+    try {
+      UUID userId = getCurrentUserIdFromContext();
+      return userRepository.findById(userId).orElse(null);
+    } catch (Exception e) {
+      log.debug("Could not get current user: {}", e.getMessage());
+      return null;
+    }
+  }
+
+  /**
+   * Get session info with full validation.
+   *
+   * @param session HTTP session
+   * @return session information
+   */
+  public SessionInfo getSessionInfo(HttpSession session) {
+    // Perform comprehensive validation
+    authValidationService.validateSessionForInfoRetrieval(session);
+
+    // Get current user (already validated in validateSessionForInfoRetrieval)
+    UserEntity userEntity = getCurrentUser();
+
+    return getSessionInfo(session, userEntity);
+  }
+
+  /**
+   * Check if current context is authenticated.
+   *
+   * @return true if authenticated
+   */
+  public boolean isAuthenticated() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return authentication != null && authentication.isAuthenticated();
+  }
+
+  /**
+   * Get current authenticated username from security context.
+   *
+   * @return username or null if not authenticated
+   */
+  public String getCurrentUsername() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+      return ((UserDetails) authentication.getPrincipal()).getUsername();
+    }
+
+    return authentication != null ? authentication.getName() : null;
   }
 }

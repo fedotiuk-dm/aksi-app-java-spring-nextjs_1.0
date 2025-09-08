@@ -157,12 +157,14 @@ public class CalculationQueryService {
 
     if (context.getServiceTypeCode() != null) {
       log.info("🔍 Validating service type exists: {}", context.getServiceTypeCode());
-      var serviceTypeExists = serviceTypeRepository.findByCode(context.getServiceTypeCode()).isPresent();
+      var gameEntity = gameRepository.findByCode(context.getGameCode())
+          .orElseThrow(() -> new IllegalArgumentException("Game not found: " + context.getGameCode()));
+      var serviceTypeExists = serviceTypeRepository.findByGameIdAndCode(gameEntity.getId(), context.getServiceTypeCode()).isPresent();
       if (!serviceTypeExists) {
-        log.error("❌ Service type not found: {}", context.getServiceTypeCode());
-        throw new IllegalArgumentException("Service type not found: " + context.getServiceTypeCode());
+        log.error("❌ Service type not found: {} for game: {}", context.getServiceTypeCode(), context.getGameCode());
+        throw new IllegalArgumentException("Service type not found: " + context.getServiceTypeCode() + " for game: " + context.getGameCode());
       }
-      log.info("✅ Service type validation passed for: {}", context.getServiceTypeCode());
+      log.info("✅ Service type validation passed for: {} in game: {}", context.getServiceTypeCode(), context.getGameCode());
     }
 
     var apiFormulaNullable = request.getFormula();
@@ -232,10 +234,10 @@ public class CalculationQueryService {
             .orElseThrow(() -> new IllegalArgumentException("Game not found: " + context.getGameCode()));
         log.info("✅ Found game entity: id={}, code={}", gameEntity.getId(), gameEntity.getCode());
 
-        log.info("🔍 Looking for service type with code: {}", context.getServiceTypeCode());
-        var serviceTypeEntity = serviceTypeRepository.findByCode(context.getServiceTypeCode())
-            .orElseThrow(() -> new IllegalArgumentException("Service type not found: " + context.getServiceTypeCode()));
-        log.info("✅ Found service type entity: id={}, code={}", serviceTypeEntity.getId(), serviceTypeEntity.getCode());
+        log.info("🔍 Looking for service type with code: {} for game: {}", context.getServiceTypeCode(), context.getGameCode());
+        var serviceTypeEntity = serviceTypeRepository.findByGameIdAndCode(gameEntity.getId(), context.getServiceTypeCode())
+            .orElseThrow(() -> new IllegalArgumentException("Service type not found: " + context.getServiceTypeCode() + " for game: " + context.getGameCode()));
+        log.info("✅ Found service type entity: id={}, code={} for game: {}", serviceTypeEntity.getId(), serviceTypeEntity.getCode(), context.getGameCode());
 
         // Get active modifiers for calculation with validation
         log.info("🚀 Getting modifiers for calculation: gameId={}, serviceTypeId={}, modifiers={}",
