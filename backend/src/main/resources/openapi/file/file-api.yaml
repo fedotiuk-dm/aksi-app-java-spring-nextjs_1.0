@@ -20,15 +20,15 @@ tags:
 
 paths:
   /api/files/{filePath}:
-    $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1{filePath}"
+    $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1[filePath]"
   /api/files/upload:
     $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1upload"
   /api/files/upload/base64:
     $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1upload~1base64"
   /api/files/{filePath}/info:
-    $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1{filePath}~1info"
+    $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1[filePath]~1info"
   /api/files/{filePath}/base64:
-    $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1{filePath}~1base64"
+    $ref: "./paths/file-paths.yaml#/paths/~1api~1files~1[filePath]~1base64"
 
 components:
   responses:

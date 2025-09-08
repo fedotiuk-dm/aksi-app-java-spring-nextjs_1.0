@@ -77,7 +77,7 @@ paths:
         "401":
           $ref: "../../common.yaml#/components/responses/Unauthorized"
 
-  /api/customers/{customerId}:
+  /api/customers/[customerId]:
     parameters:
       - name: customerId
         in: path
@@ -135,7 +135,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/customers/{customerId}/exists:
+  /api/customers/[customerId]/exists:
     parameters:
       - name: customerId
         in: path

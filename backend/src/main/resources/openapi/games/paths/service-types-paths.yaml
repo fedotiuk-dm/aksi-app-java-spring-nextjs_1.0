@@ -54,7 +54,7 @@ paths:
         "403":
           $ref: "../../common.yaml#/components/responses/Forbidden"
 
-  /api/games/service-types/{serviceTypeId}:
+  /api/games/service-types/[serviceTypeId]:
     get:
       tags: [service-types]
       operationId: gamesGetServiceTypeById
@@ -135,7 +135,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/games/service-types/{serviceTypeId}/force-delete:
+  /api/games/service-types/[serviceTypeId]/force-delete:
     delete:
       tags: [service-types]
       operationId: gamesForceDeleteServiceType
@@ -158,7 +158,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/games/service-types/{serviceTypeId}/set-active:
+  /api/games/service-types/[serviceTypeId]/set-active:
     patch:
       tags: [service-types]
       operationId: gamesSetServiceTypeActive
@@ -245,7 +245,7 @@ paths:
                 items:
                   type: string
 
-  /api/service-types/code/{code}:
+  /api/service-types/code/[code]:
     get:
       tags: [service-types]
       operationId: gamesGetServiceTypeByCode
@@ -269,7 +269,7 @@ paths:
         "404":
           description: Service type not found
 
-  /api/service-types/game/{gameId}:
+  /api/service-types/game/[gameId]:
     get:
       tags: [service-types]
       operationId: gamesGetServiceTypesByGameId

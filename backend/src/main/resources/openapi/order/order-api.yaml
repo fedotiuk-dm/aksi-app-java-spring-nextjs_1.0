@@ -28,27 +28,27 @@ paths:
   /api/orders/overdue:
     $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1overdue"
   /api/orders/customer/{customerId}/history:
-    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1customer~1{customerId}~1history"
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1customer~1[customerId]~1history"
   /api/orders/customer/{customerId}/recent:
-    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1customer~1{customerId}~1recent"
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1customer~1[customerId]~1recent"
   /api/orders/{orderId}:
-    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}"
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1[orderId]"
   /api/orders/{orderId}/items/{itemId}/characteristics:
-    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1items~1{itemId}~1characteristics"
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1[orderId]~1items~1[itemId]~1characteristics"
   /api/orders/{orderId}/items/{itemId}/photos:
-    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1items~1{itemId}~1photos"
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1[orderId]~1items~1[itemId]~1photos"
   /api/orders/{orderId}/items/{itemId}/photos/{photoId}:
-    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1items~1{itemId}~1photos~1{photoId}"
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1[orderId]~1items~1[itemId]~1photos~1[photoId]"
   /api/orders/{orderId}/receipt:
-    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1receipt"
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1[orderId]~1receipt"
   /api/orders/{orderId}/signature:
-    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1signature"
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1[orderId]~1signature"
   /api/orders/{orderId}/items:
-    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1items"
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1[orderId]~1items"
   /api/orders/{orderId}/payments:
-    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1payments"
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1[orderId]~1payments"
   /api/orders/{orderId}/payment:
-    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1{orderId}~1payment"
+    $ref: "./paths/order-paths.yaml#/paths/~1api~1orders~1[orderId]~1payment"
 
 components:
   responses:

@@ -24,11 +24,11 @@ paths:
   /api/branches/active:
     $ref: "./paths/branch-paths.yaml#/paths/~1api~1branches~1active"
   /api/branches/{branchId}:
-    $ref: "./paths/branch-paths.yaml#/paths/~1api~1branches~1{branchId}"
+    $ref: "./paths/branch-paths.yaml#/paths/~1api~1branches~1[branchId]"
   /api/branches/{branchId}/activate:
-    $ref: "./paths/branch-paths.yaml#/paths/~1api~1branches~1{branchId}~1activate"
+    $ref: "./paths/branch-paths.yaml#/paths/~1api~1branches~1[branchId]~1activate"
   /api/branches/{branchId}/deactivate:
-    $ref: "./paths/branch-paths.yaml#/paths/~1api~1branches~1{branchId}~1deactivate"
+    $ref: "./paths/branch-paths.yaml#/paths/~1api~1branches~1[branchId]~1deactivate"
 
 components:
   responses:

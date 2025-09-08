@@ -22,9 +22,9 @@ paths:
   /api/customers:
     $ref: "./paths/customer-paths.yaml#/paths/~1api~1customers"
   /api/customers/{customerId}:
-    $ref: "./paths/customer-paths.yaml#/paths/~1api~1customers~1{customerId}"
+    $ref: "./paths/customer-paths.yaml#/paths/~1api~1customers~1[customerId]"
   /api/customers/{customerId}/exists:
-    $ref: "./paths/customer-paths.yaml#/paths/~1api~1customers~1{customerId}~1exists"
+    $ref: "./paths/customer-paths.yaml#/paths/~1api~1customers~1[customerId]~1exists"
 
 components:
   responses:

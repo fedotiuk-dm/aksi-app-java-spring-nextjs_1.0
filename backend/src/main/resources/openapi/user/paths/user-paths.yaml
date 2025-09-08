@@ -83,7 +83,7 @@ paths:
         "409":
           $ref: "../../common.yaml#/components/responses/Conflict"
 
-  /api/users/{userId}:
+  /api/users/[userId]:
     parameters:
       - name: userId
         in: path
@@ -147,7 +147,7 @@ paths:
         "409":
           $ref: "../../common.yaml#/components/responses/Conflict"
 
-  /api/users/{userId}/password:
+  /api/users/[userId]/password:
     parameters:
       - name: userId
         in: path
@@ -183,7 +183,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/users/{userId}/activate:
+  /api/users/[userId]/activate:
     parameters:
       - name: userId
         in: path
@@ -217,7 +217,7 @@ paths:
         "409":
           $ref: "../../common.yaml#/components/responses/Conflict"
 
-  /api/users/{userId}/deactivate:
+  /api/users/[userId]/deactivate:
     parameters:
       - name: userId
         in: path
@@ -251,7 +251,7 @@ paths:
         "409":
           $ref: "../../common.yaml#/components/responses/Conflict"
 
-  /api/users/{userId}/roles:
+  /api/users/[userId]/roles:
     parameters:
       - name: userId
         in: path
@@ -291,7 +291,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/users/{userId}/branches:
+  /api/users/[userId]/branches:
     parameters:
       - name: userId
         in: path
@@ -353,7 +353,7 @@ paths:
         "404":
           $ref: "../../common.yaml#/components/responses/NotFound"
 
-  /api/roles/{role}/permissions:
+  /api/roles/[role]/permissions:
     parameters:
       - name: role
         in: path
@@ -386,7 +386,7 @@ paths:
         "403":
           $ref: "../../common.yaml#/components/responses/Forbidden"
 
-  /api/users/{userId}/permissions:
+  /api/users/[userId]/permissions:
     parameters:
       - name: userId
         in: path

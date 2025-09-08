@@ -33,13 +33,13 @@ paths:
   /api/auth/sessions:
     $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1sessions"
   /api/auth/sessions/{sessionId}:
-    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1sessions~1{sessionId}"
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1sessions~1[sessionId]"
   /api/auth/security/attempts:
     $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1attempts"
   /api/auth/security/unlock/{username}:
-    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1unlock~1{username}"
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1unlock~1[username]"
   /api/auth/security/unlock-ip/{ipAddress}:
-    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1unlock-ip~1{ipAddress}"
+    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1unlock-ip~1[ipAddress]"
   /api/auth/security/policy:
     $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1policy"
   /api/auth/server-time:

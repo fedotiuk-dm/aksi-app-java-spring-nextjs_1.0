@@ -24,7 +24,7 @@ paths:
   /api/cart/items:
     $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1items"
   /api/cart/items/{itemId}:
-    $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1items~1{itemId}"
+    $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1items~1[itemId]"
   /api/cart/modifiers:
     $ref: "./paths/cart-paths.yaml#/paths/~1api~1cart~1modifiers"
   /api/cart/calculate:

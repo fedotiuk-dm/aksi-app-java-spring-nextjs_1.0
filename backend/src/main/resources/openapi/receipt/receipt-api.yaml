@@ -20,11 +20,12 @@ tags:
 
 paths:
   /api/receipts/order/{orderId}:
-    $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1order~1{orderId}"
+    $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1order~1:orderId"
+
   /api/receipts/preview:
     $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1preview"
   /api/receipts/order/{orderId}/email:
-    $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1order~1{orderId}~1email"
+    $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1order~1:orderId~1email"
   /api/receipts/templates:
     $ref: "./paths/receipt-paths.yaml#/paths/~1api~1receipts~1templates"
 

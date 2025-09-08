@@ -22,21 +22,21 @@ paths:
   /api/users:
     $ref: "./paths/user-paths.yaml#/paths/~1api~1users"
   /api/users/{userId}:
-    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}"
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1[userId]"
   /api/users/{userId}/password:
-    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}~1password"
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1[userId]~1password"
   /api/users/{userId}/activate:
-    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}~1activate"
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1[userId]~1activate"
   /api/users/{userId}/deactivate:
-    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}~1deactivate"
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1[userId]~1deactivate"
   /api/users/{userId}/roles:
-    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}~1roles"
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1[userId]~1roles"
   /api/users/{userId}/branches:
-    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}~1branches"
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1[userId]~1branches"
   /api/users/{userId}/permissions:
-    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1{userId}~1permissions"
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1users~1[userId]~1permissions"
   /api/roles/{role}/permissions:
-    $ref: "./paths/user-paths.yaml#/paths/~1api~1roles~1{role}~1permissions"
+    $ref: "./paths/user-paths.yaml#/paths/~1api~1roles~1[role]~1permissions"
 components:
   responses:
     BadRequest:

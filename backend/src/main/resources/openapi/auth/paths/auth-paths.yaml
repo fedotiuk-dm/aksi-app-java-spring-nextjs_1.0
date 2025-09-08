@@ -196,7 +196,7 @@ paths:
         default:
           $ref: "../../common.yaml#/components/responses/default"
 
-  /api/auth/sessions/{sessionId}:
+  /api/auth/sessions/[sessionId]:
     parameters:
       - name: sessionId
         in: path
@@ -259,7 +259,7 @@ paths:
         default:
           $ref: "../../common.yaml#/components/responses/default"
 
-  /api/auth/security/unlock/{username}:
+  /api/auth/security/unlock/[username]:
     parameters:
       - name: username
         in: path
@@ -294,7 +294,7 @@ paths:
         default:
           $ref: "../../common.yaml#/components/responses/default"
 
-  /api/auth/security/unlock-ip/{ipAddress}:
+  /api/auth/security/unlock-ip/[ipAddress]:
     post:
       operationId: unlockIp
       summary: Unlock IP address

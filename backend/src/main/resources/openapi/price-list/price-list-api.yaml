@@ -22,7 +22,7 @@ paths:
   /api/price-list:
     $ref: "./paths/price-list-paths.yaml#/paths/~1api~1price-list"
   /api/price-list/{priceListItemId}:
-    $ref: "./paths/price-list-paths.yaml#/paths/~1api~1price-list~1{priceListItemId}"
+    $ref: "./paths/price-list-paths.yaml#/paths/~1api~1price-list~1[priceListItemId]"
 
 components:
   responses:

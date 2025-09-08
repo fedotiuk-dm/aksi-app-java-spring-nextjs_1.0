@@ -36,7 +36,7 @@ paths:
         "401":
           $ref: "../../common.yaml#/components/responses/Unauthorized"
 
-  /api/games/calculator/formulas/{formulaType}/validate:
+  /api/games/calculator/formulas/[formulaType]/validate:
     post:
       tags: [calculator]
       operationId: validateFormula
@@ -79,7 +79,7 @@ paths:
         "401":
           $ref: "../../common.yaml#/components/responses/Unauthorized"
 
-  /api/games/calculator/formulas/{formulaType}/preview:
+  /api/games/calculator/formulas/[formulaType]/preview:
     post:
       tags: [calculator]
       operationId: previewFormulaCalculation
@@ -160,7 +160,7 @@ paths:
           $ref: "../../common.yaml#/components/responses/Unauthorized"
 
   # Universal calculation endpoint
-  /api/games/calculator/formulas/{formulaType}/calculate:
+  /api/games/calculator/formulas/[formulaType]/calculate:
     post:
       tags: [calculator]
       operationId: calculateWithFormula
