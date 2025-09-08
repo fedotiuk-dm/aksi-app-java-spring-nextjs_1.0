@@ -1,0 +1,281 @@
+---
+components:
+  schemas:
+    # Security Management schemas
+    SecurityAttemptsResponse:
+      type: object
+      required:
+        - overview
+        - recentAttempts
+        - blockedUsers
+        - blockedIps
+      properties:
+        overview:
+          $ref: "#/components/schemas/SecurityOverview"
+        recentAttempts:
+          type: array
+          items:
+            $ref: "#/components/schemas/LoginAttempt"
+          maxItems: 50
+          description: Recent login attempts (last 50)
+        blockedUsers:
+          type: array
+          maxItems: 100
+          items:
+            $ref: "#/components/schemas/BlockedUser"
+          description: Currently blocked users
+        blockedIps:
+          type: array
+          maxItems: 200
+          items:
+            $ref: "#/components/schemas/BlockedIp"
+          description: Currently blocked IP addresses
+      additionalProperties: false
+
+    SecurityOverview:
+      type: object
+      required:
+        - totalFailedAttemptsToday
+        - totalBlockedUsers
+        - totalBlockedIps
+        - peakAttemptTime
+      properties:
+        totalFailedAttemptsToday:
+          type: integer
+          description: Total failed attempts today
+          example: 147
+        totalBlockedUsers:
+          type: integer
+          description: Currently blocked users count
+          example: 3
+        totalBlockedIps:
+          type: integer
+          description: Currently blocked IPs count
+          example: 8
+        peakAttemptTime:
+          type: string
+          format: date-time
+          description: Time of highest attempt rate today
+        averageAttemptsPerHour:
+          type: number
+          format: double
+          description: Average failed attempts per hour
+          example: 6.2
+      additionalProperties: false
+
+    LoginAttempt:
+      type: object
+      required:
+        - timestamp
+        - username
+        - ipAddress
+        - success
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Attempt timestamp
+        username:
+          type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
+          description: Username attempted
+          example: "operator1"
+        ipAddress:
+          type: string
+          pattern: "^\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}$"
+          description: IP address
+          example: "192.168.1.1"
+        userAgent:
+          type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
+          nullable: true
+          description: User agent
+        location:
+          type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
+          nullable: true
+          description: Approximate location
+          example: "Kyiv Ukraine"
+        success:
+          type: boolean
+          description: Whether attempt was successful
+        failureReason:
+          type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
+          nullable: true
+          description: Reason for failure
+          example: "Invalid_password"
+      additionalProperties: false
+
+    BlockedUser:
+      type: object
+      required:
+        - username
+        - failedAttempts
+        - lastAttemptAt
+        - blockedUntil
+      properties:
+        username:
+          type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
+          description: Blocked username
+          example: "operator1"
+        failedAttempts:
+          type: integer
+          description: Number of failed attempts
+          example: 5
+        lastAttemptAt:
+          type: string
+          format: date-time
+          description: Last failed attempt time
+        blockedUntil:
+          type: string
+          format: date-time
+          description: When block expires
+        lastAttemptIp:
+          type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
+          description: IP of last attempt
+          example: "192.168.1.1"
+      additionalProperties: false
+
+    BlockedIp:
+      type: object
+      required:
+        - ipAddress
+        - failedAttempts
+        - lastAttemptAt
+        - blockedUntil
+      properties:
+        ipAddress:
+          type: string
+          pattern: "^\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}$"
+          description: Blocked IP address
+          example: "192.168.1.1"
+        failedAttempts:
+          type: integer
+          description: Number of failed attempts
+          example: 12
+        lastAttemptAt:
+          type: string
+          format: date-time
+          description: Last failed attempt time
+        blockedUntil:
+          type: string
+          format: date-time
+          description: When block expires
+        location:
+          type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
+          nullable: true
+          description: Approximate location
+          example: "Kyiv Ukraine"
+        lastUsername:
+          type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
+          nullable: true
+          description: Last username attempted from this IP
+          example: "operator1"
+      additionalProperties: false
+
+    SecurityPolicyResponse:
+      type: object
+      required:
+        - rateLimiting
+        - passwordPolicy
+        - sessionPolicy
+      properties:
+        rateLimiting:
+          $ref: "#/components/schemas/RateLimitingPolicy"
+        passwordPolicy:
+          $ref: "#/components/schemas/PasswordPolicyInfo"
+        sessionPolicy:
+          $ref: "#/components/schemas/SessionPolicyInfo"
+      additionalProperties: false
+
+    RateLimitingPolicy:
+      type: object
+      required:
+        - maxAttemptsPerUser
+        - maxAttemptsPerIp
+        - lockoutDurationMinutes
+        - enabled
+      properties:
+        maxAttemptsPerUser:
+          type: integer
+          description: Max failed attempts per user
+          example: 5
+        maxAttemptsPerIp:
+          type: integer
+          description: Max failed attempts per IP
+          example: 10
+        lockoutDurationMinutes:
+          type: integer
+          description: Lockout duration in minutes
+          example: 15
+        enabled:
+          type: boolean
+          description: Is rate limiting enabled
+          example: true
+      additionalProperties: false
+
+    PasswordPolicyInfo:
+      type: object
+      required:
+        - minLength
+        - requireUppercase
+        - requireLowercase
+        - requireNumbers
+        - requireSpecialChars
+      properties:
+        minLength:
+          type: integer
+          description: Minimum password length
+          example: 12
+        requireUppercase:
+          type: boolean
+          description: Require uppercase letters
+          example: true
+        requireLowercase:
+          type: boolean
+          description: Require lowercase letters
+          example: true
+        requireNumbers:
+          type: boolean
+          description: Require numbers
+          example: true
+        requireSpecialChars:
+          type: boolean
+          description: Require special characters
+          example: true
+        allowedSpecialChars:
+          type: string
+          pattern: "^[a-zA-Z0-9\\s.,!?-]{1,255}$"
+          description: Allowed special characters
+          example: "@$!%*?&"
+      additionalProperties: false
+
+    SessionPolicyInfo:
+      type: object
+      required:
+        - defaultTimeoutMinutes
+        - maxConcurrentSessions
+        - rememberMeTimeoutDays
+      properties:
+        defaultTimeoutMinutes:
+          type: integer
+          description: Default session timeout in minutes
+          example: 60
+        maxConcurrentSessions:
+          type: integer
+          description: Max concurrent sessions per user
+          example: 3
+        rememberMeTimeoutDays:
+          type: integer
+          description: Remember me timeout in days
+          example: 30
+        sessionFixationProtection:
+          type: boolean
+          description: Is session fixation protection enabled
+          example: true
+      additionalProperties: false

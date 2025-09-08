@@ -34,14 +34,6 @@ paths:
     $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1sessions"
   /api/auth/sessions/{sessionId}:
     $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1sessions~1[sessionId]"
-  /api/auth/security/attempts:
-    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1attempts"
-  /api/auth/security/unlock/{username}:
-    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1unlock~1[username]"
-  /api/auth/security/unlock-ip/{ipAddress}:
-    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1unlock-ip~1[ipAddress]"
-  /api/auth/security/policy:
-    $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1security~1policy"
   /api/auth/server-time:
     $ref: "./paths/auth-paths.yaml#/paths/~1api~1auth~1server-time"
   /api/auth/jwks:
@@ -76,24 +68,6 @@ components:
       $ref: "./schemas/auth-schemas.yaml#/components/schemas/SessionDetail"
     SessionTerminationResponse:
       $ref: "./schemas/auth-schemas.yaml#/components/schemas/SessionTerminationResponse"
-    SecurityAttemptsResponse:
-      $ref: "./schemas/auth-schemas.yaml#/components/schemas/SecurityAttemptsResponse"
-    SecurityOverview:
-      $ref: "./schemas/auth-schemas.yaml#/components/schemas/SecurityOverview"
-    LoginAttempt:
-      $ref: "./schemas/auth-schemas.yaml#/components/schemas/LoginAttempt"
-    BlockedUser:
-      $ref: "./schemas/auth-schemas.yaml#/components/schemas/BlockedUser"
-    BlockedIp:
-      $ref: "./schemas/auth-schemas.yaml#/components/schemas/BlockedIp"
-    SecurityPolicyResponse:
-      $ref: "./schemas/auth-schemas.yaml#/components/schemas/SecurityPolicyResponse"
-    RateLimitingPolicy:
-      $ref: "./schemas/auth-schemas.yaml#/components/schemas/RateLimitingPolicy"
-    PasswordPolicyInfo:
-      $ref: "./schemas/auth-schemas.yaml#/components/schemas/PasswordPolicyInfo"
-    SessionPolicyInfo:
-      $ref: "./schemas/auth-schemas.yaml#/components/schemas/SessionPolicyInfo"
     ServerTimeResponse:
       $ref: "./schemas/auth-schemas.yaml#/components/schemas/ServerTimeResponse"
     JWK:

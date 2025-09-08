@@ -423,6 +423,36 @@
                         </configuration>
                     </execution>
 
+                    <!-- Generate Security API -->
+                    <execution>
+                        <id>generate-security-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/security/security-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.aksi.api.security</apiPackage>
+                            <modelPackage>com.aksi.api.security.dto</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <dateLibrary>java8</dateLibrary>
+                                <java8>true</java8>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useBeanValidation>true</useBeanValidation>
+                                <performBeanValidation>true</performBeanValidation>
+                                <serializableModel>true</serializableModel>
+                                <delegatePattern>false</delegatePattern>
+                                <skipDefaultInterface>false</skipDefaultInterface>
+                                <resolveFully>true</resolveFully>
+                                <generateExamples>false</generateExamples>
+                                <generateModelDocumentation>false</generateModelDocumentation>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
                     <!-- Generate Cart API -->
                     <execution>
                         <id>generate-cart-api</id>
