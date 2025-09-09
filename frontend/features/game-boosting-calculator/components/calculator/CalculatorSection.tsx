@@ -85,9 +85,8 @@ export const CalculatorSection = () => {
           InputProps={{
             startAdornment: '$',
           }}
-          inputProps={{
-            min: 0,
-            step: 0.01,
+          slotProps={{
+            htmlInput: { min: 0, step: 0.01 },
           }}
           helperText={`Debug: ${basePrice / 100}$ = ${basePrice} cents`}
         />
@@ -102,9 +101,11 @@ export const CalculatorSection = () => {
             value={startLevel}
             onChange={(e) => setStartLevel(Number(e.target.value))}
             fullWidth
-            inputProps={{
-              min: calculatorConfig.levelRange.min,
-              max: calculatorConfig.levelRange.max,
+            slotProps={{
+              htmlInput: {
+                min: calculatorConfig.levelRange.min,
+                max: calculatorConfig.levelRange.max,
+              },
             }}
           />
           <TextField
@@ -113,7 +114,9 @@ export const CalculatorSection = () => {
             value={targetLevel}
             onChange={(e) => setTargetLevel(Number(e.target.value))}
             fullWidth
-            inputProps={{ min: startLevel + 1, max: calculatorConfig.levelRange.max }}
+            slotProps={{
+              htmlInput: { min: startLevel + 1, max: calculatorConfig.levelRange.max },
+            }}
           />
         </Box>
       )}

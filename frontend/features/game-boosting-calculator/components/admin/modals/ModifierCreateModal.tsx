@@ -273,7 +273,9 @@ export const ModifierCreateModal: React.FC<ModifierCreateModalProps> = ({
                 }
                 fullWidth
                 required
-                inputProps={{ min: 1 }}
+                slotProps={{
+                  htmlInput: { min: 1 },
+                }}
                 helperText={getValueHelperText()}
               />
 
@@ -288,7 +290,9 @@ export const ModifierCreateModal: React.FC<ModifierCreateModalProps> = ({
                   }))
                 }
                 fullWidth
-                inputProps={{ min: 0 }}
+                slotProps={{
+                  htmlInput: { min: 0 },
+                }}
                 helperText="Order for displaying modifiers (lower numbers appear first)"
               />
             </Box>

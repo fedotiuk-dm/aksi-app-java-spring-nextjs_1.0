@@ -18,7 +18,7 @@ import {
   CreateGameModifierRequest,
   UpdateGameModifierRequest,
 } from '@api/game';
-import { useGameModifiersManagementStore } from '../../../store/modifiers-management-store';
+import { useGameModifiersManagementStore } from '@game-boosting-calculator/store';
 
 export const useModifiersManagement = () => {
   // Orval API hooks with proper parameters

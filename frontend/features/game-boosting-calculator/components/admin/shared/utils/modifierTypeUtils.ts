@@ -75,28 +75,6 @@ function getModifierTypeDisplayName(type: string): string {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(' ');
 }
-
-/**
- * Get clean display label for modifier type
- */
-export function getModifierTypeLabel(type: string): string {
-  return getModifierTypeDisplayName(type);
-}
-
-/**
- * Check if modifier type exists in enum
- */
-export function isValidModifierType(type: string): boolean {
-  return Object.values(GameModifierType).includes(type as GameModifierType);
-}
-
-/**
- * Get all available modifier types
- */
-export function getAllModifierTypes(): string[] {
-  return Object.values(GameModifierType);
-}
-
 /**
  * Get all modifier operation options dynamically from API types
  */
@@ -143,21 +121,6 @@ function getModifierOperationDisplayName(operation: string): string {
 export function getModifierOperationDescription(operation: string): string {
   return MODIFIER_OPERATION_CONFIG[operation]?.description || 'Value for the modifier operation';
 }
-
-/**
- * Get operation display label
- */
-export function getModifierOperationLabel(operation: string): string {
-  return getModifierOperationDisplayName(operation);
-}
-
-/**
- * Check if operation exists in enum
- */
-export function isValidModifierOperation(operation: string): boolean {
-  return Object.values(GameModifierOperation).includes(operation as GameModifierOperation);
-}
-
 /**
  * Calculate modifier adjustment for a single modifier
  */

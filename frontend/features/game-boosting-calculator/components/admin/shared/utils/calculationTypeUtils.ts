@@ -50,33 +50,3 @@ export function getCalculationTypeOptions(): CalculationTypeOption[] {
     description: CALCULATION_TYPE_CONFIG[type]?.description || 'Calculation type',
   }));
 }
-
-/**
- * Get calculation type display label
- */
-export function getCalculationTypeLabel(type: string): string {
-  return CALCULATION_TYPE_CONFIG[type]?.label || type;
-}
-
-/**
- * Get calculation type description
- */
-export function getCalculationTypeDescription(type: string): string {
-  return CALCULATION_TYPE_CONFIG[type]?.description || 'Calculation type';
-}
-
-/**
- * Check if calculation type exists in Orval enum
- */
-export function isValidCalculationType(type: string): boolean {
-  return Object.values(CreatePriceConfigurationRequestCalculationType).includes(
-    type as CreatePriceConfigurationRequestCalculationType
-  );
-}
-
-/**
- * Get all available calculation types from Orval enum
- */
-export function getAllCalculationTypes(): string[] {
-  return Object.values(CreatePriceConfigurationRequestCalculationType);
-}
