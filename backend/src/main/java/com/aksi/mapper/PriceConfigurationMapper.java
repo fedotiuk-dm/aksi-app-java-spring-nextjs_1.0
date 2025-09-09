@@ -41,8 +41,9 @@ public interface PriceConfigurationMapper {
 
   @AfterMapping
   default void updateCalculationType(UpdatePriceConfigurationRequest dto, @MappingTarget PriceConfigurationEntity entity) {
-    if (dto.getCalculationType() != null) {
-      entity.setCalculationType(dto.getCalculationType().getValue());
+    var calculationType = dto.getCalculationType();
+    if (calculationType != null) {
+      entity.setCalculationType(calculationType.getValue());
     }
   }
 

@@ -98,7 +98,7 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
 
     setIsSubmitting(true);
     try {
-      await onUpdate(modifier.code, {
+      await onUpdate(modifier.id, {
         name: formData.name.trim() || undefined,
         description: formData.description.trim() || undefined,
         type: formData.type || undefined,
@@ -180,8 +180,10 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
                 label="Game Code"
                 value={modifier.gameCode}
                 fullWidth
-                InputProps={{
-                  readOnly: true,
+                slotProps={{
+                  htmlInput: {
+                    readOnly: true,
+                  },
                 }}
                 helperText="Game code cannot be changed"
               />
@@ -287,7 +289,9 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
               }
               fullWidth
               required
-              inputProps={{ min: 1 }}
+              slotProps={{
+                htmlInput: { min: 1 },
+              }}
               helperText={getValueHelperText()}
             />
 
@@ -302,7 +306,9 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
                 }))
               }
               fullWidth
-              inputProps={{ min: 0 }}
+              slotProps={{
+                htmlInput: { min: 0 },
+              }}
               helperText="Order for displaying modifiers (lower numbers appear first)"
             />
 

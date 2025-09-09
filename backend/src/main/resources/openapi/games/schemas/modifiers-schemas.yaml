@@ -51,6 +51,7 @@ components:
     GameModifier:
       type: object
       required:
+        - id
         - code
         - name
         - type
@@ -59,6 +60,10 @@ components:
         - gameCode
         - active
       properties:
+        id:
+          type: string
+          format: uuid
+          description: Modifier ID
         code:
           type: string
           description: Unique modifier code within game
@@ -132,6 +137,14 @@ components:
           type: string
           description: JSON conditions for applying modifier
           example: "minLevel: 10, maxLevel: 60"
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
 
     GameModifierInfo:
       allOf:
