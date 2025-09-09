@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * GlitchTip (Sentry) configuration for error monitoring and performance tracking.
  * Uses Sentry Java SDK 8.x with Spring Boot integration.
- *
+ *<p>
  * Note: Spring Boot auto-configuration handles most Sentry integration automatically
  * when sentry-spring-boot-starter is on the classpath.
  */

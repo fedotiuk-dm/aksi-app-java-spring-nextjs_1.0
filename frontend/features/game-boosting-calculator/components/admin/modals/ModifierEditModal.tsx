@@ -31,6 +31,17 @@ import {
   ServiceType,
 } from '@api/game';
 
+// Import shared utilities
+import {
+  getModifierTypeOptions,
+  getModifierOperationOptions,
+  getModifierValueHelperText,
+} from '../shared/utils/modifierTypeUtils';
+
+// Get dynamic options from API types
+const MODIFIER_TYPE_OPTIONS = getModifierTypeOptions();
+const MODIFIER_OPERATION_OPTIONS = getModifierOperationOptions();
+
 interface ModifierEditModalProps {
   children: React.ReactNode;
   modifier: GameModifierInfo;
@@ -139,18 +150,8 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
   const getValueHelperText = () => {
     if (!formData.operation) return 'Value for the modifier';
 
-    switch (formData.operation) {
-      case 'MULTIPLY':
-        return 'Multiplier value (e.g., 150 = 1.5x multiplier)';
-      case 'ADD':
-        return 'Fixed amount to add (in cents, e.g., 500 = $5.00)';
-      case 'SUBTRACT':
-        return 'Fixed amount to subtract (in cents, e.g., 200 = -$2.00)';
-      case 'DIVIDE':
-        return 'Divider value (e.g., 200 = divide by 2)';
-      default:
-        return 'Value for the modifier operation';
-    }
+    // Use shared utility for consistent helper text
+    return getModifierValueHelperText(formData.operation);
   };
 
   return (
@@ -210,13 +211,11 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
                     }))
                   }
                 >
-                  <MenuItem value="TIMING">Timing</MenuItem>
-                  <MenuItem value="SUPPORT">Support</MenuItem>
-                  <MenuItem value="MODE">Mode</MenuItem>
-                  <MenuItem value="QUALITY">Quality</MenuItem>
-                  <MenuItem value="EXTRA">Extra</MenuItem>
-                  <MenuItem value="PROMOTIONAL">Promotional</MenuItem>
-                  <MenuItem value="SEASONAL">Seasonal</MenuItem>
+                  {MODIFIER_TYPE_OPTIONS.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
 
@@ -232,10 +231,11 @@ export const ModifierEditModal: React.FC<ModifierEditModalProps> = ({
                     }))
                   }
                 >
-                  <MenuItem value="ADD">Add Fixed Amount</MenuItem>
-                  <MenuItem value="SUBTRACT">Subtract Fixed Amount</MenuItem>
-                  <MenuItem value="MULTIPLY">Multiply</MenuItem>
-                  <MenuItem value="DIVIDE">Divide</MenuItem>
+                  {MODIFIER_OPERATION_OPTIONS.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Box>

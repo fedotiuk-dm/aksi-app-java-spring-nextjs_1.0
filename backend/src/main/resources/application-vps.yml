@@ -83,22 +83,24 @@ logging:
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
   pattern:
-    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{correlationId:-no-correlation}] [%X{traceId:-no-trace}] [%X{requestId:-no-request}] [%X{userId:-anonymous}] [%X{method:-unknown}] [%X{uri:-unknown}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} [%X{correlationId:-no-correlation}] [%X{traceId:-no-trace}] [%X{requestId:-no-request}] [%X{userId:-anonymous}] [%X{method:-unknown}] [%X{uri:-unknown}] - %msg%n"
   file:
     name: logs/aksi-dry-cleaning.log
 
-# Management endpoints
+# Management endpoints - VPS configuration with balanced monitoring
 management:
   endpoints:
     web:
       exposure:
-        include: health,info # Only expose health and info endpoints for security
+        include: health,info,metrics # VPS endpoints (less than dev for security)
       base-path: /management
-  endpoint:
-    health:
-      show-details: always
-      show-components: always
+  health:
+    # Enable custom health indicators for VPS monitoring
+    redis:
+      enabled: true
+    db:
+      enabled: true
   info:
     env:
       enabled: true
@@ -145,7 +147,7 @@ app:
   cors:
     allowed-origins: http://localhost:3000,http://127.0.0.1:3000
 
-  # File storage configuration for development
+  # File storage configuration for VPS
   file-storage:
     upload-dir: ${FILE_UPLOAD_DIR:./uploads}
     base-url: ${FILE_BASE_URL:http://localhost:8080}

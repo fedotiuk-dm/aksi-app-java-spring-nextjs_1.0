@@ -145,8 +145,8 @@ export const GameEditModal: React.FC<GameEditModalProps> = ({
               }
               fullWidth
               helperText="Lower numbers appear first in the list"
-              inputProps={{
-                min: 0,
+              slotProps={{
+                htmlInput: { min: 0 },
               }}
             />
 

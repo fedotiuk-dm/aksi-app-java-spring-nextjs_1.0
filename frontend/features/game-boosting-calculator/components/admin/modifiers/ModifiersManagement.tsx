@@ -38,6 +38,16 @@ import {
 import { GameModifierInfo, GameModifierType, GameModifierOperation } from '@api/game';
 import { useModifiersManagement } from './useModifiersManagement.hook';
 
+// Import shared utilities for dynamic type handling
+import {
+  getModifierTypeOptions,
+  getModifierOperationOptions,
+} from '../shared/utils/modifierTypeUtils';
+
+// Get dynamic options from API types - automatically includes all backend types
+const MODIFIER_TYPE_OPTIONS = getModifierTypeOptions();
+const MODIFIER_OPERATION_OPTIONS = getModifierOperationOptions();
+
 import { ModifierCreateModal } from '../modals/ModifierCreateModal';
 import { ModifierEditModal } from '../modals/ModifierEditModal';
 import { ModifierDeleteModal } from '../modals/ModifierDeleteModal';
@@ -168,13 +178,11 @@ export const ModifiersManagement = () => {
               onChange={(e) => setTypeFilter(e.target.value as GameModifierType | '')}
             >
               <MenuItem value="">All Types</MenuItem>
-              <MenuItem value="TIMING">Timing</MenuItem>
-              <MenuItem value="SUPPORT">Support</MenuItem>
-              <MenuItem value="MODE">Mode</MenuItem>
-              <MenuItem value="QUALITY">Quality</MenuItem>
-              <MenuItem value="EXTRA">Extra</MenuItem>
-              <MenuItem value="PROMOTIONAL">Promotional</MenuItem>
-              <MenuItem value="SEASONAL">Seasonal</MenuItem>
+              {MODIFIER_TYPE_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
 
@@ -186,10 +194,11 @@ export const ModifiersManagement = () => {
               onChange={(e) => setOperationFilter(e.target.value as GameModifierOperation | '')}
             >
               <MenuItem value="">All Operations</MenuItem>
-              <MenuItem value="ADD">Add</MenuItem>
-              <MenuItem value="SUBTRACT">Subtract</MenuItem>
-              <MenuItem value="MULTIPLY">Multiply</MenuItem>
-              <MenuItem value="DIVIDE">Divide</MenuItem>
+              {MODIFIER_OPERATION_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
 

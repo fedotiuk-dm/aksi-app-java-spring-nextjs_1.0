@@ -30,7 +30,6 @@ import type {
   CreatePriceConfigurationRequestCalculationType,
 } from '@api/game';
 import { CreatePriceConfigurationRequestCalculationType as CalculationTypes } from '@api/game';
-import { PriceDisplay } from '@/shared/ui/atoms/PriceDisplay';
 
 interface PriceConfigurationCreateModalProps {
   children: React.ReactNode;
@@ -54,7 +53,6 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
     difficultyLevelId: string;
     basePrice: number;
     pricePerLevel: number;
-    currency: string;
     calculationType: CreatePriceConfigurationRequestCalculationType;
     sortOrder: number;
     active: boolean;
@@ -65,7 +63,6 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
     difficultyLevelId: '',
     basePrice: 1000, // $10.00 in cents
     pricePerLevel: 0,
-    currency: 'USD',
     calculationType: CalculationTypes.LINEAR,
     sortOrder: 0,
     active: true,
@@ -82,7 +79,6 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
         difficultyLevelId: '',
         basePrice: 1000,
         pricePerLevel: 0,
-        currency: 'USD',
         calculationType: CalculationTypes.LINEAR,
         sortOrder: 0,
         active: true,
@@ -121,7 +117,6 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
       difficultyLevelId: '',
       basePrice: 1000,
       pricePerLevel: 0,
-      currency: 'USD',
       calculationType: CalculationTypes.LINEAR,
       sortOrder: 0,
       active: true,
@@ -142,7 +137,7 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
         difficultyLevelId: formData.difficultyLevelId,
         basePrice: formData.basePrice,
         pricePerLevel: formData.pricePerLevel,
-        currency: formData.currency,
+        currency: 'USD',
         calculationType: formData.calculationType,
         // calculationFormula not provided - let backend use default
         sortOrder: formData.sortOrder,
@@ -162,10 +157,29 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
     (dl) => dl.id === formData.difficultyLevelId
   );
 
-  // Calculate final price preview
+  // Calculate final price preview based on calculation type
   const baseMultiplier = selectedServiceType?.baseMultiplier || 100;
   const levelValue = selectedDifficultyLevel?.levelValue || 1;
-  const finalPrice = (baseMultiplier / 100) * levelValue;
+  const basePriceDollars = formData.basePrice / 100; // Convert cents to dollars
+  const pricePerLevelDollars = formData.pricePerLevel / 100; // Convert cents to dollars
+
+  const finalPrice = (() => {
+    switch (formData.calculationType) {
+      case CalculationTypes.LINEAR:
+        return basePriceDollars * (baseMultiplier / 100) + pricePerLevelDollars * levelValue;
+      case CalculationTypes.RANGE:
+        // For range-based: base price + range multiplier
+        return basePriceDollars * (baseMultiplier / 100) * (1 + levelValue * 0.1);
+      case CalculationTypes.FORMULA:
+        // For formula-based: use exponential growth
+        return basePriceDollars * Math.pow(baseMultiplier / 100, levelValue / 10);
+      case CalculationTypes.TIME_BASED:
+        // For time-based: base price + time multiplier
+        return basePriceDollars * (baseMultiplier / 100) + pricePerLevelDollars * levelValue * 0.5;
+      default:
+        return basePriceDollars * (baseMultiplier / 100);
+    }
+  })();
 
   return (
     <>
@@ -237,6 +251,7 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
                   basePrice: parseInt(e.target.value) || 0,
                 }))
               }
+              onWheel={(e) => (e.target as HTMLInputElement).blur()}
               fullWidth
               required
               slotProps={{
@@ -244,7 +259,7 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
                   min: 0,
                 },
               }}
-              helperText={`${formData.currency === 'USD' ? '$' : formData.currency === 'EUR' ? '€' : '£'}${(formData.basePrice / 100).toFixed(2)}`}
+              helperText={`$${(formData.basePrice / 100).toFixed(2)}`}
             />
 
             <TextField
@@ -257,27 +272,15 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
                   pricePerLevel: parseInt(e.target.value) || 0,
                 }))
               }
+              onWheel={(e) => (e.target as HTMLInputElement).blur()}
               fullWidth
               slotProps={{
                 htmlInput: {
                   min: 0,
                 },
               }}
-              helperText={`${formData.currency === 'USD' ? '$' : formData.currency === 'EUR' ? '€' : '£'}${(formData.pricePerLevel / 100).toFixed(2)} per level`}
+              helperText={`$${(formData.pricePerLevel / 100).toFixed(2)} per level`}
             />
-
-            <FormControl fullWidth>
-              <InputLabel>Currency</InputLabel>
-              <Select
-                value={formData.currency}
-                label="Currency"
-                onChange={(e) => setFormData((prev) => ({ ...prev, currency: e.target.value }))}
-              >
-                <MenuItem value="USD">USD ($)</MenuItem>
-                <MenuItem value="EUR">EUR (€)</MenuItem>
-                <MenuItem value="GBP">GBP (£)</MenuItem>
-              </Select>
-            </FormControl>
 
             <FormControl fullWidth>
               <InputLabel>Calculation Type</InputLabel>
@@ -309,6 +312,7 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
                   sortOrder: parseInt(e.target.value) || 0,
                 }))
               }
+              onWheel={(e) => (e.target as HTMLInputElement).blur()}
               fullWidth
               slotProps={{
                 htmlInput: {
@@ -336,15 +340,14 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
                   sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
                   <Typography variant="body2">
-                    Calculated Price:{' '}
-                    <PriceDisplay amount={finalPrice} currency="USD" inline={true} />
+                    Base Price: ${basePriceDollars.toFixed(2)}
                   </Typography>
                   <Typography variant="body2">
-                    Base Multiplier: {(baseMultiplier / 100).toFixed(1)}x
+                    Multiplier: {(baseMultiplier / 100).toFixed(1)}x, Level: {levelValue}
                   </Typography>
                 </Box>
                 <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
-                  Final Price: <PriceDisplay amount={finalPrice} currency="USD" inline={true} />
+                  Final Price: ${finalPrice.toFixed(2)}
                 </Typography>
               </Box>
             )}

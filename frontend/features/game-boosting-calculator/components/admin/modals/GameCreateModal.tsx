@@ -141,8 +141,8 @@ export const GameCreateModal: React.FC<GameCreateModalProps> = ({
               }
               fullWidth
               helperText="Lower numbers appear first in the list"
-              inputProps={{
-                min: 0,
+              slotProps={{
+                htmlInput: { min: 0 },
               }}
             />
           </Box>

@@ -82,12 +82,11 @@ export const CalculatorSection = () => {
             setBasePrice(cents);
           }}
           fullWidth
-          InputProps={{
-            startAdornment: '$',
-          }}
-          inputProps={{
-            min: 0,
-            step: 0.01,
+          slotProps={{
+            input: {
+              startAdornment: '$',
+            },
+            htmlInput: { min: 0, step: 0.01 },
           }}
           helperText={`Debug: ${basePrice / 100}$ = ${basePrice} cents`}
         />
@@ -102,9 +101,11 @@ export const CalculatorSection = () => {
             value={startLevel}
             onChange={(e) => setStartLevel(Number(e.target.value))}
             fullWidth
-            inputProps={{
-              min: calculatorConfig.levelRange.min,
-              max: calculatorConfig.levelRange.max,
+            slotProps={{
+              htmlInput: {
+                min: calculatorConfig.levelRange.min,
+                max: calculatorConfig.levelRange.max,
+              },
             }}
           />
           <TextField
@@ -113,7 +114,9 @@ export const CalculatorSection = () => {
             value={targetLevel}
             onChange={(e) => setTargetLevel(Number(e.target.value))}
             fullWidth
-            inputProps={{ min: startLevel + 1, max: calculatorConfig.levelRange.max }}
+            slotProps={{
+              htmlInput: { min: startLevel + 1, max: calculatorConfig.levelRange.max },
+            }}
           />
         </Box>
       )}
@@ -125,8 +128,10 @@ export const CalculatorSection = () => {
             label="Service Type"
             value={serviceTypeCode}
             fullWidth
-            InputProps={{
-              readOnly: true,
+            slotProps={{
+              input: {
+                readOnly: true,
+              },
             }}
             helperText="Service type is automatically selected based on your booster choice"
           />
@@ -140,8 +145,10 @@ export const CalculatorSection = () => {
             label="Difficulty Level"
             value={difficultyLevelCode}
             fullWidth
-            InputProps={{
-              readOnly: true,
+            slotProps={{
+              input: {
+                readOnly: true,
+              },
             }}
             helperText="Difficulty level is automatically determined"
           />
@@ -191,7 +198,7 @@ export const CalculatorSection = () => {
       {calculatedPrice ? (
         <Box sx={{ mb: 3, p: 2, bgcolor: 'success.light', borderRadius: 1 }}>
           <Typography variant="h6" color="success.contrastText">
-            Final Price: ${(calculatedPrice / 100).toFixed(2)}
+            Final Price: <PriceDisplay amount={calculatedPrice} currency="USD" inline={true} />
           </Typography>
           <Typography variant="body2" color="success.contrastText" sx={{ opacity: 0.8 }}>
             Includes all selected modifiers and services

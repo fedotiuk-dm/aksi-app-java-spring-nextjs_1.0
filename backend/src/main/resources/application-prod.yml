@@ -1,5 +1,49 @@
 # Production profile configuration
 spring:
+  # Application name
+  application:
+    name: AKSI-Dry-Cleaning-Backend
+
+  # Database configuration for production
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/aksi_cleaners_db_v5}
+    username: ${DB_USERNAME:aksi_user}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000 # Production leak detection
+
+  # JPA configuration for production
+  jpa:
+    hibernate:
+      ddl-auto: validate # Use Liquibase for schema management
+    properties:
+      hibernate:
+        format_sql: false # Disable SQL formatting in production
+        show_sql: false
+        default_schema: public
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        # Production optimizations
+        jdbc.batch_size: 25
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+    open-in-view: false
+
+  # Liquibase configuration for production
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    default-schema: public
+    enabled: true
+    contexts: production
+
   # Redis configuration for production
   data:
     redis:
@@ -13,57 +57,34 @@ spring:
           max-idle: 10
           min-idle: 5
 
-# Logging configuration for production
+# Logging configuration for production with structured logging
 logging:
   level:
     root: WARN
     com.aksi: INFO
-    org.springframework.security: INFO
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    org.hibernate: WARN
+    org.springframework.data: WARN
     SECURITY_AUDIT: INFO
   pattern:
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-  file:
-    name: /var/log/aksi/aksi-backend.log
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{correlationId:-no-correlation}] [%X{traceId:-no-trace}] [%X{requestId:-no-request}] [%X{userId:-anonymous}] [%X{method:-unknown}] [%X{uri:-unknown}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{correlationId:-no-correlation}] [%X{traceId:-no-trace}] [%X{requestId:-no-request}] [%X{userId:-anonymous}] [%X{method:-unknown}] [%X{uri:-unknown}] - %msg%n"
   logback:
     rollingpolicy:
-      max-file-size: 100MB
+      max-file-size: 10MB
       max-history: 30
 
 # Security configuration for production
 app:
   cors:
     allowed-origins: ${CORS_ORIGINS:https://aksi-cleaners.com}
-    
+
   # File storage configuration for production
   file-storage:
     upload-dir: ${FILE_UPLOAD_DIR:/app/uploads}
     base-url: ${FILE_BASE_URL:https://api.aksi-cleaners.com}
     api-path: ${FILE_API_PATH:/api/files}
-    
-  security:
-    # Rate limiting settings - STRICT for production
-    rate-limiting:
-      enabled: true
-    max-attempts-per-user: 5
-    max-attempts-per-ip: 10
-    lockout-duration-minutes: 30  # 30 minutes lockout
-    attempt-window-minutes: 60
-    
-    # Password policy settings - STRICT for production
-    password:
-      min-length: 12
-      require-uppercase: true
-      require-lowercase: true
-      require-numbers: true
-      require-special-chars: true
-      allowed-special-chars: "@$!%*?&"
-    
-    # Session management settings - SECURE for production
-    session:
-      default-timeout-minutes: 30  # 30 minutes timeout
-      max-concurrent-sessions: 3   # Max 3 concurrent sessions
-      remember-me-timeout-days: 7  # 7 days for remember me
-      session-fixation-protection: true
 
 # Server configuration for production
 server:
@@ -71,7 +92,7 @@ server:
   servlet:
     session:
       cookie:
-        secure: true  # HTTPS only
+        secure: true # HTTPS only
         same-site: strict
         http-only: true
   compression:
@@ -86,11 +107,20 @@ springdoc:
   api-docs:
     enabled: false
 
+# Spring Actuator configuration for production monitoring
 management:
   endpoints:
     web:
       exposure:
-        include: health,metrics
-  endpoint:
-    health:
-      show-details: when-authorized
+        include: health,info,metrics,prometheus,loggers,env,configprops
+      base-path: /management
+  health:
+    # Enable custom health indicators for production monitoring
+    redis:
+      enabled: true
+    db:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: production

@@ -22,18 +22,17 @@ import { useGameBoostingStore } from '@game-boosting-calculator/store';
 import { useModifiersPanel } from './useModifiersPanel.hook';
 import type { GameModifierInfo } from '@api/game';
 
-// Dynamic category mapping - no hardcoded values
+// Import shared modifier utilities
+import {
+  getModifierDisplayValue,
+  calculateTotalModifierEffect,
+  getModifierTypeIcon,
+  getModifierTypeCleanLabel,
+} from '../../admin/shared/utils/modifierTypeUtils';
+
+// Use shared utility for consistent type labels
 const getModifierCategoryName = (type: string) => {
-  const categoryMap: Record<string, string> = {
-    TIMING: '⏱️ Timing',
-    SUPPORT: '🎯 Support',
-    MODE: '🎮 Mode',
-    MEDIA: '📺 Media',
-    TEAM: '👥 Team',
-    QUALITY: '⭐ Quality',
-    URGENCY: '🚀 Urgency',
-  };
-  return categoryMap[type] || `${type} Modifiers`;
+  return `${getModifierTypeIcon(type)} ${getModifierTypeCleanLabel(type)} Modifiers`;
 };
 
 export const ModifiersPanel = () => {
@@ -81,45 +80,20 @@ export const ModifiersPanel = () => {
 
   const calculateTotalModifier = () => {
     const selectedMods = getSelectedModifiersInfo();
-    let baseMultiplier = 1; // Start with 1 for multiplication
-    let totalAdjustment = 0; // For add/subtract operations
 
-    selectedMods.forEach((mod: GameModifierInfo) => {
-      switch (mod.operation) {
-        case 'MULTIPLY':
-          baseMultiplier *= mod.value / 100;
-          break;
-        case 'ADD':
-          totalAdjustment += mod.value;
-          break;
-        case 'SUBTRACT':
-          totalAdjustment -= mod.value;
-          break;
-        case 'DIVIDE':
-          baseMultiplier /= mod.value / 100;
-          break;
-        default:
-          break;
-      }
-    });
+    // Use shared utility for calculations with base price = 100 for percentage calculation
+    const { finalPrice } = calculateTotalModifierEffect(
+      selectedMods.map((mod) => ({ operation: mod.operation, value: mod.value })),
+      100 // Use 100 as base for percentage calculation (100 = 1.00x)
+    );
 
-    // Return the final multiplier (baseMultiplier + adjustment/100 as percentage)
-    return baseMultiplier + totalAdjustment / 100;
+    // Return as multiplier (finalPrice is in cents, so divide by 100)
+    return finalPrice / 100;
   };
 
-  const getModifierDisplayValue = (modifier: GameModifierInfo) => {
-    switch (modifier.operation) {
-      case 'MULTIPLY':
-        return `${modifier.value / 100}x`;
-      case 'ADD':
-        return `+$${modifier.value}`;
-      case 'SUBTRACT':
-        return `-$${modifier.value}`;
-      case 'DIVIDE':
-        return `÷${modifier.value / 100}`;
-      default:
-        return `${modifier.value}`;
-    }
+  const getModifierDisplayValueFormatted = (modifier: GameModifierInfo) => {
+    // Use shared utility for consistent display formatting
+    return getModifierDisplayValue(modifier.operation, modifier.value);
   };
 
   // Group modifiers by type for better organization
@@ -182,7 +156,7 @@ export const ModifiersPanel = () => {
                           {getModifierDescription(modifier)}
                         </Typography>
                         <Chip
-                          label={getModifierDisplayValue(modifier)}
+                          label={getModifierDisplayValueFormatted(modifier)}
                           size="small"
                           color="primary"
                           variant="outlined"
@@ -211,7 +185,7 @@ export const ModifiersPanel = () => {
               {getSelectedModifiersInfo().map((modifier) => (
                 <Chip
                   key={modifier.code}
-                  label={`${modifier.name} (${getModifierDisplayValue(modifier)})`}
+                  label={`${modifier.name} (${getModifierDisplayValueFormatted(modifier)})`}
                   size="small"
                   color="primary"
                   onDelete={() => handleModifierChange(modifier.code, false)}
