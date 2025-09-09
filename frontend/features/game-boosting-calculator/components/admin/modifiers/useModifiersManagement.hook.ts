@@ -165,5 +165,11 @@ export const useModifiersManagement = () => {
     handleUpdateModifier,
     handleDeleteModifier,
     handleToggleActive,
+    isCreating: createModifierMutation.isPending,
+    isUpdating:
+      updateModifierMutation.isPending ||
+      activateModifierMutation.isPending ||
+      deactivateModifierMutation.isPending,
+    isDeleting: deleteModifierMutation.isPending,
   };
 };

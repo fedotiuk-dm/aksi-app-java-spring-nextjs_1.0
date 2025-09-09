@@ -151,8 +151,10 @@ export const ModifiersManagement = () => {
             placeholder="Search modifiers..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+            slotProps={{
+              input: {
+                startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+              },
             }}
             size="small"
             sx={{ minWidth: 250 }}
@@ -303,7 +305,7 @@ export const ModifiersManagement = () => {
                       control={
                         <Switch
                           checked={modifier.active}
-                          onChange={() => handleToggleActive(modifier.code, !modifier.active)}
+                          onChange={() => handleToggleActive(modifier.id, !modifier.active)}
                           size="small"
                           disabled={isUpdating}
                         />

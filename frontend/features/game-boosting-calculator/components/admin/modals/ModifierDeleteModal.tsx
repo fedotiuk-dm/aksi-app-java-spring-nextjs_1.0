@@ -43,7 +43,7 @@ export const ModifierDeleteModal: React.FC<ModifierDeleteModalProps> = ({
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      await onDelete(modifier.code);
+      await onDelete(modifier.id);
       setOpen(false);
     } catch (error) {
       console.error('Failed to delete modifier:', error);
@@ -76,7 +76,7 @@ export const ModifierDeleteModal: React.FC<ModifierDeleteModalProps> = ({
       </Box>
 
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle color="error">Delete Game Modifier</DialogTitle>
+        <DialogTitle sx={{ color: 'error.main' }}>Delete Game Modifier</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 1 }}>
             <Typography variant="body1" gutterBottom>

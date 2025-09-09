@@ -253,6 +253,9 @@ public class CalculationQueryService {
         for (var modifierEntity : modifierEntities) {
           Integer adjustment = calculateModifierAdjustment(modifierEntity, calculatedPrice, startLevel, targetLevel);
 
+          log.info("🔧 Applying modifier {}: operation={}, value={}, adjustment={}",
+              modifierEntity.getCode(), modifierEntity.getOperation(), modifierEntity.getValue(), adjustment);
+
           if (adjustment != 0) {
             var adjustmentDto = new ModifierAdjustment();
             adjustmentDto.setModifierCode(modifierEntity.getCode());
@@ -261,11 +264,18 @@ public class CalculationQueryService {
 
             modifierAdjustments.add(adjustmentDto);
             totalModifierAdjustment += adjustment;
+
+            log.info("✅ Modifier {} applied: {} {} (price: {} -> {})",
+                modifierEntity.getCode(), adjustment > 0 ? "+" : "", adjustment,
+                calculatedPrice, calculatedPrice + adjustment);
           }
         }
 
         // Add modifier adjustments to final price
         calculatedPrice += totalModifierAdjustment;
+
+        log.info("💰 Final price after modifiers: {} (base: {}, modifiers: {})",
+            calculatedPrice, calculatedPrice - totalModifierAdjustment, totalModifierAdjustment);
 
       } catch (IncorrectResultSizeDataAccessException e) {
         // Specific handling for database query returning multiple results
@@ -381,8 +391,9 @@ public class CalculationQueryService {
         yield (int) adjustment;
       }
       case DIVIDE -> {
-        // Apply division (reduce price)
-        long adjustment = basePrice - (basePrice * 100 / Math.max(1, modifierValue));
+        // Apply division (reduce price) - negative adjustment
+        long newPrice = (long) basePrice * 100 / Math.max(1, modifierValue);
+        long adjustment = newPrice - basePrice; // This will be negative for discount
         yield (int) adjustment;
       }
     };
