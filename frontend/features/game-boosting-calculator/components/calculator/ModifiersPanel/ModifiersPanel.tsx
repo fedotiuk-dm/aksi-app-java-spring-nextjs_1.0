@@ -81,13 +81,13 @@ export const ModifiersPanel = () => {
   const calculateTotalModifier = () => {
     const selectedMods = getSelectedModifiersInfo();
 
-    // Use shared utility for calculations
+    // Use shared utility for calculations with base price = 100 for percentage calculation
     const { finalPrice } = calculateTotalModifierEffect(
       selectedMods.map((mod) => ({ operation: mod.operation, value: mod.value })),
-      0 // Base price will be applied later in parent component
+      100 // Use 100 as base for percentage calculation (100 = 1.00x)
     );
 
-    // Return as multiplier for compatibility with existing logic
+    // Return as multiplier (finalPrice is in cents, so divide by 100)
     return finalPrice / 100;
   };
 

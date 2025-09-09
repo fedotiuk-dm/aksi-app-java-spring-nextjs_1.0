@@ -30,8 +30,6 @@ import type {
   CreatePriceConfigurationRequestCalculationType,
 } from '@api/game';
 import { CreatePriceConfigurationRequestCalculationType as CalculationTypes } from '@api/game';
-import { getCalculationTypeOptions } from '../../admin/shared/utils/calculationTypeUtils';
-import { PriceDisplay } from '@/shared/ui/atoms/PriceDisplay';
 
 interface PriceConfigurationCreateModalProps {
   children: React.ReactNode;
@@ -139,7 +137,7 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
         difficultyLevelId: formData.difficultyLevelId,
         basePrice: formData.basePrice,
         pricePerLevel: formData.pricePerLevel,
-        currency: 'USD', // Fixed to USD only
+        currency: 'USD',
         calculationType: formData.calculationType,
         // calculationFormula not provided - let backend use default
         sortOrder: formData.sortOrder,
@@ -159,13 +157,29 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
     (dl) => dl.id === formData.difficultyLevelId
   );
 
-  // Calculate final price preview
+  // Calculate final price preview based on calculation type
   const baseMultiplier = selectedServiceType?.baseMultiplier || 100;
   const levelValue = selectedDifficultyLevel?.levelValue || 1;
-  const finalPrice = (baseMultiplier / 100) * levelValue;
+  const basePriceDollars = formData.basePrice / 100; // Convert cents to dollars
+  const pricePerLevelDollars = formData.pricePerLevel / 100; // Convert cents to dollars
 
-  // Get dynamic calculation type options from Orval API
-  const calculationTypeOptions = getCalculationTypeOptions();
+  const finalPrice = (() => {
+    switch (formData.calculationType) {
+      case CalculationTypes.LINEAR:
+        return basePriceDollars * (baseMultiplier / 100) + pricePerLevelDollars * levelValue;
+      case CalculationTypes.RANGE:
+        // For range-based: base price + range multiplier
+        return basePriceDollars * (baseMultiplier / 100) * (1 + levelValue * 0.1);
+      case CalculationTypes.FORMULA:
+        // For formula-based: use exponential growth
+        return basePriceDollars * Math.pow(baseMultiplier / 100, levelValue / 10);
+      case CalculationTypes.TIME_BASED:
+        // For time-based: base price + time multiplier
+        return basePriceDollars * (baseMultiplier / 100) + pricePerLevelDollars * levelValue * 0.5;
+      default:
+        return basePriceDollars * (baseMultiplier / 100);
+    }
+  })();
 
   return (
     <>
@@ -237,6 +251,7 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
                   basePrice: parseInt(e.target.value) || 0,
                 }))
               }
+              onWheel={(e) => (e.target as HTMLInputElement).blur()}
               fullWidth
               required
               slotProps={{
@@ -257,6 +272,7 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
                   pricePerLevel: parseInt(e.target.value) || 0,
                 }))
               }
+              onWheel={(e) => (e.target as HTMLInputElement).blur()}
               fullWidth
               slotProps={{
                 htmlInput: {
@@ -279,11 +295,10 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
                   }))
                 }
               >
-                {calculationTypeOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value} title={option.description}>
-                    {option.label}
-                  </MenuItem>
-                ))}
+                <MenuItem value={CalculationTypes.LINEAR}>Linear</MenuItem>
+                <MenuItem value={CalculationTypes.RANGE}>Range Based</MenuItem>
+                <MenuItem value={CalculationTypes.FORMULA}>Formula Based</MenuItem>
+                <MenuItem value={CalculationTypes.TIME_BASED}>Time Based</MenuItem>
               </Select>
             </FormControl>
 
@@ -297,6 +312,7 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
                   sortOrder: parseInt(e.target.value) || 0,
                 }))
               }
+              onWheel={(e) => (e.target as HTMLInputElement).blur()}
               fullWidth
               slotProps={{
                 htmlInput: {
@@ -324,15 +340,14 @@ export const PriceConfigurationCreateModal: React.FC<PriceConfigurationCreateMod
                   sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
                   <Typography variant="body2">
-                    Calculated Price:{' '}
-                    <PriceDisplay amount={finalPrice} currency="USD" inline={true} />
+                    Base Price: ${basePriceDollars.toFixed(2)}
                   </Typography>
                   <Typography variant="body2">
-                    Base Multiplier: {(baseMultiplier / 100).toFixed(1)}x
+                    Multiplier: {(baseMultiplier / 100).toFixed(1)}x, Level: {levelValue}
                   </Typography>
                 </Box>
                 <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
-                  Final Price: <PriceDisplay amount={finalPrice} currency="USD" inline={true} />
+                  Final Price: ${finalPrice.toFixed(2)}
                 </Typography>
               </Box>
             )}
