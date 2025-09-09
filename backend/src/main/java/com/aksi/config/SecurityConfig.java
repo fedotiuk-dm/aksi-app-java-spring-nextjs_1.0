@@ -21,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -100,11 +101,15 @@ public class SecurityConfig {
                     .maximumSessions(securityConfig.getSessionMaxConcurrentSessions())
                     .maxSessionsPreventsLogin(false))
 
-        // CSRF protection with cookie repository
+        // Add correlation ID filter
+        .addFilterBefore(new CorrelationIdFilter(), org.springframework.security.web.session.SessionManagementFilter.class)
+
+        // CSRF protection with secure cookie repository
         .csrf(
             csrf ->
-                csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                    .ignoringRequestMatchers("/api/auth/login"))
+                csrf.csrfTokenRepository(createCsrfTokenRepository())
+                    .ignoringRequestMatchers("/api/auth/login")
+                    .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
 
         // Authorization rules
         .authorizeHttpRequests(
@@ -142,9 +147,35 @@ public class SecurityConfig {
                     .logoutUrl("/api/auth/logout")
                     .deleteCookies("AKSISESSIONID", "XSRF-TOKEN")
                     .invalidateHttpSession(true)
-                    .clearAuthentication(true));
+                    .clearAuthentication(true)
+                    .logoutSuccessHandler((request, response, authentication) -> {
+                        response.setStatus(200);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"message\":\"Logged out successfully\"}");
+                    }))
+
+        // Security headers - Modern Spring Security 6.x approach
+        .headers(headers -> headers
+            .httpStrictTransportSecurity(hstsConfig -> hstsConfig
+                .maxAgeInSeconds(31536000)
+                .includeSubDomains(true))
+            .contentSecurityPolicy(cspConfig -> cspConfig
+                .policyDirectives("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;")));
 
     return http.build();
+  }
+
+  /**
+   * Create a properly configured CSRF token repository.
+   */
+  private CookieCsrfTokenRepository createCsrfTokenRepository() {
+    CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+    repository.setCookieName("XSRF-TOKEN");
+    repository.setHeaderName("X-XSRF-TOKEN");
+    repository.setCookiePath("/");
+    // Note: setSecure(true) is deprecated in Spring Security 6.x
+    // HTTPS-only cookies are enabled automatically when using HTTPS
+    return repository;
   }
 
   @Bean

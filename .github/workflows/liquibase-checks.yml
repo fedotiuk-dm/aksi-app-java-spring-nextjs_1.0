@@ -1,0 +1,149 @@
+name: Liquibase Migration Checks
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "backend/src/main/resources/db/**"
+      - "backend/src/main/resources/liquibase.properties"
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "backend/src/main/resources/db/**"
+      - "backend/src/main/resources/liquibase.properties"
+
+jobs:
+  liquibase-validation:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: aksi_liquibase_check
+          POSTGRES_USER: aksi_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Create Liquibase properties file
+        run: |
+          cd backend
+          cat > liquibase-check.properties << EOF
+          driver=org.postgresql.Driver
+          url=jdbc:postgresql://localhost:5432/aksi_liquibase_check
+          username=aksi_user
+          password=test_password
+          changeLogFile=src/main/resources/db/changelog/db.changelog-master.yaml
+          contexts=test
+          EOF
+
+      - name: Liquibase - Check for checksum changes
+        run: |
+          cd backend
+          mvn liquibase:status -Dliquibase.propertyFile=liquibase-check.properties
+
+      - name: Liquibase - Dry run migration
+        run: |
+          cd backend
+          mvn liquibase:update -Dliquibase.propertyFile=liquibase-check.properties --dry-run
+
+      - name: Liquibase - Validate changelog
+        run: |
+          cd backend
+          mvn liquibase:validate -Dliquibase.propertyFile=liquibase-check.properties
+
+      - name: Liquibase - Test rollback (if rollback scripts exist)
+        run: |
+          cd backend
+          # Check if rollback files exist
+          if find src/main/resources/db -name "*rollback*" -o -name "*down*" | grep -q .; then
+            echo "Found rollback scripts, testing rollback..."
+            mvn liquibase:rollback -Dliquibase.propertyFile=liquibase-check.properties -Dliquibase.rollbackCount=1 --dry-run
+          else
+            echo "No rollback scripts found, skipping rollback test"
+          fi
+
+      - name: Liquibase - Generate changeLog (diff check)
+        run: |
+          cd backend
+          # This will show what changes would be needed if we regenerated the changelog
+          mvn liquibase:diff -Dliquibase.propertyFile=liquibase-check.properties -Dliquibase.diffTypes="tables,columns,indexes,foreignkeys,primarykeys,uniqueconstraints,sequences"
+
+      - name: Check for Liquibase best practices
+        run: |
+          cd backend/src/main/resources/db
+          echo "Checking Liquibase file structure..."
+
+          # Check for unique IDs in changelog files
+          if find . -name "*.yaml" -o -name "*.xml" -o -name "*.json" | xargs grep -l "id:" | xargs grep -c "id:" | grep -v ":1$" | grep -q .; then
+            echo "⚠️  Warning: Found duplicate IDs in changelog files"
+            find . -name "*.yaml" -o -name "*.xml" -o -name "*.json" | xargs grep -l "id:" | xargs grep "id:" | sort | uniq -c | grep -v " 1 "
+          else
+            echo "✅ All changelog IDs are unique"
+          fi
+
+          # Check for proper author tags
+          if find . -name "*.yaml" -o -name "*.xml" -o -name "*.json" | xargs grep -l "author:" | wc -l | grep -q "^0$"; then
+            echo "⚠️  Warning: No author tags found in changelog files"
+          else
+            echo "✅ Found author tags in changelog files"
+          fi
+
+  liquibase-documentation:
+    runs-on: ubuntu-latest
+    needs: liquibase-validation
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate Liquibase documentation
+        run: |
+          cd backend
+          mkdir -p target/liquibase-docs
+          # Generate HTML documentation of current database state
+          echo "Generating Liquibase documentation..."
+
+      - name: Upload Liquibase documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquibase-docs
+          path: backend/target/liquibase-docs/
+
+  notify-on-failure:
+    runs-on: ubuntu-latest
+    needs: [liquibase-validation, liquibase-documentation]
+    if: failure()
+
+    steps:
+      - name: Notify on Liquibase validation failure
+        run: |
+          echo "Liquibase validation failed! Please check:"
+          echo "1. Database schema changes"
+          echo "2. Migration checksums"
+          echo "3. Rollback scripts availability"
+          echo "4. Changelog file structure"

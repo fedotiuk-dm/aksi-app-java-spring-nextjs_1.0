@@ -79,8 +79,30 @@ logs/
 *.log
 node_modules
 
+# Зайві файли проекту
 /OGEdge All Services test.xlsx
 /backend/scripts/analyze_prices.py
+/backend/logs/
+target/
+.mvn/wrapper/maven-wrapper.jar
+
 # Згенеровані API файли (Orval) - не комітити в Git
 /frontend/shared/api/
 /frontend/shared/api/**/*
+
+# Тимчасові файли та кеш
+*.tmp
+*.temp
+.cache/
+.tmp/
+
+# Локальні конфігурації середовищ
+.env.local
+.env.*.local
+docker/.env
+docker/env.local
+
+# Лог файли додатково
+*.log.*
+log-*.txt
+debug.log

@@ -3,6 +3,28 @@ spring:
     active: dev # Default profile
   application:
     name: AKSI-Dry-Cleaning-Backend
+
+  # Default database configuration (fallback)
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+
+  # Default JPA configuration
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false
+
+  # H2 console for development
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
   # Force English locale for validation messages
   web:
     locale: en_US

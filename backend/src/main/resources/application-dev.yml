@@ -73,7 +73,7 @@ server:
     include-binding-errors: always
     include-stacktrace: on_param
 
-# Logging configuration
+# Logging configuration with correlation tracking
 logging:
   level:
     root: WARN
@@ -83,22 +83,41 @@ logging:
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
   pattern:
-    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{correlationId:-no-correlation}] [%X{traceId:-no-trace}] [%X{userId:-anonymous}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{correlationId:-no-correlation}] [%X{traceId:-no-trace}] [%X{userId:-anonymous}] - %msg%n"
   file:
-    name: logs/aksi-dry-cleaning.log
+    name: logs/aksi-dev.log
+    max-file-size: 10MB
+    max-history: 10
 
-# Management endpoints
+# Management endpoints - Development configuration with comprehensive monitoring
 management:
   endpoints:
     web:
       exposure:
-        include: health,info # Only expose health and info endpoints for security
+        include: health,info,metrics,env,loggers # Development endpoints
       base-path: /management
   endpoint:
     health:
       show-details: always
       show-components: always
+      probes:
+        enabled: true # For Kubernetes readiness/liveness probes
+    metrics:
+      enabled: true
+    env:
+      enabled: true
+    loggers:
+      enabled: true
+  health:
+    # Enable custom health indicators for development monitoring
+    redis:
+      enabled: true
+    db:
+      enabled: true
+    # Custom application health indicator
+    application:
+      enabled: true
   info:
     env:
       enabled: true
@@ -150,3 +169,13 @@ app:
     upload-dir: ${FILE_UPLOAD_DIR:./uploads}
     base-url: ${FILE_BASE_URL:http://localhost:8080}
     api-path: ${FILE_API_PATH:/api/files}
+
+  # Structured logging configuration for development
+  logging:
+    structured:
+      enabled: false # Disable JSON format for development (easier to read)
+    include-stack-trace: true # Include full stack traces in development
+    correlation:
+      generate-request-id: true
+      include-client-ip: true
+      include-user-agent: false

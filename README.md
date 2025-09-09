@@ -40,7 +40,7 @@ Professional dry‑cleaning management system with a production‑grade Order Wi
 
 ### 🔗 Quick links
 
-- Overview • Features • Tech Stack • Architecture • Structure • Quick Start • Docs • Contributing • License
+- Overview • Features • Tech Stack • Architecture • Structure • Quick Start • Security • Monitoring • Deployment • CI/CD • Docs • Contributing • License
 
 ---
 
@@ -243,6 +243,198 @@ URLs
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8080
 - Swagger UI: http://localhost:8080/swagger-ui.html
+
+---
+
+## 🔐 Security
+
+### Cookie-Based Authentication
+
+The application uses **cookie-based authentication** instead of JWT tokens for enhanced security:
+
+- **HttpOnly Cookies**: Session cookies are HttpOnly to prevent JavaScript access
+- **Secure Cookies**: HTTPS-only cookies in production
+- **SameSite Policy**: Lax policy for CSRF protection while maintaining usability
+- **CSRF Protection**: Double-submit cookie pattern with secure token handling
+
+### Security Features
+
+- 🔒 **Spring Security** with custom authentication provider
+- 🛡️ **CSRF Protection** with secure cookie tokens
+- 🚦 **Rate Limiting** with Redis-backed counters
+- 🔐 **Password Policies** with configurable complexity rules
+- 📊 **Login Attempt Monitoring** with account lockout
+- 🔍 **Security Audit Logging** for compliance
+- 🏗️ **Security Headers** (CSP, HSTS, X-Frame-Options, etc.)
+
+### Production Security
+
+- ✅ **HTTPS Enforcement** with HSTS headers
+- ✅ **Secure Headers** via Spring Security configuration
+- ✅ **Environment-Specific** security settings
+- ✅ **Redis Session Store** for distributed sessions
+- ✅ **Database Encryption** for sensitive data
+
+---
+
+## 📊 Monitoring & Observability
+
+### Spring Actuator Endpoints
+
+The application provides comprehensive monitoring through Spring Boot Actuator:
+
+```
+GET /management/health      - Application health status
+GET /management/info        - Application information
+GET /management/metrics     - Application metrics
+GET /management/prometheus  - Prometheus metrics format
+GET /management/loggers     - Logging configuration
+```
+
+### Health Checks
+
+- **Database Health**: PostgreSQL connectivity and basic queries
+- **Redis Health**: Cache connectivity and ping responses
+- **Application Health**: Overall application status with details
+
+### Structured Logging
+
+- **Correlation ID**: Request tracing with X-Correlation-ID header
+- **Trace ID**: Unique trace identifier for request chains
+- **Structured Format**: JSON logging with MDC context
+- **Log Levels**: Configurable per component and environment
+
+### Metrics & Monitoring
+
+- **Micrometer**: JVM, HTTP, database, and custom metrics
+- **Prometheus**: Metrics export for monitoring dashboards
+- **Health Probes**: Kubernetes-ready liveness and readiness probes
+
+---
+
+## 🚀 Deployment
+
+### Docker Production Setup
+
+#### Prerequisites
+
+- Docker 24+
+- Docker Compose 2.0+
+- PostgreSQL 17
+- Redis 8
+
+#### Production Deployment
+
+1. **Clone and setup environment:**
+
+```bash
+git clone <repository-url>
+cd aksi-app
+cp docker/env.example docker/.env
+# Edit docker/.env with your production values
+```
+
+2. **Configure environment variables:**
+
+```bash
+# Edit docker/.env with production values
+POSTGRES_PASSWORD=your_secure_db_password
+REDIS_PASSWORD=your_secure_redis_password
+GLITCHTIP_DSN=your_monitoring_dsn
+```
+
+3. **Deploy with production override:**
+
+```bash
+cd docker
+docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d
+```
+
+4. **Verify deployment:**
+
+```bash
+# Check service health
+curl http://localhost:8080/management/health
+
+# Check application logs
+docker-compose logs -f backend
+```
+
+### Environment Configuration
+
+The application supports multiple environments through Spring profiles:
+
+- **dev**: Development with relaxed security
+- **prod**: Production with strict security and monitoring
+
+Key environment variables are documented in `docker/env.example`.
+
+### Health Monitoring
+
+Monitor your deployment using the built-in health checks:
+
+```bash
+# Application health
+curl http://localhost:8080/management/health
+
+# Database health
+curl http://localhost:8080/management/health/db
+
+# Redis health
+curl http://localhost:8080/management/health/redis
+
+# Metrics endpoint
+curl http://localhost:8080/management/prometheus
+```
+
+---
+
+## 🔄 CI/CD Pipeline
+
+### GitHub Actions Workflows
+
+The project includes comprehensive CI/CD pipelines:
+
+#### Main CI/CD Pipeline (`.github/workflows/ci-cd-pipeline.yml`)
+
+- **Backend Testing**: Unit tests, integration tests, code quality checks
+- **Frontend Testing**: Linting, type checking, unit tests
+- **Security Scanning**: Trivy vulnerability scanning
+- **Docker Building**: Automated container builds and registry pushes
+- **Multi-Environment**: Different configurations for dev/staging/production
+
+#### Liquibase Checks (`.github/workflows/liquibase-checks.yml`)
+
+- **Migration Validation**: Dry-run testing of database changes
+- **Checksum Verification**: Ensures migration integrity
+- **Rollback Testing**: Validates rollback scripts availability
+- **Best Practices**: Checks for unique IDs and proper author tags
+
+### Pipeline Features
+
+- ✅ **Parallel Execution**: Backend and frontend tests run in parallel
+- ✅ **Dependency Caching**: Maven and npm dependencies cached for faster builds
+- ✅ **Test Containers**: PostgreSQL and Redis for integration testing
+- ✅ **Artifact Upload**: Test results and build artifacts stored
+- ✅ **Security Scanning**: Automated vulnerability detection
+- ✅ **Deployment Ready**: Built containers pushed to registry
+
+### Running Locally
+
+```bash
+# Run full test suite
+mvn test -Pdev-fast
+
+# Run integration tests only
+mvn test -Dtest="*IntegrationTest"
+
+# Run Liquibase validation
+mvn liquibase:validate
+
+# Build production containers
+docker build -f backend/Dockerfile -t aksi-backend ./backend
+docker build -f frontend/Dockerfile -t aksi-frontend ./frontend
+```
 
 ---
 

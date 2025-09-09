@@ -88,17 +88,30 @@ logging:
   file:
     name: logs/aksi-dry-cleaning.log
 
-# Management endpoints
+# Management endpoints - VPS configuration with balanced monitoring
 management:
   endpoints:
     web:
       exposure:
-        include: health,info # Only expose health and info endpoints for security
+        include: health,info,metrics # VPS endpoints (less than dev for security)
       base-path: /management
   endpoint:
     health:
-      show-details: always
+      show-details: when-authorized # Restricted for VPS security
       show-components: always
+      probes:
+        enabled: true # For container orchestration
+    metrics:
+      enabled: true
+  health:
+    # Enable custom health indicators for VPS monitoring
+    redis:
+      enabled: true
+    db:
+      enabled: true
+    # Custom application health indicator
+    application:
+      enabled: true
   info:
     env:
       enabled: true
@@ -145,8 +158,18 @@ app:
   cors:
     allowed-origins: http://localhost:3000,http://127.0.0.1:3000
 
-  # File storage configuration for development
+  # File storage configuration for VPS
   file-storage:
     upload-dir: ${FILE_UPLOAD_DIR:./uploads}
     base-url: ${FILE_BASE_URL:http://localhost:8080}
     api-path: ${FILE_API_PATH:/api/files}
+
+  # Structured logging configuration for VPS
+  logging:
+    structured:
+      enabled: true # Enable JSON format for VPS (better for monitoring)
+    include-stack-trace: true # Include stack traces for VPS debugging
+    correlation:
+      generate-request-id: true
+      include-client-ip: true
+      include-user-agent: true

@@ -32,6 +32,7 @@ public class SessionRedisConfig {
     serializer.setCookiePath("/");
     serializer.setCookieMaxAge(3600); // 1 hour
     serializer.setUseHttpOnlyCookie(true); // Security: prevent JavaScript access
+    serializer.setUseSecureCookie(true); // Security: HTTPS only
     serializer.setSameSite("Lax"); // Balance between security and usability
     return serializer;
   }
