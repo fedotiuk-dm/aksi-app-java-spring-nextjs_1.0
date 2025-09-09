@@ -83,8 +83,8 @@ logging:
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
   pattern:
-    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{correlationId:-no-correlation}] [%X{traceId:-no-trace}] [%X{requestId:-no-request}] [%X{userId:-anonymous}] [%X{method:-unknown}] [%X{uri:-unknown}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} [%X{correlationId:-no-correlation}] [%X{traceId:-no-trace}] [%X{requestId:-no-request}] [%X{userId:-anonymous}] [%X{method:-unknown}] [%X{uri:-unknown}] - %msg%n"
   file:
     name: logs/aksi-dry-cleaning.log
 
@@ -95,22 +95,11 @@ management:
       exposure:
         include: health,info,metrics # VPS endpoints (less than dev for security)
       base-path: /management
-  endpoint:
-    health:
-      show-details: when-authorized # Restricted for VPS security
-      show-components: always
-      probes:
-        enabled: true # For container orchestration
-    metrics:
-      enabled: true
   health:
     # Enable custom health indicators for VPS monitoring
     redis:
       enabled: true
     db:
-      enabled: true
-    # Custom application health indicator
-    application:
       enabled: true
   info:
     env:
@@ -163,13 +152,3 @@ app:
     upload-dir: ${FILE_UPLOAD_DIR:./uploads}
     base-url: ${FILE_BASE_URL:http://localhost:8080}
     api-path: ${FILE_API_PATH:/api/files}
-
-  # Structured logging configuration for VPS
-  logging:
-    structured:
-      enabled: true # Enable JSON format for VPS (better for monitoring)
-    include-stack-trace: true # Include stack traces for VPS debugging
-    correlation:
-      generate-request-id: true
-      include-client-ip: true
-      include-user-agent: true

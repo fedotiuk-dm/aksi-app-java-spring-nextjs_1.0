@@ -43,8 +43,6 @@ spring:
     default-schema: public
     enabled: true
     contexts: production
-    drop-first: false
-    validate-on-migrate: true
 
   # Redis configuration for production
   data:
@@ -70,10 +68,8 @@ logging:
     org.springframework.data: WARN
     SECURITY_AUDIT: INFO
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{correlationId}] [%X{traceId}] - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{correlationId}] [%X{traceId}] - %msg%n"
-  file:
-    name: logs/aksi-prod.log
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{correlationId:-no-correlation}] [%X{traceId:-no-trace}] [%X{requestId:-no-request}] [%X{userId:-anonymous}] [%X{method:-unknown}] [%X{uri:-unknown}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{correlationId:-no-correlation}] [%X{traceId:-no-trace}] [%X{requestId:-no-request}] [%X{userId:-anonymous}] [%X{method:-unknown}] [%X{uri:-unknown}] - %msg%n"
   logback:
     rollingpolicy:
       max-file-size: 10MB
@@ -89,41 +85,6 @@ app:
     upload-dir: ${FILE_UPLOAD_DIR:/app/uploads}
     base-url: ${FILE_BASE_URL:https://api.aksi-cleaners.com}
     api-path: ${FILE_API_PATH:/api/files}
-
-  # Structured logging configuration for production
-  logging:
-    structured:
-      enabled: true # Enable JSON format for production (better for log aggregation)
-    include-stack-trace: false # Exclude stack traces in production for security
-    correlation:
-      generate-request-id: true
-      include-client-ip: true
-      include-user-agent: true # More context in production for troubleshooting
-
-  security:
-    # Rate limiting settings - STRICT for production
-    rate-limiting:
-      enabled: true
-    max-attempts-per-user: 5
-    max-attempts-per-ip: 10
-    lockout-duration-minutes: 30 # 30 minutes lockout
-    attempt-window-minutes: 60
-
-    # Password policy settings - STRICT for production
-    password:
-      min-length: 12
-      require-uppercase: true
-      require-lowercase: true
-      require-numbers: true
-      require-special-chars: true
-      allowed-special-chars: "@$!%*?&"
-
-    # Session management settings - SECURE for production
-    session:
-      default-timeout-minutes: 30 # 30 minutes timeout
-      max-concurrent-sessions: 3 # Max 3 concurrent sessions
-      remember-me-timeout-days: 7 # 7 days for remember me
-      session-fixation-protection: true
 
 # Server configuration for production
 server:
@@ -153,34 +114,13 @@ management:
       exposure:
         include: health,info,metrics,prometheus,loggers,env,configprops
       base-path: /management
-  endpoint:
-    health:
-      show-details: when-authorized
-      probes:
-        enabled: true
-    metrics:
-      enabled: true
-    prometheus:
-      enabled: true
-    loggers:
-      enabled: true
-    env:
-      enabled: true
-    configprops:
-      enabled: true
   health:
     # Enable custom health indicators for production monitoring
     redis:
       enabled: true
     db:
       enabled: true
-    # Custom application health indicator
-    application:
-      enabled: true
   metrics:
-    export:
-      prometheus:
-        enabled: true
     tags:
       application: ${spring.application.name}
       environment: production
