@@ -367,36 +367,80 @@ public class CalculationQueryService {
 
     // Get modifier value (already an integer, represents percentage for MULTIPLY/DIVIDE)
     int modifierValue = modifier.getValue(); // 50 represents 50%
+    int levelDiff = Math.max(0, targetLevel - startLevel);
 
     return switch (modifier.getOperation()) {
-      case ADD -> {
-        // Check if this is a fixed cost modifier (ranked/PvP) or level-dependent
-        if (modifier.getCode() != null &&
-            (modifier.getCode().contains("RANKED") ||
-             modifier.getCode().contains("PVP") ||
-             modifier.getCode().contains("RP"))) {
-          // Fixed addition for ranked/PvP systems (independent of levels)
-          yield modifierValue;
-        } else {
-          // Level-dependent addition for regular boosts
-          int levelDiff = Math.max(0, targetLevel - startLevel);
-          yield modifierValue * Math.max(1, levelDiff);
-        }
-      }
-      case SUBTRACT -> -modifierValue;
-      case MULTIPLY -> {
-        // Apply multiplier (e.g., 50 = +50% = multiply by 1.5)
-        long multiplier = 100 + modifierValue; // 50 becomes 150 (1.5x)
-        long adjustment = (long) basePrice * multiplier / 100 - basePrice;
-        yield (int) adjustment;
-      }
-      case DIVIDE -> {
-        // Apply division (reduce price) - negative adjustment
-        long newPrice = (long) basePrice * 100 / Math.max(1, modifierValue);
-        long adjustment = newPrice - basePrice; // This will be negative for discount
-        yield (int) adjustment;
-      }
+      case ADD -> calculateAddAdjustment(modifier, modifierValue, levelDiff);
+      case SUBTRACT -> calculateSubtractAdjustment(modifier, modifierValue, levelDiff);
+      case MULTIPLY -> calculateMultiplyAdjustment(basePrice, modifierValue);
+      case DIVIDE -> calculateDivideAdjustment(basePrice, modifierValue);
     };
+  }
+
+  /**
+   * Calculate ADD operation based on modifier type
+   */
+  private Integer calculateAddAdjustment(GameModifierEntity modifier, int modifierValue, int levelDiff) {
+    return switch (modifier.getType()) {
+      case RANK -> modifierValue; // Fixed amount for rank boosts
+      case MODE -> modifierValue; // Fixed amount for game modes
+      case TIMING -> modifierValue; // Fixed amount for timing modifiers
+      case QUALITY -> modifierValue; // Fixed amount for quality modifiers
+      case PROMOTIONAL -> modifierValue; // Fixed amount for promotional modifiers
+      case SEASONAL -> modifierValue; // Fixed amount for seasonal modifiers
+      case SERVICE -> modifierValue; // Fixed amount for service modifiers
+      case ACHIEVEMENT -> modifierValue; // Fixed amount for achievement modifiers
+      case COSMETIC -> modifierValue; // Fixed amount for cosmetic modifiers
+
+      // Level-dependent additions for progression-related modifiers
+      case PROGRESSION -> modifierValue * Math.max(1, levelDiff);
+      case SUPPORT -> modifierValue * Math.max(1, levelDiff);
+      case GUIDANCE -> modifierValue * Math.max(1, levelDiff);
+      case SOCIAL -> modifierValue * Math.max(1, levelDiff);
+      case EXTRA -> modifierValue * Math.max(1, levelDiff);
+      case SPELLS -> modifierValue * Math.max(1, levelDiff);
+    };
+  }
+
+  /**
+   * Calculate SUBTRACT operation based on modifier type
+   */
+  private Integer calculateSubtractAdjustment(GameModifierEntity modifier, int modifierValue, int levelDiff) {
+    return switch (modifier.getType()) {
+      case PROMOTIONAL -> -modifierValue; // Fixed discount
+      case SEASONAL -> -modifierValue; // Fixed seasonal discount
+      case QUALITY -> -modifierValue; // Quality-based discount
+
+      // Level-dependent subtractions
+      case PROGRESSION -> -modifierValue * Math.max(1, levelDiff);
+      case SUPPORT -> -modifierValue * Math.max(1, levelDiff);
+      case GUIDANCE -> -modifierValue * Math.max(1, levelDiff);
+      case SOCIAL -> -modifierValue * Math.max(1, levelDiff);
+      case EXTRA -> -modifierValue * Math.max(1, levelDiff);
+      case SPELLS -> -modifierValue * Math.max(1, levelDiff);
+
+      default -> -modifierValue; // Default fixed subtraction
+    };
+  }
+
+  /**
+   * Calculate MULTIPLY operation (percentage increase)
+   */
+  private Integer calculateMultiplyAdjustment(Integer basePrice, int modifierValue) {
+    // modifierValue = 50 represents +50% = multiply by 1.5
+    long multiplier = 100 + modifierValue; // 50 becomes 150 (1.5x)
+    long adjustment = (long) basePrice * multiplier / 100 - basePrice;
+    return (int) adjustment;
+  }
+
+  /**
+   * Calculate DIVIDE operation (percentage decrease)
+   */
+  private Integer calculateDivideAdjustment(Integer basePrice, int modifierValue) {
+    // modifierValue = 50 represents -50% = divide by 2.0
+    long newPrice = (long) basePrice * 100 / Math.max(1, modifierValue);
+    long adjustment = newPrice - basePrice; // This will be negative for discount
+    return (int) adjustment;
   }
 
   /**
