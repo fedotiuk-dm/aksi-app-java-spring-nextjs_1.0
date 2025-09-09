@@ -138,8 +138,9 @@ public class PriceConfigurationFactory {
     priceConfigurationMapper.updatePriceConfigurationFromDto(request, entity);
 
     // Manually update calculationType from request
-    if (request.getCalculationType() != null) {
-        entity.setCalculationType(request.getCalculationType().getValue());
+    var calculationType = request.getCalculationType();
+    if (calculationType != null) {
+        entity.setCalculationType(calculationType.getValue());
     }
 
     // Check if calculationType changed and reinitialize calculationFormula if needed
