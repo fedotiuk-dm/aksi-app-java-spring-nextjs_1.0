@@ -48,83 +48,20 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
         this.roundToHours = true;
     }
 
-    @Override
-    public Integer calculate(Integer basePrice, int fromLevel, int toLevel) {
-        if (basePrice == null) {
-            throw new IllegalArgumentException("Base price cannot be null");
-        }
-        if (hourlyRate == null) {
-            throw new IllegalArgumentException("Hourly rate cannot be null");
-        }
-        if (complexityMultiplier == null) {
-            throw new IllegalArgumentException("Complexity multiplier cannot be null");
-        }
-
-        int finalEstimatedHours = calculateEstimatedHours(fromLevel, toLevel);
-
-        // Calculate time cost with integer arithmetic
-        // complexityMultiplier is already in percentage (100 = 1.0x)
-        int complexityPercent = complexityMultiplier; // Now safe since we checked for null above
-
-        long timeCost = (long) hourlyRate * finalEstimatedHours * complexityPercent / 100;
-
-        return basePrice + (int) timeCost;
-    }
-
-    /**
-     * Calculate the final estimated hours based on level difference and configuration.
-     *
-     * @param fromLevel starting level
-     * @param toLevel target level
-     * @return final estimated hours after applying minimum hours and rounding if needed
-     */
-    private int calculateEstimatedHours(int fromLevel, int toLevel) {
-        int levelDiff = Math.max(0, toLevel - fromLevel);
-        int rawEstimatedHours = baseHours + (levelDiff * hoursPerLevel);
-
-        // Застосувати мінімальні години
-        int minHours = minimumHours != null ? minimumHours : 1;
-        int finalEstimatedHours = Math.max(minHours, rawEstimatedHours);
-
-        // Округлення до повних годин якщо потрібно
-        if (roundToHours) {
-            finalEstimatedHours = Math.max(minHours, finalEstimatedHours);
-        }
-
-        return finalEstimatedHours;
-    }
-
-    @Override
-    public void validate() {
-        if (hourlyRate == null) {
-            throw new IllegalArgumentException("Hourly rate is required for TimeBasedFormula");
-        }
-        if (hourlyRate <= 0) {
-            throw new IllegalArgumentException("Hourly rate must be positive");
-        }
-        if (baseHours < 0) {
-            throw new IllegalArgumentException("Base hours cannot be negative");
-        }
-        if (hoursPerLevel < 0) {
-            throw new IllegalArgumentException("Hours per level cannot be negative");
-        }
-        if (complexityMultiplier == null || complexityMultiplier <= 0) {
-            throw new IllegalArgumentException("Complexity multiplier must be positive");
-        }
-        if (minimumHours != null && minimumHours <= 0) {
-            throw new IllegalArgumentException("Minimum hours must be positive");
-        }
-    }
+    // REFACTORED: Business logic methods moved to TimeBasedFormulaCalculator service
+    // calculate() -> TimeBasedFormulaCalculator.calculate()
+    // calculateEstimatedHours() -> TimeBasedFormulaCalculator.calculateEstimatedHours()
+    // validate() -> TimeBasedFormulaCalculator.validateFormula()
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         TimeBasedFormulaEntity that = (TimeBasedFormulaEntity) o;
         return baseHours == that.baseHours &&
                hoursPerLevel == that.hoursPerLevel &&
                roundToHours == that.roundToHours &&
+               Objects.equals(type, that.type) &&
                Objects.equals(hourlyRate, that.hourlyRate) &&
                Objects.equals(complexityMultiplier, that.complexityMultiplier) &&
                Objects.equals(minimumHours, that.minimumHours);
@@ -132,7 +69,7 @@ public class TimeBasedFormulaEntity extends CalculationFormulaEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), hourlyRate, baseHours, hoursPerLevel,
+        return Objects.hash(type, hourlyRate, baseHours, hoursPerLevel,
                            complexityMultiplier, minimumHours, roundToHours);
     }
 

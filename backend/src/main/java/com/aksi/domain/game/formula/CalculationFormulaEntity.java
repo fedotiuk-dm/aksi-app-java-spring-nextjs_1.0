@@ -10,8 +10,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Abstract class for all calculation formula types.
- * Provides polymorphism through Jackson annotations and common interface for calculations.
+ * Abstract base class for all calculation formula types.
+ * Provides polymorphic structure for JSON serialization and JPA persistence.
+ *<p>
+ * REFACTORED: Removed business logic methods (calculate, validate).
+ * Business logic now handled by dedicated Calculator services.
  */
 @Setter
 @Getter
@@ -25,7 +28,7 @@ import lombok.Setter;
 public abstract class CalculationFormulaEntity {
 
     /**
-     * Type of calculation formula
+     * Type of calculation formula - used for polymorphic strategy selection
      */
     protected TypeEnum type;
 
@@ -33,24 +36,7 @@ public abstract class CalculationFormulaEntity {
         this.type = type;
     }
 
-    /**
-     * Calculate price based on base price and levels
-     *
-     * @param basePrice base price in cents
-     * @param fromLevel starting level
-     * @param toLevel target level
-     * @return calculated price in cents
-     */
-    public abstract Integer calculate(Integer basePrice, int fromLevel, int toLevel);
-
-    /**
-     * Validate formula parameters
-     *
-     * @throws IllegalArgumentException if parameters are invalid
-     */
-    public abstract void validate();
-
-  @Override
+    @Override
     public String toString() {
         return String.format("%s{type=%s}", getClass().getSimpleName(), type);
     }

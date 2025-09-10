@@ -27,29 +27,17 @@ public class PriceRangeEntity {
     @JsonProperty("price")
     private Integer price;
 
-  public PriceRangeEntity(int from, int to, Integer price) {
+    // Required for Jackson JSON deserialization
+    public PriceRangeEntity() {}
+
+    public PriceRangeEntity(int from, int to, Integer price) {
         this.from = from;
         this.to = to;
         this.price = price;
-        }
-
-    /**
-     * Validate the range
-     */
-    public void validate() {
-        if (from <= 0) {
-            throw new IllegalArgumentException("From level must be positive");
-        }
-        if (to < from) {
-            throw new IllegalArgumentException("To level must be >= from level");
-        }
-        if (price == null) {
-            throw new IllegalArgumentException("Price cannot be null");
-        }
-        if (price < 0) {
-            throw new IllegalArgumentException("Price cannot be negative");
-        }
     }
+
+    // REFACTORED: Business logic moved to RangeFormulaCalculator service
+    // validate() -> RangeFormulaCalculator.validatePriceRange()
 
   @Override
     public boolean equals(Object o) {

@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import com.aksi.api.game.dto.CalculationFormula.TypeEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 
 /**
@@ -32,72 +33,23 @@ public class RangeFormulaEntity extends CalculationFormulaEntity {
         super(TypeEnum.RANGE);
     }
 
-    @Override
-    public Integer calculate(Integer basePrice, int fromLevel, int toLevel) {
-        if (basePrice == null) {
-            throw new IllegalArgumentException("Base price cannot be null");
-        }
-        if (ranges.isEmpty()) {
-            throw new IllegalArgumentException("Ranges cannot be empty");
-        }
+    // REFACTORED: Business logic methods moved to RangeFormulaCalculator service
+    // calculate() -> RangeFormulaCalculator.calculate()
+    // validate() -> RangeFormulaCalculator.validateFormula()
+    // rangesOverlap() -> RangeFormulaCalculator.priceRangesOverlap() (private)
 
-        int total = 0;
-
-        // Знаходимо всі діапазони, які перекриваються з запитуваним діапазоном рівнів
-        for (PriceRangeEntity range : ranges) {
-            if (range.getFrom() <= toLevel && range.getTo() >= fromLevel) {
-                // Діапазон перекривається - додаємо його фіксовану ціну
-                total += range.getPrice();
-            }
-        }
-
-        return basePrice + total;
-    }
 
     @Override
-    public void validate() {
-        if (ranges.isEmpty()) {
-            throw new IllegalArgumentException("At least one price range is required for RangeFormula");
-        }
-
-        for (int i = 0; i < ranges.size(); i++) {
-            PriceRangeEntity range = ranges.get(i);
-            if (range == null) {
-                throw new IllegalArgumentException("Range at index " + i + " cannot be null");
-            }
-            range.validate();
-
-            // Check for range overlaps
-            for (int j = i + 1; j < ranges.size(); j++) {
-                PriceRangeEntity other = ranges.get(j);
-                if (rangesOverlap(range, other)) {
-                    throw new IllegalArgumentException(
-                        String.format("Ranges overlap: %s and %s", range, other));
-                }
-            }
-        }
-    }
-
-    /**
-     * Check if two ranges overlap
-     */
-    private boolean rangesOverlap(PriceRangeEntity r1, PriceRangeEntity r2) {
-        return r1.getFrom() <= r2.getTo() && r2.getFrom() <= r1.getTo();
-    }
-
-
-  @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         RangeFormulaEntity that = (RangeFormulaEntity) o;
-        return Objects.equals(ranges, that.ranges);
+        return Objects.equals(type, that.type) && Objects.equals(ranges, that.ranges);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), ranges);
+        return Objects.hash(type, ranges);
     }
 
     @Override

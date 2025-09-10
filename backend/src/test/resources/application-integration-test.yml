@@ -1,0 +1,48 @@
+spring:
+  # Testcontainers will override these dynamically via @DynamicPropertySource
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aksi_test
+    driver-class-name: org.postgresql.Driver
+    username: aksi_test
+    password: test_password
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  session:
+    store-type: redis
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none # Let Liquibase handle schema
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # ВАЖЛИВО: Включаємо Liquibase для міграцій
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    contexts: test
+    drop-first: true # Очищуємо БД перед кожним тестом
+
+# Application configuration for integration tests
+app:
+  file-storage:
+    upload-dir: ${FILE_UPLOAD_DIR:./test-uploads}
+    base-url: ${FILE_BASE_URL:http://localhost:8080}
+    api-path: ${FILE_API_PATH:/api/files}
+
+logging:
+  level:
+    com.aksi: DEBUG
+    org.springframework.orm.jpa: INFO
+    org.springframework.transaction: INFO
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO
+    org.testcontainers: INFO
+    liquibase: INFO
