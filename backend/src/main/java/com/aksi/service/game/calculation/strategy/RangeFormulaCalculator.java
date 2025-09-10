@@ -110,10 +110,10 @@ public class RangeFormulaCalculator {
 
     /**
      * Check if range overlaps with level range.
-     *
+     *<p>
      * Business Logic: Any overlap between range and request applies the range price.
      * This matches the original Excel-based logic where overlapping ranges are cumulative.
-     *
+     *<p>
      * Examples:
      * - Request 1-5, Range (1-5): overlap -> true
      * - Request 1-5, Range (5-10): overlap at level 5 -> true
@@ -127,7 +127,7 @@ public class RangeFormulaCalculator {
     /**
      * Check if two price ranges have true overlap (not just touching at boundaries).
      * Moved from RangeFormulaEntity.rangesOverlap() method.
-     *
+     *<p>
      * Examples:
      * - (1-5) and (5-10): touching at level 5 -> false (allowed)
      * - (1-5) and (4-8): overlapping at levels 4,5 -> true (forbidden)

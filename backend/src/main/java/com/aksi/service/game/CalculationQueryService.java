@@ -38,14 +38,14 @@ public class CalculationQueryService {
     /**
      * Calculate price based on formula using Strategy pattern.
      * Refactored method that delegates to appropriate calculation strategy.
-     *
-     * @param formula Calculation formula
-     * @param basePrice Base price
-     * @param fromLevel Starting level
-     * @param toLevel Target level
-     * @return Calculated price in cents
-     */
-    public Integer calculatePrice(CalculationFormulaEntity formula, Integer basePrice, int fromLevel, int toLevel) {
+   *
+   * @param formula Calculation formula
+   * @param basePrice Base price
+   * @param fromLevel Starting level
+   * @param toLevel Target level
+   * @return Calculated price in cents
+   */
+  public Integer calculatePrice(CalculationFormulaEntity formula, Integer basePrice, int fromLevel, int toLevel) {
         return Optional.ofNullable(formula)
                 .map(f -> {
                     var strategy = strategyFactory.getStrategy(f.getType().getValue());
@@ -62,8 +62,8 @@ public class CalculationQueryService {
      * @param formulaType Type of formula to use
      * @param request Universal calculation request
      * @return Universal calculation response
-     */
-    public UniversalCalculationResponse calculateWithFormula(String formulaType, UniversalCalculationRequest request) {
+   */
+      public UniversalCalculationResponse calculateWithFormula(String formulaType, UniversalCalculationRequest request) {
         log.info(CalculationConstants.LogMessages.CALCULATION_START, formulaType,
                 request.getContext().getStartLevel(), request.getContext().getTargetLevel());
 
@@ -87,7 +87,7 @@ public class CalculationQueryService {
             log.warn("Validation error in calculation: {}", e.getMessage());
             return responseBuilder.buildValidationErrorResponse(e.getMessage());
 
-        } catch (Exception e) {
+      } catch (Exception e) {
             log.error(CalculationConstants.LogMessages.CALCULATION_ERROR, e.getMessage(), e);
             return responseBuilder.buildErrorResponse(e.getMessage());
         }
@@ -103,7 +103,7 @@ public class CalculationQueryService {
                     if (req.getFormula().isPresent()) {
                         return GamePriceCalculationRequest.forFormulaCalculation(
                                 formulaType, req.getFormula().get(), req.getContext());
-                    } else {
+    } else {
                         return GamePriceCalculationRequest.forUniversalCalculation(req.getContext());
                     }
                 })
