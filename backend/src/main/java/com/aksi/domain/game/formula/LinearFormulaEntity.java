@@ -29,43 +29,21 @@ public class LinearFormulaEntity extends CalculationFormulaEntity {
         super(TypeEnum.LINEAR);
     }
 
-  @Override
-    public Integer calculate(Integer basePrice, int fromLevel, int toLevel) {
-        if (basePrice == null) {
-            throw new IllegalArgumentException("Base price cannot be null");
-        }
-        if (pricePerLevel == null) {
-            throw new IllegalArgumentException("Price per level cannot be null");
-        }
-
-        int levelDiff = Math.max(0, toLevel - fromLevel);
-        int levelPrice = pricePerLevel * levelDiff;
-
-        return basePrice + levelPrice;
-    }
+    // REFACTORED: Business logic methods moved to LinearFormulaCalculator service
+    // calculate() -> LinearFormulaCalculator.calculate()
+    // validate() -> LinearFormulaCalculator.validateFormula()
 
     @Override
-    public void validate() {
-        if (pricePerLevel == null) {
-            throw new IllegalArgumentException("Price per level is required for LinearFormula");
-        }
-        if (pricePerLevel < 0) {
-            throw new IllegalArgumentException("Price per level cannot be negative");
-        }
-    }
-
-  @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         LinearFormulaEntity that = (LinearFormulaEntity) o;
-        return Objects.equals(pricePerLevel, that.pricePerLevel);
+        return Objects.equals(type, that.type) && Objects.equals(pricePerLevel, that.pricePerLevel);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), pricePerLevel);
+        return Objects.hash(type, pricePerLevel);
     }
 
     @Override

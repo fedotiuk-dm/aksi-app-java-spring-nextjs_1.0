@@ -36,52 +36,8 @@ public class FormulaFormulaEntity extends CalculationFormulaEntity {
         super(TypeEnum.FORMULA);
     }
 
-  @Override
-    public Integer calculate(Integer basePrice, int fromLevel, int toLevel) {
-        if (basePrice == null) {
-            throw new IllegalArgumentException("Base price cannot be null");
-        }
-        if (expression == null || expression.trim().isEmpty()) {
-            throw new IllegalArgumentException("Expression cannot be null or empty");
-        }
-
-        // For simplicity, return base price if expression is too complex
-        // In production, you would implement a simple expression evaluator
-        // Only consider truly complex expressions (with arithmetic operators other than + and -)
-        if (expression.contains("*") || expression.contains("/") ||
-            (expression.contains("(") && !expression.equals("basePrice + levelDiff"))) {
-            return basePrice;
-        }
-
-        // Simple addition/subtraction support
-        if (expression.startsWith("basePrice + ")) {
-            String variableStr = expression.substring("basePrice + ".length()).trim();
-            try {
-                // Try to parse as number first
-                int number = Integer.parseInt(variableStr);
-                return basePrice + number;
-            } catch (NumberFormatException e) {
-                // If not a number, try to find in variables
-                if (variables != null && variables.containsKey(variableStr)) {
-                    int variableValue = variables.get(variableStr);
-                    return basePrice + variableValue;
-                }
-                return basePrice;
-            }
-        }
-
-        if (expression.startsWith("basePrice - ")) {
-            String numberStr = expression.substring("basePrice - ".length()).trim();
-            try {
-                int number = Integer.parseInt(numberStr);
-                return Math.max(0, basePrice - number);
-            } catch (NumberFormatException e) {
-                return basePrice;
-            }
-        }
-
-        return basePrice;
-    }
+    // REFACTORED: Business logic methods moved to FormulaExpressionCalculator service
+    // calculate() -> FormulaExpressionCalculator.calculate()
 
     /**
      * Get variables map (simplified for Integer arithmetic)
@@ -102,30 +58,22 @@ public class FormulaFormulaEntity extends CalculationFormulaEntity {
 
 
 
-    @Override
-    public void validate() {
-        if (expression == null || expression.trim().isEmpty()) {
-            throw new IllegalArgumentException("Expression is required for FormulaFormula");
-        }
-
-        // Simplified validation - only check if expression is not empty
-        // In production, you would implement proper variable validation
-    }
+    // REFACTORED: validate() -> FormulaExpressionCalculator.validateFormula()
 
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         FormulaFormulaEntity that = (FormulaFormulaEntity) o;
-        return Objects.equals(expression, that.expression) &&
+        return Objects.equals(type, that.type) &&
+               Objects.equals(expression, that.expression) &&
                Objects.equals(variables, that.variables);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), expression, variables);
+        return Objects.hash(type, expression, variables);
     }
 
     @Override
