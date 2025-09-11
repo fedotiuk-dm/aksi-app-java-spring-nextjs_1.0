@@ -1,12 +1,17 @@
+/**
+ * @fileoverview Main application layout wrapper
+ * Provides consistent page structure with header and content area
+ */
+
 'use client';
 
-import { Box } from '@mui/material';
+import { Box, Container } from '@mui/material';
+import { ReactNode } from 'react';
 
 import Header from './Header';
-import React from "react";
 
 interface PageLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function PageLayout({ children }: PageLayoutProps) {
@@ -16,6 +21,7 @@ export default function PageLayout({ children }: PageLayoutProps) {
         display: 'flex',
         flexDirection: 'column',
         minHeight: '100vh',
+        bgcolor: 'background.default',
       }}
     >
       <Header />
@@ -23,15 +29,16 @@ export default function PageLayout({ children }: PageLayoutProps) {
         component="main"
         sx={{
           flexGrow: 1,
-          py: 3,
-          px: { xs: 2, md: 4 },
+          py: { xs: 2, md: 4 },
+          px: { xs: 1, md: 2 },
           overflow: 'visible',
-          minHeight: 0, // Allow content to determine height
+          minHeight: 0,
         }}
       >
-        {children}
+        <Container maxWidth="xl" sx={{ height: '100%' }}>
+          {children}
+        </Container>
       </Box>
-      
     </Box>
   );
 }

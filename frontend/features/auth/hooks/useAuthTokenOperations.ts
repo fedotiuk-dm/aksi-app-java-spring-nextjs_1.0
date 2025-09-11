@@ -1,19 +1,20 @@
 /**
- * @fileoverview Хук для оновлення сесії
- * 
- * В session-based auth немає окремого refresh token,
- * тому цей хук просто перевіряє поточну сесію
+ * @fileoverview Auth token operations using Orval API hooks
+ * Handles session refresh operations for session-based authentication
  */
+
+'use client';
 
 import { useGetCurrentSession } from '@/shared/api/generated/auth';
 import { useAuthStore } from '@/features/auth';
 import { useQueryClient } from '@tanstack/react-query';
 
-export const useRefreshToken = () => {
+export const useAuthTokenOperations = () => {
   const queryClient = useQueryClient();
   const setSession = useAuthStore((state) => state.setSession);
-  
-  const { refetch, isRefetching } = useGetCurrentSession({
+
+  // Orval hook for session management
+  const sessionQuery = useGetCurrentSession({
     query: {
       enabled: false,
     },
@@ -21,7 +22,7 @@ export const useRefreshToken = () => {
 
   const refreshSession = async () => {
     try {
-      const { data: session } = await refetch();
+      const { data: session } = await sessionQuery.refetch();
       if (session) {
         setSession(session);
         // Invalidate all queries to refresh data
@@ -30,14 +31,13 @@ export const useRefreshToken = () => {
       }
       return false;
     } catch (error) {
-      console.error('Session refresh error:', error);
       setSession(null);
       return false;
     }
   };
 
   return {
-    refreshToken: refreshSession,
-    isRefreshing: isRefetching,
+    refreshSession,
+    isRefreshing: sessionQuery.isRefetching,
   };
 };

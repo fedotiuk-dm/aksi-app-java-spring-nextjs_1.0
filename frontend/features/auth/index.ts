@@ -10,12 +10,13 @@ export { LogoutButton } from './components/LogoutButton';
 export { ProtectedRoute } from './components/ProtectedRoute';
 export { AuthProvider } from './components/AuthProvider';
 
-// Hooks
-export { useAuth } from './hooks/use-auth';
-export { useLoginForm } from './hooks/use-login';
-export { useLogout } from './hooks/use-logout';
-export { useRefreshToken } from './hooks/use-refresh-token';
-export { useChangePasswordForm } from './hooks/use-change-password';
+// Operations Hooks
+export { useAuthOperations } from './hooks/useAuthOperations';
+export { useAuthLoginOperations } from './hooks/useAuthLoginOperations';
+export { useAuthLogoutOperations } from './hooks/useAuthLogoutOperations';
+export { useAuthTokenOperations } from './hooks/useAuthTokenOperations';
+export { useAuthPasswordOperations } from './hooks/useAuthPasswordOperations';
+export { useAuthSelectors } from './hooks/useAuthSelectors';
 
 // Store and selectors
 export {
@@ -40,9 +41,23 @@ export {
   // Branch selectors
   selectCurrentBranchId,
   selectCurrentBranchName,
-  selectRequiresBranchSelection
+  selectRequiresBranchSelection,
 } from './store/auth-store';
 
+// Utils
+export {
+  getUserDisplayName,
+  shouldRedirectToBranchSelection,
+  getRedirectUrl,
+  hasValidBranchId,
+  getErrorMessage,
+} from './utils/auth.utils';
+
 // Constants
-export { ROLES, PERMISSIONS, ROLE_DISPLAY_NAMES, hasHigherOrEqualRole } from './constants/auth.constants';
+export {
+  ROLES,
+  PERMISSIONS,
+  ROLE_DISPLAY_NAMES,
+  hasHigherOrEqualRole,
+} from './constants/auth.constants';
 export type { UserRole, Permission } from './constants/auth.constants';

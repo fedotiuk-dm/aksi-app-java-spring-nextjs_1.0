@@ -1,13 +1,13 @@
 'use client';
 
 /**
- * @fileoverview Компонент для захисту роутів
+ * @fileoverview Protected route component for route authorization
  */
 
 import React, { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Box, CircularProgress } from '@mui/material';
-import { useAuth } from '@/features/auth';
+import { useAuthOperations, useAuthSelectors } from '@/features/auth';
 import { type UserRole, type Permission } from '@/features/auth/constants/auth.constants';
 
 interface ProtectedRouteProps {
@@ -25,7 +25,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, isAuthenticated, isLoading, hasPermission } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuthOperations();
+  const { hasPermission } = useAuthSelectors();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -34,58 +35,41 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
   }, [isLoading, isAuthenticated, pathname, redirectTo, router]);
 
-  // Показуємо loader під час перевірки
+  // Show loader during authentication check
   if (isLoading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
         <CircularProgress />
       </Box>
     );
   }
 
-  // Перевіряємо автентифікацію
+  // Check authentication
   if (!isAuthenticated || !user) {
-    return null; // Router.push вже відпрацює в useEffect
+    return null; // Router.push will trigger in useEffect
   }
 
-  // Перевіряємо роль, якщо вказана
+  // Check role if specified
   if (requiredRole && !user.roles?.includes(requiredRole)) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-        p={3}
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" p={3}>
         <Box textAlign="center">
-          <h2>Доступ заборонено</h2>
-          <p>У вас немає прав для перегляду цієї сторінки.</p>
-          <p>Необхідна роль: {requiredRole}</p>
+          <h2>Access Denied</h2>
+          <p>You do not have permission to view this page.</p>
+          <p>Required role: {requiredRole}</p>
         </Box>
       </Box>
     );
   }
-  
-  // Перевіряємо дозвіл, якщо вказаний
+
+  // Check permission if specified
   if (requiredPermission && !hasPermission(requiredPermission)) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-        p={3}
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" p={3}>
         <Box textAlign="center">
-          <h2>Доступ заборонено</h2>
-          <p>У вас немає прав для виконання цієї дії.</p>
-          <p>Необхідний дозвіл: {requiredPermission}</p>
+          <h2>Access Denied</h2>
+          <p>You do not have permission to perform this action.</p>
+          <p>Required permission: {requiredPermission}</p>
         </Box>
       </Box>
     );

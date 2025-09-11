@@ -1,33 +1,34 @@
 /**
- * @fileoverview Хук для зміни пароля
+ * @fileoverview Auth password operations using Orval API hooks
+ * Handles password change operations with form validation
  */
+
+'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
 import { useChangePassword, changePasswordBody } from '@/shared/api/generated/user';
-import { useAuthStore } from '@/features/auth';
+import { useAuthStore, getErrorMessage } from '@/features/auth';
 
 // Use generated schema for validation
 type ChangePasswordFormData = z.infer<typeof changePasswordBody>;
 
-export const useChangePasswordForm = () => {
+export const useAuthPasswordOperations = () => {
   const user = useAuthStore((state) => state.user);
 
+  // Orval hook for password change
   const changePasswordMutation = useChangePassword({
     mutation: {
       onSuccess: () => {
-        toast.success('Пароль успішно змінено');
+        toast.success('Password changed successfully');
         form.reset();
       },
-      onError: (error: Error) => {
-        console.error('Change password error:', error);
-        const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Помилка при зміні пароля';
+      onError: (error: { response?: { data?: { message?: string } } }) => {
+        const message = getErrorMessage(error, 'Failed to change password');
         toast.error(message);
-        form.setError('root', {
-          message,
-        });
+        form.setError('root', { message });
       },
     },
   });
@@ -40,9 +41,9 @@ export const useChangePasswordForm = () => {
     },
   });
 
-  const onSubmit = async (data: ChangePasswordFormData) => {
+  const handleSubmit = async (data: ChangePasswordFormData) => {
     if (!user?.userId) {
-      toast.error('Користувач не авторизований');
+      toast.error('User not authenticated');
       return;
     }
 
@@ -54,7 +55,7 @@ export const useChangePasswordForm = () => {
 
   return {
     form,
-    onSubmit,
+    handleSubmit,
     isLoading: changePasswordMutation.isPending,
   };
 };

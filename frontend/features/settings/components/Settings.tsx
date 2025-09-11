@@ -3,7 +3,7 @@
 import { Typography, Container, Paper, Box, Tabs, Tab } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { UsersManagement } from './users/UsersManagement';
-import { useAuth, ROLES } from '@/features/auth';
+import { useAuthOperations, ROLES } from '@/features/auth';
 import { useSearchParams } from 'next/navigation';
 
 interface TabPanelProps {
@@ -30,11 +30,11 @@ function TabPanel(props: TabPanelProps) {
 
 export function Settings() {
   const searchParams = useSearchParams();
-  const { user } = useAuth();
-  
+  const { user } = useAuthOperations();
+
   // Only admins can see users tab
   const isAdmin = user?.roles?.includes(ROLES.ADMIN);
-  
+
   // Check if we should open users tab
   const defaultTab = searchParams.get('tab') === 'users' && isAdmin ? 1 : 0;
   const [tab, setTab] = useState(defaultTab);
@@ -68,9 +68,7 @@ export function Settings() {
 
       <TabPanel value={tab} index={0}>
         <Paper sx={{ p: 3 }}>
-          <Typography variant="body1">
-            Загальні налаштування системи
-          </Typography>
+          <Typography variant="body1">Загальні налаштування системи</Typography>
         </Paper>
       </TabPanel>
 
@@ -82,17 +80,13 @@ export function Settings() {
 
       <TabPanel value={tab} index={isAdmin ? 2 : 1}>
         <Paper sx={{ p: 3 }}>
-          <Typography variant="body1">
-            Налаштування сповіщень
-          </Typography>
+          <Typography variant="body1">Налаштування сповіщень</Typography>
         </Paper>
       </TabPanel>
 
       <TabPanel value={tab} index={isAdmin ? 3 : 2}>
         <Paper sx={{ p: 3 }}>
-          <Typography variant="body1">
-            Системні налаштування
-          </Typography>
+          <Typography variant="body1">Системні налаштування</Typography>
         </Paper>
       </TabPanel>
     </Container>

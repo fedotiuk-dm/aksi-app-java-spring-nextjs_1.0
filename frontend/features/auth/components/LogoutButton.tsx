@@ -1,7 +1,8 @@
 'use client';
 
 /**
- * @fileoverview Кнопка виходу з системи
+ * @fileoverview Logout button component with confirmation dialog
+ * Clean logout button with proper theming and accessibility
  */
 
 import React, { useState } from 'react';
@@ -17,7 +18,7 @@ import {
 } from '@mui/material';
 import type { ButtonProps, IconButtonProps } from '@mui/material';
 import { Logout as LogoutIcon } from '@mui/icons-material';
-import { useAuth } from '@/features/auth';
+import { useAuthOperations } from '@/features/auth';
 
 interface LogoutButtonProps {
   variant?: 'button' | 'icon';
@@ -33,7 +34,7 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
   iconButtonProps,
 }) => {
   const [open, setOpen] = useState(false);
-  const { logout, isLoading } = useAuth();
+  const { logout, isLoading } = useAuthOperations();
 
   const handleClick = async () => {
     if (showConfirmation) {
@@ -55,17 +56,8 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
   if (variant === 'icon') {
     return (
       <>
-        <IconButton
-          onClick={handleClick}
-          color="inherit"
-          disabled={isLoading}
-          {...iconButtonProps}
-        >
-          {isLoading ? (
-            <CircularProgress size={24} color="inherit" />
-          ) : (
-            <LogoutIcon />
-          )}
+        <IconButton onClick={handleClick} color="inherit" disabled={isLoading} {...iconButtonProps}>
+          {isLoading ? <CircularProgress size={24} color="inherit" /> : <LogoutIcon />}
         </IconButton>
 
         {showConfirmation && (
@@ -88,7 +80,7 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
         disabled={isLoading}
         {...buttonProps}
       >
-        {isLoading ? 'Вихід...' : 'Вийти'}
+        {isLoading ? 'Logging out...' : 'Logout'}
       </Button>
 
       {showConfirmation && (
@@ -123,17 +115,16 @@ const LogoutConfirmDialog: React.FC<LogoutConfirmDialogProps> = ({
       aria-labelledby="logout-dialog-title"
       aria-describedby="logout-dialog-description"
     >
-      <DialogTitle id="logout-dialog-title">
-        Вийти з системи?
-      </DialogTitle>
+      <DialogTitle id="logout-dialog-title">Logout from system?</DialogTitle>
       <DialogContent>
         <DialogContentText id="logout-dialog-description">
-          Ви впевнені, що хочете вийти з системи? Вам доведеться знову ввести логін та пароль для входу.
+          Are you sure you want to logout from the system? You will need to enter your login and
+          password again to sign in.
         </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} disabled={isLoading}>
-          Скасувати
+          Cancel
         </Button>
         <Button
           onClick={onConfirm}
@@ -143,7 +134,7 @@ const LogoutConfirmDialog: React.FC<LogoutConfirmDialogProps> = ({
           disabled={isLoading}
           startIcon={isLoading && <CircularProgress size={20} />}
         >
-          {isLoading ? 'Вихід...' : 'Вийти'}
+          {isLoading ? 'Logging out...' : 'Logout'}
         </Button>
       </DialogActions>
     </Dialog>

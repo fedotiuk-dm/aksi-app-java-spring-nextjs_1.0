@@ -1,6 +1,10 @@
 'use client';
 
-// Зовнішні залежності
+/**
+ * @fileoverview Main application header with navigation and user menu
+ */
+
+import { useState } from 'react';
 import {
   Menu as MenuIcon,
   Home as HomeIcon,
@@ -35,32 +39,25 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import React, { useState } from 'react';
 
-// MUI компоненти
-
-// MUI іконки
-
-// Внутрішні залежності
-import { useLogout, useAuth, ROLE_DISPLAY_NAMES } from '@/features/auth';
+import { useAuthLogoutOperations, useAuthOperations, ROLE_DISPLAY_NAMES } from '@/features/auth';
 import { useSafeMUIHydration } from '@/shared/lib/hooks';
 import { useThemeMode } from '@/lib/theme-provider';
-
-// Константи
-const APP_NAME = 'AKSI Хімчистка';
+const APP_NAME = 'AKSI Dry Cleaning';
 const APP_BAR_BG_COLOR = 'primary.main';
+const PRIMARY_CONTRAST_TEXT = 'primary.contrastText';
 
 const navigationItems = [
-  { name: 'Головна', path: '/', icon: <HomeIcon /> },
-  { name: 'Клієнти', path: '/customers', icon: <PeopleIcon /> },
-  { name: 'Замовлення', path: '/orders', icon: <ReceiptIcon /> },
-  { name: 'Філії', path: '/branches', icon: <StoreIcon /> },
-  { name: 'Каталог', path: '/catalog', icon: <CatalogIcon /> },
-  { name: 'Створити замовлення', path: '/order-wizard', icon: <LaundryIcon /> },
+  { name: 'Home', path: '/', icon: <HomeIcon /> },
+  { name: 'Customers', path: '/customers', icon: <PeopleIcon /> },
+  { name: 'Orders', path: '/orders', icon: <ReceiptIcon /> },
+  { name: 'Branches', path: '/branches', icon: <StoreIcon /> },
+  { name: 'Catalog', path: '/catalog', icon: <CatalogIcon /> },
+  { name: 'Create Order', path: '/order-wizard', icon: <LaundryIcon /> },
   { name: 'Game Boosting Calculator', path: '/game-boosting-calculator', icon: <GameIcon /> },
   { name: 'Admin Panel', path: '/game-boosting-admin', icon: <SettingsIcon /> },
-  { name: 'Прайс-лист', path: '/price-list', icon: <PriceIcon /> },
-  { name: 'Налаштування', path: '/settings', icon: <SettingsIcon /> },
+  { name: 'Price List', path: '/price-list', icon: <PriceIcon /> },
+  { name: 'Settings', path: '/settings', icon: <SettingsIcon /> },
 ];
 
 export default function Header() {
@@ -68,8 +65,8 @@ export default function Header() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const pathname = usePathname();
   const router = useRouter();
-  const { logout, isLoading } = useLogout();
-  const { user } = useAuth();
+  const { logout, isLoading } = useAuthLogoutOperations();
+  const { user } = useAuthOperations();
   const { muiProps } = useSafeMUIHydration();
   const { mode, toggleTheme } = useThemeMode();
 
@@ -87,18 +84,41 @@ export default function Header() {
 
   return (
     <>
-      <AppBar position="static" elevation={0} sx={{ bgcolor: APP_BAR_BG_COLOR }} {...muiProps}>
+      <AppBar
+        position="static"
+        elevation={1}
+        sx={{
+          bgcolor: APP_BAR_BG_COLOR,
+          backdropFilter: 'blur(8px)',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+        }}
+        {...muiProps}
+      >
         <Toolbar>
           <IconButton
             edge="start"
             color="inherit"
             aria-label="menu"
-            sx={{ mr: 2 }}
+            sx={{
+              mr: 2,
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.1)',
+              },
+            }}
             onClick={() => toggleDrawer(true)}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              flexGrow: 1,
+              fontWeight: 600,
+              letterSpacing: '0.5px',
+            }}
+          >
             {APP_NAME}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -152,7 +172,7 @@ export default function Header() {
                 <ListItemIcon>
                   <PersonIcon fontSize="small" />
                 </ListItemIcon>
-                <ListItemText>Профіль</ListItemText>
+                <ListItemText>Profile</ListItemText>
               </MenuItem>
               <MenuItem
                 onClick={() => {
@@ -163,7 +183,7 @@ export default function Header() {
                 <ListItemIcon>
                   <SettingsIcon fontSize="small" />
                 </ListItemIcon>
-                <ListItemText>Налаштування</ListItemText>
+                <ListItemText>Settings</ListItemText>
               </MenuItem>
               <MenuItem
                 onClick={() => {
@@ -178,7 +198,7 @@ export default function Header() {
                     <LightModeIcon fontSize="small" />
                   )}
                 </ListItemIcon>
-                <ListItemText>{mode === 'light' ? 'Темна тема' : 'Світла тема'}</ListItemText>
+                <ListItemText>{mode === 'light' ? 'Dark Theme' : 'Light Theme'}</ListItemText>
               </MenuItem>
               <Divider />
               <MenuItem
@@ -191,7 +211,7 @@ export default function Header() {
                 <ListItemIcon>
                   <LogoutIcon fontSize="small" />
                 </ListItemIcon>
-                <ListItemText>{isLoading ? 'Виходимо...' : 'Вийти'}</ListItemText>
+                <ListItemText>{isLoading ? 'Logging out...' : 'Logout'}</ListItemText>
               </MenuItem>
             </Menu>
           </Box>
@@ -210,9 +230,20 @@ export default function Header() {
           onClick={() => toggleDrawer(false)}
           onKeyDown={() => toggleDrawer(false)}
         >
-          <Box sx={{ p: 2, bgcolor: APP_BAR_BG_COLOR, color: 'white' }}>
-            <Typography variant="h6">{APP_NAME}</Typography>
-            <Typography variant="body2">Панель управління</Typography>
+          <Box
+            sx={{
+              p: 3,
+              bgcolor: APP_BAR_BG_COLOR,
+              color: 'white',
+              background: `linear-gradient(135deg, ${APP_BAR_BG_COLOR} 0%, rgba(0,0,0,0.1) 100%)`,
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              {APP_NAME}
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.8, mt: 0.5 }}>
+              Navigation
+            </Typography>
           </Box>
           <Divider />
           <List>
@@ -225,21 +256,28 @@ export default function Header() {
                 <ListItemButton
                   selected={pathname === item.path}
                   sx={{
+                    borderRadius: 1,
+                    mx: 1,
+                    mb: 0.5,
                     '&.Mui-selected': {
-                      bgcolor: 'primary.light',
-                      color: 'primary.contrastText',
+                      bgcolor: 'primary.main',
+                      color: PRIMARY_CONTRAST_TEXT,
+                      '& .MuiListItemIcon-root': {
+                        color: PRIMARY_CONTRAST_TEXT,
+                      },
                       '&:hover': {
-                        bgcolor: 'primary.main',
+                        bgcolor: 'primary.dark',
                       },
                     },
                     '&:hover': {
                       bgcolor: 'action.hover',
+                      borderRadius: 1,
                     },
                   }}
                 >
                   <ListItemIcon
                     sx={{
-                      color: pathname === item.path ? 'primary.contrastText' : 'inherit',
+                      color: pathname === item.path ? PRIMARY_CONTRAST_TEXT : 'inherit',
                     }}
                   >
                     {item.icon}

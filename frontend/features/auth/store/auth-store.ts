@@ -1,10 +1,10 @@
 /**
- * @fileoverview Auth store з використанням Zustand для HttpOnly cookies
+ * @fileoverview Auth store using Zustand for HttpOnly cookies
  *
- * Особливості:
- * - Токени зберігаються в HttpOnly cookies (не в localStorage)
- * - Store зберігає тільки інформацію про користувача
- * - Автоматична синхронізація з API
+ * Features:
+ * - Tokens are stored in HttpOnly cookies (not in localStorage)
+ * - Store only contains user information
+ * - Automatic synchronization with API
  */
 
 import { create } from 'zustand';
@@ -81,7 +81,7 @@ export const useAuthStore = create<AuthState>()(
       })),
       {
         name: 'auth-store',
-        // Зберігаємо тільки базову інформацію (не токени!)
+        // Store only basic user info (no tokens!)
         partialize: (state) => ({
           user: state.user,
           session: state.session,

@@ -1,7 +1,7 @@
 /**
- * @fileoverview Root Layout з Orval Auth + TanStack Query
+ * @fileoverview Root Layout with Orval Auth + TanStack Query
  *
- * 🎯 Архітектура: "Orval First + TanStack Query + MUI"
+ * Architecture: "Orval First + TanStack Query + MUI"
  */
 
 import './globals.css';
@@ -9,7 +9,6 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import { Providers } from '@/lib/providers';
-import React from "react";
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -23,12 +22,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'AKSI Dry Cleaning System',
-  description: 'Система управління хімчисткою з Orval API',
+  description: 'Dry cleaning management system with Orval API integration',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="uk" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
