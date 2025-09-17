@@ -9,7 +9,7 @@ databaseChangeLog:
       value: gen_random_uuid()
       dbms: postgresql
 
-  # Initial schema creation
+  # Initial schema creation (ONLY function creation, domains replaced by 099-refactor-initial-schema.yaml)
   - include:
       file: db/changelog/changes/001-create-initial-schema.yaml
 

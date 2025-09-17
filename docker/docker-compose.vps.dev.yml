@@ -1,0 +1,352 @@
+services:
+  # # Traefik - зворотний проксі для маршрутизації
+  # traefik:
+  #   image: traefik:v3.5
+  #   container_name: traefik-dev
+  #   ports:
+  #     - "80:80" # HTTP порт
+  #     - "9090:8080" # Traefik Dashboard (змінено з 8080 на 9090, щоб уникнути конфлікту)
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   command:
+  #     # Налаштування Docker провайдера
+  #     - "--providers.docker=true"
+  #     - "--providers.docker.exposedbydefault=false"
+  #     # Налаштування точок входу
+  #     - "--entrypoints.web.address=:80"
+  #     # Включення API Dashboard
+  #     - "--api.dashboard=true"
+  #     - "--api.insecure=true"
+  #     # Налаштування логування
+  #     - "--log.level=INFO"
+  #   networks:
+  #     - aksi-network-dev
+  #   restart: unless-stopped
+  # PostgreSQL - main database for the application
+  postgres:
+    image: postgres:17
+    container_name: postgres-dev
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: aksi_user
+      POSTGRES_PASSWORD: 1911
+      POSTGRES_DB: aksi_cleaners_db_v5
+      POSTGRES_SCHEMA: public
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aksi_user -d aksi_cleaners_db_v5"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aksi-network-dev
+
+  # # PostgreSQL - separate database for GlitchTip
+  # postgres-glitchtip:
+  #   image: postgres:17
+  #   container_name: postgres-glitchtip-dev
+  #   expose:
+  #     - "5432"
+  #   environment:
+  #     POSTGRES_USER: glitchtip
+  #     POSTGRES_PASSWORD: glitchtip_pass
+  #     POSTGRES_DB: glitchtip
+  #     POSTGRES_SCHEMA: public
+  #   volumes:
+  #     - postgres_glitchtip_data_dev:/var/lib/postgresql/data
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U glitchtip -d glitchtip"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - aksi-network-dev
+
+  # Redis for session management
+  redis:
+    image: redis:8-alpine
+    container_name: redis-dev
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - aksi-network-dev
+
+  # PgAdmin - keeping consistent with main compose file
+  pgadmin:
+    image: dpage/pgadmin4:9.5
+    container_name: aksi-pgadmin-dev
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@aksi.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - pgadmin_data_dev:/var/lib/pgadmin
+      - ./pgadmin/config/servers.json:/pgadmin4/servers.json
+      - ./pgadmin/pgpass:/pgpass
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - aksi-network-dev
+
+  # # Portainer
+  # portainer:
+  #   image: portainer/portainer-ce:latest
+  #   container_name: portainer
+  #   restart: unless-stopped
+  #   ports:
+  #     - "9000:9000"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - portainer_data:/data
+  #   logging:
+  #     driver: json-file
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+
+  # Backend (Spring Boot) - development
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile.dev
+    container_name: backend-dev
+    expose:
+      - "8080"
+      - "5005"
+    ports:
+      - "8080:8080"
+      - "5005:5005" # Debug port
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/aksi_cleaners_db_v5
+      SPRING_DATASOURCE_USERNAME: aksi_user
+      SPRING_DATASOURCE_PASSWORD: 1911
+      SPRING_PROFILES_ACTIVE: dev
+      # Force English locale for Java
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+      # Redis configuration
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      # Відключаємо поштовий сервер для розробки
+      SPRING_MAIL_HOST: localhost
+      SPRING_MAIL_PORT: 3025
+      SPRING_MAIL_TEST-CONNECTION: "false"
+      # Вимикаємо health checks для різних сервісів
+      MANAGEMENT_HEALTH_MAIL_ENABLED: "false"
+      # DevTools налаштування для hot reload
+      SPRING_DEVTOOLS_RESTART_ENABLED: "true"
+      SPRING_DEVTOOLS_LIVERELOAD_ENABLED: "true"
+      # Рівень логування (ERROR для максимально чистих логів, DEBUG для детальної діагностики)
+      AKSI_LOG_LEVEL: "DEBUG"
+      LOGGING_LEVEL_COM_AKSI: "DEBUG"
+      # File storage configuration
+      FILE_UPLOAD_DIR: /app/uploads
+      FILE_BASE_URL: http://localhost:8080
+      # # GlitchTip configuration
+      # GLITCHTIP_DSN: http://b1abf81086f84a71bc66b1659e647402@glitchtip:8000/1
+      # GLITCHTIP_DEBUG: "true"
+      # GLITCHTIP_TRACES_SAMPLE_RATE: "1.0"
+    volumes:
+      - ../backend/src:/app/src # Монтуємо тільки src для hot reload
+      # - ../backend/target:/app/target # НЕ монтуємо target - компіляція тільки в контейнері
+      - backend_target:/app/target # Використовуємо Docker volume для target
+      - backend_m2_cache:/home/appuser/.m2 # Кеш Maven для non-root користувача
+      - backend_uploads:/app/uploads # Зберігаємо завантажені файли
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      # traefik:
+      #   condition: service_started
+    restart: unless-stopped
+    networks:
+      - aksi-network-dev
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "--spider",
+          "http://localhost:8080/management/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s # Даємо більше часу на запуск Spring Boot
+
+  # # GlitchTip - Error Monitoring (Development)
+  # glitchtip:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.glitchtip
+  #   container_name: glitchtip-dev
+  #   ports:
+  #     - "8001:8000"
+  #   environment:
+  #     # Database settings (як в офіційному прикладі)
+  #     DATABASE_URL: postgres://glitchtip:glitchtip_pass@postgres-glitchtip:5432/glitchtip
+  #     SECRET_KEY: "change_me_to_something_random_please_generate_new_key"
+  #     PORT: 8000
+  #     EMAIL_URL: consolemail://
+  #     GLITCHTIP_DOMAIN: http://localhost:8001
+  #     DEFAULT_FROM_EMAIL: admin@glitchtip.local
+  #     CELERY_WORKER_AUTOSCALE: "1,3"
+  #     REDIS_URL: redis://redis:6379/1
+  #     DEBUG: "true"
+  #     ALLOWED_HOSTS: "localhost,127.0.0.1,glitchtip"
+  #   volumes:
+  #     - glitchtip_uploads_dev:/code/uploads
+  #   depends_on:
+  #     postgres-glitchtip:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_started
+  #   restart: unless-stopped
+  #   networks:
+  #     - aksi-network-dev
+  #   healthcheck:
+  #     test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 30s
+
+  # # GlitchTip Worker (for Celery tasks)
+  # glitchtip-worker:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.glitchtip
+  #   container_name: glitchtip-worker-dev
+  #   command: ./bin/run-celery-with-beat.sh
+  #   environment:
+  #     DATABASE_URL: postgres://glitchtip:glitchtip_pass@postgres-glitchtip:5432/glitchtip
+  #     SECRET_KEY: "change_me_to_something_random_please_generate_new_key"
+  #     PORT: 8000
+  #     EMAIL_URL: consolemail://
+  #     GLITCHTIP_DOMAIN: http://localhost:8001
+  #     DEFAULT_FROM_EMAIL: admin@glitchtip.local
+  #     CELERY_WORKER_AUTOSCALE: "1,3"
+  #     REDIS_URL: redis://redis:6379/1
+  #     DEBUG: "true"
+  #     ALLOWED_HOSTS: "localhost,127.0.0.1,glitchtip"
+  #   volumes:
+  #     - glitchtip_uploads_dev:/code/uploads
+  #   depends_on:
+  #     - postgres-glitchtip
+  #     - redis
+  #   restart: unless-stopped
+  #   networks:
+  #     - aksi-network-dev
+
+  # # GlitchTip Migrate (for database migrations)
+  # glitchtip-migrate:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.glitchtip
+  #   container_name: glitchtip-migrate-dev
+  #   command: ./bin/run-migrate.sh
+  #   environment:
+  #     DATABASE_URL: postgres://glitchtip:glitchtip_pass@postgres-glitchtip:5432/glitchtip
+  #     SECRET_KEY: "change_me_to_something_random_please_generate_new_key"
+  #     PORT: 8000
+  #     EMAIL_URL: consolemail://
+  #     GLITCHTIP_DOMAIN: http://localhost:8001
+  #     DEFAULT_FROM_EMAIL: admin@glitchtip.local
+  #     CELERY_WORKER_AUTOSCALE: "1,3"
+  #     REDIS_URL: redis://redis:6379/1
+  #     DEBUG: "true"
+  #     ALLOWED_HOSTS: "localhost,127.0.0.1,glitchtip"
+  #   depends_on:
+  #     - postgres-glitchtip
+  #     - redis
+  #   restart: "no"
+  #   networks:
+  #     - aksi-network-dev
+
+  # Frontend (Next.js) - development
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev
+    container_name: frontend-dev
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      # API URL для клієнтської частини (browser) - прямі запити до backend через external IP
+      NEXT_PUBLIC_API_URL: http://34.154.245.60:8080
+      # API URL для серверної частини (SSR) - прямо до backend контейнера
+      NEXT_SERVER_API_URL: http://backend:8080
+      NEXT_TELEMETRY_DISABLED: 1
+      # Orval конфігурація для генерації API
+      ORVAL_API_URL: http://backend:8080/v3/api-docs
+      # # GlitchTip error monitoring
+      # NEXT_PUBLIC_GLITCHTIP_DSN: http://b1abf81086f84a71bc66b1659e647402@glitchtip:8000/1
+      # GLITCHTIP_ENABLED: "true"
+      # 🚀 NPM ОПТИМІЗАЦІЯ для прискорення
+      npm_config_audit: "false"
+      npm_config_fund: "false"
+      npm_config_progress: "false"
+      npm_config_cache_max: "86400000"
+      npm_config_maxsockets: "20"
+      npm_config_audit_level: "none"
+    volumes:
+      - ../frontend:/app # Монтуємо весь проект для автоматичного перезавантаження
+      - frontend_node_modules:/app/node_modules # Зберігаємо node_modules у volume (користувач node)
+      - frontend_next_cache:/app/.next # Зберігаємо .next кеш у volume
+      - frontend_npm_cache:/home/node/.npm # Зберігаємо npm кеш у volume
+    depends_on:
+      backend:
+        condition: service_healthy
+      # traefik:
+      #   condition: service_started
+    restart: unless-stopped
+    networks:
+      - aksi-network-dev
+    # Додаємо healthcheck для Next.js
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s # Даємо час на запуск Next.js
+    # labels:
+    #   # Налаштування Traefik
+    #   - "traefik.enable=true"
+    #   # Правило маршрутизації - всі запити, які не починаються з /api
+    #   - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+    #   # Пріоритет - низький, щоб дозволити спочатку обробити /api запити
+    #   - "traefik.http.routers.frontend.priority=1"
+    #   # Вказуємо на якому порті працює сервіс
+    #   - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+networks:
+  aksi-network-dev:
+    driver: bridge
+
+volumes:
+  postgres_data_dev:
+  # postgres_glitchtip_data_dev: # Volume for GlitchTip PostgreSQL
+  pgadmin_data_dev:
+  frontend_node_modules:
+  frontend_next_cache:
+  frontend_npm_cache:
+  backend_m2_cache:
+  backend_target: # Volume for compiled classes
+  backend_uploads: # Volume for uploaded files
+  # glitchtip_uploads_dev: # Volume for GlitchTip uploads
+  portainer_data:

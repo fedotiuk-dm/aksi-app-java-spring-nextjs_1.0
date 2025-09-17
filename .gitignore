@@ -87,8 +87,8 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 
 # Згенеровані API файли (Orval) - не комітити в Git
-/frontend/shared/api/
-/frontend/shared/api/**/*
+#/frontend/shared/api/
+#/frontend/shared/api/**/*
 
 # Тимчасові файли та кеш
 *.tmp

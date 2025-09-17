@@ -28,7 +28,14 @@ databaseChangeLog:
   - changeSet:
       id: 001-3
       author: aksi
-      comment: Create common types
+      comment: Create common types (SKIP if 099-3 already executed)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - changeSetExecuted:
+                id: 099-3
+                author: aksi
+                changeLogFile: db/changelog/changes/099-refactor-initial-schema.yaml
       changes:
         - sql:
             sql: |
